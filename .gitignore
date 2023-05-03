@@ -1,0 +1,51 @@
+*DS_Store
+*~
+*.so
+*.a
+*.exe
+build/*
+externals/*
+data/*/*.json
+data/*/*.jsonl
+data/*/*/*.jsonl
+data/*/*.xml*
+data/*/*/*.xml*
+data/*/*.gz
+*.bin
+*.gz
+*.tar
+python/venv
+python/figs
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
