@@ -126,7 +126,7 @@ namespace andromeda
 	return false;
       }
     
-    std::vector<range_type > ranges_01, ranges_02;
+    std::vector<typename base_nlp_model::range_type> ranges_01, ranges_02;
     get_ranges(subj, ranges_01, ranges_02);
 
     std::vector<pcre2_item> enum_chunks={}, single_chunks={};
