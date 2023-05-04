@@ -6,7 +6,7 @@
 sh build.mac.sh
 ```
 
-## National Language Processing (NLP)
+## Natural Language Processing (NLP)
 
 ```sh
 ./nlp.exe -m create-configs
