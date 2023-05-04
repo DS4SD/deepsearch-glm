@@ -29,14 +29,20 @@ def parse_arguments():
         description = 'Apply Andromeda-NLP on `Deep Search` documents',
         epilog = 'Text at the bottom of help')
 
-    parser.add_argument('-d', '--directory', required=True)
+    parser.add_argument('-m', '--mode', required=False, default="show",
+                        help="mode [convert;show;run]")
+    parser.add_argument('-d', '--directory', required=False, default="../data/documents/")
 
-    parser.add_argument('-u', '--username', required=False, help="username or email from DS host")
-    parser.add_argument('-p', '--password', required=False, help="API-key from DS host")
+    parser.add_argument('--models', required=False, default="term;reference")
+    
+    parser.add_argument('-u', '--username', required=False, default="<email>",
+                        help="username or email from DS host")
+    parser.add_argument('-p', '--password', required=False, default="<API_KEY>",
+                        help="API-key from DS host")
     
     args = parser.parse_args()
 
-    return args.directory, args.username, args.password
+    return args.mode, args.directory, args.models, args.username, args.password
 
 def convert(sdirectory, username, password):
 
@@ -175,37 +181,45 @@ def run_nlp_on_docs(sdir):
     print("filenames: ", filenames)
     
     model = andromeda_nlp.nlp_model()
-    model.initialise("name;term;language;reference")
+    model.initialise("term;language;reference;abbreviation")
     
     for filename in filenames:
 
         if(filename.endswith(".nlp.json")):
             continue
         
-        print(filename)
+        print(f"reading {filename}")
 
         fr = open(filename, "r")
         doc = json.load(fr)
         fr.close()
 
-        doc_ = model.apply_on_doc(doc)
+        doc_ = model.apply_on_pdfdoc(doc)
         
         filename_ = filename+".nlp.json" 
 
+        print(f" --> writing {filename_}")
         fw = open(filename_, "w")        
         fw.write(json.dumps(doc_, indent=2))
         fw.close()
         
 if __name__ == '__main__':
 
-    sdir, uname, pword = parse_arguments()
+    mode, sdir, models, uname, pword = parse_arguments()
 
-    found_new_pdfs = convert(sdir, uname, pword)
-
+    found_new_pdfs=False
+    if uname!="<email>" and pword!="<API_KEY>":
+        found_new_pdfs = convert(sdir, uname, pword)
+    
     if found_new_pdfs:
         process_zip_files(sdir)
 
-    show_nlp_on_docs(sdir)
-    
-    #run_nlp_on_docs(sdir)
+    if mode=="convert" and found_new_pdfs:
+        print(tc.blue(f"converted files located in {sdir}"))
+    elif mode=="show":
+        show_nlp_on_docs(sdir)
+    elif mode=="run":
+        run_nlp_on_docs(sdir)
+    else:
+        print(tc.red(f"unknown {mode}"))
         
