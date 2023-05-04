@@ -1,0 +1,1078 @@
+//-*-C++-*-
+
+#ifndef ANDROMEDA_MODELS_GLM_MODEL_CLI_CREATE_CREATOR_H_
+#define ANDROMEDA_MODELS_GLM_MODEL_CLI_CREATE_CREATOR_H_
+
+namespace andromeda
+{
+  namespace glm
+  {
+    class model_creator: public base_types,
+                         public model_types
+    {
+      typedef model model_type;
+
+    public:
+
+      model_creator(std::shared_ptr<model_type> model);
+
+      void update(subject<PARAGRAPH>& subj);
+      void update(subject<TABLE>& subj);
+
+      void update(subject<DOCUMENT>& subj);
+
+    private:
+
+      void contract_tokens(subject<PARAGRAPH>& subj);
+
+      void contract_tokens(subject<TABLE>& subj);
+
+      void contract_tokens(subject<DOCUMENT>& subj);
+
+      void update_tokens(std::vector<word_token>& tokens,
+                         std::vector<base_entity>& entities);
+
+      void insert_nodes(nodes_type& nodes,
+                        std::vector<word_token>& tokens,
+                        std::vector<hash_type>& word_hashes,
+                        std::vector<hash_type>& pos_hashes);
+
+      void update_counters(nodes_type& nodes,
+                           std::vector<base_entity>& entities,
+                           std::vector<hash_type>& hashes,
+                           std::set<hash_type>& docs_cnt);
+
+      void update_counters(nodes_type& nodes,
+                           std::vector<base_entity>& entities,
+                           std::map<range_type, hash_type>& ent_rngs,
+                           std::set<hash_type>& docs_cnt);
+
+      void insert_edges(std::vector<hash_type>& word_hashes,
+                        std::vector<hash_type>& pos_hashes,
+                        edges_type& edges);
+
+      void insert_edges(int padding, edges_type& edges,
+                        std::vector<hash_type>& hashes);
+
+      void insert_edges(std::vector<base_entity>& ents,
+                        edges_type& edges,
+                        std::vector<hash_type>& hashes);
+
+      void insert_begin_and_end_of_paths(std::vector<word_token>& tokens,
+                                         std::vector<base_entity>& ents,
+                                         std::vector<base_relation>& rels,
+                                         nodes_type& nodes, edges_type& edges,
+                                         std::vector<hash_type>& word_hashes);
+
+      void insert_concatenation_paths(std::vector<word_token>& tokens,
+                                      std::vector<base_entity>& entities,
+                                      std::vector<base_relation>& relations,
+                                      nodes_type& nodes,
+                                      edges_type& edges,
+                                      std::vector<hash_type>& word_hashes,
+                                      std::map<range_type, hash_type>& path_hashes);
+
+      void insert_conn_paths(std::vector<word_token>& tokens,
+                             std::vector<base_entity>& entities,
+                             std::vector<base_relation>& relations,
+                             nodes_type& nodes, edges_type& edges,
+                             std::vector<hash_type>& word_hashes,
+                             std::map<range_type, hash_type>& rng_to_conn);
+
+      void insert_term_paths(std::vector<word_token>& tokens,
+                             std::vector<base_entity>& entities,
+                             std::vector<base_relation>& relations,
+                             nodes_type& nodes, edges_type& edges,
+                             std::vector<hash_type>& word_hashes,
+                             std::map<range_type, hash_type>& rng_to_term);
+
+      void insert_verb_paths(std::vector<word_token>& tokens,
+                             std::vector<base_entity>& entities,
+                             std::vector<base_relation>& relations,
+                             nodes_type& nodes, edges_type& edges,
+                             std::vector<hash_type>& word_hashes,
+                             std::map<range_type, hash_type>& rng_to_verb);
+
+      void insert_padding_for_conn_verb_term(int padding,
+                                             std::vector<base_entity>& entities,
+                                             nodes_type& nodes, edges_type& edges,
+                                             std::vector<hash_type>& word_hashes,
+                                             std::vector<hash_type>& sent_hashes,
+                                             std::map<range_type, hash_type>& rng_to_conn,
+                                             std::map<range_type, hash_type>& rng_to_term,
+                                             std::map<range_type, hash_type>& rng_to_verb);
+
+      void insert_triplets(nodes_type& nodes, edges_type& edges,
+                           std::map<range_type, hash_type>& rng_to_conn,
+                           std::map<range_type, hash_type>& rng_to_term,
+                           std::map<range_type, hash_type>& rng_to_verb);
+
+      void insert_sentences(std::vector<base_entity>& entities,
+                            nodes_type& nodes, edges_type& edges,
+                            std::vector<hash_type>& word_hashes,
+                            std::vector<hash_type>& sent_hashes);
+
+      void insert_sentences(std::vector<base_entity>& entities,
+                            nodes_type& nodes, edges_type& edges,
+                            std::vector<hash_type>& word_hashes,
+                            std::vector<hash_type>& sent_hashes,
+                            std::map<range_type, hash_type>& rng_to_conn,
+                            std::map<range_type, hash_type>& rng_to_term,
+                            std::map<range_type, hash_type>& rng_to_verb);
+
+      void insert_texts(std::vector<base_entity>& entities,
+                        nodes_type& nodes, edges_type& edges,
+                        std::vector<hash_type>& sent_hashes);
+
+    private:
+
+      std::shared_ptr<model_type> model;
+
+      std::size_t beg_term_hash, end_term_hash,
+        beg_sent_hash, end_sent_hash,
+        beg_text_hash, end_text_hash,
+        undef_pos_hash;
+    };
+
+    model_creator::model_creator(std::shared_ptr<model_type> model):
+      model(model),
+
+      beg_term_hash(node_names::DEFAULT_HASH),
+      end_term_hash(node_names::DEFAULT_HASH),
+
+      beg_sent_hash(node_names::DEFAULT_HASH),
+      end_sent_hash(node_names::DEFAULT_HASH),
+
+      beg_text_hash(node_names::DEFAULT_HASH),
+      end_text_hash(node_names::DEFAULT_HASH),
+
+      undef_pos_hash(node_names::DEFAULT_HASH)
+    {
+      auto& nodes = model->get_nodes();
+      auto& edges = model->get_edges();
+
+      nodes.initialise();
+      edges.initialise();
+
+      beg_term_hash = node_names::to_hash.at(node_names::BEG_TERM);
+      end_term_hash = node_names::to_hash.at(node_names::END_TERM);
+
+      beg_sent_hash = node_names::to_hash.at(node_names::BEG_SENT);
+      end_sent_hash = node_names::to_hash.at(node_names::END_SENT);
+
+      beg_text_hash = node_names::to_hash.at(node_names::BEG_TEXT);
+      end_text_hash = node_names::to_hash.at(node_names::END_TEXT);
+
+      undef_pos_hash = node_names::to_hash.at(node_names::UNDEFINED_POS);
+    }
+
+    void model_creator::update(subject<PARAGRAPH>& subj)
+    {
+      auto& nodes = model->get_nodes();
+      auto& edges = model->get_edges();
+
+      auto& parameters = model->get_parameters();
+
+      std::set<hash_type> docs_cnt={};
+
+      std::vector<word_token>& tokens = subj.word_tokens;
+
+      std::vector<base_entity>& entities = subj.entities;
+      std::vector<base_relation>& relations = subj.relations;
+
+      if(tokens.size()==0)
+        {
+          return;
+        }
+
+      update_tokens(tokens, entities);
+
+      std::vector<hash_type> word_hashes={}, pos_hashes={}, sent_hashes={};
+      insert_nodes(nodes, tokens, word_hashes, pos_hashes);
+
+      update_counters(nodes, entities, word_hashes, docs_cnt);
+      update_counters(nodes, entities, pos_hashes, docs_cnt);
+
+      insert_edges(word_hashes, pos_hashes, edges);
+
+      insert_edges(parameters.padding, edges, word_hashes);
+      insert_edges(parameters.padding, edges, pos_hashes);
+
+      insert_begin_and_end_of_paths(tokens, entities, relations,
+                                    nodes, edges,  //paths,
+                                    word_hashes);
+
+      std::map<range_type, hash_type> rng_to_conc={};
+      std::map<range_type, hash_type> rng_to_conn={};
+      std::map<range_type, hash_type> rng_to_term={};
+      std::map<range_type, hash_type> rng_to_verb={};
+
+      if(parameters.keep_concs)
+        {
+          insert_concatenation_paths(tokens, entities, relations,
+                                     nodes, edges, //paths,
+                                     word_hashes, rng_to_conc);
+
+          update_counters(nodes, entities, rng_to_conc, docs_cnt);
+        }
+
+      if(parameters.keep_conns)
+        {
+          insert_conn_paths(tokens, entities, relations,
+                            nodes, edges, //paths,
+                            word_hashes, rng_to_conn);
+
+          update_counters(nodes, entities, rng_to_conn, docs_cnt);
+        }
+
+      if(parameters.keep_terms)
+        {
+          insert_term_paths(tokens, entities, relations,
+                            nodes, edges, //paths,
+                            word_hashes, rng_to_term);
+
+          update_counters(nodes, entities, rng_to_term, docs_cnt);
+        }
+
+      if(parameters.keep_verbs)
+        {
+          insert_verb_paths(tokens, entities, relations,
+                            nodes, edges, //paths,
+                            word_hashes, rng_to_verb);
+
+          update_counters(nodes, entities, rng_to_verb, docs_cnt);
+        }
+
+      if(true)
+        {
+          insert_padding_for_conn_verb_term(parameters.padding,
+                                            entities,
+                                            nodes, edges,
+                                            word_hashes, sent_hashes,
+                                            rng_to_conn, rng_to_term, rng_to_verb);
+        }
+
+      if(parameters.keep_sents)
+        {
+          insert_sentences(entities, nodes, edges,
+                           word_hashes, sent_hashes,
+                           rng_to_conn, rng_to_term, rng_to_verb);
+        }
+
+      /*
+        if(parameters.keep_sents and parameters.keep_terms)
+        {
+        insert_sentences(entities, nodes, edges, paths,
+        word_hashes, sent_hashes,
+        rng_to_conn, rng_to_term, rng_to_verb);
+        }
+        else if(parameters.keep_sents)
+        {
+        insert_sentences(entities, nodes, edges, paths,
+        word_hashes, sent_hashes);
+        }
+      */
+
+      if(sent_hashes.size()>=2 and
+         parameters.keep_sents and
+         parameters.keep_texts)
+        {
+          insert_texts(entities, nodes, edges, sent_hashes);
+        }
+    }
+
+    void model_creator::contract_tokens(subject<PARAGRAPH>& subj)
+    {
+      subj.contract_wtokens_from_entities(LINK);
+      subj.contract_wtokens_from_entities(CITE);
+      subj.contract_wtokens_from_entities(NAME);
+    }
+
+    void model_creator::contract_tokens(subject<TABLE>& subj)
+    {
+
+    }
+
+    void model_creator::contract_tokens(subject<DOCUMENT>& subj)
+    {
+      for(auto item:subj.paragraphs)
+        {
+          contract_tokens(item);
+        }
+
+      for(auto item:subj.tables)
+        {
+          contract_tokens(item);
+        }
+    }
+
+    void model_creator::update(subject<TABLE>& subj)
+    {
+
+    }
+
+    void model_creator::update(subject<DOCUMENT>& subj)
+    {
+      for(auto& paragraph:subj.paragraphs)
+        {
+          this->update(paragraph);
+        }
+
+      for(auto& table:subj.tables)
+        {
+          this->update(table);
+        }
+    }
+
+    void model_creator::update_tokens(std::vector<word_token>& tokens,
+                                      std::vector<base_entity>& entities)
+    {
+      for(auto& ent:entities)
+        {
+          auto rng = ent.wtok_range;
+
+          std::string subtype = ent.model_subtype;
+
+          if(ent.model_type==andromeda::NUMVAL and (rng[1]-rng[0])==1)
+            {
+              tokens.at(rng[0]).set_word("__"+subtype+"__");
+            }
+          else if(ent.model_type==andromeda::LINK and (rng[1]-rng[0])==1)
+            {
+              tokens.at(rng[0]).set_word("__"+subtype+"__");
+            }
+          else if(ent.model_type==andromeda::CITE and (rng[1]-rng[0])==1)
+            {
+              tokens.at(rng[0]).set_word("__"+subtype+"__");
+            }
+          else if(ent.model_type==andromeda::PARENTHESIS)
+            {
+              /*
+                auto rng = ent.word_range;
+
+                std::cout << " -> parenthesis\n";
+                for(std::size_t i=rng[0]; i<rng[1]; i++)
+                {
+                std::cout << std::setw(8) << tokens.at(i).pos << std::setw(24) << tokens.at(i).word << "\n";
+                }
+              */
+            }
+          else
+            {}
+        }
+    }
+
+    void model_creator::insert_nodes(nodes_type& nodes,
+                                     std::vector<word_token>& tokens,
+                                     std::vector<hash_type>& word_hashes,
+                                     std::vector<hash_type>& pos_hashes)
+    {
+      for(word_token& token:tokens)
+        {
+          std::string text = token.get_word();
+          std::string pos  = token.get_pos();
+
+          {
+            auto& node = nodes.insert(node_names::TOKEN, text);
+            word_hashes.push_back(node.get_hash());
+          }
+
+          {
+            auto& node = nodes.insert(node_names::SYNTX, pos);
+            pos_hashes.push_back(node.get_hash());
+          }
+        }
+    }
+
+    void model_creator::update_counters(nodes_type& nodes,
+                                        std::vector<base_entity>& entities,
+                                        std::vector<hash_type>& hashes,
+                                        std::set<hash_type>& docs_cnt)
+    {
+      std::set<hash_type> sent_beg={};
+      for(auto& ent:entities)
+        {
+          if(ent.model_type==andromeda::SENTENCE)
+            {
+              auto rng = ent.wtok_range;
+              sent_beg.insert(rng[0]);
+              sent_beg.insert(rng[1]);
+            }
+        }
+
+      std::set<hash_type> sent_cnt={};
+      std::set<hash_type> text_cnt={};
+
+      for(hash_type l=0; l<hashes.size(); l++)
+        {
+          if(sent_beg.count(l))
+            {
+              sent_cnt={};
+            }
+
+          auto& hash = hashes.at(l);
+          auto& node = nodes.get(hash);
+
+          auto sent_ins = sent_cnt.insert(hash);
+          auto text_ins = text_cnt.insert(hash);
+          auto docs_ins = docs_cnt.insert(hash);
+
+          node.incr_word_cnt();// += 1;
+          node.incr_sent_cnt(sent_ins.second);// += sent_ins.second? 1:0;
+          node.incr_text_cnt(text_ins.second);// += text_ins.second? 1:0;
+          node.incr_docs_cnt(docs_ins.second);// += text_ins.second? 1:0;
+        }
+    }
+
+    void model_creator::update_counters(nodes_type& nodes,
+                                        std::vector<base_entity>& entities,
+                                        std::map<range_type, hash_type>& ent_rngs,
+                                        std::set<hash_type>& docs_cnt)
+    {
+      std::set<hash_type> text_cnt={};
+      for(auto& ent_rng:ent_rngs)
+        {
+          hash_type hash = ent_rng.second;
+
+          auto& node = nodes.get(hash);
+          node.incr_word_cnt();
+
+          auto text_ins = text_cnt.insert(hash);
+          node.incr_text_cnt(text_ins.second);
+
+          auto docs_ins = docs_cnt.insert(hash);
+          node.incr_docs_cnt(docs_ins.second);
+        }
+
+      std::set<range_type> sent_rngs={};
+      for(auto& ent:entities)
+        {
+          if(ent.model_type==andromeda::SENTENCE)
+            {
+              auto rng = ent.wtok_range;
+              sent_rngs.insert(rng);
+            }
+        }
+
+      std::set<hash_type> sent_cnt={};
+      for(auto& sent_rng:sent_rngs)
+        {
+          sent_cnt={};
+
+          for(auto& ent_rng:ent_rngs)
+            {
+              range_type rng = ent_rng.first;
+              hash_type hash = ent_rng.second;
+
+              if(sent_rng.at(0)<=rng.at(0) and rng.at(1)<=sent_rng.at(1))
+                {
+                  auto sent_ins = sent_cnt.insert(hash);
+
+                  auto& node = nodes.get(hash);
+                  node.incr_sent_cnt(sent_ins.second);
+                }
+            }
+        }
+    }
+
+    void model_creator::insert_edges(std::vector<hash_type>& word_hashes,
+                                     std::vector<hash_type>& pos_hashes,
+                                     edges_type& edges)
+    {
+      for(std::size_t l=0; l<word_hashes.size(); l++)
+        {
+          if(pos_hashes.at(l)==undef_pos_hash)
+            {
+              continue;
+            }
+          else
+            {
+              edges.insert(edge_names::to_pos , word_hashes.at(l), pos_hashes.at(l), false);
+              edges.insert(edge_names::to_word, pos_hashes.at(l), word_hashes.at(l), false);
+            }
+        }
+    }
+
+    void model_creator::insert_edges(int padding, edges_type& edges,
+                                     std::vector<hash_type>& hashes)
+    {
+      if(padding>0)
+        {
+          edges.insert(edge_names::next, beg_text_hash, hashes.front(), false);
+          edges.insert(edge_names::next, hashes.back(), end_text_hash, false);
+
+          edges.insert(edge_names::prev, end_text_hash, hashes.back(), false);
+        }
+
+      for(int i=0; i<hashes.size(); i++)
+        {
+          for(int d=1; d<=padding; d++)
+            {
+              if(i+d<hashes.size())
+                {
+                  edges.insert(d, hashes.at(i), hashes.at(i+d), false);
+                }
+
+              if(0<=i-d)
+                {
+                  edges.insert(-d, hashes.at(i), hashes.at(i-d), false);
+                }
+            }
+        }
+    }
+
+    void model_creator::insert_begin_and_end_of_paths(std::vector<word_token>& tokens,
+                                                      std::vector<base_entity>& entities,
+                                                      std::vector<base_relation>& relations,
+                                                      nodes_type& nodes, edges_type& edges,
+                                                      std::vector<hash_type>& word_hashes)
+    {
+      for(auto& ent:entities)
+        {
+          if(ent.model_type==andromeda::TERM)
+            {
+              nodes.get(beg_term_hash).incr_word_cnt();// += 1;
+              nodes.get(end_term_hash).incr_word_cnt();// += 1;
+
+              auto rng = ent.wtok_range;
+
+              edges.insert(edge_names::to_beg, word_hashes.at(rng[0]  ), beg_term_hash, false);
+              edges.insert(edge_names::to_end, word_hashes.at(rng[1]-1), end_term_hash, false);
+
+              edges.insert(edge_names::from_beg, beg_term_hash, word_hashes.at(rng[0]), false);
+              edges.insert(edge_names::from_end, end_term_hash, word_hashes.at(rng[1]-1), false);
+
+              edges.insert(edge_names::tax_up, end_term_hash, word_hashes.at(rng[1]-1), false);
+            }
+
+          if(ent.model_type==andromeda::SENTENCE)
+            {
+              nodes.get(beg_sent_hash).incr_word_cnt();// += 1;
+              nodes.get(end_sent_hash).incr_word_cnt();// += 1;
+
+              auto rng = ent.wtok_range;
+
+              edges.insert(edge_names::to_beg, word_hashes.at(rng[0]  ), beg_sent_hash, false);
+              edges.insert(edge_names::to_end, word_hashes.at(rng[1]-1), end_sent_hash, false);
+
+              edges.insert(edge_names::from_beg, beg_sent_hash, word_hashes.at(rng[0]), false);
+              edges.insert(edge_names::from_end, end_sent_hash, word_hashes.at(rng[1]-1), false);
+            }
+        }
+
+      if(word_hashes.size()>0)
+        {
+          nodes.get(beg_text_hash).incr_word_cnt();// += 1;
+          nodes.get(end_text_hash).incr_word_cnt();// += 1;
+
+          edges.insert(edge_names::to_beg, word_hashes.front(), beg_text_hash, false);
+          edges.insert(edge_names::to_end, word_hashes.back(), end_text_hash, false);
+
+          edges.insert(edge_names::from_beg, beg_text_hash, word_hashes.front(), false);
+          edges.insert(edge_names::from_end, end_text_hash, word_hashes.back(), false);
+        }
+    }
+
+    void model_creator::insert_concatenation_paths(std::vector<word_token>& tokens,
+                                                   std::vector<base_entity>& entities,
+                                                   std::vector<base_relation>& relations,
+                                                   nodes_type& nodes,
+                                                   edges_type& edges,
+                                                   //paths_type& paths,
+                                                   std::vector<hash_type>& word_hashes,
+                                                   std::map<range_type, hash_type>& rng_to_hash)
+    {
+      for(auto& ent:entities)
+        {
+          if(ent.model_type==andromeda::EXPRESSION and
+             (ent.model_subtype=="name-concatenation" or
+              ent.model_subtype=="word-concatenation" or
+              ent.model_subtype=="latex-concatenation") and
+             ent.name.find("-")!=std::string::npos and
+             ent.name.find(" ")==std::string::npos and
+             (ent.wtok_range[1]-ent.wtok_range[0])==1)
+            {
+              auto rng = ent.wtok_range;
+
+              hash_type hash = word_hashes.at(rng[0]);
+              auto& node = nodes.get(hash);
+
+              std::string text = node.get_text();
+
+              std::vector<std::string> parts = utils::split(text, "-");
+
+              std::vector<hash_type> cont_hashes={};
+              for(std::string& part:parts)
+                {
+                  auto& node = nodes.insert(node_names::TOKEN, part);
+                  cont_hashes.push_back(node.get_hash());
+                }
+
+              if(cont_hashes.size()>=2)
+                {
+                  base_node path(node_names::CONT, cont_hashes);
+                  nodes.insert(path, false);
+
+                  rng_to_hash.emplace(ent.wtok_range, path.get_hash());
+
+                  for(std::size_t i=0; i<cont_hashes.size()-1; i++)
+                    {
+                      edges.insert(edge_names::tax_dn, cont_hashes.at(i), cont_hashes.at(i+1), false);
+                    }
+
+                  for(std::size_t i=1; i<cont_hashes.size(); i++)
+                    {
+                      edges.insert(edge_names::tax_up, cont_hashes.at(i), cont_hashes.at(i-1), false);
+                    }
+
+                  for(std::size_t i=0; i<cont_hashes.size(); i++)
+                    {
+                      edges.insert(edge_names::to_path  , cont_hashes.at(i), path.get_hash(), false);
+                      edges.insert(edge_names::from_path, path.get_hash(), cont_hashes.at(i), false);
+                    }
+                }
+            }
+        }
+    }
+
+    void model_creator::insert_conn_paths(std::vector<word_token>& tokens,
+                                          std::vector<base_entity>& entities,
+                                          std::vector<base_relation>& relations,
+                                          nodes_type& nodes, edges_type& edges,
+                                          std::vector<hash_type>& word_hashes,
+                                          std::map<range_type, hash_type>& rng_to_conn)
+    {
+      for(auto& ent:entities)
+        {
+          if(ent.model_type==andromeda::CONN)
+            {
+              auto rng = ent.wtok_range;
+
+              std::vector<hash_type> hashes={};
+              for(std::size_t i=rng[0]; i<rng[1]; i++)
+                {
+                  hashes.push_back(word_hashes.at(i));
+                }
+
+              base_node path(node_names::CONN, hashes);
+              nodes.insert(path, false);
+
+              rng_to_conn.emplace(ent.wtok_range, path.get_hash());
+            }
+        }
+    }
+
+    void model_creator::insert_term_paths(std::vector<word_token>& tokens,
+                                          std::vector<base_entity>& entities,
+                                          std::vector<base_relation>& relations,
+                                          nodes_type& nodes, edges_type& edges,
+                                          std::vector<hash_type>& word_hashes,
+                                          std::map<range_type, hash_type>& rng_to_term)
+    {
+      for(auto& ent:entities)
+        {
+          if(ent.model_type==andromeda::TERM and
+             ent.model_subtype=="single-term")
+            {
+              auto rng = ent.wtok_range;
+
+              std::vector<hash_type> term_hashes={};
+              for(std::size_t i=rng[0]; i<rng[1]; i++)
+                {
+                  term_hashes.push_back(word_hashes.at(i));
+                }
+
+              edges.insert(edge_names::to_beg, term_hashes.front(), beg_term_hash, false);
+              edges.insert(edge_names::to_end, term_hashes.back(), end_term_hash, false);
+
+              edges.insert(edge_names::from_beg, beg_term_hash, term_hashes.front(), false);
+              edges.insert(edge_names::from_end, end_term_hash, term_hashes.back(), false);
+
+              for(std::size_t i=0; i<term_hashes.size()-1; i++)
+                {
+                  edges.insert(edge_names::tax_dn, term_hashes.at(i), term_hashes.at(i+1), false);
+                }
+
+              for(std::size_t i=1; i<term_hashes.size(); i++)
+                {
+                  edges.insert(edge_names::tax_up, term_hashes.at(i), term_hashes.at(i-1), false);
+                }
+
+              base_node fpath(node_names::TERM, term_hashes);
+              nodes.insert(fpath, false);
+
+              rng_to_term.emplace(ent.wtok_range, fpath.get_hash());
+
+	      if(term_hashes.size()==1)
+		{
+		  edges.insert(edge_names::to_path  , term_hashes.at(0), fpath.get_hash(), false);
+		  edges.insert(edge_names::from_path, fpath.get_hash(), term_hashes.at(0), false);		  
+		}
+	      
+	      /*
+              if(term_hashes.size()>1)
+                {
+                  edges.insert(edge_names::from_root_to_path, term_hashes.back(), path.get_hash(), false);
+                  edges.insert(edge_names::from_path_to_root, path.get_hash(), term_hashes.back(), false);
+                }
+              else
+                {
+
+                }
+	      */
+	      
+              /*
+                if(term_hashes.size()>=1)
+                {
+                base_node fpath(node_names::TERM, term_hashes);
+                nodes.insert(fpath, false);
+
+                rng_to_term.emplace(ent.wtok_range, path.get_hash());
+
+                edges.insert(edge_names::from_root_to_path, term_hashes.back(), path.get_hash(), false);
+                edges.insert(edge_names::from_path_to_root, path.get_hash(), term_hashes.back(), false);
+
+
+                edges.insert(edge_names::from_root_to_path, term_hashes.back(), path.get_hash(), false);
+                edges.insert(edge_names::from_path_to_root, path.get_hash(), term_hashes.back(), false);
+
+                for(std::size_t i=0; i<term_hashes.size(); i++)
+                {
+                edges.insert(edge_names::to_path  , term_hashes.at(i), path.get_hash(), false);
+                edges.insert(edge_names::from_path, path.get_hash(), term_hashes.at(i), false);
+                }
+
+                for(std::size_t i=0; i<term_hashes.size(); i++)
+                {
+                if(i+1==term_hashes.size())
+                {
+                edges.insert(edge_names::from_root_to_path, term_hashes.at(i), path.get_hash(), false);
+                edges.insert(edge_names::from_path_to_root, path.get_hash(), term_hashes.at(i), false);
+                }
+                else
+                {
+                edges.insert(edge_names::from_desc_to_path, term_hashes.at(i), path.get_hash(), false);
+                edges.insert(edge_names::from_path_to_desc, path.get_hash(), term_hashes.at(i), false);
+                }
+                }
+
+                }
+              */
+            }
+        }
+    }
+
+    void model_creator::insert_verb_paths(std::vector<word_token>& tokens,
+                                          std::vector<base_entity>& entities,
+                                          std::vector<base_relation>& relations,
+                                          nodes_type& nodes,
+                                          edges_type& edges,
+                                          //paths_type& paths,
+                                          std::vector<hash_type>& word_hashes,
+                                          std::map<range_type, hash_type>& rng_to_verb)
+    {
+      for(auto& ent:entities)
+        {
+          if(ent.model_type==andromeda::VERB)
+            {
+              auto rng = ent.wtok_range;
+
+              std::vector<hash_type> verb_hashes={};
+              std::vector<std::string> pos={};
+
+              for(std::size_t i=rng[0]; i<rng[1]; i++)
+                {
+                  verb_hashes.push_back(word_hashes.at(i));
+                  pos.push_back(tokens.at(i).get_pos());
+                }
+
+              if(verb_hashes.size()>=1)
+                {
+                  base_node path(node_names::VERB, verb_hashes);
+                  nodes.insert(path, false);
+
+                  rng_to_verb.emplace(ent.wtok_range, path.get_hash());
+
+                  for(std::size_t i=0; i<verb_hashes.size(); i++)
+                    {
+                      if(pos.at(i).starts_with("V"))
+                        {
+                          edges.insert(edge_names::to_path  , verb_hashes.at(i), path.get_hash(), false);
+                          edges.insert(edge_names::from_path, path.get_hash(), verb_hashes.at(i), false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /*
+      void model_creator::insert_triplets(nodes_type& nodes, edges_type& edges, paths_type& paths,
+      std::map<range_type, hash_type>& rng_to_conn,
+      std::map<range_type, hash_type>& rng_to_term,
+      std::map<range_type, hash_type>& rng_to_verb)
+      {
+      for(auto itr_i=rng_to_conn.begin(); itr_i!=rng_to_conn.end(); itr_i++)
+      {
+      auto rng_i = itr_i->first;
+      hash_type conn = itr_i->second, term_0=-1, term_1=-1;
+
+      for(auto itr_j=rng_to_term.begin(); itr_j!=rng_to_term.end(); itr_j++)
+      {
+      auto rng_j = itr_j->first;
+
+      if(rng_j[1]==rng_i[0])
+      {
+      term_0 = itr_j->second;
+      }
+
+      if(rng_j[0]==rng_i[1])
+      {
+      term_1 = itr_j->second;
+      }
+      }
+
+      if(term_0!=-1 and term_1!=-1)
+      {
+      glm_path path(path_names::TRIPLET, {term_0, conn, term_1});
+      paths.insert(path, false);
+
+      edges.insert(edge_names::to_path, term_0, path.get_hash(), false);
+      edges.insert(edge_names::to_path, term_1, path.get_hash(), false);
+
+      edges.insert(edge_names::from_path, path.get_hash(), term_0, false);
+      edges.insert(edge_names::from_path, path.get_hash(), term_1, false);
+      }
+      }
+      }
+    */
+
+    /*
+      void model_creator::insert_sentences(std::vector<base_entity>& entities,
+      nodes_type& nodes, edges_type& edges, paths_type& paths,
+      std::vector<hash_type>& word_hashes,
+      std::vector<hash_type>& sent_hashes)
+      {
+      sent_hashes.clear();
+
+      for(auto& ent:entities)
+      {
+      if(ent.model_type==andromeda::SENTENCE)
+      {
+      std::vector<hash_type> path_hashes={};
+
+      auto rng = ent.wtok_range;
+      for(std::size_t l=rng[0]; l<rng[1]; l++)
+      {
+      path_hashes.push_back(word_hashes.at(l));
+      }
+
+      glm_path path(path_names::SENT, path_hashes);
+      paths.insert(path, false);
+
+      sent_hashes.push_back(path.get_hash());
+
+      for(hash_type hash:path_hashes)
+      {
+      if(terms.count(hash)==1 or verbs.count(hash)==1)
+      {
+      //edges.insert(edge_names::to_sent, hash, path.get_hash(), false);
+      //edges.insert(edge_names::from_sent, path.get_hash(), hash, false);
+      }
+      else
+      {}
+      }
+      }
+      }
+      }
+    */
+
+    void model_creator::insert_padding_for_conn_verb_term(int padding,
+                                                          std::vector<base_entity>& entities,
+                                                          nodes_type& nodes, edges_type& edges, //paths_type& paths,
+                                                          std::vector<hash_type>& word_hashes,
+                                                          std::vector<hash_type>& sent_hashes,
+                                                          std::map<range_type, hash_type>& rng_to_conn,
+                                                          std::map<range_type, hash_type>& rng_to_term,
+                                                          std::map<range_type, hash_type>& rng_to_verb)
+    {
+      std::vector<hash_type> hashes = word_hashes;
+
+      std::set<hash_type> terms={};
+      std::set<hash_type> verbs={};
+
+      for(auto itr=rng_to_conn.begin(); itr!=rng_to_conn.end(); itr++)
+        {
+          for(index_type l=(itr->first)[0]; l<(itr->first)[1]; l++)
+            {
+              hashes.at(l) = itr->second;
+            }
+        }
+
+      for(auto itr=rng_to_term.begin(); itr!=rng_to_term.end(); itr++)
+        {
+          for(index_type l=(itr->first)[0]; l<(itr->first)[1]; l++)
+            {
+              hashes.at(l) = itr->second;
+              terms.insert(itr->second);
+            }
+        }
+
+      for(auto itr=rng_to_verb.begin(); itr!=rng_to_verb.end(); itr++)
+        {
+          for(index_type l=(itr->first)[0]; l<(itr->first)[1]; l++)
+            {
+              hashes.at(l) = itr->second;
+              verbs.insert(itr->second);
+            }
+        }
+
+      {
+        auto itr = hashes.begin();
+
+        hash_type prev = *itr;
+        while(itr!=hashes.end())
+          {
+            if(itr==hashes.begin())
+              {
+                prev = *itr;
+                itr++;
+              }
+            else if(prev==*itr)
+              {
+                itr = hashes.erase(itr);
+              }
+            else
+              {
+                prev = *itr;
+                itr++;
+              }
+          }
+      }
+
+      for(int i=0; i<hashes.size(); i++)
+        {
+          for(int d=1; d<=padding; d++)
+            {
+              if(i+d<hashes.size())
+                {
+                  edges.insert(d, hashes.at(i), hashes.at(i+d), false);
+                }
+
+              if(0<=i-d)
+                {
+                  edges.insert(-d, hashes.at(i), hashes.at(i-d), false);
+                }
+            }
+        }
+    }
+
+    void model_creator::insert_sentences(std::vector<base_entity>& entities,
+                                         nodes_type& nodes, edges_type& edges, //paths_type& paths,
+                                         std::vector<hash_type>& word_hashes,
+                                         std::vector<hash_type>& sent_hashes,
+                                         std::map<range_type, hash_type>& rng_to_conn,
+                                         std::map<range_type, hash_type>& rng_to_term,
+                                         std::map<range_type, hash_type>& rng_to_verb)
+    {
+      sent_hashes.clear();
+
+      std::vector<hash_type> hashes = word_hashes;
+
+      std::set<hash_type> terms={};
+      std::set<hash_type> verbs={};
+
+      for(auto itr=rng_to_conn.begin(); itr!=rng_to_conn.end(); itr++)
+        {
+          for(index_type l=(itr->first)[0]; l<(itr->first)[1]; l++)
+            {
+              hashes.at(l) = itr->second;
+            }
+        }
+
+      for(auto itr=rng_to_term.begin(); itr!=rng_to_term.end(); itr++)
+        {
+          for(index_type l=(itr->first)[0]; l<(itr->first)[1]; l++)
+            {
+              hashes.at(l) = itr->second;
+              terms.insert(itr->second);
+            }
+        }
+
+      for(auto itr=rng_to_verb.begin(); itr!=rng_to_verb.end(); itr++)
+        {
+          for(index_type l=(itr->first)[0]; l<(itr->first)[1]; l++)
+            {
+              hashes.at(l) = itr->second;
+              verbs.insert(itr->second);
+            }
+        }
+
+      for(auto& ent:entities)
+        {
+          if(ent.model_type==andromeda::SENTENCE)
+            {
+              std::vector<hash_type> path_hashes={};
+
+              auto rng = ent.wtok_range;
+              for(index_type l=rng[0]; l<rng[1]; l++)
+                {
+                  if(path_hashes.size()==0)
+                    {
+                      path_hashes.push_back(hashes.at(l));
+                    }
+                  else if(path_hashes.back()!=hashes.at(l))
+                    {
+                      path_hashes.push_back(hashes.at(l));
+                    }
+                  else // repeating hash to be skipped
+                    {}
+                }
+
+              base_node path(node_names::SENT, path_hashes);
+              {
+                path.incr_word_cnt();
+                path.incr_sent_cnt();
+                path.incr_text_cnt();
+                path.incr_docs_cnt();
+              }
+
+              nodes.insert(path, false);
+
+              sent_hashes.push_back(path.get_hash());
+
+              for(hash_type hash:path_hashes)
+                {
+                  if(terms.count(hash)==1 or
+                     verbs.count(hash)==1)
+                    {
+                      edges.insert(edge_names::to_sent, hash, path.get_hash(), false);
+                      edges.insert(edge_names::from_sent, path.get_hash(), hash, false);
+                    }
+                  else
+                    {}
+                }
+            }
+        }
+    }
+
+    void model_creator::insert_texts(std::vector<base_entity>& entities,
+                                     nodes_type& nodes, edges_type& edges,
+                                     std::vector<hash_type>& sent_hashes)
+    {
+      base_node path(node_names::TEXT, sent_hashes);
+      {
+        path.incr_word_cnt();
+        path.incr_sent_cnt();
+        path.incr_text_cnt();
+        path.incr_docs_cnt();
+      }
+
+      nodes.insert(path, false);
+    }
+
+  }
+
+}
+
+#endif
