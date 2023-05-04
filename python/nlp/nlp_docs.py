@@ -7,9 +7,13 @@ import glob
 
 import textwrap
 import argparse
+
 from tabulate import tabulate
 
 import subprocess
+
+import textwrap as tw
+import textColor as tc
 
 import andromeda_nlp
 
@@ -34,42 +38,25 @@ def parse_arguments():
 
     return args.directory, args.username, args.password
 
-def process_zip_files(sdir):
-
-    jsonfiles = sorted(glob.glob(os.path.join(sdir, "*.json")))
-    for i,jsonfile in enumerate(jsonfiles):
-        print(i, "\t", jsonfile)
-        subprocess.call(["rm", jsonfile])
-
-    cellsfiles = sorted(glob.glob(os.path.join(sdir, "*.cells")))
-    for i,cellsfile in enumerate(cellsfiles):
-        print(i, "\t", cellsfile)
-        subprocess.call(["rm", cellsfile])            
-    
-    zipfiles = sorted(glob.glob(os.path.join(sdir, "*.zip")))
-    print(f"zips: ", len(zipfiles))
-
-    for zipfile in zipfiles:
-        subprocess.call(["unzip", zipfile, "-d", sdir])    
-
-    jsonfiles = sorted(glob.glob(os.path.join(sdir, "*.json")))
-    for i,jsonfile in enumerate(jsonfiles):
-        print(i, "\t", jsonfile)
-
 def convert(sdirectory, username, password):
 
     pdfs_files=glob.glob(os.path.join(sdirectory, "*.pdf"))
     json_files=glob.glob(os.path.join(sdirectory, "*.json"))
 
-    found=True
+    new_pdfs=[]
+    
+    found_new_pdfs=False
     for pdf_file in pdfs_files:
 
         json_file = pdf_file.replace(".pdf", ".json")
         if json_file not in json_files:
-            found = False
+            new_pdfs.append(pdf_file)
+            found_new_pdfs = True
 
-    if found:
-        return
+    print("found new pdf's: ", found_new_pdfs)
+            
+    if not found_new_pdfs:
+        return found_new_pdfs
     
     config_ = {
         "host": deepsearch_host,
@@ -93,61 +80,55 @@ def convert(sdirectory, username, password):
                                      source_path=sdirectory, progress_bar=True)           
     documents.download_all(result_dir=sdirectory)
 
-    info = documents.generate_report(result_dir="./converted_docs")
-    print(info)
+    info = documents.generate_report(result_dir=sdirectory)
+    return found_new_pdfs
+
+def process_zip_files(sdir):
+
+    jsonfiles = sorted(glob.glob(os.path.join(sdir, "*.json")))
+    for i,jsonfile in enumerate(jsonfiles):
+        #print(i, "\t", jsonfile)
+        subprocess.call(["rm", jsonfile])
+
+    cellsfiles = sorted(glob.glob(os.path.join(sdir, "*.cells")))
+    for i,cellsfile in enumerate(cellsfiles):
+        #print(i, "\t", cellsfile)
+        subprocess.call(["rm", cellsfile])            
     
-    process_zip_files(sdirectory)
+    zipfiles = sorted(glob.glob(os.path.join(sdir, "*.zip")))
+    print(f"zips: ", len(zipfiles))
 
-def get_label(data, header, key):
+    for zipfile in zipfiles:
+        subprocess.call(["unzip", zipfile, "-d", sdir])    
 
-    #print("properties: \n", tabulate(data, headers=header))
+    """
+    jsonfiles = sorted(glob.glob(os.path.join(sdir, "*.json")))
+    for i,jsonfile in enumerate(jsonfiles):
+        print(i, "\t", jsonfile)
+    """
     
-    i = header.index("type")
-    j = header.index("label")
-    k = header.index("confidence")
-    
-    for row in data:
-        if row[i]==key:
-            return row[j], row[k] 
-        
-    return "null", 0.0
+    for i,zipfile in enumerate(zipfiles):
+        print(i, "\t removing ", zipfile)
+        subprocess.call(["rm", zipfile])        
 
-def get_ent(ent_id, data, header, key="reference", text=""):
-
-    #print("entities: \n", tabulate(data, headers=header))
-    
-    i = header.index("type")
-    j = header.index("subtype")
-
-    k = header.index("name")
-
-    rows=[]
-    for row in data:
-        if row[i]==key:
-            rows.append([ent_id, row[i], row[j], row[k], "\n".join(textwrap.wrap(text))])
-
-    return rows, ["ent-id", "type", "subtype", "name", "text"]
-        
-def run_refs(sdir):
+def show_nlp_on_docs(sdir):
 
     filenames = glob.glob(os.path.join(sdir, "*.json"))
     print("filenames: ", filenames)
     
     model = andromeda_nlp.nlp_model()
-    model.init("language;reference")
+    model.initialise("name;term;language;reference")
     
     for filename in filenames:
-        print(filename)
+
+        if(filename.endswith(".nlp.json")):
+            continue
         
-        fr = open(filename)
+        print(filename)
+
+        fr = open(filename, "r")
         doc = json.load(fr)
         fr.close()
-        
-        if "main-text" not in doc:
-            print(doc.keys())
-            continue
-
-        references=[]
         
         for i,item in enumerate(doc["main-text"]):
             
@@ -155,160 +136,76 @@ def run_refs(sdir):
                 continue
             
             text = item["text"]
-            res = model.fit(text)
 
+            if len(text)<64:
+                continue
+            
+            res = model.apply_on_text(text)
+
+            print(tc.yellow("text:"),"\n", "\n".join(tw.wrap(text)))
+            
             props = res["properties"]
+            print(tc.yellow("properties:"),"\n", tabulate(props["data"], headers=props["headers"]))
+            
             ents = res["entities"]
+
+            for i,row in enumerate(ents["data"]):
+                if row[ents["headers"].index("type")]=="sentence":
+                    row[ents["headers"].index("name")] = row[ents["headers"].index("name")][0:16]+"..."
+                    row[ents["headers"].index("original")] = row[ents["headers"].index("original")][0:16] + "..."
+
+                elif len(row[ents["headers"].index("name")])>32:
+                    row[ents["headers"].index("name")] = row[ents["headers"].index("name")][0:16] + " ... "
+                    row[ents["headers"].index("original")] = row[ents["headers"].index("original")][0:16] + " ... "
+                else:
+                    continue
+
+            ents["data"] = sorted(ents["data"], key=lambda x: x[ents["headers"].index("char_i")])
+                
+            print(tc.yellow("entities:"),"\n", tabulate(ents["data"], headers=ents["headers"]))
             
             label, conf = get_label(props["data"], header=props["headers"], key="semantic")
-            #print(label, "\t", text[0:96])
 
-            if label=="reference" and conf>0.95:
-                references.append(res)
-
-                print("entities: \n", tabulate(ents["data"], headers=ents["headers"]))
             
-            """
-            print("\n".join(textwrap.wrap(text)))
-            
+        input(" ... ")
 
-            print("properties: \n", tabulate(props["data"], headers=props["headers"]))
+def run_nlp_on_docs(sdir):
 
-
-            print("entities: \n", tabulate(ents["data"], headers=ents["headers"]))
-            """
-
-        """
-        table=[]
-        for i, reference in enumerate(references):
-            print(reference.keys())
-            
-            ents = reference["entities"]            
-            rows, headers = get_ent(i, ents["data"], header=ents["headers"], key="reference", text=reference["text"])
-
-            table += rows
-
-        print(tabulate(table, headers=headers))
-
-        subtypes=[]
-        for j,row in enumerate(table):
-            subtypes.append(row[headers.index("subtype")])
-
-        subtypes = list(set(subtypes))            
-        print(subtypes)
-        """
-        
-        table2=[]
-        for i,reference in enumerate(references):
-
-            hent = reference["entities"]["headers"]            
-            ents = reference["entities"]["data"]            
-
-            numb=[]
-            for j,ent in enumerate(ents):
-                if ent[hent.index("type")]=="reference" and \
-                   ent[hent.index("subtype")]=="citation-number":
-                    numb.append(ent[hent.index("name")])
-                    break
-                
-            year=[]
-            for j,ent in enumerate(ents):
-                if ent[hent.index("type")]=="reference" and \
-                   ent[hent.index("subtype")]=="date":
-                    year.append(ent[hent.index("name")])
-                    break
-
-            authors=[]
-            for j,ent in enumerate(ents):
-                if ent[hent.index("type")]=="reference" and \
-                   ent[hent.index("subtype")]=="author":
-                    authors.append(ent[hent.index("name")])
-
-            title=[]
-            for j,ent in enumerate(ents):
-                if ent[hent.index("type")]=="reference" and \
-                   ent[hent.index("subtype")]=="title":
-                    title.append(ent[hent.index("name")])                    
-                    break
-                
-            journal=[]
-            for j,ent in enumerate(ents):
-                if ent[hent.index("type")]=="reference" and \
-                   ent[hent.index("subtype")]=="journal":
-                    journal.append(ent[hent.index("name")])                    
-                    break
-
-            table2.append(["; ".join(numb), "; ".join(year),
-                           "; ".join(journal),
-                           "\n".join(textwrap.wrap("; ".join(authors))),
-                           "\n".join(textwrap.wrap("; ".join(title)))])
-
-        print(tabulate(table2, headers=["reference-number", "year", "journal", "authors", "title"]))
-            
-        input("continue ...")
-            
-            
-"""
-def run_text(filenames):
-
-    model = andromeda_nlp.nlp_model()
-    model.init("term")
+    filenames = glob.glob(os.path.join(sdir, "*.json"))
+    print("filenames: ", filenames)
     
-    for filename in filenames:
-        print(filename)
-        
-        fr = open(filename)
-        doc = json.load(fr)
-        
-        for item in doc["main-text"]:
-            
-            if "text" in item:
-                
-                text = item["text"]
-                #print(f"text: {text}")
-                
-                res = model.fit(text)
-                #print(res)
-
-        fr.close()
-"""
-
-"""
-def run_docs(filenames):
-
     model = andromeda_nlp.nlp_model()
-    model.init("term;verb;conn")
-    #model.init("reference")
+    model.initialise("name;term;language;reference")
     
     for filename in filenames:
 
-        if(filename.endswith("nlp.json")):
+        if(filename.endswith(".nlp.json")):
             continue
-            
-        print(filename)
         
+        print(filename)
+
         fr = open(filename, "r")
         doc = json.load(fr)
         fr.close()
 
-        fw = open(filename, "w")        
-        fw.write(json.dumps(doc, indent=2))
-        fw.close()
+        doc_ = model.apply_on_doc(doc)
         
-        doc_ = model.fit_pdfdoc(doc)
-
         filename_ = filename+".nlp.json" 
 
         fw = open(filename_, "w")        
         fw.write(json.dumps(doc_, indent=2))
         fw.close()
-"""
-
+        
 if __name__ == '__main__':
 
     sdir, uname, pword = parse_arguments()
 
-    convert(sdir, uname, pword)
-        
-    run_refs(sdir)
+    found_new_pdfs = convert(sdir, uname, pword)
+
+    if found_new_pdfs:
+        process_zip_files(sdir)
+
+    show_nlp_on_docs(sdir)
+    
+    #run_nlp_on_docs(sdir)
         
