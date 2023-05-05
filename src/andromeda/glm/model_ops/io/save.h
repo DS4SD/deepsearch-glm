@@ -10,9 +10,8 @@ namespace andromeda
     template<typename model_type>
     class model_op<SAVE, model_type>: public io_base
     {
-      typedef typename model_type::hash_type hash_type;
-
-      typedef typename model_type::ind_type ind_type;
+      //typedef typename model_type::hash_type hash_type;
+      //typedef typename model_type::ind_type ind_type;
 
     public:
 
@@ -175,14 +174,23 @@ namespace andromeda
         LOG_S(INFO) << "writing " << edges_file.string();
         std::ofstream ofs(edges_file.c_str(), std::ios::binary);
 
+        std::size_t M=edges.number_of_flavors();
+        ofs.write((char*)&M, sizeof(M));
+	
+        for(auto flvr_itr=edges.begin(); flvr_itr!=edges.end(); flvr_itr++)
+          {
+	    flvr_type flvr = flvr_itr->first;
+	    std::size_t K = (flvr_itr->second).size();
+	    bool sorted = edges.is_sorted(flvr);
+
+	    ofs.write((char*)&flvr, sizeof(flvr));
+	    ofs.write((char*)&K, sizeof(K));
+	    ofs.write((char*)&sorted, sizeof(sorted));	    
+	  }
+
         std::size_t N=edges.size();
         ofs.write((char*)&N, sizeof(N));
-
-        //for(auto itr=edges.begin(); itr!=edges.end(); itr++)
-        //{
-        //ofs << *itr;
-        //}
-
+	
         for(auto flvr_itr=edges.begin(); flvr_itr!=edges.end(); flvr_itr++)
           {
             auto& edge_coll = flvr_itr->second;

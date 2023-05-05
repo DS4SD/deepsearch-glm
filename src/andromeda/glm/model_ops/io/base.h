@@ -6,7 +6,7 @@ namespace andromeda
   namespace glm
   {
 
-    class io_base
+    class io_base: public base_types
     {
     public:
       

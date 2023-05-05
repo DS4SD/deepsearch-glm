@@ -60,6 +60,8 @@ namespace andromeda
 
       void update(const base_edge& other);
 
+      void set_lowerbound(flvr_type flavor, hash_type hash_i);
+
       friend bool operator<(const base_edge& lhs, const base_edge& rhs);
       
       friend std::ofstream& operator<<(std::ofstream& os, const base_edge& edge);
@@ -205,6 +207,14 @@ namespace andromeda
         }
     }
 
+    void base_edge::set_lowerbound(flvr_type flavor, hash_type hash_i)
+    {
+      this->flvr = flavor;
+      this->hash_i = hash_i;
+      this->hash_j = edge_names::UNKNOWN_HASH;
+      this->count = std::numeric_limits<cnt_type>::max();
+    }
+    
     bool operator<(const base_edge& lhs, const base_edge& rhs)
     {
       if(lhs.flvr==rhs.flvr)

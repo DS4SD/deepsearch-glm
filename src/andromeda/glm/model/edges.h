@@ -36,6 +36,8 @@ namespace andromeda
       double load_factor() { return hash_to_key.load_factor(); }
       double max_load_factor() { return hash_to_key.max_load_factor(); }
 
+      std::size_t number_of_flavors() { return flvr_colls.size(); }
+
       std::size_t size() { return hash_to_key.size(); }
       std::size_t size(flvr_type flvr) { return flvr_colls.at(flvr).size(); }
 
@@ -61,10 +63,10 @@ namespace andromeda
       bool has(const edge_type& edge);
 
       bool has(flvr_type flavor, hash_type hash_i, hash_type hash_j);
-      
+
       bool get(hash_type& hash, edge_type& edge);
 
-      
+
       edge_type& insert(edge_type& edge, bool check_size);
 
       edge_type& insert(flvr_type flavor, hash_type hash_i, hash_type hash_j,
@@ -76,8 +78,9 @@ namespace andromeda
       void sort();
       void sort(flvr_type flvr);
 
-      void set_sorted();
-      
+      bool is_sorted(flvr_type flvr);
+      void set_sorted(flvr_type flvr, bool sorted);
+
       std::pair<cnt_type, cnt_type> get_number_of_edges(flvr_type flavor,
                                                         hash_type hash_i);
 
@@ -91,7 +94,7 @@ namespace andromeda
       std::size_t max_allowed_size;
 
       std::map<flvr_type, bool> flvr_sorted;
-      
+
       flvr_map_type flvr_colls;
       hash_map_type hash_to_key;
     };
@@ -150,19 +153,17 @@ namespace andromeda
 
     void glm_edges::reserve(std::size_t N)
     {
-      //LOG_S(WARNING) << "reserving: " << N;
-      
       hash_to_key.reserve(N);
       hash_to_key.max_load_factor(32.0);
 
       for(auto item:edge_names::flvr_to_name_map)
         {
-	  if(item.first!=edge_names::UNKNOWN_FLVR)
-	    {
-	      flvr_sorted[item.first]=false;
-	      flvr_colls[item.first].reserve(1e3);
-	    }
-	}
+          if(item.first!=edge_names::UNKNOWN_FLVR)
+            {
+              flvr_sorted[item.first]=false;
+              flvr_colls[item.first].reserve(1e3);
+            }
+        }
     }
 
     typename glm_edges::edge_type& glm_edges::push_back(edge_type& edge)
@@ -184,7 +185,7 @@ namespace andromeda
       flvr_coll.push_back(edge);
 
       flvr_sorted[flvr]=false;
-      
+
       return flvr_coll.back();
     }
 
@@ -210,14 +211,14 @@ namespace andromeda
       auto itr = hash_to_key.find(hash);
 
       if(itr!=hash_to_key.end() and itr->first==hash)
-	{
-	  edge = this->at(itr->second);
-	  return true;
-	}
+        {
+          edge = this->at(itr->second);
+          return true;
+        }
 
       return false;
     }
-    
+
     typename glm_edges::edge_type& glm_edges::insert(edge_type& other, bool check_size)
     {
       auto itr = hash_to_key.find(other.get_hash());
@@ -260,111 +261,127 @@ namespace andromeda
       return insert(edge, check_size);
     }
 
-    void glm_edges::set_sorted()
+    bool glm_edges::is_sorted(flvr_type flvr)
     {
-      for(auto& item:flvr_sorted)
-	{
-	  item.second=true;
-	}
+      auto itr = flvr_sorted.find(flvr);
+
+      if(itr!=flvr_sorted.end() and flvr_colls.count(flvr)>0)
+        {
+          return (itr->second);
+        }
+      else if(itr==flvr_sorted.end() and flvr_colls.count(flvr)>0)
+        {
+          flvr_sorted[flvr]=false;
+          return flvr_sorted.at(flvr);
+        }
+      else
+        {
+          return false;
+        }
     }
-    
+
+    void glm_edges::set_sorted(flvr_type flvr, bool sorted)
+    {
+      if(flvr_colls.count(flvr)>0)
+        {
+          flvr_sorted[flvr] = sorted;
+        }
+      else
+        {
+          LOG_S(WARNING) << "trying to update unknown edge-flvr (" << flvr << ")...";
+        }
+    }
+
     void glm_edges::sort(flvr_type flvr)
     {
       if(flvr_sorted.count(flvr)==0)
-	{
-	  flvr_sorted[flvr] = false;
-	}
+        {
+          flvr_sorted[flvr] = false;
+        }
       else if(flvr_sorted.at(flvr))
-	{
-	  return;
-	}
+        {
+          return;
+        }
       else
-	{}
-      
+        {}
+
       if(flvr_colls.count(flvr)==0)
-	{
-	  LOG_S(WARNING) << "no edge with name: " << edge_names::to_string(flvr);
-	  return;
-	}
-      
+        {
+          LOG_S(WARNING) << "no edge with name: " << edge_names::to_string(flvr);
+          return;
+        }
+
       auto& coll = flvr_colls.at(flvr);
-      LOG_S(INFO) << "sorting edge [" << std::setw(20) << edge_names::to_string(flvr) << "]: "
-		  << std::setw(12) << coll.size();
-      
-      {
-	std::sort(coll.begin(), coll.end());
 
-	for(std::size_t ind=0; ind<coll.size(); ind++)
-	  {
-	    edge_type& edge = coll.at(ind);
-	    
-	    flvr_type flvr = edge.get_flvr();
-	    hash_type hash = edge.get_hash();
-	    
-	    hash_to_key.at(hash) = key_type({flvr, ind});
-	  }
+      if(coll.size()>0)
+        {
+          LOG_S(INFO) << "sorting edge [" << std::setw(20) << edge_names::to_string(flvr) << "]: "
+                      << std::setw(12) << coll.size();
+        }
+
+      {
+        std::sort(coll.begin(), coll.end());
+
+        for(std::size_t ind=0; ind<coll.size(); ind++)
+          {
+            edge_type& edge = coll.at(ind);
+
+            flvr_type flvr = edge.get_flvr();
+            hash_type hash = edge.get_hash();
+
+            hash_to_key.at(hash) = key_type({flvr, ind});
+          }
       }
 
       {
-	auto edge_itr = coll.begin();
-	while(edge_itr!=coll.end())
-	  {
-	    hash_type hash_i = edge_itr->get_hash_i();
-	    
-	    val_type total=0.0;
-	    
-	    auto tmp = edge_itr;
-	    while(tmp!=coll.end() and
-		  tmp->get_hash_i()==hash_i)
-	      {
-		total += tmp->get_count();
-		tmp++;
-	      }
-	    
-	    while(edge_itr!=tmp)
-	      {
-		val_type cnt = edge_itr->get_count();
-		val_type tot = total;
-		
-		edge_itr->set_prob(cnt/(tot+1.e-6));
-		edge_itr++;
-	      }
-	  }
+        auto edge_itr = coll.begin();
+        while(edge_itr!=coll.end())
+          {
+            hash_type hash_i = edge_itr->get_hash_i();
+
+            val_type total=0.0;
+
+            auto tmp = edge_itr;
+            while(tmp!=coll.end() and
+                  tmp->get_hash_i()==hash_i)
+              {
+                total += tmp->get_count();
+                tmp++;
+              }
+
+            while(edge_itr!=tmp)
+              {
+                val_type cnt = edge_itr->get_count();
+                val_type tot = total;
+
+                edge_itr->set_prob(cnt/(tot+1.e-6));
+                edge_itr++;
+              }
+          }
       }
 
-      flvr_sorted.at(flvr)=true;      
+      flvr_sorted.at(flvr)=true;
     }
-    
+
     void glm_edges::sort()
     {
       LOG_S(INFO) << __FUNCTION__;
 
       for(auto itr=flvr_colls.begin(); itr!=flvr_colls.end(); itr++)
-	{
-	  sort(itr->first);
-	}
+        {
+          sort(itr->first);
+        }
     }
 
-    /*
-    typename glm_edges::edge_itr_type glm_edges::traverse(flvr_type flvr,
-                                                          hash_type hash_i)
-    {
-      auto& coll = flvr_colls.at(flvr);
-
-      edge_type edge(flvr, hash_i, 0, -1);
-      return std::lower_bound(coll.begin(), coll.end(), edge);
-    }
-    */
-    
     std::pair<typename glm_edges::cnt_type,
               typename glm_edges::cnt_type> glm_edges::get_number_of_edges(flvr_type flvr,
                                                                            hash_type hash_i)
     {
       if(flvr_sorted.count(flvr)==0 or (not flvr_sorted.at(flvr)))
-	{
-	  sort(flvr);
-	}
-      
+        {
+          sort(flvr);
+        }
+
       auto& coll = flvr_colls.at(flvr);
 
       edge_type edge(flvr, hash_i, 0, -1);
@@ -391,36 +408,44 @@ namespace andromeda
                                                      std::vector<edge_type>& tmps, bool sorted)
     {
       tmps.clear();
-      
+
       if(flvr_sorted.count(flvr)==0 or (not flvr_sorted.at(flvr)))
-	{
-	  //sort(flvr);
-	  LOG_S(ERROR) << "flvr " << flvr << " is not sorted: aborting traversal ...";
-	  return tmps.size();
-	}
+        {
+          //LOG_S(WARNING) << "# flvr-sorted: " << flvr_sorted.size();
+          //for(auto item:flvr_sorted)
+	  //{
+	  //LOG_S(WARNING) << item.first << ": " << item.second;
+	  //}
+
+          LOG_S(ERROR) << "flvr " << flvr << " is not sorted: aborting traversal ...";
+          return tmps.size();
+        }
 
       if(flvr_colls.count(flvr)==0)
-	{
-	  LOG_S(WARNING) << "unknown flvr: " << flvr;
-	  return tmps.size();
-	}
-      
+        {
+          LOG_S(WARNING) << "unknown flvr: " << flvr;
+          return tmps.size();
+        }
+
       auto& coll = flvr_colls.at(flvr);
 
-      edge_type edge(flvr, hash_i, edge_names::UNKNOWN_HASH, 0);
-      auto itr = std::lower_bound(coll.begin(), coll.end(), edge);
-      
       std::size_t total=0;
-      while(itr!=coll.end() and
-	    itr->get_hash_i()==hash_i and
-	    itr->get_hash_j()==edge_names::UNKNOWN_HASH and
-	    itr->get_count()>0)
-        {
-          tmps.push_back(*itr);
-          total += itr->get_count();
+      {
+        edge_type edge;
+	edge.set_lowerbound(flvr, hash_i);
+	
+        auto itr = std::lower_bound(coll.begin(), coll.end(), edge);
+        while(itr!=coll.end() and
+              itr->get_hash_i()==hash_i and
+              itr->get_hash_j()!=edge_names::UNKNOWN_HASH and
+              itr->get_count()>0)
+          {
+            tmps.push_back(*itr);
+            total += itr->get_count();
 
-          itr++;
-        }
+            itr++;
+          }
+      }
 
       for(auto& tmp:tmps)
         {
@@ -429,6 +454,8 @@ namespace andromeda
 
           tmp.set_prob(cnt/(tot+1.e-6));
         }
+
+      LOG_S(INFO) << __FUNCTION__ << " flavor: " << flvr << " => " << tmps.size();
 
       return tmps.size();
     }

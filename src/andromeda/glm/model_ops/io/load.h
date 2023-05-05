@@ -131,14 +131,13 @@ namespace andromeda
 
         LOG_S(INFO) << "reading " << nodes_file.string();
         std::ifstream ifs(nodes_file.c_str(), std::ios::binary);
-
+	
         std::size_t N=0;
         ifs.read((char*)&N, sizeof(N));
 
 	std::size_t D = N/1000;
 	
         LOG_S(INFO) << "  #-nodes: " << N << " => start reading ...";
-
         for(std::size_t i=0; i<N; i++)
           {
 	    if(((i%D)==0) or (i+1)==N)
@@ -151,25 +150,10 @@ namespace andromeda
             ifs >> node;
 	    
             nodes.push_back(node);
-	    
-            /*
-              nlohmann::json data_ = node.to_json(nodes);
-              LOG_S(INFO) << "data_: " << data_.dump(2);
-            */
           }
 	std::cout << "\n";
 
-	
-	/*
-        for(auto flvr_itr=nodes.begin(); flvr_itr!=nodes.end(); flvr_itr++)
-          {
-            for(const auto& node:flvr_itr->second)
-	      {
-		LOG_S(INFO) << (flvr_itr->first) << ": " << node.get_hash();
-		LOG_S(INFO) << " => " << node.get_text(nodes, true);
-	      }
-	  }
-	*/
+	//nodes.sort();
       }
 
       {
@@ -179,14 +163,33 @@ namespace andromeda
         LOG_S(INFO) << "reading " << edges_file.string();
         std::ifstream ifs(edges_file.c_str(), std::ios::binary);
 
-        std::size_t N=0;
-        ifs.read((char*)&N, sizeof(N));
+	// number of flavors
+        std::size_t M=0;
+        ifs.read((char*)&M, sizeof(M));
 
+	std::map<flvr_type, std::pair<std::size_t, bool> > overview;
+        for(std::size_t i=0; i<M; i++)
+	  {
+	    flvr_type flvr;
+	    std::size_t K;
+	    bool sorted;
+
+	    ifs.read((char*)&flvr, sizeof(flvr));
+	    ifs.read((char*)&K, sizeof(K));
+	    ifs.read((char*)&sorted, sizeof(sorted));
+
+	    overview[flvr] = std::pair<std::size_t, bool>(K,sorted);
+	    //LOG_S(INFO) << "edge-flavor: " << std::setw(3) << flvr << " -> " << std::setw(9) << K
+	    //<< " (sorted: " << (sorted?"true":"false") << ")";
+	  }
+	
+        std::size_t N=0;
+	
+        ifs.read((char*)&N, sizeof(N));
+	edges.reserve((1.1*N));
+	
         LOG_S(INFO) << "  #-edges: " << N;
 	std::size_t D = N/1000;
-	//std::size_t M = N*1.1;
-	//LOG_S(INFO) << "  reserving #-edges: " << M;	
-        //edges.reserve(M);
 
 	LOG_S(INFO) << "  reading edges:";
         for(std::size_t i=0; i<N; i++)
@@ -203,9 +206,13 @@ namespace andromeda
           }
 	std::cout << "\n";
 
-	edges.set_sorted();
-      }
+	for(auto itr=overview.begin(); itr!=overview.end(); itr++)
+	  {	    
+	    edges.set_sorted(itr->first, (itr->second).second);
+	  }
 
+	//edges.sort();
+      }
      
       {
         LOG_S(INFO) << "reading done!";
