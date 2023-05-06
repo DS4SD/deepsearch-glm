@@ -171,7 +171,7 @@ namespace andromeda
 	  return false;
 	}
 
-      for(int l=0; l<header.size(); l++)
+      for(std::size_t l=0; l<header.size(); l++)
 	{
 	  if(l+1==header.size())
 	    {
@@ -183,7 +183,7 @@ namespace andromeda
 	    }
 	}
 
-      for(int i=0; i<data.size(); i++)
+      for(std::size_t i=0; i<data.size(); i++)
 	{
 	  write_row<std::tuple_size_v<row_type>,
 		    tuple_types ...>::to_ofs(ofs, data.at(i));
@@ -199,7 +199,7 @@ namespace andromeda
       typedef std::tuple<tuple_types ...> row_type;
 
       std::vector<std::vector<std::string> > rows={};
-      for(int i=0; i<data.size(); i++)
+      for(std::size_t i=0; i<data.size(); i++)
 	{
 	  std::vector<std::string> row={};
 
@@ -220,7 +220,7 @@ namespace andromeda
       typedef std::tuple<tuple_types ...> row_type;
 
       std::vector<std::vector<std::string> > rows={};
-      for(int i=0; i<data.size(); i++)
+      for(std::size_t i=0; i<data.size(); i++)
 	{
 	  std::vector<std::string> row={};
 
