@@ -140,7 +140,7 @@ namespace andromeda
         group_names = {};
 
         tabptr = name_table;
-        for(int i=0; i<namecount; i++)
+        for(PCRE2_SIZE i=0; i<namecount; i++)
           {
             // int n = (tabptr[0] << 8) | tabptr[1];
             //LOG_S(WARNING) << i << ": [" << n << ", " << name_entry_size-3 << "] with name: " << tabptr+2;
@@ -352,7 +352,7 @@ namespace andromeda
 
     for(auto name:group_names)
       {
-        int index = pcre2_substring_number_from_name(re, (PCRE2_SPTR)name.c_str());
+	std::size_t index = pcre2_substring_number_from_name(re, (PCRE2_SPTR)name.c_str());
 
         if(index<item.groups.size())
           {
