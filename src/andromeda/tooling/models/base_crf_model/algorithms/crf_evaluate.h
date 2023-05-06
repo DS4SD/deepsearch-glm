@@ -119,7 +119,7 @@ namespace andromeda_crf
     std::string first_header="true \\ pred";
     std::size_t flen = first_header.size();
 
-    for(int i=0; i<model->num_classes(); i++)
+    for(std::size_t i=0; i<model->num_classes(); i++)
       {
         to_label[i] = model->get_class_label(i);
         to_index[model->get_class_label(i)] = i;
@@ -130,7 +130,7 @@ namespace andromeda_crf
       }
 
     confusion_matrix.resize(to_label.size());
-    for(int i=0; i<model->num_classes(); i++)
+    for(std::size_t i=0; i<model->num_classes(); i++)
       {
         confusion_matrix[i].resize(to_label.size(), 0);
       }
@@ -279,14 +279,14 @@ namespace andromeda_crf
     ss << "%-perfect: " << double(perfect_preds)/double(number_preds)
        << " [" << perfect_preds << "/" << number_preds << "] \n\n";
     
-    for(int l=0; l<header.size(); l++)
+    for(std::size_t l=0; l<header.size(); l++)
       {
         std::size_t len = l==0? flen:mlen;
         ss << std::setw(len) << header.at(l) << " | ";
       }
     ss << "\n";
 
-    for(int l=0; l<header.size(); l++)
+    for(std::size_t l=0; l<header.size(); l++)
       {
         std::size_t len = l==0? flen:mlen;
         ss << std::setw(len) << std::string(len, '-') << " | ";
