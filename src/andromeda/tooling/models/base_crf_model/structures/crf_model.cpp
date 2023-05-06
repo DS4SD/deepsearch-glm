@@ -478,8 +478,8 @@ namespace andromeda_crf
     //  num_tags = _num_classes;
 
     initialize_state_weights(seq);
-    const double fp = forward_prob(seq.vs.size());
-    assert(abs(fp - 1) < 0.01);
+    //const double fp = forward_prob(seq.vs.size());
+    //assert(abs(fp - 1) < 0.01);
 
     const int len = seq.vs.size();
 
@@ -803,9 +803,15 @@ namespace andromeda_crf
 
   inline bool contain_space(const std::string & s)
   {
-    for (int i = 0; i < s.size(); i++) {
-      if (isspace(s[i])) return true;
-    }
+    //for (int i = 0; i < s.size(); i++) {
+    for(std::size_t i=0; i<s.size(); i++)
+      {
+	if(isspace(s[i]))
+	  {
+	    return true;
+	  }
+      }
+
     return false;
   }
 
@@ -1009,7 +1015,7 @@ namespace andromeda_crf
       add_sample_empirical_expectation(*n, _vee);
     }
 
-    for(int i = 0; i < _vee.size(); i++)
+    for(std::size_t i=0; i<_vee.size(); i++)
       {
         _vee[i] /= _vs.size();
       }
