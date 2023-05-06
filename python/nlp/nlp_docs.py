@@ -93,12 +93,10 @@ def process_zip_files(sdir):
 
     jsonfiles = sorted(glob.glob(os.path.join(sdir, "*.json")))
     for i,jsonfile in enumerate(jsonfiles):
-        #print(i, "\t", jsonfile)
         subprocess.call(["rm", jsonfile])
 
     cellsfiles = sorted(glob.glob(os.path.join(sdir, "*.cells")))
     for i,cellsfile in enumerate(cellsfiles):
-        #print(i, "\t", cellsfile)
         subprocess.call(["rm", cellsfile])            
     
     zipfiles = sorted(glob.glob(os.path.join(sdir, "*.zip")))
@@ -107,16 +105,15 @@ def process_zip_files(sdir):
     for zipfile in zipfiles:
         subprocess.call(["unzip", zipfile, "-d", sdir])    
 
-    """
-    jsonfiles = sorted(glob.glob(os.path.join(sdir, "*.json")))
-    for i,jsonfile in enumerate(jsonfiles):
-        print(i, "\t", jsonfile)
-    """
-    
     for i,zipfile in enumerate(zipfiles):
         print(i, "\t removing ", zipfile)
         subprocess.call(["rm", zipfile])        
 
+    cellsfiles = sorted(glob.glob(os.path.join(sdir, "*.cells")))
+    for i,cellsfile in enumerate(cellsfiles):
+        subprocess.call(["rm", cellsfile])            
+
+        
 def show_nlp_on_docs(sdir):
 
     filenames = glob.glob(os.path.join(sdir, "*.json"))

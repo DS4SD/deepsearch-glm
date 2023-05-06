@@ -106,8 +106,8 @@ namespace andromeda
 	    auto op_0a = flow.add_select(words);
 	    op_0a->get_nodeset()->set_name("search");
 
-	    auto op_1a = flow.add_traverse(edge_names::to_path, op_0a->get_flid());
-	    op_1a->get_nodeset()->set_name("to-path");
+	    auto op_1a = flow.add_traverse(edge_names::from_token, op_0a->get_flid());
+	    op_1a->get_nodeset()->set_name("from-token");
 	    
 	    auto op_0b = flow.add_select(words.back());
 	    op_0b->get_nodeset()->set_name("search-root");
@@ -115,8 +115,8 @@ namespace andromeda
 	    auto op_0c = flow.add_select(path);
 	    op_0c->get_nodeset()->set_name("search-path");
 
-	    auto op_0d = flow.add_traverse(edge_names::to_path, op_0c->get_flid());
-	    op_0d->get_nodeset()->set_name("to-path (from path)");
+	    auto op_0d = flow.add_traverse(edge_names::from_token, op_0c->get_flid());
+	    op_0d->get_nodeset()->set_name("from-token");
 	    
 	    //auto op_2 = flow.add_traverse(edge_names::from_root_to_path, op_0b->get_flid());
 	    //op_2->get_nodeset()->set_name("from-root-to-path");

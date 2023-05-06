@@ -93,10 +93,17 @@ namespace andromeda
         auto& old_nodes = old_model->get_nodes();
 
 	std::set<std::string> protected_names={};
-	for(auto name:node_names::NAMES)
-	  {
-	    protected_names.insert(name);
-	  }
+	{
+	  for(auto name:node_names::TOKEN_NAMES)
+	    {
+	      protected_names.insert(name);
+	    }
+	  
+	  for(auto name:node_names::LABEL_NAMES)
+	    {
+	      protected_names.insert(name);
+	    }	
+	}
 	
         for(auto& flvr_coll:old_nodes)
           {

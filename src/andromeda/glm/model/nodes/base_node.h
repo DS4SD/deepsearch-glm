@@ -229,7 +229,6 @@ namespace andromeda
             case node_names::TOKEN:
             case node_names::SYNTX:	      
             case node_names::LABEL:
-            case node_names::SUBLABEL:
               {
                 std::string item = "__"+node_names::to_name.at(flvr)+"_"+*text_ptr.get()+"__";
                 hash = utils::to_hash(item);

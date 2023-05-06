@@ -35,27 +35,29 @@ namespace andromeda
       const static inline flvr_type tax_dn = 32; // `BEG_TERM` -> `old` -> `wise` -> `man`
       const static inline flvr_type tax_up = 33; // `END_TERM` -> `man` -> `wise` -> old
 
-      const static inline flvr_type to_lower = 60; // `Superconductors` -> `superconductor`
-      const static inline flvr_type to_upper = 61; // `superconductor` -> `Superconductors`
+      const static inline flvr_type to_lower = 64; // `Superconductors` -> `superconductor`
+      const static inline flvr_type to_upper = 65; // `superconductor` -> `Superconductors`
 
-      const static inline flvr_type to_singular = 62; // `Superconductors` -> `superconductor`
-      const static inline flvr_type to_plural = 63; // `superconductor` -> `Superconductors`
-      
-      //const static inline flvr_type to_concept = 64; // `Superconductors` -> `superconductor`
-      //const static inline flvr_type to_instance = 65; // `superconductor` -> `Superconductors`
+      const static inline flvr_type to_singular = 66; // `Superconductors` -> `superconductor`
+      const static inline flvr_type to_plural = 67; // `superconductor` -> `Superconductors`
 
-      //const static inline flvr_type to_node = 96; //
-      const static inline flvr_type to_word = 97; //
+      const static inline flvr_type to_token = 96; //
+      const static inline flvr_type from_token = 97; //
+            
       const static inline flvr_type to_pos = 98; //
+      const static inline flvr_type from_pos = 99; //
 
-      const static inline flvr_type to_path = 99; //
-      const static inline flvr_type from_path = 100; //
+      const static inline flvr_type to_label = 100; // `Superconductors` -> `superconductor`
+      const static inline flvr_type from_label = 101; // `superconductor` -> `Superconductors`
 
-      const static inline flvr_type from_root_to_path = 101; //
-      const static inline flvr_type from_path_to_root = 102; //
-      const static inline flvr_type from_desc_to_path = 103; //
-      const static inline flvr_type from_path_to_desc = 104; //
+      const static inline flvr_type to_root = 102; // `Superconductors` -> `superconductor`
+      const static inline flvr_type from_root = 103; // `superconductor` -> `Superconductors`
 
+      //const static inline flvr_type from_root_to_path = 101; //
+      //const static inline flvr_type from_path_to_root = 102; //
+      //const static inline flvr_type from_desc_to_path = 103; //
+      //const static inline flvr_type from_path_to_desc = 104; //
+      /*
       const static inline flvr_type to_beg = 128; //
       const static inline flvr_type to_end = 129; //
 
@@ -73,6 +75,7 @@ namespace andromeda
       const static inline flvr_type from_conn = 169; //
       const static inline flvr_type from_sent = 171; //
       const static inline flvr_type from_text = 173; //
+      */
       
       static flvr_type jump(flvr_type d=0) { return d; }
 
@@ -97,18 +100,27 @@ namespace andromeda
          { tax_dn, "tax-dn"},
          { tax_up, "tax-up"},
 
+
 	 { to_lower, "to-lower"},
 	 { to_upper, "to-upper"},
+
 	 { to_singular, "to-singular"},
 	 { to_plural, "to-plural"},
 	 
-         //{ to_concept, "to-concept"},
-         //{ to_instance, "to-instance"},
 
-         //{ to_node, "to-node"},
-         { to_word, "to-word"},
-         { to_pos , "to-pos"},
+         { to_token, "to-token"},
+         { from_token, "from-token"},
 
+         { to_pos, "to-pos"},
+         { from_pos, "from-pos"},
+
+	 { to_label, "to-label"},
+         { from_label, "from-label"},
+
+	 { to_root, "to-root"},
+         { from_root, "from-root"},
+
+	 /*
 	 { to_beg, "to-begin"},
 	 { to_end, "to-end"},
 
@@ -135,6 +147,7 @@ namespace andromeda
 	 { from_term, "from-term"},
 	 { from_sent, "from-sent"},
 	 { from_text, "from-text"}
+	 */
         };
 
       static std::string to_string(flvr_type flvr)

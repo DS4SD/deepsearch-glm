@@ -211,10 +211,8 @@ namespace andromeda
 
 	      if(nodes.has(root.get_hash()))
 		{
-		  edges.insert(edge_names::from_root_to_path, root.get_hash(), term_i.get_hash(),
-			       term_i.count(), false);
-		  edges.insert(edge_names::from_path_to_root, term_i.get_hash(), root.get_hash(),
-			       term_i.count(), false);
+		  edges.insert(edge_names::from_root, root.get_hash(), term_i.get_hash(), term_i.count(), false);
+		  edges.insert(edge_names::to_root, term_i.get_hash(), root.get_hash(), term_i.count(), false);
 		}
 	    }		  
 				       

@@ -5,6 +5,14 @@
 *.exe
 build/*
 externals/*
+data/documents/*.csv
+data/documents/*.json
+data/models/*.json
+data/models/*.jsonl
+data/models/*.bin
+data/models/*.txt
+data/models/*.vec
+data/models/*.out
 data/*/*.json
 data/*/*.jsonl
 data/*/*/*.jsonl
@@ -16,6 +24,9 @@ data/*/*.gz
 *.tar
 python/venv
 python/figs
+python/ds_config.json
+resources/*/*/*.txt
+resources/*/*/*/*.txt
 
 # Prerequisites
 *.d

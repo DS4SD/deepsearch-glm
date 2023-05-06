@@ -142,10 +142,16 @@ namespace andromeda
 	{
 	  flvr_colls[item.first].reserve(1e6);
 	}
-      
-      for(std::string name:node_names::NAMES)	
+
+      for(std::string name:node_names::TOKEN_NAMES)	
 	{
 	  auto& node = this->insert(node_names::TOKEN, name);
+	  node_names::to_hash[name] = node.get_hash();
+	}
+      
+      for(std::string name:node_names::LABEL_NAMES)	
+	{
+	  auto& node = this->insert(node_names::LABEL, name);
 	  node_names::to_hash[name] = node.get_hash();
 	}
 
