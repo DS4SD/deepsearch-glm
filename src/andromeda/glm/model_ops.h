@@ -24,6 +24,8 @@ namespace andromeda
 
 	  case MERGE: return "MERGE";
 	  }
+
+	return "UNKNOWN_MODELOP";
       }
 
     template<model_op_name name, typename model_type>

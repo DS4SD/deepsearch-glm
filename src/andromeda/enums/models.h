@@ -130,6 +130,8 @@ namespace andromeda
 
       case NULL_MODEL: return "NULL";
       }
+
+    return "UNKNOWN_NLP_MODEL";
   }
 
   model_name to_modelname(std::string name)

@@ -65,7 +65,6 @@ namespace andromeda
 	    op = std::make_shared<flowop_type>(model_ptr, flid, deps, config);
 	  }
 	  break;
-
 	  
 	default:
 	  {
@@ -95,7 +94,7 @@ namespace andromeda
       
 	  return to_flowop(model_ptr, flop, flid, deps, config);
 	}
-      catch(std::exception exc)
+      catch(std::exception& exc)
 	{
 	  LOG_S(ERROR) << exc.what();
 	}
