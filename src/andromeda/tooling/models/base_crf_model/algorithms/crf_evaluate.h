@@ -189,7 +189,7 @@ namespace andromeda_crf
           {
             if(to_index.count(token.true_label)==0)
               {
-                int i = to_label.size();
+		std::size_t i = to_label.size();
 
                 to_label[i] = token.true_label;
                 to_index[token.true_label] = i;
@@ -200,9 +200,9 @@ namespace andromeda_crf
                                << token.true_label << " is not in model-classes";
 
                 confusion_matrix.resize(to_label.size());
-                for(int i=0; i<to_label.size(); i++)
+                for(std::size_t j=0; j<to_label.size(); j++)
                   {
-                    confusion_matrix[i].resize(to_label.size(), 0);
+                    confusion_matrix[j].resize(to_label.size(), 0);
                   }
               }
           }
