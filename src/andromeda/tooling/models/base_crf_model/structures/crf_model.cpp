@@ -12,7 +12,7 @@
 
 namespace andromeda_crf
 {
-  static crf_model* pointer_to_working_object = NULL; // this is not a good solution...
+  //static crf_model* pointer_to_working_object = NULL; // this is not a good solution...
 
   crf_model::crf_model()
   {
