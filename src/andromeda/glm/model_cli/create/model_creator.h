@@ -504,18 +504,22 @@ namespace andromeda
           edges.insert(edge_names::prev, end_text_hash, hashes.back(), false);
         }
 
-      for(int i=0; i<hashes.size(); i++)
-        {
+      int len = hashes.size();
+      int ind = 0;
+      for(std::size_t i=0; i<hashes.size(); i++)
+        {	  
           for(int d=1; d<=padding; d++)
             {
-              if(i+d<hashes.size())
+	      ind = i+d;
+              if(ind<len)
                 {
-                  edges.insert(d, hashes.at(i), hashes.at(i+d), false);
+                  edges.insert(d, hashes.at(i), hashes.at(ind), false);
                 }
 
-              if(0<=i-d)
+	      ind = i-d;
+              if(0<=ind)
                 {
-                  edges.insert(-d, hashes.at(i), hashes.at(i-d), false);
+                  edges.insert(-d, hashes.at(i), hashes.at(ind), false);
                 }
             }
         }
