@@ -126,7 +126,7 @@ namespace andromeda
 
     private:
 
-      std::shared_ptr<model_type> model;
+      std::shared_ptr<model_type> model_ptr;
 
       std::size_t beg_term_hash, end_term_hash,
         beg_sent_hash, end_sent_hash,
@@ -134,8 +134,8 @@ namespace andromeda
         undef_pos_hash;
     };
 
-    model_creator::model_creator(std::shared_ptr<model_type> model):
-      model(model),
+    model_creator::model_creator(std::shared_ptr<model_type> model_ptr):
+      model_ptr(model_ptr),
 
       beg_term_hash(node_names::DEFAULT_HASH),
       end_term_hash(node_names::DEFAULT_HASH),
@@ -148,8 +148,8 @@ namespace andromeda
 
       undef_pos_hash(node_names::DEFAULT_HASH)
     {
-      auto& nodes = model->get_nodes();
-      auto& edges = model->get_edges();
+      auto& nodes = model_ptr->get_nodes();
+      auto& edges = model_ptr->get_edges();
 
       nodes.initialise();
       edges.initialise();
@@ -168,10 +168,10 @@ namespace andromeda
 
     void model_creator::update(subject<PARAGRAPH>& subj)
     {
-      auto& nodes = model->get_nodes();
-      auto& edges = model->get_edges();
+      auto& nodes = model_ptr->get_nodes();
+      auto& edges = model_ptr->get_edges();
 
-      auto& parameters = model->get_parameters();
+      auto& parameters = model_ptr->get_parameters();
 
       std::set<hash_type> docs_cnt={};
 
@@ -504,8 +504,9 @@ namespace andromeda
           edges.insert(edge_names::prev, end_text_hash, hashes.back(), false);
         }
 
-      int len = hashes.size();
       int ind = 0;
+      int len = hashes.size();
+
       for(std::size_t i=0; i<hashes.size(); i++)
         {	  
           for(int d=1; d<=padding; d++)
@@ -953,19 +954,24 @@ namespace andromeda
               }
           }
       }
-
-      for(int i=0; i<hashes.size(); i++)
+ 
+      int ind = 0;
+      int len = hashes.size();
+      
+      for(std::size_t i=0; i<hashes.size(); i++)
         {
           for(int d=1; d<=padding; d++)
             {
-              if(i+d<hashes.size())
+	      ind = i+d;	      
+              if(ind<len)
                 {
-                  edges.insert(d, hashes.at(i), hashes.at(i+d), false);
+                  edges.insert(d, hashes.at(i), hashes.at(ind), false);
                 }
 
-              if(0<=i-d)
+	      ind = i-d;
+              if(0<=ind)
                 {
-                  edges.insert(-d, hashes.at(i), hashes.at(i-d), false);
+                  edges.insert(-d, hashes.at(i), hashes.at(ind), false);
                 }
             }
         }

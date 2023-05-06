@@ -46,7 +46,7 @@ namespace andromeda_crf
 
     void incr_line_counter() { _line_counter++; }
 
-    int num_classes() const { return _num_classes; }
+    std::size_t num_classes() const { return _num_classes; }
 
     std::string get_class_label(int i) const { return _label_bag.Str(i); }
 
