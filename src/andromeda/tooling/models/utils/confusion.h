@@ -88,7 +88,7 @@ namespace andromeda
 	is_from_model[label] = true;
 	
 	confusion_matrix.resize(to_label.size());
-	for(int i=0; i<to_label.size(); i++)
+	for(std::size_t i=0; i<to_label.size(); i++)
 	  {
 	    confusion_matrix[i].resize(to_label.size(), 0);
 	  }
@@ -112,7 +112,7 @@ namespace andromeda
     
     if(to_index.count(true_label)==0)
       {
-	int i = to_label.size();
+	std::size_t i = to_label.size();
 
 	to_label[i] = true_label;
 	to_index[true_label] = i;
@@ -123,7 +123,7 @@ namespace andromeda
 		       << true_label << " is not in model-classes";
 
 	confusion_matrix.resize(to_label.size());
-	for(int i=0; i<to_label.size(); i++)
+	for(std::size_t i=0; i<to_label.size(); i++)
 	  {
 	    confusion_matrix[i].resize(to_label.size(), 0);
 	  }
@@ -156,7 +156,7 @@ namespace andromeda
       {
         //flen = std::max(flen, item.second.size());
 	
-        int i = to_index.at(item.second);
+        std::size_t i = to_index.at(item.second);
 	
         std::size_t diag_cnt=confusion_matrix.at(i).at(i);
 
@@ -203,14 +203,14 @@ namespace andromeda
     ss << "%-perfect: " << double(perfect_preds)/double(number_preds)
        << " [" << perfect_preds << "/" << number_preds << "] \n\n";
     
-    for(int l=0; l<header.size(); l++)
+    for(std::size_t l=0; l<header.size(); l++)
       {
         std::size_t len = l==0? flen:mlen;
         ss << std::setw(len) << header.at(l) << " | ";
       }
     ss << "\n";
 
-    for(int l=0; l<header.size(); l++)
+    for(std::size_t l=0; l<header.size(); l++)
       {
         std::size_t len = l==0? flen:mlen;
         ss << std::setw(len) << std::string(len, '-') << " | ";
@@ -259,7 +259,7 @@ namespace andromeda
       }
     ss << "\n";
 
-    int rind=0;
+    std::size_t rind=0;
     for(auto& row:confusion_matrix)
       {
         ss << std::setw(flen) << to_label.at(rind++) << " | ";
