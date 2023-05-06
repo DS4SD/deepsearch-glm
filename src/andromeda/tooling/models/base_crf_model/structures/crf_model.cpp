@@ -1459,14 +1459,24 @@ namespace andromeda_crf
             }
           }
         }
+
         // edge
-        for (int i = 0; i < seq.vs.size() - 1; i++) {
-          const int eid0 = edge_feature_id(seq.vs[i].label, seq.vs[i+1].label);
-          const int eid1 = edge_feature_id(vs[i], vs[i+1]);
-          if (eid0 == eid1) continue;
-          X[eid0] += 1.0;
-          X[eid1] -= 1.0;
-        }
+	if(seq.vs.size()>0)
+	  {
+	    for(std::size_t i=0; i<seq.vs.size()-1; i++)
+	      {
+		const int eid0 = edge_feature_id(seq.vs[i].label, seq.vs[i+1].label);
+		const int eid1 = edge_feature_id(vs[i], vs[i+1]);
+		
+		if(eid0 == eid1)
+		  {
+		    continue;
+		  }
+		
+		X[eid0] += 1.0;
+		X[eid1] -= 1.0;
+	      }
+	  }
 
         double wX = 0, X2 = 0;
         for (std::map<int, double>::const_iterator i = X.begin(); i != X.end(); i++) {
