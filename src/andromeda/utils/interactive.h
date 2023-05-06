@@ -79,10 +79,10 @@ namespace andromeda
             }
         }
 
-      for(int i=0; i<data.size(); i++)
+      for(std::size_t i=0; i<data.size(); i++)
         {
           ss << "\n| ";
-          for(int j=0; j<data.at(i).size(); j++)
+          for(std::size_t j=0; j<data.at(i).size(); j++)
             {
               auto elem = data.at(i).at(j);
               ss << std::setw(widths.at(j)) << elem << " | ";

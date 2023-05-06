@@ -119,9 +119,11 @@ namespace andromeda
     std::size_t text_ind = utils::index_of("word", headers);
     std::size_t orig_ind = utils::index_of("original", headers);
 
-    if(char_i_ind==-1 or char_j_ind==-1 or
-       pos_ind==-1 or tag_ind==-1 or
-       text_ind==-1 or orig_ind==-1)
+    const std::size_t mONE=-1;
+    
+    if(char_i_ind==mONE or char_j_ind==mONE or
+       pos_ind==mONE or tag_ind==mONE or
+       text_ind==mONE or orig_ind==mONE)
       {
 	LOG_S(ERROR) << "can not find the correct column index for word-token";
 	return false;
