@@ -185,10 +185,13 @@ namespace andromeda_crf
     return -score;
   }
 
-  double crf_model::FunctionGradientWrapper(const std::vector<double> & x, std::vector<double> & grad)
-  {
+  /*
+    double crf_model::FunctionGradientWrapper(const std::vector<double> & x,
+    std::vector<double> & grad)
+    {
     return pointer_to_working_object->FunctionGradient(x, grad);
-  }
+    }
+  */
 
   /*
     int
@@ -1326,13 +1329,13 @@ namespace andromeda_crf
             double maxp = -1;
             std::string maxtag;
 
-	    for (std::size_t j = 0; j < wsum.size(); j++)
-	      {
-              double p = wsum[j]/sum;
-              if (p <= 0.001) continue;
-              tp[_label_bag.Str(j).c_str()] = p;
-              if (p > maxp) { maxp = p; maxtag = _label_bag.Str(j).c_str();}
-            }
+            for (std::size_t j = 0; j < wsum.size(); j++)
+              {
+                double p = wsum[j]/sum;
+                if (p <= 0.001) continue;
+                tp[_label_bag.Str(j).c_str()] = p;
+                if (p > maxp) { maxp = p; maxtag = _label_bag.Str(j).c_str();}
+              }
             tagp.push_back(tp);
             s0.vs[i].label = maxtag;
           } else {
@@ -1461,22 +1464,22 @@ namespace andromeda_crf
         }
 
         // edge
-	if(seq.vs.size()>0)
-	  {
-	    for(std::size_t i=0; i<seq.vs.size()-1; i++)
-	      {
-		const int eid0 = edge_feature_id(seq.vs[i].label, seq.vs[i+1].label);
-		const int eid1 = edge_feature_id(vs[i], vs[i+1]);
-		
-		if(eid0 == eid1)
-		  {
-		    continue;
-		  }
-		
-		X[eid0] += 1.0;
-		X[eid1] -= 1.0;
-	      }
-	  }
+        if(seq.vs.size()>0)
+          {
+            for(std::size_t i=0; i<seq.vs.size()-1; i++)
+              {
+                const int eid0 = edge_feature_id(seq.vs[i].label, seq.vs[i+1].label);
+                const int eid1 = edge_feature_id(vs[i], vs[i+1]);
+
+                if(eid0 == eid1)
+                  {
+                    continue;
+                  }
+
+                X[eid0] += 1.0;
+                X[eid1] -= 1.0;
+              }
+          }
 
         double wX = 0, X2 = 0;
         for (std::map<int, double>::const_iterator i = X.begin(); i != X.end(); i++) {
@@ -1597,9 +1600,9 @@ namespace andromeda_crf
     std::vector<int> ri(_vs.size());
     for(std::size_t i=0; i<ri.size(); i++)
       {
-	ri[i] = i;
+        ri[i] = i;
       }
-    
+
     const int batch_size = 20;
 
     _vee.assign(_vee.size(), 0);
@@ -1630,52 +1633,52 @@ namespace andromeda_crf
           logl += add_sample_model_expectation(seq, vme, ncorrect);
           add_sample_empirical_expectation(seq, _vee);
 
-	  int ri_len = ri.size();
-	  
+          int ri_len = ri.size();
+
           n++;
           if(n==batch_size || i+1==ri_len)
-	    {
-	      // update the weights of the features
-	      for(std::size_t j = 0; j < d; j++) {
-		_vee[j] /= n;
-		vme[j] /= n;
-	      }
-
-            std::vector<double> grad(d);
-            for(std::size_t j = 0; j < d; j++) {
-              grad[j] = vme[j] - _vee[j];
-            }
-
-            const double eta = eta0 * tau / (tau + k);
-            if (L1_PSEUDO_GRADIENT == 0) {
+            {
+              // update the weights of the features
               for(std::size_t j = 0; j < d; j++) {
-                _vl[j] -= eta * grad[j];
+                _vee[j] /= n;
+                vme[j] /= n;
               }
-            } else {
-              grad = pseudo_gradient(_vl, grad, L1_PSEUDO_GRADIENT);
+
+              std::vector<double> grad(d);
               for(std::size_t j = 0; j < d; j++) {
-                const double prev = _vl[j];
-                _vl[j] -= eta * grad[j];
-                if (prev * _vl[j] < 0) _vl[j] = 0;
+                grad[j] = vme[j] - _vee[j];
               }
+
+              const double eta = eta0 * tau / (tau + k);
+              if (L1_PSEUDO_GRADIENT == 0) {
+                for(std::size_t j = 0; j < d; j++) {
+                  _vl[j] -= eta * grad[j];
+                }
+              } else {
+                grad = pseudo_gradient(_vl, grad, L1_PSEUDO_GRADIENT);
+                for(std::size_t j = 0; j < d; j++) {
+                  const double prev = _vl[j];
+                  _vl[j] -= eta * grad[j];
+                  if (prev * _vl[j] < 0) _vl[j] = 0;
+                }
+              }
+
+              //  l1ball_projection(_vl, 500000);
+
+              // reset
+              k++;
+              n = 0;
+              vme.assign(d, 0);
+
+              _vee.assign(_vee.size(), 0);
+
+              initialize_edge_weights();
+
+              if(i+1==ri_len)
+                {
+                  break;
+                }
             }
-
-            //  l1ball_projection(_vl, 500000);
-
-            // reset
-            k++;
-            n = 0;
-            vme.assign(d, 0);
-
-            _vee.assign(_vee.size(), 0);
-
-	    initialize_edge_weights();
-
-	    if(i+1==ri_len)
-	      {	
-		break;
-	      }
-	  }
         }
       logl /= _vs.size();
 
