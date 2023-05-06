@@ -1592,11 +1592,14 @@ namespace andromeda_crf
   {
     const double L1_PSEUDO_GRADIENT = 0;
     //  const double L1_PSEUDO_GRADIENT = 0.00001;
-    const int d = _fb.Size();
+    const std::size_t d = _fb.Size();
 
     std::vector<int> ri(_vs.size());
-    for (int i = 0; i < ri.size(); i++) ri[i] = i;
-
+    for(std::size_t i=0; i<ri.size(); i++)
+      {
+	ri[i] = i;
+      }
+    
     const int batch_size = 20;
 
     _vee.assign(_vee.size(), 0);
