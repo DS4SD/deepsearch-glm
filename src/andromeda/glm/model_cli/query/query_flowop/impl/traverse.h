@@ -88,7 +88,7 @@ namespace andromeda
 	  
 	  //source_id = params["source"].get<flow_id_type>();
 	}
-      catch(std::exception exc)
+      catch(std::exception& exc)
 	{
 	  LOG_S(WARNING) << "traverse parameters: " << config.dump(2) << "\n -> error: " << exc.what();
 	  return false;

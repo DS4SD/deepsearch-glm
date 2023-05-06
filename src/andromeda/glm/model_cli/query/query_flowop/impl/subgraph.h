@@ -113,7 +113,7 @@ namespace andromeda
 	      edge_flvrs.insert(edge_names::to_flavor(edge_name));
 	    }
         }
-      catch(std::exception exc)
+      catch(std::exception& exc)
         {
           LOG_S(WARNING) << exc.what();
           return false;

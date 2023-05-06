@@ -107,7 +107,7 @@ namespace andromeda
             int token_ind = std::stoi(ind.text);
             token_inds.push_back(token_ind);
           }
-        catch(std::exception e)
+        catch(std::exception& e)
           {}
       }
 

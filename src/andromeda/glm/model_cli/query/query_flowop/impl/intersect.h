@@ -82,7 +82,7 @@ namespace andromeda
 
 	  
 	}
-      catch(std::exception exc)
+      catch(std::exception& exc)
 	{
 	  LOG_S(WARNING) << exc.what();
 	  return false;

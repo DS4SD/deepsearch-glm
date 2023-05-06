@@ -97,10 +97,10 @@ namespace andromeda
 	    ofs.emplace(std::make_pair(type, path.c_str()));
 	    LOG_S(INFO) << "exporting " << type << " to " << path.string();
 	  }
-	catch(std::exception e)
+	catch(std::exception& exc)
 	  {
 	    LOG_S(ERROR) << "failed exporting " << type
-			 << " with error: " << e.what();
+			 << " with error: " << exc.what();
 	  }
       }
 

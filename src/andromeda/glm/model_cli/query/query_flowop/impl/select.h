@@ -108,7 +108,7 @@ namespace andromeda
 	{
 	  hashes = params.value("hashes", hashes);
 	}
-      catch(std::exception exc)
+      catch(std::exception& exc)
 	{
 	  hashes.clear();
 	}
@@ -122,7 +122,7 @@ namespace andromeda
 	{
 	  nodes = params.value("nodes", nodes);
 	}
-      catch(std::exception exc)
+      catch(std::exception& exc)
 	{
 	  LOG_S(WARNING) << exc.what();
 	  return false;

@@ -135,7 +135,7 @@ namespace andromeda
                 {
 		  exprs.emplace_back("filter", "", regex_item);
                 }
-              catch(std::exception exc)
+              catch(std::exception& exc)
                 {
                   LOG_S(WARNING) << exc.what();
                 }

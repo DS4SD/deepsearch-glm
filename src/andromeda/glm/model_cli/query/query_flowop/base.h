@@ -165,7 +165,7 @@ namespace andromeda
 	      num_edges = config[output_lbl].value(num_edges_lbl, num_edges);	  	      
 	    }
         }
-      catch(std::exception exc)
+      catch(std::exception& exc)
 	{
 	  LOG_S(ERROR) << exc.what();
 	  return false;
