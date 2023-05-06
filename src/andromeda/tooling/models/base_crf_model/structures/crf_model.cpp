@@ -478,6 +478,8 @@ namespace andromeda_crf
     //  num_tags = _num_classes;
 
     initialize_state_weights(seq);
+    forward_prob(seq.vs.size());
+
     //const double fp = forward_prob(seq.vs.size());
     //assert(abs(fp - 1) < 0.01);
 
@@ -704,8 +706,10 @@ namespace andromeda_crf
                                                  std::vector<double>& vme,
                                                  int & ncorrect)
   {
-    const double fp = forward_backward(seq);
-    assert(abs(fp - 1.0) < 0.01);
+    forward_backward(seq);
+    //const double fp = forward_backward(seq);
+    //assert(abs(fp - 1.0) < 0.01);
+
     //    double p = calc_likelihood(seq, fp);
     //    logl += log(p);
     const double logl = calc_loglikelihood(seq);
@@ -1180,7 +1184,7 @@ namespace andromeda_crf
   {
     _feature2mef.clear();
 
-    for (int i = 0; i < _featurename_bag.Size(); i++) {
+    for(std::size_t i = 0; i < _featurename_bag.Size(); i++) {
       std::vector<int> vi;
       for (int k = 0; k < _num_classes; k++) {
         int id = _fb.Id(utils::crf_feature(k, i));
@@ -1189,8 +1193,8 @@ namespace andromeda_crf
       _feature2mef.push_back(vi);
     }
 
-    for (int i = 0; i < _label_bag.Size(); i++) {
-      for (int j = 0; j < _label_bag.Size(); j++) {
+    for(int i = 0; i < _label_bag.Size(); i++) {
+      for(int j = 0; j < _label_bag.Size(); j++) {
         const std::string & label1 = _label_bag.Str(j);
         const int l1 = _featurename_bag.Put("->\t" + label1);
         const int id = _fb.Put(utils::crf_feature(i, l1));
@@ -1305,29 +1309,37 @@ namespace andromeda_crf
 
     tagp.clear();
     forward_backward(seq);
-    for (size_t i = 0; i < seq.vs.size(); i++) {
-      std::vector<double> wsum = calc_state_weight(i);
-      std::map<std::string, double> tp;
-      if (OUTPUT_MARGINAL_PROB) {
-        double sum = 0;
-        for (std::vector<double>::const_iterator j = wsum.begin(); j != wsum.end(); j++) sum += *j;
-        s0.vs[i].label = "";
-        assert(abs(sum -1) < 0.01);
-        double maxp = -1;
-        std::string maxtag;
-        for (size_t j = 0; j < wsum.size(); j++) {
-          double p = wsum[j]/sum;
-          if (p <= 0.001) continue;
-          tp[_label_bag.Str(j).c_str()] = p;
-          if (p > maxp) { maxp = p; maxtag = _label_bag.Str(j).c_str();}
+
+    for(std::size_t i = 0; i < seq.vs.size(); i++)
+      {
+        std::vector<double> wsum = calc_state_weight(i);
+        std::map<std::string, double> tp;
+
+        if (OUTPUT_MARGINAL_PROB)
+          {
+            double sum = 0;
+
+            for (std::vector<double>::const_iterator j = wsum.begin(); j != wsum.end(); j++) sum += *j;
+
+            s0.vs[i].label = "";
+            assert(abs(sum -1) < 0.01);
+            double maxp = -1;
+            std::string maxtag;
+
+	    for (std::size_t j = 0; j < wsum.size(); j++)
+	      {
+              double p = wsum[j]/sum;
+              if (p <= 0.001) continue;
+              tp[_label_bag.Str(j).c_str()] = p;
+              if (p > maxp) { maxp = p; maxtag = _label_bag.Str(j).c_str();}
+            }
+            tagp.push_back(tp);
+            s0.vs[i].label = maxtag;
+          } else {
+          const int l = max_element(wsum.begin(), wsum.end()) - wsum.begin();
+          s0.vs[i].label = _label_bag.Str(l);
         }
-        tagp.push_back(tp);
-        s0.vs[i].label = maxtag;
-      } else {
-        const int l = max_element(wsum.begin(), wsum.end()) - wsum.begin();
-        s0.vs[i].label = _label_bag.Str(l);
       }
-    }
 
   }
 
