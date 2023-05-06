@@ -45,12 +45,8 @@ namespace andromeda
         case SELECT: { return "SELECT"; }
 	  
         case TRAVERSE: { return "TRAVERSE"; }
-	  //case PEARSON: { return "PEARSON"; }
 
         case FILTER: { return "FILTER"; }
-
-	  //case POS_RANK: { return "POS_RANK"; }
-	  //case POS_FILTER: { return "POS_FILTER"; }
 
         case JOIN: { return "JOIN"; }
         case INTERSECT: { return "INTERSECT"; }
@@ -59,6 +55,8 @@ namespace andromeda
 
 	case SUBGRAPH: { return "SUBGRAPH"; }
         }
+
+      return "FLOWOP_DEFAULT";
     }
 
     flowop_name to_flowop_name(const std::string& name)
