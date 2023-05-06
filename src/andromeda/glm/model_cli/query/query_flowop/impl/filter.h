@@ -167,7 +167,7 @@ namespace andromeda
     {
       auto& target = results.at(query_baseop::flid);
 
-      auto& nodes = query_baseop::model->get_nodes();
+      auto& nodes = query_baseop::model_ptr->get_nodes();
 
       base_node node;
       for(auto sid:query_baseop::dependencies)
@@ -195,7 +195,7 @@ namespace andromeda
     {
       auto& target = results.at(query_baseop::flid);
 
-      auto& nodes = query_baseop::model->get_nodes();
+      auto& nodes = query_baseop::model_ptr->get_nodes();
 
       base_node node;
       for(auto sid:query_baseop::dependencies)

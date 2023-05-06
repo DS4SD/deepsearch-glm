@@ -201,12 +201,12 @@ namespace andromeda
 
     bool query_flowop<SELECT>::set_hashes_from_nodes()
     {
-      if(model==NULL)
+      if(model_ptr==NULL)
 	{
 	  return false;
 	}
       
-      auto& model_nodes = model->get_nodes();
+      auto& model_nodes = model_ptr->get_nodes();
       
       hashes.clear();      
       for(const std::vector<std::string>& node:nodes)

@@ -125,7 +125,7 @@ namespace andromeda
     bool query_flowop<SUBGRAPH>::execute(results_type& results)
     {
       //auto& nodes = model->get_nodes();
-      auto& edges = model->get_edges();
+      auto& edges = model_ptr->get_edges();
       
       auto& target = results.at(query_baseop::flid);
       target->clear();

@@ -46,7 +46,7 @@ namespace andromeda
 
     public:
 
-      query_baseop(std::shared_ptr<model_type> model,
+      query_baseop(std::shared_ptr<model_type> model_ptr,
                    flow_op_type flop, flow_id_type flid,
 		   std::set<flow_id_type> dependencies);
 
@@ -65,7 +65,7 @@ namespace andromeda
       cnt_type get_ind_nodes() { return ind_nodes; }
       cnt_type get_ind_edges() { return ind_edges; }
       
-      std::shared_ptr<model_type> get_model() { return model; }
+      std::shared_ptr<model_type> get_model() { return model_ptr; }
 
       double get_time() { return delta_t.count(); }
 
@@ -82,7 +82,7 @@ namespace andromeda
 
       bool done;
 
-      std::shared_ptr<model_type> model;
+      std::shared_ptr<model_type> model_ptr;
       
       flow_op_type flop;
       flow_id_type flid;
@@ -97,11 +97,11 @@ namespace andromeda
       std::chrono::duration<double, std::milli> delta_t;
     };
 
-    query_baseop::query_baseop(std::shared_ptr<model_type> model,
+    query_baseop::query_baseop(std::shared_ptr<model_type> model_ptr,
                                flow_op_type flop, flow_id_type flid,
 			       std::set<flow_id_type> dependencies):
       done(false),
-      model(model),
+      model_ptr(model_ptr),
       
       flop(flop),
       flid(flid),
@@ -113,7 +113,7 @@ namespace andromeda
       ind_nodes(0),
       ind_edges(0),
 
-      nodeset(std::make_shared<flow_res_type>(model)),
+      nodeset(std::make_shared<flow_res_type>(model_ptr)),
       
       t0(std::chrono::system_clock::now()),
       t1(std::chrono::system_clock::now()),

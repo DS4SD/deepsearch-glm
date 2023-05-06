@@ -1630,13 +1630,16 @@ namespace andromeda_crf
           logl += add_sample_model_expectation(seq, vme, ncorrect);
           add_sample_empirical_expectation(seq, _vee);
 
+	  int ri_len = ri.size();
+	  
           n++;
-          if (n == batch_size || i == ri.size() - 1) {
-            // update the weights of the features
-            for(std::size_t j = 0; j < d; j++) {
-              _vee[j] /= n;
-              vme[j] /= n;
-            }
+          if(n==batch_size || i+1==ri_len)
+	    {
+	      // update the weights of the features
+	      for(std::size_t j = 0; j < d; j++) {
+		_vee[j] /= n;
+		vme[j] /= n;
+	      }
 
             std::vector<double> grad(d);
             for(std::size_t j = 0; j < d; j++) {
@@ -1663,10 +1666,16 @@ namespace andromeda_crf
             k++;
             n = 0;
             vme.assign(d, 0);
+
             _vee.assign(_vee.size(), 0);
-            initialize_edge_weights();
-            if (i == ri.size() - 1) break;
-          }
+
+	    initialize_edge_weights();
+
+	    if(i+1==ri_len)
+	      {	
+		break;
+	      }
+	  }
         }
       logl /= _vs.size();
 
