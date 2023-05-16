@@ -31,9 +31,10 @@ def parse_arguments():
 
     parser.add_argument('-m', '--mode', required=False, default="show",
                         help="mode [convert;show;run]")
-    parser.add_argument('-d', '--directory', required=False, default="../data/documents/")
+    parser.add_argument('-d', '--directory', required=False,
+                        default="../data/documents/reports")
 
-    parser.add_argument('--models', required=False, default="term;reference")
+    parser.add_argument('--models', required=False, default="term;abbreviation")
     
     parser.add_argument('-u', '--username', required=False, default="<email>",
                         help="username or email from DS host")
@@ -112,7 +113,6 @@ def process_zip_files(sdir):
     cellsfiles = sorted(glob.glob(os.path.join(sdir, "*.cells")))
     for i,cellsfile in enumerate(cellsfiles):
         subprocess.call(["rm", cellsfile])            
-
         
 def show_nlp_on_docs(sdir):
 

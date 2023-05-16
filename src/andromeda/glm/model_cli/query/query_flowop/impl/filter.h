@@ -85,7 +85,7 @@ namespace andromeda
             params[flavors_lbl]=nlohmann::json::array({});
             for(auto flvr:flavors)
               {
-                params[flavors_lbl].push_back(node_names::to_name.at(flvr));
+                params[flavors_lbl].push_back(node_names::to_name(flvr));
               }
           }
         else if(mode==regexes_lbl)

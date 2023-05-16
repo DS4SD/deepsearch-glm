@@ -1,5 +1,6 @@
 //-*-C++-*-
 
+/*
 #ifndef ANDROMEDA_SUBJECTS_WEBDOC_ELEMENT_H_
 #define ANDROMEDA_SUBJECTS_WEBDOC_ELEMENT_H_
 
@@ -42,3 +43,4 @@ namespace andromeda
 }
 
 #endif
+*/

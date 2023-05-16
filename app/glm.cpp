@@ -26,7 +26,7 @@ bool parse_arguments(int argc, char *argv[], nlohmann::json& config)
   cxxopts::Options options("glm", "GLM toolkit");
 
   options.add_options()
-    ("m,mode", "mode [create-configs,create,distill,train,predict,explore]",
+    ("m,mode", "mode [create-configs,create,augment,distill,train,predict,explore]",
      cxxopts::value<std::string>()->default_value("create-configs"))
     ("c,config", "config-file for the model",
      cxxopts::value<std::string>()->default_value("./config.json"))
@@ -51,7 +51,9 @@ bool parse_arguments(int argc, char *argv[], nlohmann::json& config)
   std::string mode = result["mode"].as<std::string>();
   config["mode"] = mode;
   
-  std::set<std::string> modes = {"create-configs","create","distill","query","explore"};
+  std::set<std::string> modes = {"create-configs","create",
+				 "augment","distill",
+				 "query","explore"};
   
   if(modes.count(mode)==0)
     {
@@ -87,6 +89,9 @@ bool parse_arguments(int argc, char *argv[], nlohmann::json& config)
   else if(mode==to_string(andromeda::glm::DISTILL))
     {
     }
+  else if(mode==to_string(andromeda::glm::AUGMENT))
+    {
+    }  
   else if(mode==to_string(andromeda::glm::QUERY))
     {
     }
@@ -134,6 +139,10 @@ int main(int argc, char *argv[])
     {
       andromeda::glm::create_glm_model(args, model);
     }
+  else if(mode==to_string(andromeda::glm::AUGMENT))
+    {
+      andromeda::glm::augment_glm_model(args, model);      
+    }  
   else if(mode==to_string(andromeda::glm::DISTILL))
     {
       std::shared_ptr<glm_model_type> distilled_model=NULL;

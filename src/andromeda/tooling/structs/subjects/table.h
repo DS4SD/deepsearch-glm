@@ -7,7 +7,7 @@ namespace andromeda
 {
   
   template<>
-  class subject<TABLE>
+  class subject<TABLE>: provenance
   {
   public:
 
@@ -16,22 +16,40 @@ namespace andromeda
   public:
 
     subject();
+    subject(uint64_t dhash,
+	    uint64_t index);
+    
     ~subject();
 
     void clear();
 
+    bool set_data(nlohmann::json& data);
+
+    bool set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
+		    std::shared_ptr<utils::text_normaliser> text_normaliser);
+    
     bool set(nlohmann::json& data,
 	     std::shared_ptr<utils::char_normaliser> char_normaliser,
 	     std::shared_ptr<utils::text_normaliser> text_normaliser);	     
 
-    void show();
+    void show(bool prps, bool ents, bool rels);
 
+    std::string get_text() const;
+    
+    uint64_t num_rows() const { return nrows; }
+    uint64_t num_cols() const { return ncols; }
+
+    table_element_type& operator()(std::array<uint64_t,2> coor) { return data.at(coor.at(0)).at(coor.at(1)); }
+    table_element_type& operator()(uint64_t i, uint64_t j) { return data.at(i).at(j); }
+    
   public:
 
     uint64_t dhash;
     uint64_t index;
+
+    std::string caption;
     
-    std::size_t nrows, ncols;
+    uint64_t nrows, ncols;
     std::vector<std::vector<table_element_type> > data;
     
     std::set<std::string> applied_models;
@@ -44,6 +62,8 @@ namespace andromeda
   subject<TABLE>::subject():
     dhash(-1),
     index(-1),
+
+    caption(""),
     
     nrows(0), ncols(0),
     data(),
@@ -55,56 +75,168 @@ namespace andromeda
     relations({})
   {}
 
+  subject<TABLE>::subject(uint64_t dhash,
+			  uint64_t index):
+    dhash(dhash),
+    index(index),
+
+    caption(""),
+    
+    nrows(0), ncols(0),
+    data(),
+
+    applied_models(),
+    
+    properties({}),
+    entities({}),
+    relations({})
+  {}
+  
   subject<TABLE>::~subject()
   {}
 
+  bool subject<TABLE>::set_data(nlohmann::json& item)
+  {
+    if(item.count("data"))
+      {
+	nlohmann::json grid = item["data"];
+	
+	std::set<int> ncols={};
+	for(uint64_t i=0; i<grid.size(); i++)
+	  {
+	    data.push_back({});
+	    for(uint64_t j=0; j<grid[i].size(); j++)
+	      {
+		std::string text = "";
+		if(grid[i][j].count("text"))
+		  {		    
+		    text = grid[i][j]["text"];
+		  }
+		data.back().emplace_back(i,j,text);
+	      }	   	    
+	  }
+      }
+
+    if(item.count("text"))
+      {
+	caption = item["text"].get<std::string>();
+      }
+    
+    if(item.count("prov"))
+      {
+	provenance::set(item["prov"]);
+      }
+    
+    if(data.size()>0)
+      {
+	nrows = data.size();
+	ncols = data.at(0).size();
+	
+	return true;
+      }
+	
+    return false;	
+  }
+
+  bool subject<TABLE>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
+				  std::shared_ptr<utils::text_normaliser> text_normaliser)
+  {
+    bool valid = true;
+    
+    for(auto& row:data)
+      {
+	for(auto& cell:row)
+	  {
+	    valid = (valid and cell.set_tokens(char_normaliser, text_normaliser));
+	  }
+      }
+
+    return valid;
+  }  
+  
   bool subject<TABLE>::set(nlohmann::json& grid,
 			   std::shared_ptr<utils::char_normaliser> char_normaliser,
 			   std::shared_ptr<utils::text_normaliser> text_normaliser)
   {       
-    std::set<int> ncols={};
-    for(std::size_t i=0; i<grid.size(); i++)
-      {
-	data.push_back({});
-	for(std::size_t j=0; j<grid[i].size(); j++)
-	  {
-	    std::string text = grid[i][j]["text"];
-	    data.back().emplace_back(i,j, text);
-	  }
+    bool task_0 = set_data(grid);
+    bool task_1 = set_tokens(char_normaliser, text_normaliser);
 
-	ncols.insert(data.back().size());
-      }
-    
-    if(data.size()>0/* and ncols.size()==1*/)
-      {
-	//show();
-
-	//std::string tmp;
-	//std::cin >> tmp;
-	
-	return true;
-      }
-
-    return false;
+    return (task_0 and task_1);
   }
 
-  void subject<TABLE>::show()
+  void subject<TABLE>::show(bool prps, bool ents, bool rels)
   {
     std::vector<std::vector<std::string> > grid={};
-    for(std::size_t i=0; i<data.size(); i++)
+    for(uint64_t i=0; i<data.size(); i++)
       {
 	grid.push_back({});
-	for(std::size_t j=0; j<data[i].size(); j++)
+	for(uint64_t j=0; j<data.at(i).size(); j++)
 	  {
-	    grid[i].push_back(data[i][j].text);
+	    grid.at(i).push_back(data.at(i).at(j).text);
 	  }
       }
 
     std::stringstream ss;
-    utils::show_table(grid, ss, 48);
 
-    //LOG_S(INFO) << "NLP-output: \n" << ss.str();
-    LOG_S(INFO) << "\n" << ss.str();
+    if(provenance::elements.size()>0)
+      {
+	ss << "prov: "
+	   << provenance::elements.at(0).page << ", "
+	   << " ["
+	   << provenance::elements.at(0).bbox[0] << ", "
+	   << provenance::elements.at(0).bbox[1] << ", "
+	   << provenance::elements.at(0).bbox[2] << ", "
+	   << provenance::elements.at(0).bbox[3]
+	   << "]";
+      }
+    
+    {
+      ss << "\ntable: ";
+      utils::show_table(grid, ss, 48);
+    }
+    
+    //if(mdls)
+    {
+      ss << "\nmodels: ";
+      for(auto model:applied_models)
+	{
+	  ss << model << ", ";
+	}
+      ss << "[done]\n";
+    }
+    
+    if(prps)
+      {
+        ss << tabulate(properties);
+      }
+
+    if(ents)
+      {
+        ss << tabulate(entities);
+      }
+
+    if(rels)
+      {
+        ss << tabulate(entities, relations);
+      }
+
+    LOG_S(INFO) << "NLP-output: \n" << ss.str();
+  }
+
+  std::string subject<TABLE>::get_text() const
+  {
+    std::stringstream ss;
+    
+    for(uint64_t i=0; i<data.size(); i++)
+      {
+	for(uint64_t j=0; j<data.at(i).size(); j++)
+	  {
+	    ss << data.at(i).at(j).text << " ";
+	  }
+      }
+
+    std::string text = ss.str();
+    return text;      
   }
   
 }

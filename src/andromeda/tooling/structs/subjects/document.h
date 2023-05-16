@@ -24,8 +24,9 @@ namespace andromeda
               bool ctokens=false, bool wtokens=true,
               bool prps=true, bool ents=true, bool rels=true);
 
-    bool set_text(nlohmann::json& data);
-    bool set_text(std::filesystem::path filepath,
+    bool set_data(nlohmann::json& data);
+
+    bool set_data(std::filesystem::path filepath,
                   nlohmann::json& data);
 
     bool set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
@@ -48,8 +49,11 @@ namespace andromeda
     std::filesystem::path filepath;
     nlohmann::json orig;
 
+    std::string doc_name;
+    uint64_t doc_hash;
+
     std::vector<std::size_t> pind_to_orig; // paragraphs-index to original maintext-index
-    std::vector<std::size_t> tind_to_orig; // paragraphs-index to original tables-index
+    std::vector<std::size_t> tind_to_orig; // tables-index to original tables-index
 
     std::vector<subject<PARAGRAPH> > paragraphs;
     std::vector<subject<TABLE> > tables;
@@ -62,6 +66,9 @@ namespace andromeda
   subject<DOCUMENT>::subject():
     valid(true),
     applied_models(),
+
+    doc_name(""),
+    doc_hash(-1),
 
     pind_to_orig({}),
     tind_to_orig({}),
@@ -110,7 +117,6 @@ namespace andromeda
   {
     valid = false;
 
-
     orig = nlohmann::json::object({});
 
     pind_to_orig.clear();
@@ -134,24 +140,41 @@ namespace andromeda
       }
   }
 
+  bool subject<DOCUMENT>::set_data(std::filesystem::path filepath, nlohmann::json& data)
+  {
+    this->filepath = filepath;
+    return set_data(data);
+  }
 
-  bool subject<DOCUMENT>::set_text(nlohmann::json& data)
+  bool subject<DOCUMENT>::set_data(nlohmann::json& data)
   {
     clear();
+
+    if(data.count("file-info") and
+       data["file-info"].count("document-hash"))
+      {
+        doc_name = data["file-info"].value("document-hash", doc_name);
+        doc_hash = utils::to_hash(doc_name);
+      }
+    else
+      {
+        LOG_S(WARNING) << "no `file-info.document-hash detected ...`";
+
+        doc_name = filepath.c_str();
+        doc_hash = utils::to_hash(doc_name);
+      }
 
     orig = data;
 
     if(data.count("main-text"))
       {
+        uint64_t ind=0;
         for(auto& item:data["main-text"])
           {
-            if(item.count("text"))
+            if(item.count("text")==1)
               {
-                std::string text="";
-                text = item.value("text", text);
-
-                subject<PARAGRAPH> subj;
-                bool valid = subj.set_text(text);
+                subject<PARAGRAPH> subj(doc_hash, ind);
+                bool valid = subj.set_data(item);
 
                 if(valid)
                   {
@@ -159,6 +182,8 @@ namespace andromeda
                     paragraphs.push_back(subj);
                   }
               }
+
+            ind += 1;
           }
       }
     else
@@ -166,6 +191,48 @@ namespace andromeda
         LOG_S(WARNING) << "no `main-text` detected in pdf-document ...";
         return false;
       }
+
+    if(data.count("tables"))
+      {
+        uint64_t ind=0;
+        for(auto& item:data["tables"])
+          {
+            if(item.count("data")==1)
+              {
+                subject<TABLE> subj(doc_hash, ind);
+                bool valid = subj.set_data(item);
+
+                if(valid)
+                  {
+                    tind_to_orig.push_back(tables.size());
+                    tables.push_back(subj);
+                  }
+              }
+
+            ind += 1;
+          }
+      }
+    else
+      {
+        LOG_S(WARNING) << "no `tables` detected in pdf-document ...";
+        return false;
+      }
+
+    /*
+      for(auto& item:paragraphs)
+      {
+      item.show(true, false, false, false, false, false, false);
+      }
+
+      for(auto& item:tables)
+      {
+      item.show(false, false, false);
+      }
+
+      LOG_S(WARNING) << "set doc ...";
+      std::string tmp;
+      std::cin >> tmp;
+    */
 
     return true;
   }
@@ -184,6 +251,17 @@ namespace andromeda
           }
       }
 
+    for(auto& table:tables)
+      {
+        bool valid = table.set_tokens(char_normaliser, text_normaliser);
+
+        if(not valid)
+          {
+            LOG_S(WARNING) << __FILE__ << ":" << __FUNCTION__
+                           << " --> unvalid text detected in main-text";
+          }
+      }
+
     return true;
   }
 
@@ -191,33 +269,25 @@ namespace andromeda
                               std::shared_ptr<utils::char_normaliser> char_normaliser,
                               std::shared_ptr<utils::text_normaliser> text_normaliser)
   {
-    if(set_text(data))
+    if(set_data(data))
       {
         return set_tokens(char_normaliser, text_normaliser);
       }
 
     return false;
-  }
-
-  bool subject<DOCUMENT>::set_text(std::filesystem::path filepath, nlohmann::json& data)
-  {
-    this->filepath = filepath;
-    return set_text(data);
   }
 
   bool subject<DOCUMENT>::set(std::filesystem::path filepath, nlohmann::json& data,
                               std::shared_ptr<utils::char_normaliser> char_normaliser,
                               std::shared_ptr<utils::text_normaliser> text_normaliser)
   {
-    if(set_text(filepath, data))
+    if(set_data(filepath, data))
       {
         return set_tokens(char_normaliser, text_normaliser);
       }
 
     return false;
   }
-
-
 
 }
 

@@ -24,7 +24,7 @@ namespace andromeda
     virtual model_name get_name() { return EXPRESSION; }
 
     virtual bool apply(subject<PARAGRAPH>& subj);
-    virtual bool apply(subject<TABLE>& subj) { return false; }
+    virtual bool apply(subject<TABLE>& subj);
 
   private:
 
@@ -37,10 +37,12 @@ namespace andromeda
     bool apply_common_regex(subject<PARAGRAPH>& subj);
     bool apply_apostrophe_regex(subject<PARAGRAPH>& subj);
     bool apply_abbr_regex(subject<PARAGRAPH>& subj);
-      
+
     bool apply_regex(subject<PARAGRAPH>& subj);
 
     bool apply_concatenation_regex(subject<PARAGRAPH>& subj);
+    bool apply_concatenation_regex(subject<TABLE>& subj);
+    
     bool apply_latex_regex(subject<PARAGRAPH>& subj);
 
     bool find_concatenated_wtokens(subject<PARAGRAPH>& subj);
@@ -291,6 +293,18 @@ namespace andromeda
     return true;
   }
 
+  bool nlp_model<ENT, EXPRESSION>::apply(subject<TABLE>& subj)
+  {
+    if(not satisfies_dependencies(subj))
+      {
+        return false;
+      }
+
+    apply_concatenation_regex(subj);
+    
+    return true;
+  }
+
   bool nlp_model<ENT, EXPRESSION>::apply(subject<PARAGRAPH>& subj)
   {
     //LOG_S(INFO) << "starting expression ...";
@@ -507,10 +521,7 @@ namespace andromeda
 
   bool nlp_model<ENT, EXPRESSION>::apply_concatenation_regex(subject<PARAGRAPH>& subj)
   {
-    //std::string orig = subj.text;
     std::string text = subj.text;
-
-    //std::size_t max_id = subj.get_max_ent_hash();
 
     // find all concat expressions
     for(auto& expr:concat_exprs)
@@ -538,21 +549,87 @@ namespace andromeda
 
                     // FIXME: it would be nice to have something more sophisticated ...
                     bool keep=true;
-                    if(name.ends_with(" and") or name.ends_with(" or"))
+                    if(name.ends_with(" and") or
+                       name.ends_with(" or"))
                       {
                         keep = false;
                       }
 
                     if(keep)
                       {
-                        subj.entities.emplace_back(//++max_id,
-                                                   //utils::to_hash(name),
-                                                   EXPRESSION, expr.get_subtype(),
+                        subj.entities.emplace_back(EXPRESSION, expr.get_subtype(),
                                                    name, orig,
                                                    char_range, ctok_range, wtok_range);
                       }
 
                     utils::mask(text, char_range);
+                  }
+              }
+          }
+      }
+
+    return true;
+  }
+
+  bool nlp_model<ENT, EXPRESSION>::apply_concatenation_regex(subject<TABLE>& subj)
+  {
+    for(std::size_t i=0; i<subj.num_rows(); i++)
+      {
+        for(std::size_t j=0; j<subj.num_cols(); j++)
+          {
+            if(subj(i,j).text.size()==0)
+              {
+                continue;
+              }
+
+            std::string text = subj(i,j).text;
+
+            // find all concat expressions
+            for(auto& expr:concat_exprs)
+              {
+                std::vector<pcre2_item> items;
+                expr.find_all(text, items);
+
+                for(auto& item:items)
+                  {
+                    //LOG_S(INFO) << item.to_json().dump();
+
+                    for(auto& grp:item.groups)
+                      {
+                        if(grp.group_name=="expr")
+                          {
+                            range_type char_range = grp.rng;
+
+                            range_type ctok_range = subj(i,j).get_char_token_range(grp.rng);
+                            range_type wtok_range = subj(i,j).get_word_token_range(grp.rng);
+
+                            std::string orig="", name="";
+
+                            orig = subj(i,j).from_ctok_range(ctok_range);
+                            name = normalise(orig);
+
+                            // FIXME: it would be nice to have something more sophisticated ...
+                            bool keep=true;
+                            if(name.ends_with(" and") or
+                               name.ends_with(" or"))
+                              {
+                                keep = false;
+                              }
+
+                            if(keep)
+                              {
+                                subj.entities.emplace_back(EXPRESSION, expr.get_subtype(),
+                                                           name, orig,
+                                                           subj(i,j).get_coor(),
+                                                           subj(i,j).get_span(),
+                                                           char_range,
+							   ctok_range,
+							   wtok_range);
+                              }
+
+                            utils::mask(text, char_range);
+                          }
+                      }
                   }
               }
           }
@@ -679,7 +756,7 @@ namespace andromeda
 
     while(wtoken_inds.size()>=2)
       {
-	index_type wind = wtoken_inds.front();
+        index_type wind = wtoken_inds.front();
         std::string word = wtokens.at(wind).get_word();
 
         if(special_begins.count(word)==1)

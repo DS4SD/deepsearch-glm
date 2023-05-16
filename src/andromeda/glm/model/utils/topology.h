@@ -535,8 +535,8 @@ namespace andromeda
       clear();
 
       {
-        auto& names = node_names::to_name;
-        for(auto itr=names.begin(); itr!=names.end(); itr++)
+        //auto& names = node_names::to_name;
+        for(auto itr=node_names::begin(); itr!=node_names::end(); itr++)
           {
             node_flavors[itr->first] = itr->second;
             node_counts[itr->first] = 0;
@@ -548,8 +548,8 @@ namespace andromeda
       }
 
       {
-        auto& names = edge_names::flvr_to_name_map;
-        for(auto itr=names.begin(); itr!=names.end(); itr++)
+        //auto& names = edge_names::flvr_to_name_map;
+        for(auto itr=edge_names::begin(); itr!=edge_names::end(); itr++)
           {
             edge_flavors[itr->first] = itr->second;
             edge_counts[itr->first] = 0;

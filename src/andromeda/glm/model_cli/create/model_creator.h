@@ -84,14 +84,16 @@ namespace andromeda
                              std::vector<base_relation>& relations,
                              nodes_type& nodes, edges_type& edges,
                              std::vector<hash_type>& tok_hashes,
-                             std::map<range_type, hash_type>& rng_to_term);
+                             std::map<range_type, hash_type>& rng_to_term,
+			     std::map<hash_type, hash_type>& ihash_to_node);
 
       void insert_verb_paths(std::vector<word_token>& tokens,
                              std::vector<base_entity>& entities,
                              std::vector<base_relation>& relations,
                              nodes_type& nodes, edges_type& edges,
                              std::vector<hash_type>& tok_hashes,
-                             std::map<range_type, hash_type>& rng_to_verb);
+                             std::map<range_type, hash_type>& rng_to_verb,
+			     std::map<hash_type, hash_type>& ihash_to_node);
 
       void insert_padding_for_conn_verb_term(int padding,
                                              std::vector<base_entity>& entities,
@@ -124,6 +126,11 @@ namespace andromeda
                         nodes_type& nodes, edges_type& edges,
                         std::vector<hash_type>& sent_hashes);
 
+      void insert_relations(std::vector<base_entity>& entities,
+			    std::vector<base_relation>& relations,
+			    nodes_type& nodes, edges_type& edges,
+			    std::map<hash_type, hash_type>& ihash_to_node);
+      
     private:
 
       std::shared_ptr<model_type> model;
@@ -182,7 +189,7 @@ namespace andromeda
 
       if(tokens.size()==0)
         {
-          return;
+           return;
         }
 
       update_tokens(tokens, entities);
@@ -199,18 +206,19 @@ namespace andromeda
       insert_edges(parameters.padding, edges, pos_hashes);
 
       insert_begin_and_end_of_paths(tokens, entities, relations,
-                                    nodes, edges,  //paths,
-                                    tok_hashes);
+                                    nodes, edges, tok_hashes);
 
+      std::map<hash_type, hash_type> ihash_to_node={};
+      
       std::map<range_type, hash_type> rng_to_conc={};
       std::map<range_type, hash_type> rng_to_conn={};
       std::map<range_type, hash_type> rng_to_term={};
       std::map<range_type, hash_type> rng_to_verb={};
-
+      
       if(parameters.keep_concs)
         {
           insert_concatenation_paths(tokens, entities, relations,
-                                     nodes, edges, //paths,
+                                     nodes, edges, 
                                      tok_hashes, rng_to_conc);
 
           update_counters(nodes, entities, rng_to_conc, docs_cnt);
@@ -219,7 +227,7 @@ namespace andromeda
       if(parameters.keep_conns)
         {
           insert_conn_paths(tokens, entities, relations,
-                            nodes, edges, //paths,
+                            nodes, edges, 
                             tok_hashes, rng_to_conn);
 
           update_counters(nodes, entities, rng_to_conn, docs_cnt);
@@ -228,8 +236,9 @@ namespace andromeda
       if(parameters.keep_terms)
         {
           insert_term_paths(tokens, entities, relations,
-                            nodes, edges, //paths,
-                            tok_hashes, rng_to_term);
+                            nodes, edges, 
+                            tok_hashes, rng_to_term,
+			    ihash_to_node);
 
           update_counters(nodes, entities, rng_to_term, docs_cnt);
         }
@@ -237,8 +246,9 @@ namespace andromeda
       if(parameters.keep_verbs)
         {
           insert_verb_paths(tokens, entities, relations,
-                            nodes, edges, //paths,
-                            tok_hashes, rng_to_verb);
+                            nodes, edges, 
+                            tok_hashes, rng_to_verb,
+			    ihash_to_node);
 
           update_counters(nodes, entities, rng_to_verb, docs_cnt);
         }
@@ -259,28 +269,71 @@ namespace andromeda
                            rng_to_conn, rng_to_term, rng_to_verb);
         }
 
-      /*
-        if(parameters.keep_sents and parameters.keep_terms)
-        {
-        insert_sentences(entities, nodes, edges, paths,
-        tok_hashes, sent_hashes,
-        rng_to_conn, rng_to_term, rng_to_verb);
-        }
-        else if(parameters.keep_sents)
-        {
-        insert_sentences(entities, nodes, edges, paths,
-        tok_hashes, sent_hashes);
-        }
-      */
-
       if(sent_hashes.size()>=2 and
          parameters.keep_sents and
          parameters.keep_texts)
         {
           insert_texts(entities, nodes, edges, sent_hashes);
         }
+
+      if(true)
+	{
+	  insert_relations(entities, relations, nodes, edges, ihash_to_node);
+	}
     }
 
+    void model_creator::update(subject<TABLE>& subj)
+    {
+      std::vector<hash_type> node_term_hashes={};
+      
+      for(auto& ent:subj.entities)
+	{
+          if(ent.model_type==andromeda::TERM and
+             ent.model_subtype=="single-term")
+            {
+	      /*
+	      auto coor = ent.coor_range;
+              auto rng = ent.wtok_range;
+
+              std::vector<hash_type> term_hashes={};
+              for(std::size_t i=rng[0]; i<rng[1]; i++)
+                {
+                  term_hashes.push_back(tok_hashes.at(i));
+                }
+
+	      base_node term_i(node_names::TERM, term_hashes);
+              nodes.insert(term_i, false);
+
+	      node_term_hashes.push_back(term_i.get_hash());
+	      */
+	    }
+	}
+      
+      
+    }
+
+    void model_creator::update(subject<DOCUMENT>& subj)
+    {
+      for(auto& paragraph:subj.paragraphs)
+        {
+          this->update(paragraph);
+        }
+
+      for(auto& table:subj.tables)
+        {
+          this->update(table);
+        }
+    }
+
+
+
+
+
+
+
+
+
+    
     void model_creator::contract_tokens(subject<PARAGRAPH>& subj)
     {
       subj.contract_wtokens_from_entities(LINK);
@@ -303,24 +356,6 @@ namespace andromeda
       for(auto item:subj.tables)
         {
           contract_tokens(item);
-        }
-    }
-
-    void model_creator::update(subject<TABLE>& subj)
-    {
-
-    }
-
-    void model_creator::update(subject<DOCUMENT>& subj)
-    {
-      for(auto& paragraph:subj.paragraphs)
-        {
-          this->update(paragraph);
-        }
-
-      for(auto& table:subj.tables)
-        {
-          this->update(table);
         }
     }
 
@@ -578,7 +613,6 @@ namespace andromeda
                                                    std::vector<base_relation>& relations,
                                                    nodes_type& nodes,
                                                    edges_type& edges,
-                                                   //paths_type& paths,
                                                    std::vector<hash_type>& tok_hashes,
                                                    std::map<range_type, hash_type>& rng_to_hash)
     {
@@ -667,7 +701,8 @@ namespace andromeda
                                           std::vector<base_relation>& relations,
                                           nodes_type& nodes, edges_type& edges,
                                           std::vector<hash_type>& tok_hashes,
-                                          std::map<range_type, hash_type>& rng_to_term)
+                                          std::map<range_type, hash_type>& rng_to_term,
+					  std::map<hash_type, hash_type>& ihash_to_node)
     {
       for(auto& ent:entities)
         {
@@ -682,6 +717,7 @@ namespace andromeda
                   term_hashes.push_back(tok_hashes.at(i));
                 }
 
+	      /*
               edges.insert(edge_names::to_label, term_hashes.front(), beg_term_hash, false);
               edges.insert(edge_names::to_label, term_hashes.back(), end_term_hash, false);
 
@@ -697,16 +733,17 @@ namespace andromeda
                 {
                   edges.insert(edge_names::tax_up, term_hashes.at(i), term_hashes.at(i-1), false);
                 }
+	      */
+	      
+              base_node term_i(node_names::TERM, term_hashes);
+              nodes.insert(term_i, false);
 
-              base_node fpath(node_names::TERM, term_hashes);
-              nodes.insert(fpath, false);
-
-              rng_to_term.emplace(ent.wtok_range, fpath.get_hash());
+              rng_to_term.emplace(ent.wtok_range, term_i.get_hash());
 
 	      if(term_hashes.size()==1)
 		{
-		  edges.insert(edge_names::from_token, term_hashes.at(0), fpath.get_hash(), false);
-		  edges.insert(edge_names::to_token, fpath.get_hash(), term_hashes.at(0), false);		  
+		  edges.insert(edge_names::from_token, term_hashes.at(0), term_i.get_hash(), false);
+		  edges.insert(edge_names::to_token, term_i.get_hash(), term_hashes.at(0), false);		  
 		}
 	      
 	      /*
@@ -714,10 +751,6 @@ namespace andromeda
                 {
                   edges.insert(edge_names::from_root_to_path, term_hashes.back(), path.get_hash(), false);
                   edges.insert(edge_names::from_path_to_root, path.get_hash(), term_hashes.back(), false);
-                }
-              else
-                {
-
                 }
 	      */
 	      
@@ -767,9 +800,9 @@ namespace andromeda
                                           std::vector<base_relation>& relations,
                                           nodes_type& nodes,
                                           edges_type& edges,
-                                          //paths_type& paths,
                                           std::vector<hash_type>& tok_hashes,
-                                          std::map<range_type, hash_type>& rng_to_verb)
+                                          std::map<range_type, hash_type>& rng_to_verb,
+					  std::map<hash_type, hash_type>& ihash_to_node)
     {
       for(auto& ent:entities)
         {
@@ -889,7 +922,7 @@ namespace andromeda
 
     void model_creator::insert_padding_for_conn_verb_term(int padding,
                                                           std::vector<base_entity>& entities,
-                                                          nodes_type& nodes, edges_type& edges, //paths_type& paths,
+                                                          nodes_type& nodes, edges_type& edges,
                                                           std::vector<hash_type>& tok_hashes,
                                                           std::vector<hash_type>& sent_hashes,
                                                           std::map<range_type, hash_type>& rng_to_conn,
@@ -968,7 +1001,7 @@ namespace andromeda
     }
 
     void model_creator::insert_sentences(std::vector<base_entity>& entities,
-                                         nodes_type& nodes, edges_type& edges, //paths_type& paths,
+                                         nodes_type& nodes, edges_type& edges,
                                          std::vector<hash_type>& tok_hashes,
                                          std::vector<hash_type>& sent_hashes,
                                          std::map<range_type, hash_type>& rng_to_conn,
@@ -1071,6 +1104,31 @@ namespace andromeda
       nodes.insert(path, false);
     }
 
+    void model_creator::insert_relations(std::vector<base_entity>& entities,
+					 std::vector<base_relation>& relations,
+					 nodes_type& nodes, edges_type& edges,
+					 std::map<hash_type, hash_type>& ihash_to_node)
+    {
+      for(auto& rel:relations)
+	{
+	  edge_names::update_flvr(rel.get_name());
+	}
+      
+      for(auto& rel:relations)
+	{
+	  flvr_type flvr = edge_names::to_flvr(rel.get_name());
+	  
+	  hash_type ihash_i = rel.get_ihash_i();
+	  hash_type ihash_j = rel.get_ihash_j();
+	  
+	  if(ihash_to_node.count(ihash_i) and
+	     ihash_to_node.count(ihash_j))
+	    {
+	      edges.insert(flvr, ihash_to_node.at(ihash_i), ihash_to_node.at(ihash_j), 1, false);
+	    }
+	}
+    }
+    
   }
 
 }

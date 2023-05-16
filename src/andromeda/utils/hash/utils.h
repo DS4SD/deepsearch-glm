@@ -66,6 +66,17 @@ namespace andromeda
           }
         }
     }
+
+    static uint16_t to_flvr_hash(const std::string& text)
+    {
+      const static std::string seed = "QWERTYUIOP!@#$%^&*()_+qwertyuiop";
+      std::string name = seed + text;
+      
+      uint64_t uhash64 = std::hash<std::string_view>{}(name.c_str());
+      uint16_t uhash16 = uhash64;
+	
+      return uhash16;
+    }
     
   }
 

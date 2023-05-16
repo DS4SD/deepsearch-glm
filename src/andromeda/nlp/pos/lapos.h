@@ -35,21 +35,13 @@ namespace andromeda
 
     bool initialise(std::filesystem::path resources_dir, bool verbose);
 
-    bool check_dependency(subject<PARAGRAPH>& subj,
-                          std::string& lang);
+    template<typename subject_type>
+    bool check_dependency(const std::set<model_name>& deps,
+			  subject_type& subj, std::string& lang);
 
     bool contract_word_tokens(subject<PARAGRAPH>& subj);
 
-    /*
-    template<typename wtoken_type, typename index_type>
-    void pre_process(std::vector<wtoken_type>& wtokens,
-                     std::array<index_type, 2>& rng,
-                     std::vector<pos_token_type>& pos_tokens,
-                     std::map<index_type, index_type>& ptid_to_wtid);
-    */
-
     void pre_process(std::vector<word_token>& wtokens,
-                     //std::array<index_type, 2>& rng,
 		     range_type& rng,
                      std::vector<pos_token_type>& pos_tokens,
                      std::map<index_type, index_type>& ptid_to_wtid);
@@ -57,12 +49,8 @@ namespace andromeda
     void run_pos_tagger(subject<PARAGRAPH>& subj,
                         std::shared_ptr<pos_model_type> pos_model);
 
-    /*
-    template<typename wtoken_type, typename index_type>
-    void post_process(std::vector<wtoken_type>& wtokens,
-                      std::vector<pos_token_type>& pos_tokens,
-                      std::map<index_type, index_type>& ptid_to_wtid);
-    */
+    void run_pos_tagger(subject<TABLE>& subj,
+                        std::shared_ptr<pos_model_type> pos_model);    
 
     void post_process(std::vector<word_token>& wtokens,
                       std::vector<pos_token_type>& pos_tokens,
@@ -72,22 +60,17 @@ namespace andromeda
 
   private:
 
-    const static std::set<model_name> dependencies;
+    const static inline std::set<model_name> text_dependencies = {LANGUAGE, SENTENCE};
 
+    const static inline std::set<model_name> table_dependencies = {LANGUAGE};
+
+    const static inline std::set<model_name> dependencies = text_dependencies;
+    
     std::filesystem::path model_file;
 
     std::map<std::string, std::shared_ptr<pos_model_type> > pos_models;
     std::set<std::string> numbers;
   };
-
-  const std::set<model_name> nlp_model<POS, LAPOS>::dependencies = {LANGUAGE, SENTENCE};
-
-  /*
-    nlp_model<POS, LAPOS>::nlp_model()
-    {
-    initialise(andromeda::RESOURCES_DIR);
-    }
-  */
 
   nlp_model<POS, LAPOS>::nlp_model(std::filesystem::path resources_dir, bool verbose)
   {
@@ -120,9 +103,11 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<POS, LAPOS>::check_dependency(subject<PARAGRAPH>& subj, std::string& lang)
-  {
-    bool static_dependency = satisfies_dependencies(subj);
+  template<typename subject_type>
+  bool nlp_model<POS, LAPOS>::check_dependency(const std::set<model_name>& deps,
+					       subject_type& subj, std::string& lang)
+  {    
+    bool static_dependency = satisfies_dependencies(subj, deps);
 
     bool dyn_dependency=false;
 
@@ -135,7 +120,7 @@ namespace andromeda
             dyn_dependency=true;
           }
       }
-
+    
     return (static_dependency and dyn_dependency);
   }
 
@@ -148,7 +133,7 @@ namespace andromeda
       }
 
     std::string lang="null";
-    if(not check_dependency(subj, lang))
+    if(not check_dependency(text_dependencies, subj, lang))
       {
         return false;
       }
@@ -160,16 +145,10 @@ namespace andromeda
     return update_applied_models(subj);
   }
 
-  bool nlp_model<POS, LAPOS>::apply(subject<TABLE>& subj)
-  {
-    return false;
-  }
-
   void nlp_model<POS, LAPOS>::run_pos_tagger(subject<PARAGRAPH>& subj,
                                              std::shared_ptr<pos_model_type> pos_model)
   {
     std::vector<pos_token_type> pos_tokens={};
-    //std::map<std::size_t, std::size_t> ptid_to_wtid={};
     std::map<index_type, index_type> ptid_to_wtid={};
 
     auto& wtokens = subj.word_tokens;
@@ -190,16 +169,52 @@ namespace andromeda
         post_process(wtokens, pos_tokens, ptid_to_wtid);
       }
   }
+  
+  bool nlp_model<POS, LAPOS>::apply(subject<TABLE>& subj)
+  {
+    std::string lang="null";
+    if(not check_dependency(table_dependencies, subj, lang))
+      {
+        return false;
+      }
+    
+    std::shared_ptr<pos_model_type> pos_model = pos_models.at(lang);
+    
+    for(std::size_t i=0; i<subj.num_rows(); i++)
+      {
+	for(std::size_t j=0; j<subj.num_cols(); j++)
+	  {	    
+	    auto& word_tokens = subj(i,j).word_tokens;
+	    	    
+	    // initialise
+	    for(auto& word_token:word_tokens)
+	      {
+		word_token.set_pos(word_token::UNDEF_POS);
+	      }
 
-  /*
-  template<typename wtoken_type, typename index_type>
-  void nlp_model<POS, LAPOS>::pre_process(std::vector<wtoken_type>& wtokens,
-                                          std::array<index_type, 2>& rng,
-                                          std::vector<pos_token_type>& pos_tokens,
-                                          std::map<index_type, index_type>& ptid_to_wtid)
-  */
+	    if(word_tokens.size()==0)
+	      {
+		continue;
+	      }
+	    
+	    range_type rng = {0, word_tokens.size()};
+	    
+	    std::vector<pos_token_type> pos_tokens={};	    
+	    std::map<index_type, index_type> ptid_to_wtid={};
+	    
+	    pre_process(word_tokens, rng, pos_tokens, ptid_to_wtid);
+	    
+	    pos_model->predict(pos_tokens);
+	    
+	    post_process(word_tokens, pos_tokens, ptid_to_wtid);
+	  }
+      }
+    
+    return update_applied_models(subj);
+  }
+
+
   void nlp_model<POS, LAPOS>::pre_process(std::vector<word_token>& wtokens,
-                                          //std::array<index_type, 2>& rng,
 					  range_type& rng,
                                           std::vector<pos_token_type>& pos_tokens,
                                           std::map<index_type, index_type>& ptid_to_wtid)  
@@ -244,12 +259,6 @@ namespace andromeda
       }
   }
 
-  /*
-  template<typename wtoken_type, typename index_type>
-  void nlp_model<POS, LAPOS>::post_process(std::vector<wtoken_type>& wtokens,
-                                           std::vector<pos_token_type>& pos_tokens,
-                                           std::map<index_type, index_type>& ptid_to_wtid)
-  */
   void nlp_model<POS, LAPOS>::post_process(std::vector<word_token>& wtokens,
                                            std::vector<pos_token_type>& pos_tokens,
                                            std::map<index_type, index_type>& ptid_to_wtid)

@@ -25,7 +25,6 @@ namespace andromeda
 							    "word", "original"};
 
     typedef float    fval_type;
-    //typedef std::float16_t fval_type;
     typedef uint16_t flvr_type;    
     typedef uint64_t hash_type;
     

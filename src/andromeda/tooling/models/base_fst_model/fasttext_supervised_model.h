@@ -303,7 +303,8 @@ namespace andromeda
   
   bool fasttext_supervised_model::preprocess(const subject<TABLE>& subj, std::string& text)
   {
-    return false;
+    text = subj.get_text();
+    return (text.size()>0);
   }
   
   bool fasttext_supervised_model::prepare_data()
@@ -537,6 +538,9 @@ namespace andromeda
 
 	subj.properties.emplace_back(key, label, conf);
 	subj.applied_models.insert(key);
+
+	//LOG_S(INFO) << "text: " << text;
+	//LOG_S(INFO) << key << " (" << label << "): " << conf;
       }
     
     return update_applied_models(subj);    

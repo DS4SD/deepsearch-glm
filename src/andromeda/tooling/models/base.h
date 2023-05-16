@@ -30,13 +30,16 @@ namespace andromeda
     bool satisfies_dependencies(subject_type& subj);
 
     template<typename subject_type>
+    static bool satisfies_dependencies(subject_type& subj, const std::set<model_name>& deps);
+
+    template<typename subject_type>
     bool update_applied_models(subject_type& subj);
 
     virtual bool match(std::string& text, nlohmann::json& annot) { return false; }
     virtual bool apply(std::string& text, nlohmann::json& annots) { return false; }
 
     virtual bool apply(subject<PARAGRAPH>& subj) = 0;// { return false; }
-    virtual bool apply(subject<TABLE>& subj) { return false; }
+    virtual bool apply(subject<TABLE>& subj) = 0;//{ return false; }
 
     virtual bool apply(subject<DOCUMENT>& subj);
 
@@ -54,20 +57,36 @@ namespace andromeda
   template<typename subject_type>
   bool base_nlp_model::satisfies_dependencies(subject_type& subj)
   {
+    /*
     bool result=true;
     for(auto dep:get_dependencies())
       {
         if(subj.applied_models.count(to_key(dep))==0)
           {
-            //LOG_S(WARNING) << "model-dependency " << to_key(dep)
-            //<< " is not satisfied for " << this->get_key();
+            result = false;
+          }
+      }
+
+    return result;
+    */
+    return satisfies_dependencies(subj, get_dependencies());
+  }
+
+  template<typename subject_type>
+  bool base_nlp_model::satisfies_dependencies(subject_type& subj, const std::set<model_name>& deps)
+  {
+    bool result=true;
+    for(auto dep:deps)
+      {
+        if(subj.applied_models.count(to_key(dep))==0)
+          {
             result = false;
           }
       }
 
     return result;
   }
-
+  
   template<typename subject_type>
   bool base_nlp_model::update_applied_models(subject_type& subj)
   {
@@ -82,11 +101,13 @@ namespace andromeda
         return false;
       }
 
+    LOG_S(INFO) << "apply " << get_key() << " on document: " << subj.doc_name;
+    
     for(subject<PARAGRAPH>& paragraph:subj.paragraphs)
       {
         this->apply(paragraph);
       }
-
+    
     for(subject<TABLE>& table:subj.tables)
       {
         this->apply(table);

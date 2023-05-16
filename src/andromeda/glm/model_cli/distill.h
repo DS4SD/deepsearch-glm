@@ -63,12 +63,12 @@ namespace andromeda
       }
 
       {
-	auto item = model_op<SAVE, model_type>::to_config();
+	auto item = model_op<SAVE>::to_config();
 	config.merge_patch(item);
       }
       
       {
-	auto item = model_op<LOAD, model_type>::to_config();
+	auto item = model_op<LOAD>::to_config();
 	config.merge_patch(item);
       }    
       

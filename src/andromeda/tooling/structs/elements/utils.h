@@ -5,21 +5,7 @@
 
 namespace andromeda
 {
-  void show_list(std::vector<list_element>& data,
-		 std::stringstream& ss)
-  {
-    std::vector<std::string> grid;
-    
-    for(auto& item:data)
-      {
-	grid.push_back(item.text);
-      }
-
-    utils::show_list(grid, ss, 70);
-  }
-  
-  void show_table(std::vector<std::vector<table_element> >& data,
-		  std::stringstream& ss)
+  void show_table(std::vector<std::vector<table_element> >& data, std::stringstream& ss)
   {
     std::vector<std::vector<std::string> > grid;
     

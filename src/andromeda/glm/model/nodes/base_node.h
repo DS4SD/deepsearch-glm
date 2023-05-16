@@ -52,8 +52,8 @@ namespace andromeda
       hash_type get_hash() const { return hash; };
       flvr_type get_flvr() const { return flvr; };
 
-      std::string get_name() const { return node_names::to_name.at(flvr); };
-
+      std::string get_name() const { return node_names::to_name(flvr); };
+      
       cnt_type count() const { return word_cnt; }
       ind_type length() const { return (nodes_ptr==NULL? 1: nodes_ptr->size()); }
 
@@ -78,10 +78,10 @@ namespace andromeda
       std::string get_text(nodes_type& nodes, bool connected) const;
 
       template<typename nodes_type>
-      void get_token_path(nodes_type& nodes_coll, std::vector<hash_type>& path) const;
+      std::size_t get_token_path(nodes_type& nodes, std::vector<hash_type>& path) const;
 
       template<typename nodes_type>
-      std::string get_token_text(nodes_type& nodes_coll, std::vector<hash_type>& path) const;
+      std::string get_token_text(nodes_type& nodes, std::vector<hash_type>& path) const;
       
       void clear();
       
@@ -230,7 +230,7 @@ namespace andromeda
             case node_names::SYNTX:	      
             case node_names::LABEL:
               {
-                std::string item = "__"+node_names::to_name.at(flvr)+"_"+*text_ptr.get()+"__";
+                std::string item = "__"+node_names::to_name(flvr)+"_"+*text_ptr.get()+"__";
                 hash = utils::to_hash(item);
               }
               break;
@@ -310,8 +310,10 @@ namespace andromeda
     }
 
     template<typename nodes_type>
-    void base_node::get_token_path(nodes_type& nodes_coll, std::vector<hash_type>& path) const
+    std::size_t base_node::get_token_path(nodes_type& nodes, std::vector<hash_type>& path) const
     {
+      path.clear();
+      
       switch(flvr)
 	{
 	case node_names::TOKEN:
@@ -328,16 +330,22 @@ namespace andromeda
 	  {
 	    if(nodes_ptr==NULL)
 	      {
-		LOG_S(WARNING) << "nodes is NULL for " << node_names::to_name.at(flvr);
-		return;
+		LOG_S(WARNING) << "nodes is NULL for " << node_names::to_name(flvr);
+		return 0;
 	      }
 	    
 	    for(hash_type hash:*nodes_ptr.get())
 	      {
 		base_node node;
-		if(nodes_coll.get(hash, node))
+		if(nodes.get(hash, node))
 		  {
-		    node.get_token_path(nodes_coll, path);
+		    std::vector<hash_type> new_path={};
+		    node.get_token_path(nodes, new_path);
+
+		    for(auto hash:new_path)
+		      {
+			path.push_back(hash);
+		      }
 		  }
 	      }
 	  }
@@ -353,68 +361,31 @@ namespace andromeda
 	default:
 	  {}
 	}
+
+      return path.size();
     }
 
     template<typename nodes_type>
-    std::string base_node::get_token_text(nodes_type& nodes_coll, std::vector<hash_type>& path) const
+    std::string base_node::get_token_text(nodes_type& nodes, std::vector<hash_type>& path) const
     {
+      get_token_path(nodes, path);      
+      
       std::stringstream ss;
-
-      for(auto thash:path)
+      for(std::size_t l=0; l<path.size(); l++)
 	{
+	  std::string conn = (l+1==path.size()? "":" ");
+	  
 	  base_node node;
-	  if(nodes_coll.get(thash, node))
+	  if(nodes.get(path.at(l), node))
 	    {
 	      std::string token = node.get_text();
-	      ss << token;
+	      ss << token << conn;
 	    }
 	}
 
       return ss.str();
     }
 
-    /*
-    template<typename nodes_type>
-    std::string base_node::get_text(nodes_type& nodes_coll) const
-    {
-      if(text!=NULL)
-        {
-          std::string res = *text.get();
-          return res;
-        }
-      else if(nodes!=NULL)
-        {
-          std::vector<hash_type> path = *nodes.get();
-
-          std::stringstream ss;
-          for(hash_type phash:path)
-            {
-	      base_node other;			
-              if(nodes_coll.get(phash, other))
-                {
-                  ss << other.get_text(nodes_coll) << " ";
-                }
-              else
-                {
-                  ss << "__unknown__" << " ";
-                }
-            }
-
-          std::string res = ss.str();
-          res.pop_back(); // remove trailing space;
-
-          return res;
-        }
-      else
-        {
-          LOG_S(ERROR) << __FILE__ << ":" << __LINE__ << " "
-                       << "both text and nodes are NULL: can not resolve text!";
-
-          return "__NULL__";
-        }
-    }
-    */
-    
     template<typename nodes_type>
     std::string base_node::get_text(nodes_type& nodes_coll, bool connected) const
     {
@@ -502,7 +473,7 @@ namespace andromeda
       {
         data[hash_lbl] = hash;
         data[flvr_lbl] = flvr;
-        data[name_lbl] = node_names::to_name.at(flvr);
+        data[name_lbl] = node_names::to_name(flvr);
 
         data[text_lbl] = nlohmann::json::value_t::null;
         if(text_ptr!=NULL)
@@ -594,7 +565,7 @@ namespace andromeda
       {
 	row.push_back(hash);
 	row.push_back(flvr);
-        row.push_back(node_names::to_name.at(flvr));
+        row.push_back(node_names::to_name(flvr));
 
 	row.push_back(word_cnt);
 	row.push_back(sent_cnt);
@@ -625,7 +596,7 @@ namespace andromeda
       {
 	row.push_back(hash);
 	row.push_back(flvr);
-        row.push_back(node_names::to_name.at(flvr));
+        row.push_back(node_names::to_name(flvr));
 
 	row.push_back(word_cnt);
 	row.push_back(sent_cnt);

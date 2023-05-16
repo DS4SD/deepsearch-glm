@@ -34,11 +34,14 @@ def parse_arguments():
     parser = argparse.ArgumentParser(
         prog = 'CRF-reference data processor',
         description = 'Prepare CRF data for CRF-reference parser',
-        epilog = 'python ./nlp_train/crf_reference.py -m all -d <directory-of-pdf> -u <username of DS> -p <API-key of DS>')
+        epilog = 'python ./nlp/crf_reference.py -m all -d <directory-of-pdfs> -t <target-dir> -u <username of DS> -p <API-key of DS>')
 
-    parser.add_argument('-m', '--mode', required=False, default="all", help="parse: [convert,extract,annotate,prepare,all]")
-    parser.add_argument('-d', '--source-directory', required=False, help="directory with pdfs")
-    parser.add_argument('-t', '--target-directory', required=False, default="nlp_data", help="directory for target files")
+    parser.add_argument('-m', '--mode', required=False, default="all",
+                        help="parse: [convert,extract,annotate,prepare,all]")
+    parser.add_argument('-d', '--source-directory', required=False, default="data/documents/articles",
+                        help="directory with pdfs")
+    parser.add_argument('-t', '--target-directory', required=False, default="data/models/",
+                        help="directory for target files")
     parser.add_argument('-u', '--username', required=False, help="username or email from DS host")
     parser.add_argument('-p', '--password', required=False, help="API-key from DS host")
 

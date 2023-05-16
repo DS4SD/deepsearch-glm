@@ -280,7 +280,7 @@ namespace andromeda
         {
           if(nodes.get(qnode.hash, node))
             {
-              std::vector<std::string> row = { "node", node_names::to_name.at(node.get_flvr()),
+              std::vector<std::string> row = { "node", node_names::to_name(node.get_flvr()),
                                                std::to_string(qnode.count),
                                                std::to_string(utils::round_value(qnode.weight)),
                                                std::to_string(utils::round_value(qnode.prob)),

@@ -7,28 +7,38 @@ namespace andromeda
 {
   namespace glm
   {
-    template<typename model_type>
-    class model_op<SAVE, model_type>: public io_base
+    template<>
+    class model_op<SAVE>: public io_base
     {
-      //typedef typename model_type::hash_type hash_type;
-      //typedef typename model_type::ind_type ind_type;
-
     public:
 
-      model_op(std::shared_ptr<model_type> model);
+      model_op();
       ~model_op();
 
       static nlohmann::json to_config();
 
       bool from_config(nlohmann::json& config);
 
-      bool save(std::filesystem::path path);
+      template<typename model_type>
+      bool save(std::shared_ptr<model_type> model_ptr);
 
+      template<typename model_type>
+      bool save(std::filesystem::path path,
+		std::shared_ptr<model_type> model_ptr);
+      
     private:
 
-      bool to_csv(std::filesystem::path path);
+      template<typename model_type>
+      bool to_bin(std::filesystem::path path,
+		  std::shared_ptr<model_type> model_ptr);
 
-      bool to_json(std::filesystem::path path);
+      template<typename model_type>
+      bool to_csv(std::filesystem::path path,
+		  std::shared_ptr<model_type> model_ptr);
+
+      template<typename model_type>
+      bool to_json(std::filesystem::path path,
+		   std::shared_ptr<model_type> model_ptr);
 
     private:
 
@@ -36,11 +46,9 @@ namespace andromeda
       bool save_resolved_text;
 
       std::filesystem::path model_path;
-      std::shared_ptr<model_type> model;
     };
 
-    template<typename model_type>
-    model_op<SAVE, model_type>::model_op(std::shared_ptr<model_type> model):
+    model_op<SAVE>::model_op():
       io_base(),
 
       save_to_json(false),
@@ -48,16 +56,13 @@ namespace andromeda
 
       save_resolved_text(true),
 
-      model_path(),
-      model(model)
+      model_path()
     {}
 
-    template<typename model_type>
-    model_op<SAVE, model_type>::~model_op()
+    model_op<SAVE>::~model_op()
     {}
 
-    template<typename model_type>
-    nlohmann::json model_op<SAVE, model_type>::to_config()
+    nlohmann::json model_op<SAVE>::to_config()
     {
       nlohmann::json config = nlohmann::json::object({});
       {
@@ -75,8 +80,7 @@ namespace andromeda
       return config;
     }
 
-    template<typename model_type>
-    bool model_op<SAVE, model_type>::from_config(nlohmann::json& config)
+    bool model_op<SAVE>::from_config(nlohmann::json& config)
     {
       bool result=false;
 
@@ -99,8 +103,6 @@ namespace andromeda
           save_to_csv = save.value(io_base::write_csv_lbl, save_to_csv);
 
           save_resolved_text = save.value(io_base::save_rtext_lbl, save_resolved_text);
-
-          result = this->save(model_path);
         }
       else
         {
@@ -112,7 +114,33 @@ namespace andromeda
     }
 
     template<typename model_type>
-    bool model_op<SAVE, model_type>::save(std::filesystem::path path)
+    bool model_op<SAVE>::save(std::shared_ptr<model_type> model_ptr)
+    {
+      bool result = this->to_bin(model_path, model_ptr);
+
+      if(save_to_json)
+        {
+          to_json(model_path, model_ptr);
+        }
+
+      if(save_to_csv)
+        {
+          to_csv(model_path, model_ptr);
+        }
+
+      return result;
+    }
+
+    template<typename model_type>
+    bool model_op<SAVE>::save(std::filesystem::path path,
+			      std::shared_ptr<model_type> model_ptr)
+    {
+      return this->to_bin(model_path, model_ptr);
+    }
+    
+    template<typename model_type>
+    bool model_op<SAVE>::to_bin(std::filesystem::path path,
+				std::shared_ptr<model_type> model_ptr)
     {
       LOG_S(INFO) << "writing started ...";
 
@@ -122,7 +150,7 @@ namespace andromeda
         }
 
       {
-        auto& param = model->get_parameters();
+        auto& param = model_ptr->get_parameters();
 
         LOG_S(INFO) << "writing " << param_file.string();
         std::ofstream ofs(param_file.c_str());
@@ -132,7 +160,7 @@ namespace andromeda
       }
 
       {
-        auto& topology = model->get_topology();
+        auto& topology = model_ptr->get_topology();
 
         LOG_S(INFO) << "writing " << topo_file.string();
         std::ofstream ofs_a(topo_file.c_str());
@@ -147,12 +175,14 @@ namespace andromeda
       }
 
       {
-        auto& nodes = model->get_nodes();
+        auto& nodes = model_ptr->get_nodes();
 
+	nodes.sort();
+	
         LOG_S(INFO) << "writing " << nodes_file.string();
         std::ofstream ofs(nodes_file.c_str(), std::ios::binary);
 
-        std::size_t tot=nodes.size();
+        std::size_t tot = nodes.size();
         ofs.write((char*)&tot, sizeof(tot));
 
         std::size_t cnt=0;
@@ -165,11 +195,15 @@ namespace andromeda
               }
           }
 
+	if(cnt!=tot)
+	  {
+	    LOG_S(ERROR) << "node-size: " << tot << " versus counted size: " << cnt;
+	  }	
         assert(cnt==tot);
       }
 
       {
-        auto& edges = model->get_edges();
+        auto& edges = model_ptr->get_edges();
 
         LOG_S(INFO) << "writing " << edges_file.string();
         std::ofstream ofs(edges_file.c_str(), std::ios::binary);
@@ -201,21 +235,12 @@ namespace andromeda
           }
       }
 
-      if(save_to_json)
-        {
-          to_json(path);
-        }
-
-      if(save_to_csv)
-        {
-          to_csv(path);
-        }
-
       return true;
     }
 
     template<typename model_type>
-    bool model_op<SAVE, model_type>::to_json(std::filesystem::path path)
+    bool model_op<SAVE>::to_json(std::filesystem::path path,
+				 std::shared_ptr<model_type> model_ptr)
     {
       LOG_S(INFO) << "writing JSON started ...";
 
@@ -225,7 +250,7 @@ namespace andromeda
         }
 
       {
-        auto& nodes = model->get_nodes();
+        auto& nodes = model_ptr->get_nodes();
 
         LOG_S(INFO) << "writing " << nodes_file_json.string();
         std::ofstream ofs(nodes_file_json.c_str());
@@ -252,7 +277,8 @@ namespace andromeda
     }
 
     template<typename model_type>
-    bool model_op<SAVE, model_type>::to_csv(std::filesystem::path path)
+    bool model_op<SAVE>::to_csv(std::filesystem::path path,
+				std::shared_ptr<model_type> model_ptr)
     {
       LOG_S(INFO) << "writing CSV started ...";
 
@@ -261,11 +287,8 @@ namespace andromeda
           return false;
         }
 
-      //ind_type ind=0;
-      //std::unordered_map<hash_type, ind_type> to_index={};
-
       {
-        auto& nodes = model->get_nodes();
+        auto& nodes = model_ptr->get_nodes();
         LOG_S(INFO) << "writing " << nodes_file_csv.string();
 
         std::ofstream ofs(nodes_file_csv.c_str());
@@ -294,50 +317,10 @@ namespace andromeda
 		  }
 	      }
 	  }
-	
-	/*
-        ofs << "hash" << ","
-            << "flavor" << ","
-            << "word-count" << ","
-            << "sent-count" << ","
-            << "text-count" << ","
-          //<< "tags" << ","
-            << "text" << "\n";
-
-        for(auto itr=nodes.begin(); itr!=nodes.end(); itr++)
-          {
-            if(itr->first==node_names::TOKEN or
-               itr->first==node_names::CONT or
-               itr->first==node_names::CONN or
-               itr->first==node_names::VERB or
-               itr->first==node_names::TERM)
-              {
-                for(auto& node:itr->second)
-                  {
-                    std::string text = node.get_text(nodes);
-
-                    if(text.find("\"")!=std::string::npos)
-                      {
-                        text = utils::replace(text, "\"", "'");
-                      }
-
-                    to_index[node.get_hash()] = ind++;
-
-                    ofs << node.get_hash() << ","
-                        << node_names::to_name.at(node.get_flvr()) << ","
-                        << node.get_word_cnt() << ","
-                        << node.get_sent_cnt() << ","
-                        << node.get_text_cnt() << ","
-                      //<< "\"" << utils::to_string(itr->tags) << "\","
-                        << "\"" << text << "\"\n";
-                  }
-              }
-          }
-	*/
       }
 
       {
-        auto& edges = model->get_edges();
+        auto& edges = model_ptr->get_edges();
         LOG_S(INFO) << "writing " << edges_file_csv.string();
 
         std::ofstream ofs(edges_file_csv.c_str());
@@ -365,7 +348,7 @@ namespace andromeda
 		//}
 
                 ofs << edge.get_flvr() << ","
-                    << edge_names::to_string(edge.get_flvr()) << ","
+                    << edge_names::to_name(edge.get_flvr()) << ","
                     << std::fixed
                     << edge.get_hash_i() << ","
                     << edge.get_hash_j() << ","

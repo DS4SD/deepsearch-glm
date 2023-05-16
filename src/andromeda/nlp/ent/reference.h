@@ -26,6 +26,7 @@ namespace andromeda
     virtual model_name get_name() { return REFERENCE; }
 
     virtual bool apply(subject<PARAGRAPH>& subj);
+    virtual bool apply(subject<TABLE>& subj) { return false; }
     virtual bool apply(subject<DOCUMENT>& subj);
     
   private:

@@ -73,7 +73,9 @@ namespace andromeda
 
       static inline std::map<std::string, hash_type> to_hash = {};
 
-      static inline std::map<flvr_type, std::string> to_name =
+    private:
+      
+      static inline std::map<flvr_type, std::string> to_name_map =
         {
 	 { TOKEN, "token"},
 	 { SYNTX, "syntax"},
@@ -96,9 +98,26 @@ namespace andromeda
 	 { BOOK, "book"	} 
         };
 
+    public:
+
+      static typename std::map<flvr_type, std::string>::iterator begin()
+      {
+	return to_name_map.begin();
+      }
+
+      static typename std::map<flvr_type, std::string>::iterator end()
+      {
+	return to_name_map.end();
+      }      
+
+      static std::string to_name(flvr_type flvr)
+      {
+	return to_name_map.at(flvr);
+      }
+      
       static flvr_type to_flavor(std::string name)
       {
-	for(auto itr=to_name.begin(); itr!=to_name.end(); itr++)
+	for(auto itr=begin(); itr!=end(); itr++)
 	  {
 	    if(itr->second==name)
 	      {
@@ -115,7 +134,7 @@ namespace andromeda
 	std::vector<flvr_type> result={};
 	for(auto name:names)
 	  {
-	    for(auto itr=to_name.begin(); itr!=to_name.end(); itr++)
+	    for(auto itr=begin(); itr!=end(); itr++)
 	      {
 		if(itr->second==name)
 		  {
@@ -132,7 +151,7 @@ namespace andromeda
 	std::set<flvr_type> result={};
 	for(auto name:names)
 	  {
-	    for(auto itr=to_name.begin(); itr!=to_name.end(); itr++)
+	    for(auto itr=begin(); itr!=end(); itr++)
 	      {
 		if(itr->second==name)
 		  {

@@ -1,5 +1,6 @@
 //-*-C++-*-
 
+/*
 #ifndef ANDROMEDA_SUBJECTS_LIST_ELEMENT_H_
 #define ANDROMEDA_SUBJECTS_LIST_ELEMENT_H_
 
@@ -29,3 +30,4 @@ namespace andromeda
 }
 
 #endif
+*/

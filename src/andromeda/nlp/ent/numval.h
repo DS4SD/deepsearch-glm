@@ -21,7 +21,7 @@ namespace andromeda
     virtual model_name get_name() { return NUMVAL; }
 
     virtual bool apply(subject<PARAGRAPH>& subj);
-    virtual bool apply(subject<TABLE>& subj) { return false; }
+    virtual bool apply(subject<TABLE>& subj);
     
   private:
     
@@ -186,7 +186,68 @@ namespace andromeda
 
     return update_applied_models(subj);
   }
+  
+  bool nlp_model<ENT, NUMVAL>::apply(subject<TABLE>& subj)
+  {
+    //LOG_S(INFO) << "starting numval ...";
+    
+    if(not satisfies_dependencies(subj))
+      {
+	return false;
+      }
 
+    //subj.show();
+
+    for(std::size_t i=0; i<subj.num_rows(); i++)
+      {
+	for(std::size_t j=0; j<subj.num_cols(); j++)
+	  {	    
+	    std::string text = subj(i,j).text;
+
+	    if(text.size()==0)
+	      {
+		continue;
+	      }
+	    
+	    for(auto& expr:exprs)
+	      {
+		std::vector<pcre2_item> items;
+		expr.find_all(text, items);
+		
+		for(auto& item:items)
+		  {
+		    //LOG_S(INFO) << item.to_json().dump();
+		    
+		    for(auto& grp:item.groups)
+		      {
+			if(grp.group_name=="value")
+			  {
+			    // NOTE: in future, we might need to have individual post-processing
+			    // to determine the range.
+			    auto char_range = grp.rng;
+
+			    auto ctok_range = subj(i,j).get_char_token_range(char_range);
+			    auto wtok_range = subj(i,j).get_word_token_range(char_range);
+			    
+			    std::string orig = subj(i,j).from_char_range(char_range);
+			    std::string name = subj(i,j).from_ctok_range(ctok_range);
+			    
+			    subj.entities.emplace_back(NUMVAL, expr.get_subtype(),
+						       name, orig, 
+						       subj(i,j).get_coor(), subj(i,j).get_span(),
+						       char_range, ctok_range, wtok_range);
+			    
+			    utils::mask(text, item.rng);
+			  }
+		      }
+		  }
+	      }
+	  }
+      }
+    
+    return update_applied_models(subj);	    
+  }
+  
 }
 
 #endif

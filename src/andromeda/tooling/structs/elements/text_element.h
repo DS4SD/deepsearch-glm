@@ -14,7 +14,6 @@ namespace andromeda
     typedef typename word_token::index_type index_type;
     typedef typename word_token::range_type range_type;
     
-    //typedef std::tuple<std::size_t, std::size_t, std::string> candidate_type;
     typedef std::tuple<index_type, index_type, std::string> candidate_type;
 
   public:
@@ -25,7 +24,6 @@ namespace andromeda
   public:
 
     text_element();
-    //text_element(std::string line);
 
     bool is_valid();
     
@@ -143,7 +141,8 @@ namespace andromeda
     clear();
 
     orig = utils::strip(ctext);
-
+    text = orig;
+    
     if(orig.size()==0)
       {
         return false;

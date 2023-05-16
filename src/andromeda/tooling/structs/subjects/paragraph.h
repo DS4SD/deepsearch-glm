@@ -6,17 +6,22 @@
 namespace andromeda
 {
   template<>
-  class subject<PARAGRAPH>: public text_element
+  class subject<PARAGRAPH>: public provenance,
+			    public text_element
   {
   public:
 
     subject();
+    subject(uint64_t dhash,
+	    uint64_t index);
+    
     ~subject();
 
     void clear();
 
     bool set_text(const std::string& ctext);
-
+    bool set_data(const nlohmann::json& item);
+    
     bool set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
 		    std::shared_ptr<utils::text_normaliser> text_normaliser);
     
@@ -53,7 +58,7 @@ namespace andromeda
     uint64_t dhash;
     uint64_t index;
     
-    std::set<std::string> applied_models;
+    std::set<std::string> applied_models, labels;
 
     std::vector<base_property> properties;
     std::vector<base_entity> entities;
@@ -65,12 +70,27 @@ namespace andromeda
     index(-1),
     
     applied_models(),
-
+    labels(),
+    
     properties({}),
     entities({}),
     relations({})
   {}
 
+  subject<PARAGRAPH>::subject(uint64_t dhash,
+			      uint64_t index):
+    dhash(dhash),
+    index(index),
+    
+    applied_models(),
+    labels(),
+    
+    properties({}),
+    entities({}),
+    relations({})
+  {}
+
+  
   subject<PARAGRAPH>::~subject()
   {}
 
@@ -79,7 +99,8 @@ namespace andromeda
     text_element::clear();
 
     applied_models.clear();
-
+    labels.clear();
+      
     properties.clear();
     entities.clear();
     relations.clear();
@@ -90,6 +111,38 @@ namespace andromeda
     clear();
     
     return text_element::set_text(ctext);
+  }
+
+  bool subject<PARAGRAPH>::set_data(const nlohmann::json& item)
+  {    
+    if(item.count("text"))
+      {
+	std::string ctext = item["text"].get<std::string>();
+	set_text(ctext);
+      }
+    else
+      {
+	return false;
+      }
+
+    if(item.count("type"))
+      {
+	std::string label = item["type"].get<std::string>();
+	labels.insert(label);
+      }
+
+    if(item.count("name"))
+      {
+	std::string label = item["name"].get<std::string>();
+	labels.insert(label);
+      }    
+    
+    if(item.count("prov"))
+      {
+	provenance::set(item["prov"]);
+      }
+
+    return true;
   }
 
   bool subject<PARAGRAPH>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
@@ -303,9 +356,27 @@ namespace andromeda
   {
     std::stringstream ss;
 
+    if(provenance::elements.size()>0)
+      {
+	ss << "prov: "
+	   << provenance::elements.at(0).page << ", "
+	   << " ["
+	   << provenance::elements.at(0).bbox[0] << ", "
+	   << provenance::elements.at(0).bbox[1] << ", "
+	   << provenance::elements.at(0).bbox[2] << ", "
+	   << provenance::elements.at(0).bbox[3]
+	   << "]";
+      }
+    
     if(txt)
       {
         ss << "\ntext: ";
+        for(auto label:labels)
+          {
+            ss << label << ", ";
+          }
+        ss << "[done]\n";
+	
         utils::show_string(text, ss, 6);
       }
 

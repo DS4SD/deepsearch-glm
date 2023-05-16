@@ -40,10 +40,8 @@ namespace andromeda
     
   private:
 
-    const static std::set<model_name> dependencies;
+    const static inline std::set<model_name> dependencies = {};
   };
-
-  const std::set<model_name> nlp_model<CLS, LANGUAGE>::dependencies = {};
 
   nlp_model<CLS, LANGUAGE>::nlp_model():
     fasttext_supervised_model()
@@ -92,8 +90,15 @@ namespace andromeda
       {
 	return false;
       }
+
+    bool classified = (subj.applied_models.count(get_key())>0);
     
-    return fasttext_supervised_model::classify(subj);
+    if(not classified)
+      {
+	classified = fasttext_supervised_model::classify(subj);	
+      }
+    
+    return classified;    
   }
 
   bool nlp_model<CLS, LANGUAGE>::apply(subject<TABLE>& subj)
@@ -103,9 +108,16 @@ namespace andromeda
 	return false;
       }
     
-    return fasttext_supervised_model::classify(subj);
+    bool classified = (subj.applied_models.count(get_key())>0);
+    
+    if(not classified)
+      {
+	classified = fasttext_supervised_model::classify(subj);	
+      }
+    
+    return classified;        
   }
-
+  
   bool nlp_model<CLS, LANGUAGE>::apply(subject<DOCUMENT>& subj)
   {
     if(not satisfies_dependencies(subj))

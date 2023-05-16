@@ -7,9 +7,11 @@ namespace andromeda
 {
   namespace glm
   {
-    template<typename model_type>
-    class model_op<LOAD, model_type>: public io_base
+    template<>
+    class model_op<LOAD>: public io_base
     {
+      typedef andromeda::glm::model model_type;
+      
       typedef typename model_type::nodes_type nodes_type;
       typedef typename model_type::edges_type edges_type;
 
@@ -18,33 +20,46 @@ namespace andromeda
 
     public:
 
-      model_op(std::shared_ptr<model_type> model);
+      model_op();
       ~model_op();
 
       static nlohmann::json to_config();
 
       bool from_config(nlohmann::json& config);
 
-      bool load(std::filesystem::path path);
+      void set_incremental(bool incr);
+
+      bool load(std::shared_ptr<model_type> model_ptr);
+      
+      bool load(std::filesystem::path path,
+		std::shared_ptr<model_type> model_ptr);
 
     private:
 
       std::filesystem::path model_path;
-      std::shared_ptr<model_type> model;
+      
+
+      bool read_nodes_incremental;
+      bool read_edges_incremental;
     };
 
-    template<typename model_type>
-    model_op<LOAD, model_type>::model_op(std::shared_ptr<model_type> model):
+    model_op<LOAD>::model_op():
       model_path(),
-      model(model)
+
+      read_nodes_incremental(false),
+      read_edges_incremental(false)    
     {}
 
-    template<typename model_type>
-    model_op<LOAD, model_type>::~model_op()
+    model_op<LOAD>::~model_op()
     {}
 
-    template<typename model_type>
-    nlohmann::json model_op<LOAD, model_type>::to_config()
+    void model_op<LOAD>::set_incremental(bool incr)
+    {
+      read_nodes_incremental = incr;
+      read_edges_incremental = incr;
+    }
+    
+    nlohmann::json model_op<LOAD>::to_config()
     {
       nlohmann::json config = nlohmann::json::object({});
       {
@@ -57,8 +72,7 @@ namespace andromeda
       return config;
     }
 
-    template<typename model_type>
-    bool model_op<LOAD, model_type>::from_config(nlohmann::json& config)
+    bool model_op<LOAD>::from_config(nlohmann::json& config)
     {
       bool result=false;
 
@@ -77,8 +91,7 @@ namespace andromeda
               LOG_S(ERROR) << "path to model does not exists: " << model_path;
               return false;
             }
-
-          result = this->load(model_path);
+          //result = this->load(model_path);
         }
       else
         {
@@ -89,8 +102,13 @@ namespace andromeda
       return result;
     }
 
-    template<typename model_type>
-    bool model_op<LOAD, model_type>::load(std::filesystem::path path)
+
+    bool model_op<LOAD>::load(std::shared_ptr<model_type> model_ptr)
+    {
+      return this->load(model_path, model_ptr);
+    }
+    
+    bool model_op<LOAD>::load(std::filesystem::path path, std::shared_ptr<model_type> model_ptr)
     {
       LOG_S(INFO) << "reading started ...";
 
@@ -100,7 +118,7 @@ namespace andromeda
         }
 
       {
-        auto& param = model->get_parameters();
+        auto& param = model_ptr->get_parameters();
         param.clear();
 
         LOG_S(INFO) << "reading " << param_file.string();
@@ -113,7 +131,7 @@ namespace andromeda
       }
 
       {
-        auto& topology = model->get_topology();
+        auto& topology = model_ptr->get_topology();
         topology.clear();
 
         LOG_S(INFO) << "reading " << topo_file.string();
@@ -126,16 +144,20 @@ namespace andromeda
       }
 
       {
-        auto& nodes = model->get_nodes();
-        nodes.initialise();
+        auto& nodes = model_ptr->get_nodes();
 
+	if(not read_nodes_incremental)
+	  {
+	    nodes.clear();
+	  }
+	
         LOG_S(INFO) << "reading " << nodes_file.string();
         std::ifstream ifs(nodes_file.c_str(), std::ios::binary);
 	
         std::size_t N=0;
         ifs.read((char*)&N, sizeof(N));
 
-	std::size_t D = N/1000;
+	std::size_t D = N/100;
 	
         LOG_S(INFO) << "  #-nodes: " << N << " => start reading ...";
         for(std::size_t i=0; i<N; i++)
@@ -148,16 +170,28 @@ namespace andromeda
 	    
             base_node node;
             ifs >> node;
-	    
-            nodes.push_back(node);
-          }
-	std::cout << "\n";
 
-	//nodes.sort();
+	    if(read_nodes_incremental)
+	      {
+		nodes.insert(node, false);		
+	      }
+	    else
+	      {
+		nodes.push_back(node);
+	      }
+	  }
+	std::cout << "\n";
       }
 
+      /*
       {
-        auto& edges = model->get_edges();
+	auto& nodes = model_ptr->get_nodes();
+	LOG_S(INFO) << "modes are consistent: " << (nodes.is_consistent()? "true":"false");
+      }
+      */
+      
+      {
+        auto& edges = model_ptr->get_edges();
         edges.clear();
 
         LOG_S(INFO) << "reading " << edges_file.string();
@@ -179,14 +213,11 @@ namespace andromeda
 	    ifs.read((char*)&sorted, sizeof(sorted));
 
 	    overview[flvr] = std::pair<std::size_t, bool>(K,sorted);
-	    //LOG_S(INFO) << "edge-flavor: " << std::setw(3) << flvr << " -> " << std::setw(9) << K
-	    //<< " (sorted: " << (sorted?"true":"false") << ")";
 	  }
 	
         std::size_t N=0;
 	
         ifs.read((char*)&N, sizeof(N));
-	edges.reserve((1.1*N));
 	
         LOG_S(INFO) << "  #-edges: " << N;
 	std::size_t D = N/1000;
@@ -202,22 +233,32 @@ namespace andromeda
 	    base_edge edge;
             ifs >> edge;
 
-	    edges.push_back(edge);
+	    //edges.push_back(edge, false);
+	    if(read_edges_incremental)
+	      {
+		edges.insert(edge, false);		
+	      }
+	    else
+	      {
+		edges.push_back(edge, read_edges_incremental);
+	      }	    
           }
 	std::cout << "\n";
 
+	//edges.init_hashmap();
+	
 	for(auto itr=overview.begin(); itr!=overview.end(); itr++)
-	  {	    
+	  {
+	    LOG_S(INFO) << "edge-flvr: " << itr->first << " -> "
+			<< (itr->second).first << ";" << (itr->second).second;
 	    edges.set_sorted(itr->first, (itr->second).second);
 	  }
-
-	//edges.sort();
       }
-     
+      
       {
         LOG_S(INFO) << "reading done!";
 
-        auto& topology = model->get_topology();
+        auto& topology = model_ptr->get_topology();
         topology.to_shell();
       }
 

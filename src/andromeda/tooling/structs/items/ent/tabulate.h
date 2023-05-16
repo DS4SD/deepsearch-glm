@@ -17,6 +17,75 @@ namespace andromeda
       }
   }
   
+  std::string tabulate(std::vector<base_entity>& entities)
+  {
+    std::sort(entities.begin(), entities.end(),
+	      [](const base_entity& lhs, const base_entity& rhs)
+	      {
+		if(lhs.coor[0]==rhs.coor[0])
+		  {
+		    if(lhs.coor[1]==rhs.coor[1])
+		      {		
+			if(lhs.char_range[0]==rhs.char_range[0])
+			  {
+			    return lhs.char_range[1]>rhs.char_range[1];
+			  }
+			else
+			  {
+			    return lhs.char_range[0]<rhs.char_range[0];
+			  }
+		      }
+		    else
+		      {
+			return lhs.coor[1]<rhs.coor[1];
+		      }
+		  }
+		else
+		  {
+		    return lhs.coor[0]<rhs.coor[0];
+		  }
+	      });
+
+    std::stringstream ss;
+    
+    std::vector<std::string> headers={};
+
+    if(entities.size()==0)
+      {
+	ss << "\nentities: " << entities.size() << "\n";
+	return ss.str();
+      }
+    else if(entities.at(0).subj_name==PARAGRAPH)
+      {
+	headers = base_entity::short_text_headers();
+      }
+    else if(entities.at(0).subj_name==TABLE)
+      {
+	headers = base_entity::short_table_headers();
+      }
+    else
+      {
+	headers = base_entity::headers();
+      }
+
+    std::vector<std::vector<std::string> > data={};
+
+    std::size_t col_width=32;
+    for(auto& ent:entities)
+      {
+	auto row = ent.to_row(col_width);
+	if(row.size()==headers.size())
+	  {
+	    data.push_back(ent.to_row(col_width));
+	  }
+      }
+    
+    ss << "\nentities: " << entities.size() << "\n"
+       << utils::to_string(headers, data);    
+    
+    return ss.str();
+  }
+
   std::string tabulate(std::string text, std::vector<base_entity>& entities)
   {
     std::sort(entities.begin(), entities.end(),
@@ -30,7 +99,7 @@ namespace andromeda
 		return lhs.char_range[0]<rhs.char_range[0];
 	      });
 
-    std::vector<std::string> header = base_entity::short_headers();
+    std::vector<std::string> header = base_entity::short_text_headers();
     std::vector<std::vector<std::string> > data={};
 
     //std::size_t col_width=64;
@@ -54,7 +123,7 @@ namespace andromeda
       }
     
     return ss.str();
-  }
+  }  
   
 }
 

@@ -11,7 +11,8 @@ namespace andromeda
       {
        UNDEF,
        CREATE_CONFIGS,
-       CREATE, DISTILL,
+       CREATE,
+       AUGMENT, DISTILL,
        QUERY, EXPLORE
       };
     
@@ -23,6 +24,7 @@ namespace andromeda
 	  case CREATE_CONFIGS: return "create-configs";
 
 	  case CREATE: return "create";
+	  case AUGMENT: return "augment";
 	  case DISTILL: return "distill";
 
 	  case QUERY: return "query";
@@ -40,6 +42,10 @@ namespace andromeda
 	{
 	  return CREATE;
 	}
+      else if(text==to_string(AUGMENT))
+	{
+	  return AUGMENT;
+	}      
       else if(text==to_string(DISTILL))
 	{
 	  return DISTILL;
@@ -57,15 +63,67 @@ namespace andromeda
 	  return UNDEF;
 	}
     }
+
+    template<model_cli_name name, typename model_type>
+    class config_cli
+    {};
     
     template<model_cli_name name, typename model_type>
     class model_cli
     {};
+
+    
+    template<typename model_type>
+    class base_config_cli
+    {
+    public:
+      
+      const static inline std::string MODE = "mode";
+      
+    protected:
+
+      base_config_cli(model_cli_name name, nlohmann::json configuration);
+
+      nlohmann::json to_config();
+      
+    protected:
+
+      model_cli_name name;
+
+      nlohmann::json configuration;
+    };
+
+    template<typename model_type>
+    base_config_cli<model_type>::base_config_cli(model_cli_name name,
+						 nlohmann::json configuration):
+      name(name),
+      configuration(configuration)
+    {}
+    
+    template<typename model_type>
+    nlohmann::json base_config_cli<model_type>::to_config()
+    {
+      nlohmann::json config = nlohmann::json::object({});
+      config[MODE] = to_string(name);
+
+      {
+	nlohmann::json item = model_op<SAVE>::to_config();
+	config.merge_patch(item);
+      }
+      
+      {
+	nlohmann::json item = model_op<LOAD>::to_config();
+	config.merge_patch(item);
+      }
+
+      return config;
+    }
     
   }
   
 }
 
+#include <andromeda/glm/model_cli/augment.h>
 #include <andromeda/glm/model_cli/create.h>
 #include <andromeda/glm/model_cli/distill.h>
 

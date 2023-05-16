@@ -22,10 +22,8 @@ namespace andromeda
     virtual model_name get_name() { return TERM; }
 
     virtual bool apply(subject<PARAGRAPH>& subj);
-    virtual bool apply(subject<TABLE>& subj) { return false; }
-
-    //virtual bool apply(subject<WEBDOC>& subj) { return false; }
-
+    virtual bool apply(subject<TABLE>& subj);
+    
   private:
 
     std::vector<pcre2_expr> enum_exprs;
@@ -102,17 +100,20 @@ namespace andromeda
     }        
     
     {
-      single_exprs.emplace_back(this->get_key(), "single-term", R"(((JJ|NN)(S|P|PS)?\{(\d+)\})+(NN(S|P|PS)?\{(\d+)\}))");
+      single_exprs.emplace_back(this->get_key(), "single-term",
+				R"(((JJ|NN)(S|P|PS)?\{(\d+)\})+(NN(S|P|PS)?\{(\d+)\}))");
     }
 
     /*
     {
-      exprs.emplace_back(this->get_key(), "single-term", R"(((VBG|JJ|NN)(S|P)?\{(\d+)\})+(NN(S|P)?\{(\d+)\}))");
+      exprs.emplace_back(this->get_key(), "single-term", 
+      R"(((VBG|JJ|NN)(S|P)?\{(\d+)\})+(NN(S|P)?\{(\d+)\}))");
     }
     */
     
     {
-      single_exprs.emplace_back(this->get_key(), "single-term", R"((NN(P|S|PS)?\{(\d+)\})+)");
+      single_exprs.emplace_back(this->get_key(), "single-term",
+				R"((NN(P|S|PS)?\{(\d+)\})+)");
     }
   }
 
@@ -121,7 +122,7 @@ namespace andromeda
 
   bool nlp_model<ENT, TERM>::apply(subject<PARAGRAPH>& subj)
   {
-    if(not satisfies_dependencies(subj))
+    if(not satisfies_dependencies(subj, text_dependencies))
       {
 	return false;
       }
@@ -145,6 +146,37 @@ namespace andromeda
     return update_applied_models(subj);
   }
 
+  bool nlp_model<ENT, TERM>::apply(subject<TABLE>& subj)
+  {
+    if(not satisfies_dependencies(subj, table_dependencies))
+      {
+	return false;
+      }
+
+    for(std::size_t i=0; i<subj.num_rows(); i++)
+      {
+	for(std::size_t j=0; j<subj.num_cols(); j++)
+	  {	    
+	    if(subj(i,j).text.size()==0)
+	      {
+		continue;
+	      }
+
+	    std::vector<typename base_nlp_model::range_type> ranges_01={}, ranges_02={};
+	    //get_ranges(subj, ranges_01, ranges_02);
+	    
+	    std::vector<pcre2_item> single_chunks={};
+	    
+	    get_chunks(subj(i,j), single_exprs, single_chunks);	    
+
+	    add_entities(get_name(), subj, subj(i,j).get_coor(), subj(i,j).get_span(),
+			 ranges_01, ranges_02, single_chunks);
+	  }
+      }
+    
+    return update_applied_models(subj);
+  }
+  
 }
 
 #endif

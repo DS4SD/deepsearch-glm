@@ -194,7 +194,7 @@ namespace andromeda
 	    nlohmann::json data;
 	    ifs >> data;
 
-	    valid = subject.set_text(*path_itr, data);
+	    valid = subject.set_data(*path_itr, data);
 	  }
 
 	success = ((valid) and (path_itr!=path_end));

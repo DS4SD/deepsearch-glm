@@ -7,16 +7,10 @@ namespace andromeda
 {
   class base_relation
   {
-    const static inline std::vector<std::string> SHRT_HEADERS
-    = { "type", "conf",
-	"hash_i", "hash_j",
-	"ihash_i", "ihash_j",
-	"name_i", "name_j"};
-    
-    //const static inline std::vector<std::string> LONG_HEADERS
-    //= { "type", "conf",
-    //"doc_hash_i", "subj_i", "subj_i_ind", "hash_i", "flvr_i", "range_i", "coord_i", "name_i",
-    //	"doc_hash_j", "subj_j", "subj_j_ind", "hash_j", "flvr_j", "range_j", "coord_j", "name_j"};
+    const static inline std::vector<std::string> SHRT_HEADERS = { "flvr", "name", "conf",
+								  "hash_i", "hash_j",
+								  "ihash_i", "ihash_j",
+								  "name_i", "name_j"};
 
     typedef typename word_token::fval_type fval_type;
     typedef typename word_token::flvr_type flvr_type;
@@ -26,6 +20,8 @@ namespace andromeda
     typedef typename word_token::range_type range_type;
     typedef typename word_token::coord_type coord_type;
 
+    inline static std::mutex mtx;
+    
     inline static std::unordered_map<std::string, base_relation::flvr_type> to_flvr_map = {};
     inline static std::unordered_map<base_relation::flvr_type, std::string> to_name_map = {};
     
@@ -43,6 +39,14 @@ namespace andromeda
     nlohmann::json to_json_row();
 
     std::vector<std::string> to_row(std::size_t col_width);
+
+    std::string get_name() { return to_name(flvr); }
+
+    hash_type get_hash_i() { return hash_i; }
+    hash_type get_hash_j() { return hash_j; }
+
+    hash_type get_ihash_i() { return ihash_i; }
+    hash_type get_ihash_j() { return ihash_j; }
     
   private:
 
@@ -67,11 +71,10 @@ namespace andromeda
       }
     else
       {
-	std::mutex mtx;
 	std::scoped_lock lock(mtx);
 
-	flvr = to_flvr_map.size();
-	
+	flvr = utils::to_flvr_hash(rel_name);
+
 	to_flvr_map.insert({rel_name, flvr});
 	to_name_map.insert({flvr, rel_name});
       }
@@ -95,7 +98,7 @@ namespace andromeda
   base_relation::base_relation(std::string name, fval_type conf,
 			       const base_entity& ent_i,
 			       const base_entity& ent_j):
-    flvr(to_flvr(name)),
+    flvr(to_flvr(name)),    
     conf(conf),
 
     hash_i(ent_i.hash),
@@ -110,7 +113,7 @@ namespace andromeda
   
   nlohmann::json base_relation::to_json_row()
   {
-    nlohmann::json row = nlohmann::json::array({to_name(flvr), conf,
+    nlohmann::json row = nlohmann::json::array({flvr, to_name(flvr), conf,
 						hash_i, hash_j,
 						ihash_i, ihash_j,
 						name_i, name_j});
@@ -123,7 +126,7 @@ namespace andromeda
   std::vector<std::string> base_relation::to_row(std::size_t col_width)
   {
     std::vector<std::string> row =
-      { to_name(flvr), std::to_string(conf),
+      { std::to_string(flvr), to_name(flvr), std::to_string(conf),
 	std::to_string(hash_i), std::to_string(hash_j),
 	std::to_string(ihash_i), std::to_string(ihash_j),
 	name_i, name_j};

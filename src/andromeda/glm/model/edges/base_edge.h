@@ -44,7 +44,7 @@ namespace andromeda
       hash_type get_hash_i() const { return hash_i; };
       hash_type get_hash_j() const { return hash_j; };
       
-      std::string get_name() const { return node_names::to_name.at(flvr); };
+      std::string get_name() const { return edge_names::to_name(flvr); };
 
       cnt_type get_count() const { return count; }
       void     set_count(cnt_type cnt) { count = cnt; }
@@ -176,7 +176,7 @@ namespace andromeda
       {
         row.push_back(hash);
 	row.push_back(flvr);
-        row.push_back(edge_names::to_string(flvr));
+        row.push_back(edge_names::to_name(flvr));
 
         row.push_back(hash_i);
         row.push_back(hash_j);
