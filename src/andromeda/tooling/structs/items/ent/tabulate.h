@@ -8,64 +8,66 @@ namespace andromeda
 
   template<typename index_type>
   void create_hash_to_name(std::vector<base_entity>& entities,
-			   std::map<index_type, std::string>& hash_to_name)
+                           std::map<index_type, std::string>& hash_to_name)
   {
     hash_to_name.clear();
     for(const auto& ent:entities)
       {
-	hash_to_name.insert({ent.hash, ent.name});
+        hash_to_name.insert({ent.hash, ent.name});
       }
   }
-  
+
   std::string tabulate(std::vector<base_entity>& entities)
   {
-    std::sort(entities.begin(), entities.end(),
-	      [](const base_entity& lhs, const base_entity& rhs)
-	      {
-		if(lhs.coor[0]==rhs.coor[0])
-		  {
-		    if(lhs.coor[1]==rhs.coor[1])
-		      {		
-			if(lhs.char_range[0]==rhs.char_range[0])
-			  {
-			    return lhs.char_range[1]>rhs.char_range[1];
-			  }
-			else
-			  {
-			    return lhs.char_range[0]<rhs.char_range[0];
-			  }
-		      }
-		    else
-		      {
-			return lhs.coor[1]<rhs.coor[1];
-		      }
-		  }
-		else
-		  {
-		    return lhs.coor[0]<rhs.coor[0];
-		  }
-	      });
+    std::sort(entities.begin(), entities.end());
+    /*
+      [](const base_entity& lhs, const base_entity& rhs)
+      {
+      if(lhs.coor[0]==rhs.coor[0])
+      {
+      if(lhs.coor[1]==rhs.coor[1])
+      {
+      if(lhs.char_range[0]==rhs.char_range[0])
+      {
+      return lhs.char_range[1]>rhs.char_range[1];
+      }
+      else
+      {
+      return lhs.char_range[0]<rhs.char_range[0];
+      }
+      }
+      else
+      {
+      return lhs.coor[1]<rhs.coor[1];
+      }
+      }
+      else
+      {
+      return lhs.coor[0]<rhs.coor[0];
+      }
+      });
+    */
 
     std::stringstream ss;
-    
+
     std::vector<std::string> headers={};
 
     if(entities.size()==0)
       {
-	ss << "\nentities: " << entities.size() << "\n";
-	return ss.str();
+        ss << "\nentities: " << entities.size() << "\n";
+        return ss.str();
       }
     else if(entities.at(0).subj_name==PARAGRAPH)
       {
-	headers = base_entity::short_text_headers();
+        headers = base_entity::short_text_headers();
       }
     else if(entities.at(0).subj_name==TABLE)
       {
-	headers = base_entity::short_table_headers();
+        headers = base_entity::short_table_headers();
       }
     else
       {
-	headers = base_entity::headers();
+        headers = base_entity::headers();
       }
 
     std::vector<std::vector<std::string> > data={};
@@ -73,31 +75,31 @@ namespace andromeda
     std::size_t col_width=32;
     for(auto& ent:entities)
       {
-	auto row = ent.to_row(col_width);
-	if(row.size()==headers.size())
-	  {
-	    data.push_back(ent.to_row(col_width));
-	  }
+        auto row = ent.to_row(col_width);
+        if(row.size()==headers.size())
+          {
+            data.push_back(ent.to_row(col_width));
+          }
       }
-    
+
     ss << "\nentities: " << entities.size() << "\n"
-       << utils::to_string(headers, data);    
-    
+       << utils::to_string(headers, data);
+
     return ss.str();
   }
 
   std::string tabulate(std::string text, std::vector<base_entity>& entities)
   {
     std::sort(entities.begin(), entities.end(),
-	      [](const base_entity& lhs, const base_entity& rhs)
-	      {
-		if(lhs.char_range[0]==rhs.char_range[0])
-		  {
-		    return lhs.char_range[1]>rhs.char_range[1];
-		  }
-		
-		return lhs.char_range[0]<rhs.char_range[0];
-	      });
+              [](const base_entity& lhs, const base_entity& rhs)
+              {
+                if(lhs.char_range[0]==rhs.char_range[0])
+                  {
+                    return lhs.char_range[1]>rhs.char_range[1];
+                  }
+
+                return lhs.char_range[0]<rhs.char_range[0];
+              });
 
     std::vector<std::string> header = base_entity::short_text_headers();
     std::vector<std::vector<std::string> > data={};
@@ -105,26 +107,26 @@ namespace andromeda
     //std::size_t col_width=64;
     std::size_t name_width = 32;
     std::size_t orig_width = 48;
-    
+
     for(auto& ent:entities)
       {
-	data.push_back(ent.to_row(text, name_width, orig_width));
+        data.push_back(ent.to_row(text, name_width, orig_width));
       }
 
     std::stringstream ss;
     if(entities.size()==0)
       {
-	ss << "\nentities: " << entities.size() << "\n";
+        ss << "\nentities: " << entities.size() << "\n";
       }
     else
       {
-	ss << "\nentities: " << entities.size() << "\n"
-	   << utils::to_string(header, data);    
+        ss << "\nentities: " << entities.size() << "\n"
+           << utils::to_string(header, data);
       }
-    
+
     return ss.str();
-  }  
-  
+  }
+
 }
 
 #endif

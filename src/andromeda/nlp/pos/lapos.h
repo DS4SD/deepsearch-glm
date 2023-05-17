@@ -185,14 +185,15 @@ namespace andromeda
 	for(std::size_t j=0; j<subj.num_cols(); j++)
 	  {	    
 	    auto& word_tokens = subj(i,j).word_tokens;
-	    	    
+	  	    
 	    // initialise
 	    for(auto& word_token:word_tokens)
 	      {
 		word_token.set_pos(word_token::UNDEF_POS);
 	      }
 
-	    if(word_tokens.size()==0)
+	    if(subj(i,j).is_numeric() or
+	       word_tokens.size()==0)
 	      {
 		continue;
 	      }

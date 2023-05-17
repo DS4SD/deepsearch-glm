@@ -156,8 +156,8 @@ namespace andromeda
     for(std::size_t i=0; i<subj.num_rows(); i++)
       {
 	for(std::size_t j=0; j<subj.num_cols(); j++)
-	  {	    
-	    if(subj(i,j).text.size()==0)
+	  {	   	    
+	    if(subj(i,j).skip())
 	      {
 		continue;
 	      }

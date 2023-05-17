@@ -61,33 +61,33 @@ namespace andromeda
     static std::vector<std::string> short_table_headers();
 
     base_entity(model_name type,
-                range_type& char_range,
-                range_type& ctok_range,
-                range_type& wtok_range);
+                range_type char_range,
+                range_type ctok_range,
+                range_type wtok_range);
 
     // Paragraph entity
     base_entity(model_name type, std::string subtype,
                 std::string name, std::string orig,
-                range_type& char_range,
-                range_type& ctok_range,
-                range_type& wtok_range);
+                range_type char_range,
+                range_type ctok_range,
+                range_type wtok_range);
 
     // Table entity
     base_entity(model_name type, std::string subtype,
                 std::string name, std::string orig,
                 range_type coor, range_type span,
-                range_type& char_range,
-                range_type& ctok_range,
-                range_type& wtok_range);
+                range_type char_range,
+                range_type ctok_range,
+                range_type wtok_range);
 
     // Document entity
     base_entity(model_name type, std::string subtype,
                 std::string name, std::string orig,
                 range_type coor, range_type span,
                 subject_name subj_name, index_type subj_index,
-                range_type& char_range,
-                range_type& ctok_range,
-                range_type& wtok_range);
+                range_type char_range,
+                range_type ctok_range,
+                range_type wtok_range);
 
     bool verify_wtok_range_match(std::vector<word_token>& wtokens);
 
@@ -98,7 +98,7 @@ namespace andromeda
     std::string get_name() const;
 
     std::string get_reference() const;
-
+    
     nlohmann::json to_json();
     nlohmann::json to_json_row();
 
@@ -108,6 +108,9 @@ namespace andromeda
                                     std::size_t name_width,
                                     std::size_t orig_width);
 
+    friend bool operator<(const base_entity& lhs,
+			  const base_entity& rhs);
+    
   private:
 
     void initialise_hashes();
@@ -138,9 +141,9 @@ namespace andromeda
   };
 
   base_entity::base_entity(model_name type,
-                           range_type& char_range,
-                           range_type& ctok_range,
-                           range_type& wtok_range):
+                           range_type char_range,
+                           range_type ctok_range,
+                           range_type wtok_range):
     hash(DEFAULT_HASH),
     ihash(DEFAULT_HASH),
 
@@ -175,9 +178,9 @@ namespace andromeda
 
   base_entity::base_entity(model_name type, std::string subtype,
                            std::string name, std::string orig,
-                           range_type& char_range,
-                           range_type& ctok_range,
-                           range_type& wtok_range):
+                           range_type char_range,
+                           range_type ctok_range,
+                           range_type wtok_range):
     hash(DEFAULT_HASH),
     ihash(DEFAULT_HASH),
 
@@ -213,9 +216,9 @@ namespace andromeda
   base_entity::base_entity(model_name type, std::string subtype,
                            std::string name, std::string orig,
                            range_type coor, range_type span,
-                           range_type& char_range,
-                           range_type& ctok_range,
-                           range_type& wtok_range):
+                           range_type char_range,
+                           range_type ctok_range,
+                           range_type wtok_range):
     hash(DEFAULT_HASH),
     ihash(DEFAULT_HASH),
 
@@ -252,9 +255,9 @@ namespace andromeda
                            std::string name, std::string orig,
                            range_type coor, range_type span,
                            subject_name subj_name, index_type subj_index,
-                           range_type& char_range,
-                           range_type& ctok_range,
-                           range_type& wtok_range):
+                           range_type char_range,
+                           range_type ctok_range,
+                           range_type wtok_range):
     hash(DEFAULT_HASH),
     ihash(DEFAULT_HASH),
 
@@ -303,47 +306,6 @@ namespace andromeda
       };
 
     ihash = utils::to_hash(hash_vec);
-    /*
-      switch(subj_name)
-      {
-      case TEXT:
-      case PARAGRAPH:
-      {
-      std::vector<hash_type> hash_vec =
-      {
-      hash,
-      hash_type(subj_name),
-      hash_type(subj_index),
-      char_range.at(0),
-      char_range.at(1)
-      };
-      ihash = utils::to_hash(hash_vec);
-      }
-      break;
-
-      case TABLE:
-      {
-      std::vector<hash_type> hash_vec =
-      {
-      hash,
-      hash_type(subj_name),
-      hash_type(subj_index),
-      coor.at(0),
-      coor.at(1),
-      char_range.at(0),
-      char_range.at(1)
-      };
-      ihash = utils::to_hash(hash_vec);
-      }
-      break;
-
-      default:
-      {
-      LOG_S(ERROR) << "no instance hash defined for " << to_string(subj_name)
-      << "in " << __FILE__ << ":" << __LINE__;
-      }
-      }
-    */
   }
 
   // do the char-ranges line up with the word-ranges ...
@@ -570,6 +532,34 @@ namespace andromeda
 
     return row;
   }
+
+  bool operator<(const base_entity& lhs,
+		 const base_entity& rhs)
+  {
+    if(lhs.coor[0]==rhs.coor[0])
+      {
+	if(lhs.coor[1]==rhs.coor[1])
+	  {		
+	    if(lhs.char_range[0]==rhs.char_range[0])
+	      {
+		return lhs.char_range[1]>rhs.char_range[1];
+	      }
+	    else
+	      {
+		return lhs.char_range[0]<rhs.char_range[0];
+	      }
+	  }
+	else
+	  {
+	    return lhs.coor[1]<rhs.coor[1];
+	  }
+      }
+    else
+      {
+	return lhs.coor[0]<rhs.coor[0];
+      }
+  }
+
 }
 
 #endif

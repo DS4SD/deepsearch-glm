@@ -242,6 +242,42 @@ namespace andromeda
 		      }
 		  }
 	      }
+
+	    // FIXME: can be optimised!
+	    text = utils::replace(text, "-", "");
+	    text = utils::replace(text, "+", "");
+	    text = utils::replace(text, "*", "");
+	    text = utils::replace(text, ":", "");
+	    text = utils::replace(text, "/", "");
+	    
+	    text = utils::replace(text, "(", "");
+	    text = utils::replace(text, ")", "");
+	    text = utils::replace(text, "{", "");
+	    text = utils::replace(text, "}", "");
+	    text = utils::replace(text, "[", "");
+	    text = utils::replace(text, "]", "");
+
+	    text = utils::replace(text, "_", "");	    
+	    text = utils::replace(text, "^", "");
+
+	    text = utils::replace(text, "$", "");
+	    text = utils::replace(text, "%", "");
+
+	    text = utils::replace(text, ".", "");
+	    text = utils::replace(text, ",", "");
+	    text = utils::replace(text, ";", "");
+	    
+	    text = utils::strip(text);
+
+	    if(text.size()==0)
+	      {
+		subj(i,j).set_numeric(true);
+	      }
+
+	    if((not subj(i,j).is_numeric()) and text.size()<3)
+	      {
+		LOG_S(WARNING) << "table-text '" << text << "': " << subj(i,j).get_text();
+	      }
 	  }
       }
     

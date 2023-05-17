@@ -11,7 +11,6 @@
 #include <andromeda/glm/model_cli/create/logger.h>
 #include <andromeda/glm/model_cli/create/model_merger.h>
 #include <andromeda/glm/model_cli/create/model_creator.h>
-//#include <andromeda/glm/model_cli/create/model_augmenter.h>
 
 namespace andromeda
 {
@@ -20,6 +19,7 @@ namespace andromeda
     template<typename model_type>
     class model_cli<CREATE, model_type>
     {
+      typedef typename model_type::hash_type hash_type;
       typedef typename model_type::index_type index_type;
 
       typedef typename model_type::node_type node_type;
@@ -325,8 +325,9 @@ namespace andromeda
 		{
 		  nlp.write(subj);
 		}
-	      
-	      creator.update(subj);
+
+	      std::set<hash_type> doc_ents={};
+	      creator.update(subj, doc_ents);
 	    }
 	  else	    
 	    {

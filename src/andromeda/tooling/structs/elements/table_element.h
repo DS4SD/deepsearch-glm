@@ -18,16 +18,21 @@ namespace andromeda
 		  uint64_t col_span,
 		  uint64_t row_span,
 		  std::string orig);
-
+    
     std::array<uint64_t, 2> get_coor() { return {i,j}; }
     std::array<uint64_t, 2> get_span() { return {col_span, row_span}; }
-
+    
     std::string get_text() const { return text; }
 
+    
     bool is_col_header() { return col_header; }
     bool is_row_header() { return row_header; }
     bool is_numeric() { return numeric; }
 
+    void set_numeric(bool val) { numeric = val; }
+
+    bool skip() { return (numeric or word_tokens.size()==0); }
+    
     void show();
     
   private:

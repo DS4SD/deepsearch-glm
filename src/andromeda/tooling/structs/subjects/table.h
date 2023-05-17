@@ -32,6 +32,11 @@ namespace andromeda
 	     std::shared_ptr<utils::char_normaliser> char_normaliser,
 	     std::shared_ptr<utils::text_normaliser> text_normaliser);	     
 
+    void sort();
+
+    typename std::vector<base_entity>::iterator ents_beg(std::array<uint64_t, 2> coor);
+    typename std::vector<base_entity>::iterator ents_end(std::array<uint64_t, 2> coor);
+    
     void show(bool prps, bool ents, bool rels);
 
     std::string get_text() const;
@@ -164,6 +169,38 @@ namespace andromeda
     return (task_0 and task_1);
   }
 
+  void subject<TABLE>::sort()
+  {
+    std::sort(entities.begin(), entities.end());
+  }
+
+  typename std::vector<base_entity>::iterator subject<TABLE>::ents_beg(std::array<uint64_t, 2> coor)
+  {
+    base_entity fake(NULL_MODEL, "fake", "fake", "fake", coor, {1,1}, {0,0}, {0,0}, {0,0});
+    return std::lower_bound(entities.begin(), entities.end(), fake);    
+  }
+  
+  typename std::vector<base_entity>::iterator subject<TABLE>::ents_end(std::array<uint64_t, 2> coor)
+  {
+    if(coor.at(0)+1==num_rows() and
+       coor.at(1)+1==num_cols())
+      {
+	return entities.end();
+      }
+    else if(coor.at(1)+1==num_cols())
+      {
+	coor.at(0) += 1;
+	coor.at(1) = 0;	
+      }
+    else
+      {
+	coor.at(1) += 1;		
+      }
+    
+    base_entity fake(NULL_MODEL, "fake", "fake", "fake", coor, {1,1}, {0,0}, {0,0}, {0,0});
+    return std::lower_bound(entities.begin(), entities.end(), fake);
+  }
+  
   void subject<TABLE>::show(bool prps, bool ents, bool rels)
   {
     std::vector<std::vector<std::string> > grid={};

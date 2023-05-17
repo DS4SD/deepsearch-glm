@@ -16,10 +16,10 @@ namespace andromeda
 
       model_creator(std::shared_ptr<model_type> model);
 
-      void update(subject<PARAGRAPH>& subj);
-      void update(subject<TABLE>& subj);
+      void update(subject<PARAGRAPH>& subj, std::set<hash_type>& docs_cnt);
+      void update(subject<TABLE>& subj, std::set<hash_type>& docs_cnt);
 
-      void update(subject<DOCUMENT>& subj);
+      void update(subject<DOCUMENT>& subj, std::set<hash_type>& docs_cnt);
 
     private:
 
@@ -37,14 +37,18 @@ namespace andromeda
                         std::vector<hash_type>& tok_hashes,
                         std::vector<hash_type>& pos_hashes);
 
-      void update_counters(nodes_type& nodes,
+      void update_counters(subject_name name, nodes_type& nodes,
                            std::vector<base_entity>& entities,
                            std::vector<hash_type>& hashes,
+			   std::set<hash_type>& text_cnt,
+			   std::set<hash_type>& tabl_cnt,
                            std::set<hash_type>& docs_cnt);
 
-      void update_counters(nodes_type& nodes,
+      void update_counters(
+			   nodes_type& nodes,
                            std::vector<base_entity>& entities,
                            std::map<range_type, hash_type>& ent_rngs,
+
                            std::set<hash_type>& docs_cnt);
 
       void insert_edges(std::vector<hash_type>& tok_hashes,
@@ -126,6 +130,10 @@ namespace andromeda
                         nodes_type& nodes, edges_type& edges,
                         std::vector<hash_type>& sent_hashes);
 
+      void insert_tables(std::vector<base_entity>& entities,
+			 nodes_type& nodes, edges_type& edges,
+			 std::vector<hash_type>& sent_hashes);      
+
       void insert_relations(std::vector<base_entity>& entities,
 			    std::vector<base_relation>& relations,
 			    nodes_type& nodes, edges_type& edges,
@@ -173,14 +181,13 @@ namespace andromeda
       undef_pos_hash = node_names::to_hash.at(node_names::UNDEFINED_POS);
     }
 
-    void model_creator::update(subject<PARAGRAPH>& subj)
+    void model_creator::update(subject<PARAGRAPH>& subj,
+			       std::set<hash_type>& docs_cnt) // hashes of nodes already in doc
     {
       auto& nodes = model->get_nodes();
       auto& edges = model->get_edges();
 
       auto& parameters = model->get_parameters();
-
-      std::set<hash_type> docs_cnt={};
 
       std::vector<word_token>& tokens = subj.word_tokens;
 
@@ -194,11 +201,13 @@ namespace andromeda
 
       update_tokens(tokens, entities);
 
-      std::vector<hash_type> tok_hashes={}, pos_hashes={}, sent_hashes={};
+      std::vector<hash_type> tok_hashes={}, pos_hashes={};
+      std::set<hash_type> text_hashes={}, table_hashes={};
+      
       insert_nodes(nodes, tokens, tok_hashes, pos_hashes);
 
-      update_counters(nodes, entities, tok_hashes, docs_cnt);
-      update_counters(nodes, entities, pos_hashes, docs_cnt);
+      update_counters(PARAGRAPH, nodes, entities, tok_hashes, text_hashes, table_hashes, docs_cnt);
+      update_counters(PARAGRAPH, nodes, entities, pos_hashes, text_hashes, table_hashes, docs_cnt);
 
       insert_edges(tok_hashes, pos_hashes, edges);
 
@@ -253,6 +262,8 @@ namespace andromeda
           update_counters(nodes, entities, rng_to_verb, docs_cnt);
         }
 
+      std::vector<hash_type> sent_hashes={};
+      
       if(true)
         {
           insert_padding_for_conn_verb_term(parameters.padding,
@@ -282,18 +293,54 @@ namespace andromeda
 	}
     }
 
-    void model_creator::update(subject<TABLE>& subj)
+    void model_creator::update(subject<TABLE>& subj,
+			       std::set<hash_type>& docs_cnt) // hashes of nodes already in doc`
     {
+      auto& nodes = model->get_nodes();
+      auto& edges = model->get_edges();
+
+      //auto& parameters = model->get_parameters();
+      
       std::vector<hash_type> node_term_hashes={};
       
+      std::vector<base_entity>& entities = subj.entities;
+      //std::vector<base_relation>& relations = subj.relations;
+
+      std::set<hash_type> text_cnt={}, tabl_cnt={};
+      
+      for(uint64_t i=0; i<subj.num_rows(); i++)
+	{
+	  for(uint64_t j=0; j<subj.num_cols(); j++)
+	    {
+	      std::vector<word_token>& tokens = subj(i,j).word_tokens;
+
+	      //update_tokens(tokens, entities);
+	      
+	      if(tokens.size()==0)
+		{
+		  continue;
+		}
+	      
+	      std::vector<hash_type> tok_hashes={}, pos_hashes={};//, sent_hashes={};
+	      insert_nodes(nodes, tokens, tok_hashes, pos_hashes);
+
+	      update_counters(TABLE, nodes, entities, tok_hashes, text_cnt, tabl_cnt, docs_cnt);
+	      update_counters(TABLE, nodes, entities, pos_hashes, text_cnt, tabl_cnt, docs_cnt);
+
+	      insert_edges(tok_hashes, pos_hashes, edges);
+	    }
+	}
+
+      /*
       for(auto& ent:subj.entities)
 	{
+	  auto coor = ent.coor;
+	  auto rng = ent.wtok_range;
+
           if(ent.model_type==andromeda::TERM and
              ent.model_subtype=="single-term")
             {
-	      /*
-	      auto coor = ent.coor_range;
-              auto rng = ent.wtok_range;
+	      auto tok_hashes = subj(coor).get_word_tokens();
 
               std::vector<hash_type> term_hashes={};
               for(std::size_t i=rng[0]; i<rng[1]; i++)
@@ -305,23 +352,28 @@ namespace andromeda
               nodes.insert(term_i, false);
 
 	      node_term_hashes.push_back(term_i.get_hash());
-	      */
 	    }
 	}
-      
-      
+
+      for(auto term_hash:node_term_hashes)
+	{
+	  edges.insert(edge_names::to_table, tok_hashes.at(l), pos_hashes.at(l), false);	  
+	}
+      */
     }
 
-    void model_creator::update(subject<DOCUMENT>& subj)
+    void model_creator::update(subject<DOCUMENT>& subj, std::set<hash_type>& doc_ents)
     {
+      doc_ents.clear();
+      
       for(auto& paragraph:subj.paragraphs)
         {
-          this->update(paragraph);
+          this->update(paragraph, doc_ents);
         }
 
       for(auto& table:subj.tables)
         {
-          this->update(table);
+          this->update(table, doc_ents);
         }
     }
 
@@ -419,24 +471,29 @@ namespace andromeda
         }
     }
 
-    void model_creator::update_counters(nodes_type& nodes,
+    void model_creator::update_counters(subject_name name, nodes_type& nodes,
                                         std::vector<base_entity>& entities,
                                         std::vector<hash_type>& hashes,
-                                        std::set<hash_type>& docs_cnt)
-    {
+                                        std::set<hash_type>& text_cnt,
+					std::set<hash_type>& tabl_cnt,
+					std::set<hash_type>& docs_cnt)
+    {      
       std::set<hash_type> sent_beg={};
-      for(auto& ent:entities)
-        {
-          if(ent.model_type==andromeda::SENTENCE)
-            {
-              auto rng = ent.wtok_range;
-              sent_beg.insert(rng[0]);
-              sent_beg.insert(rng[1]);
-            }
-        }
+
+      if(name==PARAGRAPH)
+	{
+	  for(auto& ent:entities)
+	    {
+	      if(ent.model_type==andromeda::SENTENCE)
+		{
+		  auto rng = ent.wtok_range;
+		  sent_beg.insert(rng[0]);
+		  sent_beg.insert(rng[1]);
+		}
+	    }
+	}
 
       std::set<hash_type> sent_cnt={};
-      std::set<hash_type> text_cnt={};
 
       for(hash_type l=0; l<hashes.size(); l++)
         {
@@ -450,12 +507,24 @@ namespace andromeda
 
           auto sent_ins = sent_cnt.insert(hash);
           auto text_ins = text_cnt.insert(hash);
+	  auto tabl_ins = tabl_cnt.insert(hash);
           auto docs_ins = docs_cnt.insert(hash);
 
           node.incr_word_cnt();// += 1;
-          node.incr_sent_cnt(sent_ins.second);// += sent_ins.second? 1:0;
-          node.incr_text_cnt(text_ins.second);// += text_ins.second? 1:0;
-          node.incr_docs_cnt(docs_ins.second);// += text_ins.second? 1:0;
+
+	  if(name==PARAGRAPH)
+	    {
+	      node.incr_sent_cnt(sent_ins.second);
+	      node.incr_text_cnt(text_ins.second);
+	    }
+	  else if(name==TABLE)	    
+	    {
+	      node.incr_tabl_cnt(tabl_ins.second);
+	    }
+	  else
+	    {}
+	  
+          node.incr_docs_cnt(docs_ins.second);
         }
     }
 
