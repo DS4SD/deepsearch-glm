@@ -271,7 +271,7 @@ namespace andromeda
       std::vector<std::string> header = { "type", "flavor",
                                           "count", "weight", "prob", "cumul",
                                           "text",
-                                          "word-count", "sent-count", "text-count"};
+                                          "#-word", "#-sent", "#-text", "#-table", "#-doc"};
 
       std::vector<std::vector<std::string> > data={};
 
@@ -288,7 +288,9 @@ namespace andromeda
                                                node.get_text(nodes, false),
                                                std::to_string(node.get_word_cnt()),
                                                std::to_string(node.get_sent_cnt()),
-                                               std::to_string(node.get_text_cnt()) };
+                                               std::to_string(node.get_text_cnt()),
+					       std::to_string(node.get_tabl_cnt()),
+					       std::to_string(node.get_fdoc_cnt()) };
 
               assert(row.size()==header.size());
               data.push_back(row);

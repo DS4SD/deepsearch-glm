@@ -20,6 +20,8 @@ namespace andromeda
 
     nlohmann::json to_json();
 
+    uint64_t get_hash() const { return doc_hash; }
+    
     void show(bool txt=true, bool mdls=false,
               bool ctokens=false, bool wtokens=true,
               bool prps=true, bool ents=true, bool rels=true);
@@ -109,6 +111,28 @@ namespace andromeda
               }
           }
       }
+
+    if(result.count("tables"))
+      {
+        std::vector<std::string> keys = {"hash", "orig", "text",
+                                         "properties", "entities", "relations"};
+
+        for(std::size_t l=0; l<tables.size(); l++)
+          {
+            if(tables.at(l).valid)
+              {
+                auto para = tables.at(l).to_json();
+
+                std::size_t ind = pind_to_orig.at(l);
+                auto& item = result["tables"][ind];
+
+                for(std::string key:keys)
+                  {
+                    item[key] = para[key];
+                  }
+              }
+          }
+      }    
 
     return result;
   }

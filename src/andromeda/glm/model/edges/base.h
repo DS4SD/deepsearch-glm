@@ -53,6 +53,13 @@ namespace andromeda
       const static inline flvr_type to_root = 102; // `Superconductors` -> `superconductor`
       const static inline flvr_type from_root = 103; // `superconductor` -> `Superconductors`
 
+      const static inline flvr_type to_text = 128; 
+      const static inline flvr_type from_text = 129;
+      const static inline flvr_type to_table = 130; 
+      const static inline flvr_type from_table = 131;
+      const static inline flvr_type to_doc = 132; 
+      const static inline flvr_type from_doc = 133; 
+      
       const static inline flvr_type custom = 256;
       
     private:
@@ -96,7 +103,14 @@ namespace andromeda
          { from_label, "from-label"},
 
 	 { to_root, "to-root"},
-         { from_root, "from-root"}
+         { from_root, "from-root"},
+
+	 { to_text, "to-text"},
+         { from_text, "from-text"},
+	 { to_table, "to-table"},
+         { from_table, "from-table"},
+	 { to_doc, "to-doc"},
+         { from_doc, "from-doc"}
         };
 
     public:

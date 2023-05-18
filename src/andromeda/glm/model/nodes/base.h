@@ -33,6 +33,7 @@ namespace andromeda
       const static inline flvr_type VERB = 11;  // verb
       
       const static inline flvr_type SENT = 16; // sentence
+
       const static inline flvr_type TEXT = 32; // text (multiple sentences)
       const static inline flvr_type TABL = 48; // table
 

@@ -99,8 +99,8 @@ namespace andromeda
 
     std::string get_reference() const;
     
-    nlohmann::json to_json();
-    nlohmann::json to_json_row();
+    nlohmann::json to_json() const;
+    nlohmann::json to_json_row() const;
 
     std::vector<std::string> to_row(std::size_t col_width);
 
@@ -167,8 +167,8 @@ namespace andromeda
 
     wtok_range_match(true)
   {
-    assert(char_range[0]<char_range[1]);
-    assert(ctok_range[0]<ctok_range[1]);
+    assert(char_range[0]<=char_range[1]);
+    assert(ctok_range[0]<=ctok_range[1]);
     assert(wtok_range[0]<=wtok_range[1]);
 
     initialise_hashes();
@@ -242,8 +242,8 @@ namespace andromeda
 
     wtok_range_match(true)
   {
-    assert(char_range[0]<char_range[1]);
-    assert(ctok_range[0]<ctok_range[1]);
+    assert(char_range[0]<=char_range[1]);
+    assert(ctok_range[0]<=ctok_range[1]);
     assert(wtok_range[0]<=wtok_range[1]);
 
     initialise_hashes();
@@ -381,7 +381,7 @@ namespace andromeda
     return ref;
   }
 
-  nlohmann::json base_entity::to_json()
+  nlohmann::json base_entity::to_json() const
   {
     nlohmann::json result = nlohmann::json::object();
     {
@@ -409,7 +409,7 @@ namespace andromeda
     return result;
   }
 
-  nlohmann::json base_entity::to_json_row()
+  nlohmann::json base_entity::to_json_row() const
   {
     nlohmann::json row = nlohmann::json::array({to_key(model_type), model_subtype,
                                                 conf, hash, ihash,

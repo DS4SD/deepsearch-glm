@@ -274,10 +274,10 @@ namespace andromeda
 		subj(i,j).set_numeric(true);
 	      }
 
-	    if((not subj(i,j).is_numeric()) and text.size()<3)
-	      {
-		LOG_S(WARNING) << "table-text '" << text << "': " << subj(i,j).get_text();
-	      }
+	    //if((not subj(i,j).is_numeric()) and text.size()<3)
+	    //{
+	    //LOG_S(WARNING) << "table-text '" << text << "': " << subj(i,j).get_text();
+	    //}
 	  }
       }
     

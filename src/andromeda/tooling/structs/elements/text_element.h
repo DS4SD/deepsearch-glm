@@ -29,6 +29,8 @@ namespace andromeda
     
     void clear();
 
+    hash_type get_hash() const { return hash; }
+    
     bool set_text(const std::string& ctext);
 
     bool set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
@@ -70,13 +72,13 @@ namespace andromeda
 
     bool valid;
 
+    uint64_t hash; // hash of normalised text
+    
     std::size_t len; // number-of-chars
     std::size_t dst; // number-of-utf8-tokens
 
     std::string orig; // original text
     std::string text; // normalised text (removing confusables)
-
-    std::string hash; // hash of normalised text
 
     std::vector<char_token> char_tokens;
     std::vector<word_token> word_tokens;
@@ -94,7 +96,8 @@ namespace andromeda
 
   text_element::text_element():
     valid(true),
-
+    hash(-1),
+    
     len(0),
     dst(0),
 
@@ -108,7 +111,8 @@ namespace andromeda
   void text_element::clear()
   {
     valid = true;
-
+    hash = -1;
+    
     len=0;
     dst=0;
 
@@ -151,7 +155,8 @@ namespace andromeda
     len = orig.size();
 
     valid = utf8::is_valid(orig.c_str(), orig.c_str()+len);
-
+    hash = utils::to_hash(orig);
+    
     return valid;
   }
 

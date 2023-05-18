@@ -19,6 +19,10 @@ namespace andromeda
 
     void clear();
 
+    nlohmann::json to_json();
+
+    bool from_json(const nlohmann::json& data);
+    
     bool set_text(const std::string& ctext);
     bool set_data(const nlohmann::json& item);
     
@@ -31,7 +35,9 @@ namespace andromeda
 
     bool get_property_label(const std::string name, std::string& label);
 
-    std::string get_text();
+    uint64_t get_hash() const { return hash; }
+    std::string get_text() const;
+
     std::string get_text(range_type rng);
 
     void apply_wtoken_contractions(std::vector<candidate_type>& candidates);
@@ -39,10 +45,6 @@ namespace andromeda
     void contract_wtokens_from_entities(model_name name);
     void contract_wtokens_from_entities(model_name name, std::string subtype);
 
-    nlohmann::json to_json();
-
-    bool from_json(const nlohmann::json& data);
-    
     void show(bool txt=true,
               bool mdls=false,
 
@@ -55,6 +57,8 @@ namespace andromeda
 
   public:
 
+    uint64_t hash;
+    
     uint64_t dhash;
     uint64_t index;
     
@@ -89,7 +93,6 @@ namespace andromeda
     entities({}),
     relations({})
   {}
-
   
   subject<PARAGRAPH>::~subject()
   {}
@@ -110,7 +113,12 @@ namespace andromeda
   {
     clear();
     
-    return text_element::set_text(ctext);
+    text_element::set_text(ctext);
+
+    std::vector<uint64_t> hashes={dhash, hash};
+    hash = utils::to_hash(hashes);
+
+    return text_element::valid;
   }
 
   bool subject<PARAGRAPH>::set_data(const nlohmann::json& item)
@@ -177,11 +185,6 @@ namespace andromeda
     return false;
   }
 
-  std::string subject<PARAGRAPH>::get_text()
-  {
-    return text_element::text;
-  }
-  
   std::string subject<PARAGRAPH>::get_text(range_type rng)
   {
     return text_element::get_text(rng);
@@ -308,8 +311,7 @@ namespace andromeda
   }
 
   bool subject<PARAGRAPH>::from_json(const nlohmann::json& data)
-  {
-    
+  {    
     if(data.count("hash")>0 and data.count("applied-models")>0 and
        data.count("orig")>0 and data.count("text")>0)
       {
@@ -335,7 +337,7 @@ namespace andromeda
 	LOG_S(WARNING) << "could not read `word-tokens`";
 	return false;
       }
-
+    
     if(data.count("properties"))
       {
 	auto& props = data["properties"];

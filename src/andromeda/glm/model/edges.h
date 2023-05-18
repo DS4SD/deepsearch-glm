@@ -295,7 +295,7 @@ namespace andromeda
         }
       else
         {
-          LOG_S(WARNING) << "trying to update unknown edge-flvr (" << flvr << ")...";
+          //LOG_S(WARNING) << "trying to update unknown edge-flvr (" << flvr << ") ...";
         }
     }
 

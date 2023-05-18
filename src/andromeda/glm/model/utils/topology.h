@@ -46,9 +46,6 @@ namespace andromeda
       template<typename model_type>
       std::size_t compute_edges_statistics(model_type& model);
 
-      //template<typename model_type>
-      //std::size_t compute_paths_statistics(model_type& model);
-
       void initialise(short type, std::map<key_type, std::size_t>& stats);
 
       nlohmann::json to_json(std::map<short, std::string>& data);
@@ -73,18 +70,15 @@ namespace andromeda
 
       std::map<short, std::string> node_flavors;
       std::map<short, std::string> edge_flavors;
-      //std::map<short, std::string> path_flavors;
 
       std::map<short, std::size_t> node_counts;
       std::map<short, std::size_t> edge_counts;
-      //std::map<short, std::size_t> path_counts;
 
       std::map<key_type, std::size_t> node_word_stats;
       std::map<key_type, std::size_t> node_sent_stats;
       std::map<key_type, std::size_t> node_text_stats;
 
       std::map<key_type, std::size_t> edge_count_stats;
-      //std::map<key_type, std::size_t> path_count_stats;
 
       std::vector<std::string> nodes_header, edges_header;//, paths_header;
       std::vector<std::vector<std::string> > nodes_table, edges_table;//, paths_table;
@@ -152,9 +146,8 @@ namespace andromeda
             for(auto lb:lower_bound)
               {
                 key_type key(itr->first, lb);
-
+		
                 auto itr = node_text_stats.find(key);
-                //row.push_back(std::to_string(itr->second));
                 row.push_back(to_string(itr->second));
 
                 total.at(ind++) += itr->second;
@@ -196,7 +189,6 @@ namespace andromeda
 
           nodes_table.push_back(row_0);
           nodes_table.push_back(row_1);
-          //nodes_table.push_back(cum_0);
           nodes_table.push_back(cum_1);
         }
 
@@ -367,18 +359,15 @@ namespace andromeda
 
       result["node-flavors"] = to_json(node_flavors);
       result["edge-flavors"] = to_json(edge_flavors);
-      //result["path-flavors"] = to_json(path_flavors);
 
       result["node-count"] = to_json(node_counts, node_flavors);
       result["edge-count"] = to_json(edge_counts, edge_flavors);
-      //result["path-count"] = to_json(path_counts, path_flavors);
 
       result["node-word-stats"] = to_json(node_word_stats, node_flavors);
       result["node-sent-stats"] = to_json(node_sent_stats, node_flavors);
       result["node-text-stats"] = to_json(node_text_stats, node_flavors);
 
       result["edge-count-stats"] = to_json(edge_count_stats, edge_flavors);
-      //result["path-count-stats"] = to_json(path_count_stats, path_flavors);
 
       return result;
     }
@@ -389,18 +378,15 @@ namespace andromeda
 
       from_json(config["node-flavors"], node_flavors);
       from_json(config["edge-flavors"], edge_flavors);
-      //from_json(config["path-flavors"], path_flavors);
 
       from_json(config["node-count"], node_counts);
       from_json(config["edge-count"], edge_counts);
-      //from_json(config["path-count"], path_counts);
 
       from_json(config["node-word-stats"], node_word_stats);
       from_json(config["node-sent-stats"], node_sent_stats);
       from_json(config["node-text-stats"], node_text_stats);
 
       from_json(config["edge-count-stats"], edge_count_stats);
-      //from_json(config["path-count-stats"], path_count_stats);
 
       //LOG_S(INFO) << "node_counts: " << node_counts.size();
       //LOG_S(INFO) << "edge_counts: " << edge_counts.size();
@@ -517,7 +503,6 @@ namespace andromeda
     {
       node_flavors.clear();
       edge_flavors.clear();
-      //path_flavors.clear();
 
       node_counts.clear();
       edge_counts.clear();
@@ -527,7 +512,6 @@ namespace andromeda
       node_text_stats.clear();
 
       edge_count_stats.clear();
-      //path_count_stats.clear();
     }
 
     void glm_topology::initialise()
@@ -557,19 +541,6 @@ namespace andromeda
             initialise(itr->first, edge_count_stats);
           }
       }
-
-      /*
-        {
-        auto& names = path_names::to_name;
-        for(auto itr=names.begin(); itr!=names.end(); itr++)
-        {
-        path_flavors[itr->first] = itr->second;
-        path_counts[itr->first] = 0;
-
-        initialise(itr->first, path_count_stats);
-        }
-        }
-      */
     }
 
     void glm_topology::initialise(short flavor, std::map<key_type, std::size_t>& stats)
@@ -595,8 +566,6 @@ namespace andromeda
 
       compute_edges_statistics(model);
 
-      //compute_paths_statistics(model);
-
       to_shell();
     }
 
@@ -612,7 +581,9 @@ namespace andromeda
         {
           for(auto& node:flvr_coll.second)
             {
-              max_text_cnt = std::max(max_text_cnt, node.get_text_cnt());
+	      cnt_type cnt = node.get_text_cnt()+node.get_tabl_cnt()+node.get_fdoc_cnt();	      
+
+              max_text_cnt = std::max(max_text_cnt, cnt);
 
               {
                 node_counts.at(node.get_flvr()) += 1;
@@ -621,7 +592,8 @@ namespace andromeda
               {
                 update_statistics(node.get_flvr(), node.get_word_cnt(), node_word_stats);
                 update_statistics(node.get_flvr(), node.get_sent_cnt(), node_sent_stats);
-                update_statistics(node.get_flvr(), node.get_text_cnt(), node_text_stats);
+                //update_statistics(node.get_flvr(), node.get_text_cnt(), node_text_stats);
+		update_statistics(node.get_flvr(), cnt, node_text_stats);
               }
             }
         }

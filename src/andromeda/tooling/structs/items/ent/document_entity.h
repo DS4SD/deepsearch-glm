@@ -1,5 +1,6 @@
 //-*-C++-*-
 
+/*
 #ifndef ANDROMEDA_STRUCTS_ITEMS_ENT_DOCUMENT_H_
 #define ANDROMEDA_STRUCTS_ITEMS_ENT_DOCUMENT_H_
 
@@ -106,3 +107,4 @@ namespace andromeda
 }
 
 #endif
+*/

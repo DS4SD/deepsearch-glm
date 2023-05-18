@@ -129,8 +129,19 @@ namespace andromeda
 
 	    auto op_4b = flow.add_filter({node_names::TERM}, {op_3->get_flid()});
 	    op_4b->get_nodeset()->set_name("tax-up terms");
-	    
 
+
+	    auto op_5a = flow.add_traverse(edge_names::to_root, op_0d->get_flid());
+	    op_5a->get_nodeset()->set_name("to-root");
+
+	    auto op_5b = flow.add_traverse(edge_names::from_root, op_5a->get_flid());
+	    op_5b->get_nodeset()->set_name("from-root");
+
+	    auto op_5c = flow.add_filter({node_names::TERM}, {op_0d->get_flid()});
+	    op_5c->get_nodeset()->set_name("terms containing `from-token`");
+
+	    
+	    
 	    /*
 	    auto op_4a = flow.add_traverse(edge_names::to_verb, op_2->get_id());
 	    op_4a->get_nodeset()->set_name("to-verb");
@@ -192,6 +203,15 @@ namespace andromeda
 	    auto result_5 = op_5->get_nodeset();
 	    result_5->show(32);	    	    
 	    */
+
+	    auto result_5a = op_5a->get_nodeset();
+	    result_5a->show(32);
+
+	    auto result_5b = op_5b->get_nodeset();
+	    result_5b->show(32);
+
+	    auto result_5c = op_5c->get_nodeset();
+	    result_5c->show(32);	    	    
 	  }	  
 	}
     }

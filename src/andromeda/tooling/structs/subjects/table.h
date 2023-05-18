@@ -9,6 +9,14 @@ namespace andromeda
   template<>
   class subject<TABLE>: provenance
   {
+    typedef float    fval_type;
+    typedef uint16_t flvr_type;    
+    typedef uint64_t hash_type;
+    
+    typedef            uint64_t     index_type;
+    typedef std::array<uint64_t, 2> range_type;
+    typedef std::array<uint64_t, 2> coord_type;
+    
   public:
 
     typedef table_element table_element_type;
@@ -23,6 +31,9 @@ namespace andromeda
 
     void clear();
 
+    nlohmann::json to_json();
+    bool from_json(const nlohmann::json& data);
+    
     bool set_data(nlohmann::json& data);
 
     bool set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
@@ -39,6 +50,7 @@ namespace andromeda
     
     void show(bool prps, bool ents, bool rels);
 
+    uint64_t get_hash() const { return hash; } 
     std::string get_text() const;
     
     uint64_t num_rows() const { return nrows; }
@@ -46,9 +58,16 @@ namespace andromeda
 
     table_element_type& operator()(std::array<uint64_t,2> coor) { return data.at(coor.at(0)).at(coor.at(1)); }
     table_element_type& operator()(uint64_t i, uint64_t j) { return data.at(i).at(j); }
+
+  private:
+
+    void set_hash();
     
   public:
 
+    bool valid;
+    uint64_t hash;
+    
     uint64_t dhash;
     uint64_t index;
 
@@ -65,6 +84,8 @@ namespace andromeda
   };
 
   subject<TABLE>::subject():
+    valid(false),
+    
     dhash(-1),
     index(-1),
 
@@ -79,9 +100,11 @@ namespace andromeda
     entities({}),
     relations({})
   {}
-
+  
   subject<TABLE>::subject(uint64_t dhash,
 			  uint64_t index):
+    valid(false),
+    
     dhash(dhash),
     index(index),
 
@@ -100,6 +123,75 @@ namespace andromeda
   subject<TABLE>::~subject()
   {}
 
+  void subject<TABLE>::clear()
+  {
+    valid = false;
+    
+    dhash=-1;
+    index=-1;
+
+    caption="";
+    
+    nrows=0;
+    ncols=0;
+
+    data.clear();
+
+    applied_models.clear();
+    
+    properties.clear();
+    entities.clear();
+    relations.clear();
+  }
+
+  nlohmann::json subject<TABLE>::to_json()
+  {
+    nlohmann::json result = nlohmann::json::object({});
+
+    {
+      result["hash"] = hash;
+    }
+
+    result["applied-models"] = applied_models;
+    
+    {
+      nlohmann::json& props = result["properties"];
+      andromeda::to_json(properties, props);
+    }
+
+    {
+      nlohmann::json& ents = result["entities"];
+      ents = nlohmann::json::object({});
+
+      ents["headers"] = base_entity::headers();
+
+      nlohmann::json& ents_data = ents["data"];      
+      ents_data = nlohmann::json::array({});
+
+      for(std::size_t l=0; l<entities.size(); l++)
+	{
+	  ents_data.push_back(entities.at(l).to_json_row());
+	}
+    }
+
+    {
+      nlohmann::json& rels = result["relations"];
+      rels = nlohmann::json::object({});
+
+      rels["headers"] = base_relation::headers();
+
+      nlohmann::json& rels_data = rels["data"];      
+      rels_data = nlohmann::json::array({});
+      
+      for(std::size_t l=0; l<relations.size(); l++)
+	{
+	  rels_data.push_back(relations.at(l).to_json_row());
+	}      
+    }
+
+    return result;
+  }
+  
   bool subject<TABLE>::set_data(nlohmann::json& item)
   {
     if(item.count("data"))
@@ -117,6 +209,7 @@ namespace andromeda
 		  {		    
 		    text = grid[i][j]["text"];
 		  }
+
 		data.back().emplace_back(i,j,text);
 	      }	   	    
 	  }
@@ -136,17 +229,33 @@ namespace andromeda
       {
 	nrows = data.size();
 	ncols = data.at(0).size();
+
+	set_hash();
 	
 	return true;
       }
 	
     return false;	
   }
+  
+  void subject<TABLE>::set_hash()
+  {
+    std::vector<uint64_t> hashes={dhash};
+    for(std::size_t i=0; i<data.size(); i++)
+      {
+	for(std::size_t j=0; j<data.at(i).size(); j++)
+	  {
+	    hashes.push_back(data.at(i).at(j).hash);
+	  }
+      }
 
+    hash = utils::to_hash(hashes);
+  }
+  
   bool subject<TABLE>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
 				  std::shared_ptr<utils::text_normaliser> text_normaliser)
   {
-    bool valid = true;
+    valid = true;
     
     for(auto& row:data)
       {
@@ -182,6 +291,7 @@ namespace andromeda
   
   typename std::vector<base_entity>::iterator subject<TABLE>::ents_end(std::array<uint64_t, 2> coor)
   {
+    /*
     if(coor.at(0)+1==num_rows() and
        coor.at(1)+1==num_cols())
       {
@@ -199,6 +309,13 @@ namespace andromeda
     
     base_entity fake(NULL_MODEL, "fake", "fake", "fake", coor, {1,1}, {0,0}, {0,0}, {0,0});
     return std::lower_bound(entities.begin(), entities.end(), fake);
+    */
+    range_type max_range =
+      { std::numeric_limits<uint64_t>::max(),
+	std::numeric_limits<uint64_t>::max()};
+    
+    base_entity fake(NULL_MODEL, "fake", "fake", "fake", coor, {1,1}, max_range, max_range, max_range);
+    return std::upper_bound(entities.begin(), entities.end(), fake);    
   }
   
   void subject<TABLE>::show(bool prps, bool ents, bool rels)
@@ -268,10 +385,17 @@ namespace andromeda
       {
 	for(uint64_t j=0; j<data.at(i).size(); j++)
 	  {
-	    ss << data.at(i).at(j).text << " ";
+	    if(j+1==data.at(i).size())
+	      {
+		ss << data.at(i).at(j).text << "\n";
+	      }
+	    else
+	      {
+		ss << data.at(i).at(j).text << ", ";
+	      }
 	  }
       }
-
+    
     std::string text = ss.str();
     return text;      
   }
