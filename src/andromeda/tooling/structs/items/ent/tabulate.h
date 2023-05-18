@@ -20,33 +20,6 @@ namespace andromeda
   std::string tabulate(std::vector<base_entity>& entities)
   {
     std::sort(entities.begin(), entities.end());
-    /*
-      [](const base_entity& lhs, const base_entity& rhs)
-      {
-      if(lhs.coor[0]==rhs.coor[0])
-      {
-      if(lhs.coor[1]==rhs.coor[1])
-      {
-      if(lhs.char_range[0]==rhs.char_range[0])
-      {
-      return lhs.char_range[1]>rhs.char_range[1];
-      }
-      else
-      {
-      return lhs.char_range[0]<rhs.char_range[0];
-      }
-      }
-      else
-      {
-      return lhs.coor[1]<rhs.coor[1];
-      }
-      }
-      else
-      {
-      return lhs.coor[0]<rhs.coor[0];
-      }
-      });
-    */
 
     std::stringstream ss;
 
@@ -67,7 +40,8 @@ namespace andromeda
       }
     else
       {
-        headers = base_entity::headers();
+	LOG_S(ERROR) << "not supported subject-type";
+	return "";
       }
 
     std::vector<std::vector<std::string> > data={};

@@ -28,18 +28,41 @@ namespace andromeda
       { "type", "subtype",
         "conf",
         "hash", "ihash",
+	"coor_i", "coor_j",	
         "char_i", "char_j",
         "ctok_i", "ctok_j",
         "wtok_i", "wtok_j",
         "wtok-match",
-        "name", "original",
-        "subj-type", "subj-path"};
+        "name", "original"
+      };
 
+    const static inline std::vector<std::string> TEXT_HEADERS =
+      { "type", "subtype",
+        "conf",
+        "hash", "ihash",
+        "char_i", "char_j",
+        "ctok_i", "ctok_j",
+        "wtok_i", "wtok_j",
+        "wtok-match",
+        "name", "original"
+      };
+
+    const static inline std::vector<std::string> TABLE_HEADERS =
+      { "type", "subtype",
+        "conf",
+        "hash", "ihash",
+	"coor_i", "coor_j",
+        "char_i", "char_j",
+        "ctok_i", "ctok_j",
+        "wtok_i", "wtok_j",
+        "wtok-match",
+        "name", "original"
+      };
+    
     const static inline std::vector<std::string> SHORT_TEXT_HEADERS =
       { "type", "subtype",
         "conf",
         "hash", "ihash",
-        "row", "col",
         "char_i", "char_j",
         "wtok-match",
         "name", "original"};
@@ -55,7 +78,7 @@ namespace andromeda
 
   public:
 
-    static std::vector<std::string> headers();
+    static std::vector<std::string> headers(subject_name subj);
 
     static std::vector<std::string> short_text_headers();
     static std::vector<std::string> short_table_headers();
@@ -100,7 +123,7 @@ namespace andromeda
     std::string get_reference() const;
     
     nlohmann::json to_json() const;
-    nlohmann::json to_json_row() const;
+    nlohmann::json to_json_row(subject_name subj) const;
 
     std::vector<std::string> to_row(std::size_t col_width);
 
@@ -324,11 +347,82 @@ namespace andromeda
     return wtok_range_match;
   }
 
-  std::vector<std::string> base_entity::headers()
+  std::vector<std::string> base_entity::headers(subject_name subj)
   {
-    return HEADERS;
+    switch(subj)
+      {
+      case PARAGRAPH:
+	{
+	  return TEXT_HEADERS;
+	}
+	break;
+
+      case TABLE:
+	{
+	  return TABLE_HEADERS;
+	}
+	break;
+
+      default:
+	{
+	  return HEADERS;
+	}
+      }
   }
 
+  nlohmann::json base_entity::to_json_row(subject_name subj) const
+  {
+    nlohmann::json row;
+    
+    switch(subj)
+      {
+      case PARAGRAPH:
+	{
+	  row = nlohmann::json::array({to_key(model_type), model_subtype,
+				       conf, hash, ihash,
+				       char_range[0], char_range[1],
+				       ctok_range[0], ctok_range[1],
+				       wtok_range[0], wtok_range[1],
+				       wtok_range_match,
+				       name, orig});
+	}
+	break;
+	
+      case TABLE:
+	{
+	  row = nlohmann::json::array({to_key(model_type), model_subtype,
+				       conf, hash, ihash,
+				       coor[0], coor[1],
+				       char_range[0], char_range[1],
+				       ctok_range[0], ctok_range[1],
+				       wtok_range[0], wtok_range[1],
+				       wtok_range_match,
+				       name, orig});
+
+	}
+	break;
+
+      default:
+	{
+	  row = nlohmann::json::array({to_key(model_type), model_subtype,
+				       conf, hash, ihash,
+				       coor[0], coor[1],
+				       char_range[0], char_range[1],
+				       ctok_range[0], ctok_range[1],
+				       wtok_range[0], wtok_range[1],
+				       wtok_range_match,
+				       name, orig});
+	}
+      }
+    
+    if(row.size()!=headers(subj).size())
+      {
+	LOG_S(ERROR);
+      }
+    
+    return row;
+  }
+  
   std::vector<std::string> base_entity::short_text_headers()
   {
     return SHORT_TEXT_HEADERS;
@@ -409,19 +503,6 @@ namespace andromeda
     return result;
   }
 
-  nlohmann::json base_entity::to_json_row() const
-  {
-    nlohmann::json row = nlohmann::json::array({to_key(model_type), model_subtype,
-                                                conf, hash, ihash,
-						coor[0], coor[1],
-                                                char_range[0], char_range[1],
-                                                ctok_range[0], ctok_range[1],
-                                                wtok_range[0], wtok_range[1],
-                                                wtok_range_match, name, orig});
-    assert(row.size()==HEADERS.size());
-
-    return row;
-  }
 
   std::vector<std::string> base_entity::to_row(std::size_t col_width)
   {

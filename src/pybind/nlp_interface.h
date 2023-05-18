@@ -279,6 +279,8 @@ namespace andromeda_py
 	success=false;
 	ss << "text is not UTF8 compliant";
       }
+
+    paragraph.sort();
     
     nlohmann::json result = paragraph.to_json();
     {

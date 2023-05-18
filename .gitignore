@@ -19,6 +19,7 @@ data/*/*/*.jsonl
 data/*/*.xml*
 data/*/*/*.xml*
 data/*/*.gz
+data/*/*/*.csv
 *.bin
 *.gz
 *.tar

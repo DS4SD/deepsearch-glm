@@ -163,14 +163,14 @@ namespace andromeda
       nlohmann::json& ents = result["entities"];
       ents = nlohmann::json::object({});
 
-      ents["headers"] = base_entity::headers();
+      ents["headers"] = base_entity::headers(TABLE);
 
       nlohmann::json& ents_data = ents["data"];      
       ents_data = nlohmann::json::array({});
 
       for(std::size_t l=0; l<entities.size(); l++)
 	{
-	  ents_data.push_back(entities.at(l).to_json_row());
+	  ents_data.push_back(entities.at(l).to_json_row(TABLE));
 	}
     }
 
@@ -285,36 +285,23 @@ namespace andromeda
 
   typename std::vector<base_entity>::iterator subject<TABLE>::ents_beg(std::array<uint64_t, 2> coor)
   {
-    base_entity fake(NULL_MODEL, "fake", "fake", "fake", coor, {1,1}, {0,0}, {0,0}, {0,0});
+    range_type min_range = {0, 0};
+    
+    base_entity fake(NULL_MODEL, "fake", "fake", "fake", coor, {1,1},
+		     min_range, min_range, min_range);
+
     return std::lower_bound(entities.begin(), entities.end(), fake);    
   }
   
   typename std::vector<base_entity>::iterator subject<TABLE>::ents_end(std::array<uint64_t, 2> coor)
   {
-    /*
-    if(coor.at(0)+1==num_rows() and
-       coor.at(1)+1==num_cols())
-      {
-	return entities.end();
-      }
-    else if(coor.at(1)+1==num_cols())
-      {
-	coor.at(0) += 1;
-	coor.at(1) = 0;	
-      }
-    else
-      {
-	coor.at(1) += 1;		
-      }
-    
-    base_entity fake(NULL_MODEL, "fake", "fake", "fake", coor, {1,1}, {0,0}, {0,0}, {0,0});
-    return std::lower_bound(entities.begin(), entities.end(), fake);
-    */
     range_type max_range =
       { std::numeric_limits<uint64_t>::max(),
 	std::numeric_limits<uint64_t>::max()};
     
-    base_entity fake(NULL_MODEL, "fake", "fake", "fake", coor, {1,1}, max_range, max_range, max_range);
+    base_entity fake(NULL_MODEL, "fake", "fake", "fake", coor, {1,1},
+		     max_range, max_range, max_range);
+
     return std::upper_bound(entities.begin(), entities.end(), fake);    
   }
   

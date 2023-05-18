@@ -73,12 +73,16 @@ namespace andromeda
               for(std::size_t i=0; i<term_hashes_i.size()-1; i++)
                 {
                   edges.insert(edge_names::tax_dn, term_hashes_i.at(i), term_hashes_i.at(i+1), cnt, false);
+		  edges.insert(edge_names::to_root, term_hashes_i.at(i), root.get_hash(), cnt, false);
                 }
 
               for(std::size_t i=1; i<term_hashes_i.size(); i++)
                 {
                   edges.insert(edge_names::tax_up, term_hashes_i.at(i), term_hashes_i.at(i-1), cnt, false);
-                }	      
+		  edges.insert(edge_names::from_root, root.get_hash(), term_hashes_i.at(i), cnt, false);
+                }
+	      	      
+	      edges.insert(edge_names::from_root, root.get_hash(), term_i.get_hash(), cnt, false);	      
             }
 
           for(std::size_t i=0; i<term_hashes_i.size(); i++)

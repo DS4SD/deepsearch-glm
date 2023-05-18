@@ -20,7 +20,6 @@ namespace andromeda
     void clear();
 
     nlohmann::json to_json();
-
     bool from_json(const nlohmann::json& data);
     
     bool set_text(const std::string& ctext);
@@ -33,6 +32,8 @@ namespace andromeda
 	     std::shared_ptr<utils::char_normaliser> char_normaliser,
 	     std::shared_ptr<utils::text_normaliser> text_normaliser);
 
+    void sort();
+    
     bool get_property_label(const std::string name, std::string& label);
 
     uint64_t get_hash() const { return hash; }
@@ -171,6 +172,11 @@ namespace andromeda
     return false;
   }
 
+  void subject<PARAGRAPH>::sort()
+  {
+    std::sort(entities.begin(), entities.end());
+  }
+  
   bool subject<PARAGRAPH>::get_property_label(const std::string name, std::string& label)
   {
     for(auto& prop:properties)
@@ -281,14 +287,14 @@ namespace andromeda
       nlohmann::json& ents = result["entities"];
       ents = nlohmann::json::object({});
 
-      ents["headers"] = base_entity::headers();
+      ents["headers"] = base_entity::headers(PARAGRAPH);
 
       nlohmann::json& data = ents["data"];      
       data = nlohmann::json::array({});
 
       for(std::size_t l=0; l<entities.size(); l++)
 	{
-	  data.push_back(entities.at(l).to_json_row());
+	  data.push_back(entities.at(l).to_json_row(PARAGRAPH));
 	}
     }
 
