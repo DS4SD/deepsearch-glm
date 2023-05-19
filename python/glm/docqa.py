@@ -6,6 +6,7 @@ import json
 import glob
 
 import argparse
+import textwrap
 
 from tabulate import tabulate
 
@@ -36,8 +37,6 @@ def load_glm(path:str):
 
 def analyse_prompt(prompt, nlp_model):
 
-    print(nlp_model)
-    
     res = nlp_model.apply_on_text(prompt)
 
     print(res.keys())
@@ -56,15 +55,22 @@ def analyse_prompt(prompt, nlp_model):
 
 def show_query_result(res, max_nodes=16):
 
-
+    wrapper = textwrap.TextWrapper(width=50)
+    
     print("overview: \n", tabulate(res["overview"]["data"], headers=res["overview"]["headers"]), "\n")
 
     for i,item in enumerate(res["result"]):
         
         headers = item["nodes"]["headers"]
         data = item["nodes"]["data"]
-        
-        print(f"oper{i}: \n", tabulate(data[0:max_nodes], headers=headers), "\n")
+
+        for j,row in enumerate(data):
+            text = row[headers.index("text")]
+            print("text: ", text)
+            
+            data[j][headers.index("text")] = "\n".join(wrapper.wrap(text))
+                    
+        print(f"operation {i}: \n", tabulate(data[0:max_nodes], headers=headers), "\n")
 
 def expand_terms(terms):
 
@@ -74,21 +80,31 @@ def expand_terms(terms):
         qry = andromeda_glm.glm_query()
         qry.select({"nodes":[[term]]})
         qry.filter_by({"mode": "node-flavor", "node-flavors":["token"]})
+        flid = qry.get_last_flid()
         qry.traverse({"edge":"to-root"})
         qry.traverse({"edge":"from-root"})
+        qry.filter_by({"mode": "node-flavor", "node-flavors":["term"]})
+
+        qry.filter_by({"mode": "contains", "contains-flid":flid})        
+        qry.traverse({"edge":"to-sent"})
         
         config = qry.to_config()    
-        print("query: ", json.dumps(config, indent=2))    
+        #print("query: ", json.dumps(config, indent=2))    
         
         res = glm_model.query(config)
-        show_query_result(res)
-    
+        if "status" in res and res["status"]=="success":
+            show_query_result(res)
+        else:
+            print(res)
+            #print(res["status"], ": ", res["message"])
+            
 def do_qa(nlp_model, glm_model):
 
     while True:
         
         prompt = input("question: ")
         #prompt = "What is the income of IBM in 2022?"
+        #prompt = "net-zero"
         if(prompt=="q"):
             break
         
@@ -110,6 +126,7 @@ def do_qa(nlp_model, glm_model):
         show_query_result(res)
         """
 
+        #break
         
 if __name__ == '__main__':
     

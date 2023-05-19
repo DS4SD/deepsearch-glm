@@ -53,12 +53,15 @@ namespace andromeda
       const static inline flvr_type to_root = 102; // `Superconductors` -> `superconductor`
       const static inline flvr_type from_root = 103; // `superconductor` -> `Superconductors`
 
-      const static inline flvr_type to_text = 128; 
-      const static inline flvr_type from_text = 129;
-      const static inline flvr_type to_table = 130; 
-      const static inline flvr_type from_table = 131;
-      const static inline flvr_type to_doc = 132; 
-      const static inline flvr_type from_doc = 133; 
+      // hierarchy
+      const static inline flvr_type to_sent = 128; 
+      const static inline flvr_type from_sent = 129;
+      const static inline flvr_type to_text = 130; 
+      const static inline flvr_type from_text = 131;
+      const static inline flvr_type to_table = 132; 
+      const static inline flvr_type from_table = 133;
+      const static inline flvr_type to_doc = 134; 
+      const static inline flvr_type from_doc = 135; 
       
       const static inline flvr_type custom = 256;
       
@@ -91,8 +94,8 @@ namespace andromeda
 
 	 { to_singular, "to-singular"},
 	 { to_plural, "to-plural"},
-	 
 
+	 
          { to_token, "to-token"},
          { from_token, "from-token"},
 
@@ -105,6 +108,8 @@ namespace andromeda
 	 { to_root, "to-root"},
          { from_root, "from-root"},
 
+	 { to_sent, "to-sent"},
+         { from_sent, "from-sent"},
 	 { to_text, "to-text"},
          { from_text, "from-text"},
 	 { to_table, "to-table"},
@@ -159,21 +164,6 @@ namespace andromeda
 	return flvr_to_name_map.at(flvr);
       }
 
-      /*
-      static std::string to_string(flvr_type flvr)
-      {
-	auto itr = flvr_to_name_map.find(flvr);
-
-	if(itr!=flvr_to_name_map.end())
-	  {
-	    return itr->second;
-	  }
-
-	LOG_S(ERROR) << "requesting undefined edge-flavor `" << flvr << "`";
-	return "UNKNOWN_FLVR";
-      }
-      */
-      
       static flvr_type to_flvr(std::string name)
       {
 	for(auto itr=begin(); itr!=end(); itr++)

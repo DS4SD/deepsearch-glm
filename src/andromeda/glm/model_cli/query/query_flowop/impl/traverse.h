@@ -86,9 +86,10 @@ namespace andromeda
 	  std::string edge_name = params["edge"].get<std::string>();
 	  edge_flavor = edge_names::to_flvr(edge_name);
 	}
-      catch(std::exception exc)
+      catch(std::exception& exc)
 	{
-	  LOG_S(WARNING) << "traverse parameters: " << config.dump(2) << "\n -> error: " << exc.what();
+	  LOG_S(WARNING) << "traverse parameters: " << config.dump(2) << "\n"
+			 << " -> error: " << exc.what();
 	  return false;
 	}
 

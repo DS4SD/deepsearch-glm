@@ -33,6 +33,9 @@ namespace andromeda
 	     std::shared_ptr<utils::text_normaliser> text_normaliser);
 
     void sort();
+
+    typename std::vector<base_entity>::iterator ents_beg(std::array<uint64_t, 2> char_rng);
+    typename std::vector<base_entity>::iterator ents_end(std::array<uint64_t, 2> char_rng);
     
     bool get_property_label(const std::string name, std::string& label);
 
@@ -175,6 +178,22 @@ namespace andromeda
   void subject<PARAGRAPH>::sort()
   {
     std::sort(entities.begin(), entities.end());
+  }
+
+  typename std::vector<base_entity>::iterator subject<PARAGRAPH>::ents_beg(std::array<uint64_t, 2> char_rng)
+  {
+    base_entity fake(NULL_MODEL, "fake", "fake", "fake",
+		     char_rng, {0,0}, {0,0});
+    
+    return std::lower_bound(entities.begin(), entities.end(), fake);    
+  }
+  
+  typename std::vector<base_entity>::iterator subject<PARAGRAPH>::ents_end(std::array<uint64_t, 2> char_rng)
+  {
+    base_entity fake(NULL_MODEL, "fake", "fake", "fake",
+		     char_rng, {0,0}, {0,0});
+
+    return std::upper_bound(entities.begin(), entities.end(), fake);    
   }
   
   bool subject<PARAGRAPH>::get_property_label(const std::string name, std::string& label)

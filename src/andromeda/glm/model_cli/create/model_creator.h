@@ -1198,8 +1198,8 @@ namespace andromeda
                   if(terms.count(hash)==1 or
                      verbs.count(hash)==1)
                     {
-                      //edges.insert(edge_names::to_sent, hash, path.get_hash(), false);
-                      //edges.insert(edge_names::from_sent, path.get_hash(), hash, false);
+                      edges.insert(edge_names::to_sent, hash, path.get_hash(), false);
+                      edges.insert(edge_names::from_sent, path.get_hash(), hash, false);
                     }
                   else
                     {}

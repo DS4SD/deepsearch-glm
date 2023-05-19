@@ -129,30 +129,18 @@ namespace andromeda
 
 	if(i1_to_name.count(i0-2)==1)
 	  {
-	    //LOG_S(WARNING) << subj.entities.at(itr->second).orig << " --> "
-	    //<< subj.entities.at(i1_to_name.at(i0-2)).orig;
-	    
 	    auto& ent_i = subj.entities.at(itr->second);
 	    auto& ent_j = subj.entities.at(i1_to_name.at(i0-2));
-	   	    
-	    //subj.relations.emplace_back("to-definition", 1.0, ent_i.hash, ent_j.hash);
-	    //subj.relations.emplace_back("to-abbreviation", 1.0, ent_j.hash, ent_i.hash);
 
-	    subj.relations.emplace_back("to-definition", 1.0, ent_i, ent_j);
+	    subj.relations.emplace_back("from-abbreviation", 1.0, ent_i, ent_j);
 	    subj.relations.emplace_back("to-abbreviation", 1.0, ent_j, ent_i);
 	  }
 	else if(i1_to_term.count(i0-2)==1)
 	  {
-	    //LOG_S(WARNING) << subj.entities.at(itr->second).orig << " --> "
-	    //<< subj.entities.at(i1_to_term.at(i0-2)).orig;
-	    
 	    auto& ent_i = subj.entities.at(itr->second);
 	    auto& ent_j = subj.entities.at(i1_to_term.at(i0-2));
-	    
-	    //subj.relations.emplace_back("to-definition", 1.0, ent_i.hash, ent_j.hash);
-	    //subj.relations.emplace_back("to-abbreviation", 1.0, ent_j.hash, ent_i.hash);
 
-	    subj.relations.emplace_back("to-definition", 1.0, ent_i, ent_j);
+	    subj.relations.emplace_back("from-abbreviation", 1.0, ent_i, ent_j);
 	    subj.relations.emplace_back("to-abbreviation", 1.0, ent_j, ent_i);	    
 	  }
 	else

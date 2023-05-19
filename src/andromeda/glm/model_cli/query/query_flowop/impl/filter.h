@@ -16,6 +16,7 @@ namespace andromeda
 
       const static inline std::string flavors_lbl = "node-flavors";
       const static inline std::string regexes_lbl = "node-regex";
+      const static inline std::string contains_lbl = "contains-flid";
 
     public:
 
@@ -38,6 +39,8 @@ namespace andromeda
       bool filter_by_node_flavor(results_type& results);
 
       bool filter_by_node_text(results_type& results);
+
+      bool filter_by_flid(results_type& results);
       
     private:
 
@@ -47,6 +50,8 @@ namespace andromeda
       
       std::vector<std::string> regexes;
       std::vector<pcre2_expr> exprs;
+
+      flow_id_type filter_flid;
     };
 
     query_flowop<FILTER>::query_flowop(std::shared_ptr<model_type> model,
@@ -91,6 +96,10 @@ namespace andromeda
         else if(mode==regexes_lbl)
           {
             params[regexes_lbl]=regexes;
+          }
+	else if(mode==contains_lbl)
+          {
+            params[contains_lbl]=0;
           }
         else
           {
@@ -140,9 +149,21 @@ namespace andromeda
                   LOG_S(WARNING) << exc.what();
                 }
             }
-        }
+	}
+      else if(params.count(contains_lbl))
+	{
+	  mode = contains_lbl;
+	  
+	  filter_flid = -1;
+	  filter_flid = params.value(contains_lbl, filter_flid);
+
+	  query_baseop::dependencies.insert(filter_flid);
+	}
       else
-        {}
+        {
+	  LOG_S(ERROR) << "unrecognised filter mode: " << mode;
+	  return false;
+	}
 
       return true;
     }
@@ -156,7 +177,11 @@ namespace andromeda
       else if(mode==regexes_lbl)
         {
           return filter_by_node_text(results);
-        }      
+        }
+      else if(mode==contains_lbl)
+	{
+	  return filter_by_flid(results);	  
+	}
       else
         {
           return false;
@@ -213,6 +238,84 @@ namespace andromeda
 			{
 			  target->set(itr_i->hash, itr_i->count, itr_i->prob);
 			}
+		    }
+		}
+	    }
+
+	}
+
+      target->normalise();
+
+      query_baseop::done = true;
+      return query_baseop::done;
+    }
+
+    bool query_flowop<FILTER>::filter_by_flid(results_type& results)
+    {
+      if(results.count(filter_flid)==0)
+	{
+	  return false;
+	}
+      
+      auto& filter = results.at(filter_flid);
+      auto& target = results.at(query_baseop::flid);
+
+      auto& nodes = query_baseop::model->get_nodes();
+
+      std::vector<hash_type> nhashes={}, thashes={};
+      
+      base_node node;
+      for(auto sid:query_baseop::dependencies)
+        {
+          auto& source = results.at(sid);
+          for(auto itr_i=source->begin(); itr_i!=source->end(); itr_i++)
+            {
+              if(nodes.get(itr_i->hash, node))
+                {
+		  bool contains = filter->has_node(itr_i->hash);
+
+		  nhashes={};
+		  thashes={};
+		  
+		  if(not contains)
+		    {
+		      nhashes = node.get_nodes();
+		    }
+
+		  if(nhashes.size()>0)
+		    {
+		      for(auto hash:nhashes)
+			{
+			  contains = filter->has_node(hash);
+			  
+			  if(contains)
+			    {
+			      break;
+			    }
+			}
+		    }
+		  
+		  if(not contains)
+		    {
+		      node.get_token_path(nodes, thashes);
+		    }
+
+		  if(thashes.size()>0)
+		    {
+		      for(auto hash:thashes)
+			{
+			  contains = filter->has_node(hash);
+			  
+			  if(contains)
+			    {
+			      break;
+			    }
+			}		      
+		    }
+		  
+		  if(contains)
+		    {
+		      target->set(itr_i->hash, itr_i->count, itr_i->prob);		      
 		    }
 		}
 	    }
