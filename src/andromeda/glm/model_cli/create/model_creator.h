@@ -376,14 +376,6 @@ namespace andromeda
 		      auto docs_ins = docs_cnt.insert(term_i.get_hash());
 		      term_i.incr_fdoc_cnt(docs_ins.second);
 
-		      if(term_i.get_text(nodes, false)=="Income")
-			{
-			  LOG_S(INFO) << table_node.get_hash() << ", "<< term_i.get_hash() << "\t"
-				      << tabl_ins.second << ": " << term_i.get_tabl_cnt();
-			  
-			  LOG_S(INFO) << "\n counters: " << term_i.to_json(nodes)["counters"].dump();
-			}
-		      
 		      if(term_hashes.size()==1)
 			{
 			  edges.insert(edge_names::from_token, term_hashes.at(0), term_i.get_hash(), false);

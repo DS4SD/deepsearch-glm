@@ -57,18 +57,6 @@ namespace andromeda
   template<typename subject_type>
   bool base_nlp_model::satisfies_dependencies(subject_type& subj)
   {
-    /*
-    bool result=true;
-    for(auto dep:get_dependencies())
-      {
-        if(subj.applied_models.count(to_key(dep))==0)
-          {
-            result = false;
-          }
-      }
-
-    return result;
-    */
     return satisfies_dependencies(subj, get_dependencies());
   }
 
@@ -101,7 +89,7 @@ namespace andromeda
         return false;
       }
 
-    LOG_S(INFO) << "apply " << get_key() << " on document: " << subj.doc_name;
+    //LOG_S(INFO) << "apply " << get_key() << " on document: " << subj.doc_name;
     
     for(subject<PARAGRAPH>& paragraph:subj.paragraphs)
       {

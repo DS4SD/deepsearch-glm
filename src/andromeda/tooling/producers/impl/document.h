@@ -182,6 +182,19 @@ namespace andromeda
 
   bool producer<DOCUMENT>::read(doc_type& subject, std::size_t& count)
   {
+    if(curr_docs>=maxnum_docs)
+      {
+	static bool show=true;
+	if(show)
+	  {
+	    show=false;
+	    LOG_S(WARNING) << "count is exceeding max-count: " << curr_docs
+			   << " versus " << maxnum_docs;
+	  }
+	
+        return false;
+      }
+    
     bool valid=false, success=false;
 
     while((not valid) and (path_itr!=path_end))
