@@ -6,19 +6,20 @@
 namespace andromeda
 {
   template<>
-  class subject<PARAGRAPH>: public provenance,
+  class subject<PARAGRAPH>: public base_subject,
 			    public text_element
   {
   public:
 
     subject();
-    subject(uint64_t dhash,
-	    uint64_t index);
+    subject(uint64_t dhash, prov_element& prov);
     
     ~subject();
 
     void clear();
 
+    bool is_valid() { return (base_subject::valid and text_element::valid); }
+    
     nlohmann::json to_json();
     bool from_json(const nlohmann::json& data);
     
@@ -62,40 +63,43 @@ namespace andromeda
   public:
 
     uint64_t hash;
-    
-    uint64_t dhash;
-    uint64_t index;
-    
-    std::set<std::string> applied_models, labels;
 
-    std::vector<base_property> properties;
-    std::vector<base_entity> entities;
-    std::vector<base_relation> relations;
+    std::set<std::string> labels;
+    //uint64_t dhash;
+    //uint64_t index;
+    
+    //std::set<std::string> applied_models, labels;
+
+    //std::vector<base_property> properties;
+    //std::vector<base_entity> entities;
+    //std::vector<base_relation> relations;
   };
 
   subject<PARAGRAPH>::subject():
-    dhash(-1),
-    index(-1),
+    base_subject(),
+
+    //hash(-1),
+    //dhash(-1),
     
-    applied_models(),
-    labels(),
+    //applied_models(),
+    labels()//,
     
-    properties({}),
-    entities({}),
-    relations({})
+    //properties({}),
+    //entities({}),
+    //relations({})
   {}
 
-  subject<PARAGRAPH>::subject(uint64_t dhash,
-			      uint64_t index):
-    dhash(dhash),
-    index(index),
+  subject<PARAGRAPH>::subject(uint64_t dhash, prov_element& prov):
+    base_subject(dhash, {prov}),
     
-    applied_models(),
-    labels(),
+    //hash(provenance.get_hash()),
     
-    properties({}),
-    entities({}),
-    relations({})
+    //applied_models(),
+    labels()//,
+    
+    //properties({}),
+    //entities({}),
+    //relations({})
   {}
   
   subject<PARAGRAPH>::~subject()
@@ -103,20 +107,14 @@ namespace andromeda
 
   void subject<PARAGRAPH>::clear()
   {
+    base_subject::clear();
     text_element::clear();
-
-    applied_models.clear();
+    
     labels.clear();
-      
-    properties.clear();
-    entities.clear();
-    relations.clear();
   }
 
   bool subject<PARAGRAPH>::set_text(const std::string& ctext)
   {
-    clear();
-    
     text_element::set_text(ctext);
 
     std::vector<uint64_t> hashes={dhash, hash};
@@ -126,35 +124,28 @@ namespace andromeda
   }
 
   bool subject<PARAGRAPH>::set_data(const nlohmann::json& item)
-  {    
+  {
+    base_subject::clear_models();
+    text_element::clear();
+
+    bool valid=false;
     if(item.count("text"))
       {
 	std::string ctext = item["text"].get<std::string>();
-	set_text(ctext);
+	valid = set_text(ctext);
       }
     else
       {
 	return false;
       }
 
-    if(item.count("type"))
+    for(auto& prov:base_subject::provs)
       {
-	std::string label = item["type"].get<std::string>();
-	labels.insert(label);
+	labels.insert(prov.name);
+	labels.insert(prov.type);
       }
-
-    if(item.count("name"))
-      {
-	std::string label = item["name"].get<std::string>();
-	labels.insert(label);
-      }    
     
-    if(item.count("prov"))
-      {
-	provenance::set(item["prov"]);
-      }
-
-    return true;
+    return valid;
   }
 
   bool subject<PARAGRAPH>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
@@ -383,16 +374,20 @@ namespace andromeda
   {
     std::stringstream ss;
 
-    if(provenance::elements.size()>0)
+    if(base_subject::provs.size()>0)
       {
 	ss << "prov: "
-	   << provenance::elements.at(0).page << ", "
+	   << base_subject::provs.at(0).page << ", "
 	   << " ["
-	   << provenance::elements.at(0).bbox[0] << ", "
-	   << provenance::elements.at(0).bbox[1] << ", "
-	   << provenance::elements.at(0).bbox[2] << ", "
-	   << provenance::elements.at(0).bbox[3]
-	   << "]";
+	   << base_subject::provs.at(0).bbox[0] << ", "
+	   << base_subject::provs.at(0).bbox[1] << ", "
+	   << base_subject::provs.at(0).bbox[2] << ", "
+	   << base_subject::provs.at(0).bbox[3]
+	   << "]\n";
+      }
+    else
+      {
+	ss << "no provenance \n";
       }
     
     if(txt)

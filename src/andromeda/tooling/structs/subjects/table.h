@@ -7,15 +7,8 @@ namespace andromeda
 {
   
   template<>
-  class subject<TABLE>: provenance
+  class subject<TABLE>: public base_subject
   {
-    typedef float    fval_type;
-    typedef uint16_t flvr_type;    
-    typedef uint64_t hash_type;
-    
-    typedef            uint64_t     index_type;
-    typedef std::array<uint64_t, 2> range_type;
-    typedef std::array<uint64_t, 2> coord_type;
     
   public:
 
@@ -24,13 +17,14 @@ namespace andromeda
   public:
 
     subject();
-    subject(uint64_t dhash,
-	    uint64_t index);
-    
+    subject(uint64_t dhash, prov_element& prov);
+	        
     ~subject();
 
     void clear();
 
+    bool is_valid() { return (base_subject::valid); }
+    
     nlohmann::json to_json();
     bool from_json(const nlohmann::json& data);
     
@@ -65,59 +59,59 @@ namespace andromeda
     
   public:
 
-    bool valid;
-    uint64_t hash;
+    //bool valid;
+    //uint64_t hash;
     
-    uint64_t dhash;
-    uint64_t index;
-
-    std::string caption;
+    //uint64_t dhash;
+    
+    std::vector<subject<PARAGRAPH> > captions;
+    std::vector<subject<PARAGRAPH> > footnotes;
     
     uint64_t nrows, ncols;
     std::vector<std::vector<table_element_type> > data;
-    
-    std::set<std::string> applied_models;
-    
-    std::vector<base_property> properties;
-    std::vector<base_entity> entities;
-    std::vector<base_relation> relations;
   };
 
   subject<TABLE>::subject():
-    valid(false),
-    
-    dhash(-1),
-    index(-1),
+    base_subject(),
+    //valid(false),
 
-    caption(""),
-    
-    nrows(0), ncols(0),
-    data(),
+    //hash(-1),
+    //dhash(-1),
+    //index(-1),
 
-    applied_models(),
+    captions({}),
+    footnotes({}),
     
-    properties({}),
-    entities({}),
-    relations({})
+    nrows(0),
+    ncols(0),
+    data({})//,
+
+    //applied_models(),
+    
+    //properties({}),
+    //entities({}),
+    //relations({})
   {}
   
-  subject<TABLE>::subject(uint64_t dhash,
-			  uint64_t index):
-    valid(false),
-    
-    dhash(dhash),
-    index(index),
+  subject<TABLE>::subject(uint64_t dhash, prov_element& prov):
+    base_subject(dhash, prov),
+    //valid(false),
 
-    caption(""),
+    //hash(-1),
+    //dhash(dhash),
+    //index(index),
+
+    captions({}),
+    footnotes({}),    
     
     nrows(0), ncols(0),
-    data(),
+    data()//,
 
-    applied_models(),
+    //applied_models(),
     
-    properties({}),
-    entities({}),
-    relations({})
+    //properties({}),
+    //entities({}),
+    //relations({})
   {}
   
   subject<TABLE>::~subject()
@@ -125,25 +119,28 @@ namespace andromeda
 
   void subject<TABLE>::clear()
   {
-    valid = false;
-    
-    dhash=-1;
-    index=-1;
+    base_subject::clear();
+    //valid = false;
 
-    caption="";
+    //hash=-1;
+    //dhash=-1;
+    //index=-1;
+    
+    captions.clear();
+    footnotes.clear();
     
     nrows=0;
     ncols=0;
 
     data.clear();
 
-    applied_models.clear();
+    //applied_models.clear();
     
-    properties.clear();
-    entities.clear();
-    relations.clear();
+    //properties.clear();
+    //entities.clear();
+    //relations.clear();
   }
-
+  
   nlohmann::json subject<TABLE>::to_json()
   {
     nlohmann::json result = nlohmann::json::object({});
@@ -194,6 +191,9 @@ namespace andromeda
   
   bool subject<TABLE>::set_data(nlohmann::json& item)
   {
+    base_subject::clear_models();
+    data.clear();
+    
     if(item.count("data"))
       {
 	nlohmann::json grid = item["data"];
@@ -213,16 +213,6 @@ namespace andromeda
 		data.back().emplace_back(i,j,text);
 	      }	   	    
 	  }
-      }
-
-    if(item.count("text"))
-      {
-	caption = item["text"].get<std::string>();
-      }
-    
-    if(item.count("prov"))
-      {
-	provenance::set(item["prov"]);
       }
     
     if(data.size()>0)
@@ -319,15 +309,15 @@ namespace andromeda
 
     std::stringstream ss;
 
-    if(provenance::elements.size()>0)
+    if(base_subject::provs.size()>0)
       {
 	ss << "prov: "
-	   << provenance::elements.at(0).page << ", "
+	   << base_subject::provs.at(0).page << ", "
 	   << " ["
-	   << provenance::elements.at(0).bbox[0] << ", "
-	   << provenance::elements.at(0).bbox[1] << ", "
-	   << provenance::elements.at(0).bbox[2] << ", "
-	   << provenance::elements.at(0).bbox[3]
+	   << base_subject::provs.at(0).bbox[0] << ", "
+	   << base_subject::provs.at(0).bbox[1] << ", "
+	   << base_subject::provs.at(0).bbox[2] << ", "
+	   << base_subject::provs.at(0).bbox[3]
 	   << "]";
       }
     

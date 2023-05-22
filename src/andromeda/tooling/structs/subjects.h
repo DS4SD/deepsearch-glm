@@ -12,9 +12,11 @@ namespace andromeda
 
 #endif
 
+#include <andromeda/tooling/structs/subjects/base.h>
+
 #include <andromeda/tooling/structs/subjects/paragraph.h>
 #include <andromeda/tooling/structs/subjects/table.h>
-
+#include <andromeda/tooling/structs/subjects/figure.h>
 #include <andromeda/tooling/structs/subjects/document.h>
 
 

@@ -21,7 +21,7 @@ namespace andromeda
     nlohmann::json to_json();
 
     uint64_t get_hash() const { return doc_hash; }
-    
+
     void show(bool txt=true, bool mdls=false,
               bool ctokens=false, bool wtokens=true,
               bool prps=true, bool ents=true, bool rels=true);
@@ -42,6 +42,23 @@ namespace andromeda
              std::shared_ptr<utils::char_normaliser> char_normaliser,
              std::shared_ptr<utils::text_normaliser> text_normaliser);
 
+  private:
+
+    void init_provs(std::vector<prov_element>& provs);
+    bool clean_provs(std::vector<prov_element>& provs); // remove all provs with ignore==true
+      
+    void order_items();
+
+    bool init_items();
+
+    bool remove_headers_and_footers(std::vector<prov_element>& provs);
+
+    bool init_tables(std::vector<prov_element>& provs);
+
+    bool init_figures(std::vector<prov_element>& provs);
+
+    bool init_paragraphs(std::vector<prov_element>& provs);
+    
   public:
 
     bool valid;
@@ -56,10 +73,13 @@ namespace andromeda
 
     std::vector<std::size_t> pind_to_orig; // paragraphs-index to original maintext-index
     std::vector<std::size_t> tind_to_orig; // tables-index to original tables-index
+    std::vector<std::size_t> find_to_orig; // figures-index to original tables-index
 
     std::vector<subject<PARAGRAPH> > paragraphs;
     std::vector<subject<TABLE> > tables;
+    std::vector<subject<FIGURE> > figures;
 
+    // document-level
     std::vector<base_property> properties;
     std::vector<base_entity> entities;
     std::vector<base_relation> relations;
@@ -77,6 +97,7 @@ namespace andromeda
 
     paragraphs(),
     tables(),
+    figures(),
 
     properties(),
     entities(),
@@ -97,7 +118,7 @@ namespace andromeda
 
         for(std::size_t l=0; l<paragraphs.size(); l++)
           {
-            if(paragraphs.at(l).valid)
+            if(paragraphs.at(l).is_valid())
               {
                 auto para = paragraphs.at(l).to_json();
 
@@ -119,7 +140,7 @@ namespace andromeda
 
         for(std::size_t l=0; l<tables.size(); l++)
           {
-            if(tables.at(l).valid)
+            if(tables.at(l).is_valid())
               {
                 auto para = tables.at(l).to_json();
 
@@ -132,7 +153,7 @@ namespace andromeda
                   }
               }
           }
-      }    
+      }
 
     return result;
   }
@@ -172,6 +193,8 @@ namespace andromeda
 
   bool subject<DOCUMENT>::set_data(nlohmann::json& data)
   {
+    LOG_S(INFO) << __FUNCTION__;
+    
     clear();
 
     if(data.count("file-info") and
@@ -190,73 +213,367 @@ namespace andromeda
 
     orig = data;
 
-    if(data.count("main-text"))
+    order_items();
+
+    init_items();
+
+    return true;
+  }
+
+  void subject<DOCUMENT>::init_provs(std::vector<prov_element>& provs)
+  {    
+    provs.clear();
+
+    for(std::size_t l=0; l<orig["main-text"].size(); l++)
       {
-        uint64_t ind=0;
-        for(auto& item:data["main-text"])
+        auto& item = orig["main-text"][l];
+
+        if(item.count("$ref"))
           {
-            if(item.count("text")==1)
-              {
-                subject<PARAGRAPH> subj(doc_hash, ind);
-                bool valid = subj.set_data(item);
+            prov_element prov(l, item["$ref"], item["name"], item["type"]);
 
-                if(valid)
-                  {
-                    pind_to_orig.push_back(paragraphs.size());
-                    paragraphs.push_back(subj);
-                  }
-              }
+            auto& ref_item = orig[prov.path.first][prov.path.second];
+            prov.set(ref_item["prov"][0]);
 
-            ind += 1;
+            provs.push_back(prov);
+          }
+        else if(item.count("prov") and item["prov"].size()==1)
+          {
+            prov_element prov(l, item["name"], item["type"]);
+            prov.set(item["prov"][0]);
+
+            provs.push_back(prov);
+          }
+        else
+          {
+            LOG_S(WARNING) << "undefined: " << item.dump();
           }
       }
-    else
+
+  }
+
+  void subject<DOCUMENT>::order_items()
+  {
+    LOG_S(INFO) << __FUNCTION__;
+    
+    if(orig.count("main-text")==0)
       {
-        LOG_S(WARNING) << "no `main-text` detected in pdf-document ...";
-        return false;
+        return;
       }
 
-    if(data.count("tables"))
-      {
-        uint64_t ind=0;
-        for(auto& item:data["tables"])
-          {
-            if(item.count("data")==1)
-              {
-                subject<TABLE> subj(doc_hash, ind);
-                bool valid = subj.set_data(item);
-
-                if(valid)
-                  {
-                    tind_to_orig.push_back(tables.size());
-                    tables.push_back(subj);
-                  }
-              }
-
-            ind += 1;
-          }
-      }
-    else
-      {
-        LOG_S(WARNING) << "no `tables` detected in pdf-document ...";
-        return false;
-      }
+    std::vector<prov_element> provs={};
+    init_provs(provs);
 
     /*
-      for(auto& item:paragraphs)
       {
-      item.show(true, false, false, false, false, false, false);
+      std::vector<std::string> headers = prov_element::headers();
+
+      std::vector<std::vector<std::string> > rows={};
+      for(auto& item:provs)
+      {
+      rows.push_back(item.to_row());
       }
 
-      for(auto& item:tables)
-      {
-      item.show(false, false, false);
+      LOG_S(INFO) << "filepath: " << filepath << "\n\n"
+      << utils::to_string(headers, rows, -1);
+
       }
+    */
+
+    LOG_S(WARNING) << "sorting ... ";
+    sort(provs.begin(), provs.end());
+
+    /*
+      {
+      std::vector<std::string> headers = prov_element::headers();
+
+      std::vector<std::vector<std::string> > rows={};
+      for(auto& item:provs)
+      {
+      rows.push_back(item.to_row());
+      }
+
+      LOG_S(INFO) << "sorted: " << "\n\n"
+      << utils::to_string(headers, rows, -1);
+      }
+    */
+
+    {
+      // copy ...
+      nlohmann::json maintext = orig["main-text"];
+      for(std::size_t l=0; l<provs.size(); l++)
+        {
+          maintext[l] = orig["main-text"][provs.at(l).maintext_ind];
+          maintext[l]["pdf-order"] = provs.at(l).maintext_ind;
+        }
+
+      // overwrite ...
+      orig["main-text"] = maintext;
+    }
+  }
+
+  bool subject<DOCUMENT>::init_items()
+  {
+    LOG_S(INFO) << __FUNCTION__;
+    
+    if(not orig.count("main-text"))
+      {
+        return false;
+      }
+
+    std::vector<prov_element> provs={};
+    init_provs(provs);
+
+    {
+      std::vector<std::string> headers = prov_element::headers();
+
+      std::vector<std::vector<std::string> > rows={};
+      for(auto& item:provs)
+        {
+          rows.push_back(item.to_row());
+        }
+
+      LOG_S(INFO) << "sorted: " << "\n\n"
+                  << utils::to_string(headers, rows, -1);
+    }
+
+    {
+      remove_headers_and_footers(provs);
+      clean_provs(provs);
+    }
+
+    {
+      init_tables(provs);
+      clean_provs(provs);
+    }
+
+    {
+      init_figures(provs);
+      clean_provs(provs);
+    }
+
+    {
+      std::vector<std::string> headers = prov_element::headers();
+
+      std::vector<std::vector<std::string> > rows={};
+      for(auto& item:provs)
+        {
+          rows.push_back(item.to_row());
+        }
+
+      LOG_S(INFO) << "sorted: " << "\n\n"
+                  << utils::to_string(headers, rows, -1);
+    }
+    
+    {
+      init_paragraphs(provs);
+    }
+
+    {
+      for(auto& item:paragraphs)
+        {
+          item.show(true, false, false, false, false, false, false);
+        }
+
+      //for(auto& item:tables)
+      //{
+      //item.show(false, false, false);
+      //}
 
       LOG_S(WARNING) << "set doc ...";
       std::string tmp;
       std::cin >> tmp;
+    }
+
+    return true;
+  }
+
+  bool subject<DOCUMENT>::clean_provs(std::vector<prov_element>& provs)
+  {
+    for(auto itr=provs.begin(); itr!=provs.end(); )
+      {
+        if(itr->ignore)
+          {
+            itr = provs.erase(itr);
+          }
+        else
+          {
+            itr++;
+          }
+      }
+
+    return true;
+  }
+
+  bool subject<DOCUMENT>::remove_headers_and_footers(std::vector<prov_element>& provs)
+  {
+    LOG_S(INFO) << __FUNCTION__;
+    
+    std::set<std::string> to_be_ignored={"page-header", "page-footer"};
+    for(auto itr=provs.begin(); itr!=provs.end(); itr++)
+      {
+        itr->ignore = to_be_ignored.count(itr->type)? true:false;
+      }
+
+    return true;
+  }
+
+  bool subject<DOCUMENT>::init_tables(std::vector<prov_element>& provs)    
+  {
+    LOG_S(INFO) << __FUNCTION__;
+    
+    std::map<std::size_t, std::vector<std::size_t> > page_to_tables={};
+
+    for(auto itr=provs.begin(); itr!=provs.end(); itr++)
+      {
+        if(page_to_tables.count(itr->page)==0)
+          {
+            page_to_tables[itr->page] = {};
+          }
+
+        if(itr->type=="table")
+          {
+            auto item = orig[(itr->path).first][(itr->path).second];
+
+            subject<TABLE> table(doc_hash, *itr);
+            bool valid_table = table.set_data(item);
+
+            if(not valid_table)
+              {
+                continue;
+              }
+
+            itr->ignore=true;
+            page_to_tables[itr->page].push_back(std::distance(provs.begin(), itr));
+          }
+      }
+
+    /*
+
+      auto prev_itr = itr;
+      auto next_itr = itr;
+
+      while(prev_itr!=provs.begin())
+      {
+      prev_itr--;
+
+      if(prev_itr->page!=itr->page)
+      {
+      break;
+      }
+
+      if(prev_itr->name=="caption")
+      {
+      subject<PARAGRAPH> caption(doc_hash, ind);
+      bool valid = caption.set_data(item);
+
+      table.captions.push_back(caption);
+      prev_itr->ignore=true;
+      }
+      else
+      {
+      break;
+      }
+      }
+
+      next_itr++;
+      while(next_itr!=provs.end())
+      {
+      if(next_itr->page!=itr->page)
+      {
+      break;
+      }
+
+      if(next_itr->name=="caption" and
+      table.get_captions().size()==0)
+      {
+      subject<PARAGRAPH> caption(doc_hash, ind);
+      bool valid = caption.set_data(item);
+
+      table.captions.push_back(caption);
+      next_itr->ignore=true;
+      }
+      else if(prev_itr->name=="footnote")
+      {
+      subject<PARAGRAPH> footnote(doc_hash, ind);
+      bool valid = footnote.set_data(item);
+
+      table.footnotes.push_back(footnote);
+      next_itr->ignore=true;
+      }
+      else
+      {
+      break;
+      }
+
+      next_itr++;
+      }
+
+      tind_to_orig.push_back(tables.size());
+      tables.push_back(subj);
+      }
+      }
     */
+
+    return true;
+  }
+
+  bool subject<DOCUMENT>::init_figures(std::vector<prov_element>& provs)
+  {
+    LOG_S(INFO) << __FUNCTION__;
+    
+    std::map<std::size_t, std::vector<std::size_t> > page_to_figures={};
+
+    for(auto itr=provs.begin(); itr!=provs.end(); itr++)
+      {
+        if(page_to_figures.count(itr->page)==0)
+          {
+            page_to_figures[itr->page] = {};
+          }
+
+        if(itr->type=="figure")
+          {
+            auto item = orig[(itr->path).first][(itr->path).second];
+
+            subject<FIGURE> figure(doc_hash, *itr);
+            bool valid_figure = figure.set_data(item);
+
+            if(not valid_figure)
+              {
+                continue;
+              }
+
+            itr->ignore=true;
+            page_to_figures[itr->page].push_back(std::distance(provs.begin(), itr));
+          }
+      }
+
+    return true;
+  }
+
+  bool subject<DOCUMENT>::init_paragraphs(std::vector<prov_element>& provs)
+  {
+    LOG_S(INFO) << __FUNCTION__;
+
+    paragraphs.clear();
+    for(auto itr=provs.begin(); itr!=provs.end(); itr++)
+      {
+        if(itr->type=="paragraph" or itr->type=="subtitle-level-1")
+          {
+            auto item = orig[(itr->path).first][(itr->path).second];	    
+	    
+            subject<PARAGRAPH> subj(doc_hash, *itr);
+            bool valid = subj.set_data(item);
+
+            if(valid)
+              {
+                pind_to_orig.push_back(paragraphs.size());
+                paragraphs.push_back(subj);
+
+		LOG_S(WARNING) << "#-provs: " << paragraphs.back().provs.size();
+              }	    
+          }
+      }
 
     return true;
   }
