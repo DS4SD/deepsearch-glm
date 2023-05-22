@@ -339,17 +339,17 @@ namespace andromeda
 
     {
       remove_headers_and_footers(provs);
-      clean_provs(provs);
+      //clean_provs(provs);
     }
 
     {
       init_tables(provs);
-      clean_provs(provs);
+      //clean_provs(provs);
     }
 
     {
       init_figures(provs);
-      clean_provs(provs);
+      //clean_provs(provs);
     }
 
     {
@@ -418,102 +418,68 @@ namespace andromeda
     return true;
   }
 
-  bool subject<DOCUMENT>::init_tables(std::vector<prov_element>& provs)    
+  bool subject<DOCUMENT>::init_tables(std::vector<prov_element>& provs)				          
   {
     LOG_S(INFO) << __FUNCTION__;
     
-    std::map<std::size_t, std::vector<std::size_t> > page_to_tables={};
+    //std::map<std::size_t, std::vector<std::size_t> > page_to_tables={};
 
     for(auto itr=provs.begin(); itr!=provs.end(); itr++)
       {
+	if(itr->ignore)
+	  {
+	    continue;
+	  }
+
+	/*
         if(page_to_tables.count(itr->page)==0)
           {
             page_to_tables[itr->page] = {};
           }
-
-        if(itr->type=="table")
+	*/
+	
+        else if(itr->type=="table")
           {
             auto item = orig[(itr->path).first][(itr->path).second];
 
             subject<TABLE> table(doc_hash, *itr);
             bool valid_table = table.set_data(item);
 
-            if(not valid_table)
+            if(valid_table)
               {
-                continue;
+		itr->ignore=true;
+		tables.push_back(table);
+		
+		page_to_tables[itr->page].push_back(std::distance(provs.begin(), itr));
               }
-
-            itr->ignore=true;
-            page_to_tables[itr->page].push_back(std::distance(provs.begin(), itr));
           }
       }
 
-    /*
-
-      auto prev_itr = itr;
-      auto next_itr = itr;
-
-      while(prev_itr!=provs.begin())
+    for(auto& table:tables)
       {
-      prev_itr--;
+	auto mtext_ind = table.provs.at(0).maintext_ind;
+	auto caption_ind = mtext_ind-1;
+	
+	if(provs.at(capt_ind).type=="caption")
+	  {
+	    subject<PARAGRAPH> caption(doc_hash, ind);
+	    bool valid = caption.set_data(item);
+	    
+	    table.captions.push_back(caption);
+	    provs.at(caption_ind).ignore = true; 
+	  }
 
-      if(prev_itr->page!=itr->page)
-      {
-      break;
+	auto fnote_ind = mtext_ind+1;
+	
+	if(provs.at(fnote_ind).type=="footnote")
+	  {
+	    subject<PARAGRAPH> footnote(doc_hash, ind);
+	    bool valid = footnote.set_data(item);
+	    
+	    table.captions.push_back(caption);
+	    provs.at(caption_ind).ignore = true; 
+	  }	
       }
-
-      if(prev_itr->name=="caption")
-      {
-      subject<PARAGRAPH> caption(doc_hash, ind);
-      bool valid = caption.set_data(item);
-
-      table.captions.push_back(caption);
-      prev_itr->ignore=true;
-      }
-      else
-      {
-      break;
-      }
-      }
-
-      next_itr++;
-      while(next_itr!=provs.end())
-      {
-      if(next_itr->page!=itr->page)
-      {
-      break;
-      }
-
-      if(next_itr->name=="caption" and
-      table.get_captions().size()==0)
-      {
-      subject<PARAGRAPH> caption(doc_hash, ind);
-      bool valid = caption.set_data(item);
-
-      table.captions.push_back(caption);
-      next_itr->ignore=true;
-      }
-      else if(prev_itr->name=="footnote")
-      {
-      subject<PARAGRAPH> footnote(doc_hash, ind);
-      bool valid = footnote.set_data(item);
-
-      table.footnotes.push_back(footnote);
-      next_itr->ignore=true;
-      }
-      else
-      {
-      break;
-      }
-
-      next_itr++;
-      }
-
-      tind_to_orig.push_back(tables.size());
-      tables.push_back(subj);
-      }
-      }
-    */
 
     return true;
   }
@@ -522,14 +488,19 @@ namespace andromeda
   {
     LOG_S(INFO) << __FUNCTION__;
     
-    std::map<std::size_t, std::vector<std::size_t> > page_to_figures={};
+    //std::map<std::size_t, std::vector<std::size_t> > page_to_figures={};
 
     for(auto itr=provs.begin(); itr!=provs.end(); itr++)
       {
-        if(page_to_figures.count(itr->page)==0)
-          {
-            page_to_figures[itr->page] = {};
-          }
+	if(itr->ignore)
+	  {
+	    continue;
+	  }
+	
+        //if(page_to_figures.count(itr->page)==0)
+	//{
+	//page_to_figures[itr->page] = {};
+	//}
 
         if(itr->type=="figure")
           {
@@ -538,16 +509,30 @@ namespace andromeda
             subject<FIGURE> figure(doc_hash, *itr);
             bool valid_figure = figure.set_data(item);
 
-            if(not valid_figure)
+            if(valid_figure)
               {
-                continue;
-              }
-
-            itr->ignore=true;
-            page_to_figures[itr->page].push_back(std::distance(provs.begin(), itr));
+		itr->ignore=true;
+		figures.push_back(figure);
+	      }
+            //page_to_figures[itr->page].push_back(std::distance(provs.begin(), itr));
           }
       }
 
+    for(auto& figure:figures)
+      {
+	auto mtext_ind = figure.provs.at(0).maintext_ind;
+	auto caption_ind = mtext_ind+1;
+	
+	if(provs.at(capt_ind).type=="caption")
+	  {
+	    subject<PARAGRAPH> caption(doc_hash, ind);
+	    bool valid = caption.set_data(item);
+	    
+	    figure.captions.push_back(caption);
+	    provs.at(caption_ind).ignore = true; 
+	  }
+      }
+    
     return true;
   }
 
@@ -558,6 +543,11 @@ namespace andromeda
     paragraphs.clear();
     for(auto itr=provs.begin(); itr!=provs.end(); itr++)
       {
+	if(itr->ignore)
+	  {
+	    continue;
+	  }
+	
         if(itr->type=="paragraph" or itr->type=="subtitle-level-1")
           {
             auto item = orig[(itr->path).first][(itr->path).second];	    
