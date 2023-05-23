@@ -7,7 +7,7 @@ namespace andromeda
 {
 
   template<>
-  class subject<DOCUMENT>
+  class subject<DOCUMENT>: public base_subject
   {
   public:
 
@@ -42,6 +42,8 @@ namespace andromeda
              std::shared_ptr<utils::char_normaliser> char_normaliser,
              std::shared_ptr<utils::text_normaliser> text_normaliser);
 
+    void finalise();
+    
   private:
 
     void init_provs(std::vector<prov_element>& provs);
@@ -61,47 +63,32 @@ namespace andromeda
     
   public:
 
-    bool valid;
-
-    std::set<std::string> applied_models;
-
     std::filesystem::path filepath;
     nlohmann::json orig;
 
     std::string doc_name;
     uint64_t doc_hash;
 
-    std::vector<std::size_t> pind_to_orig; // paragraphs-index to original maintext-index
-    std::vector<std::size_t> tind_to_orig; // tables-index to original tables-index
-    std::vector<std::size_t> find_to_orig; // figures-index to original tables-index
-
-    std::vector<subject<PARAGRAPH> > paragraphs;
-    std::vector<subject<TABLE> > tables;
-    std::vector<subject<FIGURE> > figures;
-
-    // document-level
-    std::vector<base_property> properties;
-    std::vector<base_entity> entities;
-    std::vector<base_relation> relations;
+    //std::vector<subject<PARAGRAPH> > paragraphs;
+    //std::vector<subject<TABLE> > tables;
+    //std::vector<subject<FIGURE> > figures;
   };
 
   subject<DOCUMENT>::subject():
-    valid(true),
-    applied_models(),
+    base_subject(DOCUMENT),
+    //valid(true),
+    //applied_models(),
 
     doc_name(""),
     doc_hash(-1),
 
-    pind_to_orig({}),
-    tind_to_orig({}),
-
     paragraphs(),
     tables(),
-    figures(),
+    figures()//,
 
-    properties(),
-    entities(),
-    relations()
+    //properties(),
+    //entities(),
+    //relations()
   {}
 
   subject<DOCUMENT>::~subject()
@@ -111,23 +98,35 @@ namespace andromeda
   {
     nlohmann::json result = orig;
 
+    {
+      nlohmann::json base = base_subject::to_json();
+
+      for(auto& elem:base.items())
+	{
+	  result[elem.key()] = elem.value();
+	}
+    }
+    
     if(result.count("main-text"))
       {
-        std::vector<std::string> keys = {"hash", "orig", "text",
-                                         "properties", "entities", "relations"};
+        std::vector<std::string> keys
+	  = { "hash",
+	      "orig", "text",
+	      "properties", "entities", "relations"};
 
         for(std::size_t l=0; l<paragraphs.size(); l++)
-          {
+          {   	    
             if(paragraphs.at(l).is_valid())
               {
-                auto para = paragraphs.at(l).to_json();
-
-                std::size_t ind = pind_to_orig.at(l);
-                auto& item = result["main-text"][ind];
-
-                for(std::string key:keys)
+		auto& paragraph = paragraphs.at(l);
+		
+		auto& prov = paragraph.provs.at(0);
+                auto& item = result[prov.path.first][prov.path.first];
+		
+                auto _ = paragraph.to_json();
+                for(auto& elem:_.items())
                   {
-                    item[key] = para[key];
+                    item[elem.key()] = elem.value();
                   }
               }
           }
@@ -135,43 +134,49 @@ namespace andromeda
 
     if(result.count("tables"))
       {
-        std::vector<std::string> keys = {"hash", "orig", "text",
-                                         "properties", "entities", "relations"};
+        std::vector<std::string> keys
+	  = { "hash",
+	      "captions", "footnotes", "mentions", 
+	      "properties", "entities", "relations"};
 
         for(std::size_t l=0; l<tables.size(); l++)
           {
             if(tables.at(l).is_valid())
               {
-                auto para = tables.at(l).to_json();
-
-                std::size_t ind = pind_to_orig.at(l);
-                auto& item = result["tables"][ind];
-
-                for(std::string key:keys)
+		auto& table = tables.at(l);
+		
+		auto& prov = table.provs.at(0);
+                auto& item = result[prov.path.first][prov.path.first];
+		
+                auto _ = table.to_json();
+		for(auto& elem:_.items())
                   {
-                    item[key] = para[key];
+                    item[elem.key()] = elem.value();
                   }
-              }
+	      }
           }
       }
 
     if(result.count("figures"))
       {
-        std::vector<std::string> keys = {"hash", "orig", "text",
-                                         "properties", "entities", "relations"};
+        std::vector<std::string> keys
+	  = { "hash", 
+	      "captions", "footnotes", "mentions", 
+	      "properties", "entities", "relations"};
 
         for(std::size_t l=0; l<figures.size(); l++)
           {
             if(figures.at(l).is_valid())
               {
-                auto para = figures.at(l).to_json();
-
-                std::size_t ind = pind_to_orig.at(l);
-                auto& item = result["figures"][ind];
-
-                for(std::string key:keys)
+		auto& figure = figures.at(l);
+		
+		auto& prov = figure.provs.at(0);
+                auto& item = result[prov.path.first][prov.path.first];
+		
+                auto _ = figure.to_json();
+                for(auto& elem:_.items())
                   {
-                    item[key] = para[key];
+                    item[elem.key()] = elem.value();
                   }
               }
           }
@@ -182,20 +187,13 @@ namespace andromeda
 
   void subject<DOCUMENT>::clear()
   {
-    valid = false;
+    base_subject::clear();
 
     orig = nlohmann::json::object({});
-
-    pind_to_orig.clear();
-    tind_to_orig.clear();
 
     paragraphs.clear();
     tables.clear();
     figures.clear();
-
-    properties.clear();
-    entities.clear();
-    relations.clear();
   }
 
   void subject<DOCUMENT>::show(bool txt, bool mdls,
@@ -605,10 +603,7 @@ namespace andromeda
 
             if(valid)
               {
-                pind_to_orig.push_back(paragraphs.size());
                 paragraphs.push_back(subj);
-
-		//LOG_S(WARNING) << "#-provs: " << paragraphs.back().provs.size();
               }	    
           }
       }
@@ -637,10 +632,21 @@ namespace andromeda
         if(not valid)
           {
             LOG_S(WARNING) << __FILE__ << ":" << __FUNCTION__
-                           << " --> unvalid text detected in main-text";
+                           << " --> unvalid text detected in table";
           }
       }
 
+    for(auto& figure:figures)
+      {
+        bool valid = figure.set_tokens(char_normaliser, text_normaliser);
+
+        if(not valid)
+          {
+            LOG_S(WARNING) << __FILE__ << ":" << __FUNCTION__
+                           << " --> unvalid text detected in figure";
+          }
+      }
+    
     return true;
   }
 
@@ -668,6 +674,59 @@ namespace andromeda
     return false;
   }
 
+  bool subject<DOCUMENT>::finalise()
+  {
+    
+  }
+
+  bool subject<DOCUMENT>::finalise_properties()
+  {
+    std::map<std::string, std::size_t> property_mapping;
+
+    std::size_t total=0;
+    for(subject<PARAGRAPH>& para:subj.paragraphs)
+      {
+	for(auto& prop:para.properties)
+	  {
+	    std::string key = prop.get_name();
+	    std::size_t dst = para.dst;
+	    
+	    if(lang_mapping.count(key)==1)
+	      {
+		lang_mapping[key] += dst;
+		total += dst;
+	      }
+	    else
+	      {
+		lang_mapping[key] = dst;
+		total += dst;
+	      }
+	  }
+      }
+
+    base_property prop(this->get_key(), "null", 0.0);
+    for(auto itr=property_mapping.begin(); itr!=property_mapping.end(); itr++)
+      {
+	double confidence = std::round(1000*(itr->second)/(0.0+total))/1000.0;
+	
+	if(itr==lang_mapping.begin())
+	  {
+	    prop.set_name(itr->first);
+	    prop.set_conf(confidence);
+	  }
+	else if(prop.get_conf()<confidence)
+	  {
+	    prop.set_name(itr->first);
+	    prop.set_conf(confidence);	    
+	  }
+	else
+	  {}
+      }
+
+    subj.properties.push_back(prop);
+    applied
+  }
+  
 }
 
 #endif

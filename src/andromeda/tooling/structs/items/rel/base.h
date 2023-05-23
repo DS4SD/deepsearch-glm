@@ -5,13 +5,14 @@
 
 namespace andromeda
 {
-  class base_relation
+  class base_relation: public base_types
   {
     const static inline std::vector<std::string> SHRT_HEADERS = { "flvr", "name", "conf",
 								  "hash_i", "hash_j",
 								  "ihash_i", "ihash_j",
 								  "name_i", "name_j"};
 
+    /*
     typedef typename word_token::fval_type fval_type;
     typedef typename word_token::flvr_type flvr_type;
     typedef typename word_token::hash_type hash_type;
@@ -19,7 +20,8 @@ namespace andromeda
     typedef typename word_token::index_type index_type;
     typedef typename word_token::range_type range_type;
     typedef typename word_token::coord_type coord_type;
-
+    */
+    
     inline static std::mutex mtx;
     
     inline static std::unordered_map<std::string, base_relation::flvr_type> to_flvr_map = {};
@@ -32,7 +34,7 @@ namespace andromeda
     static flvr_type   to_flvr(const std::string& rel_name);
     static std::string to_name(const flvr_type& rel_flvr);
 
-    base_relation(std::string name, fval_type conf,
+    base_relation(std::string name, val_type conf,
 		  const base_entity& ent_i,
 		  const base_entity& ent_j);
 
@@ -51,7 +53,7 @@ namespace andromeda
   private:
 
     flvr_type flvr;
-    fval_type conf;
+    val_type  conf;
 
     const hash_type hash_i, ihash_i;
     const hash_type hash_j, ihash_j;
@@ -95,7 +97,7 @@ namespace andromeda
     return name;
   }
 
-  base_relation::base_relation(std::string name, fval_type conf,
+  base_relation::base_relation(std::string name, val_type conf,
 			       const base_entity& ent_i,
 			       const base_entity& ent_j):
     flvr(to_flvr(name)),    

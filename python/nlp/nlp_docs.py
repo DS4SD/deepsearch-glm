@@ -199,7 +199,40 @@ def run_nlp_on_docs(sdir):
         fw = open(filename_, "w")        
         fw.write(json.dumps(doc_, indent=2))
         fw.close()
+
         
+def viz_page(doc):
+
+    mtext = doc["main-text"]
+        
+def viz_nlp_on_docs(sdir):
+
+    filenames = glob.glob(os.path.join(sdir, "*.json"))
+    print("filenames: ", filenames)
+    
+    model = andromeda_nlp.nlp_model()
+    model.initialise("term;language;reference;abbreviation")
+    
+    for filename in filenames:
+
+        if(filename.endswith(".nlp.json")):
+            continue
+        
+        print(f"reading {filename}")
+
+        fr = open(filename, "r")
+        doc = json.load(fr)
+        fr.close()
+
+        doc_ = model.apply_on_pdfdoc(doc)
+        
+        filename_ = filename.replace(".json", ".nlp.json") 
+
+        print(f" --> writing {filename_}")
+        fw = open(filename_, "w")        
+        fw.write(json.dumps(doc_, indent=2))
+        fw.close()        
+    
 if __name__ == '__main__':
 
     mode, sdir, models, uname, pword = parse_arguments()

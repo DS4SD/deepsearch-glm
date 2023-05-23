@@ -5,17 +5,18 @@
 
 namespace andromeda
 {
-  class base_entity
+  class base_entity: public base_types
   {
   public:
-
+    /*
     typedef typename word_token::fval_type fval_type;
     typedef typename word_token::flvr_type flvr_type;
     typedef typename word_token::hash_type hash_type;
 
     typedef typename word_token::index_type index_type;
     typedef typename word_token::range_type range_type;
-
+    */
+    
     const static inline hash_type DEFAULT_HASH = -1;
 
     const static inline index_type DEFAULT_INDEX = -1;
@@ -143,7 +144,7 @@ namespace andromeda
     hash_type hash; // hash of the text
     hash_type ihash; // instance-hash of the instance (encoding the position of the entity). This is important later for entity resolution.
 
-    fval_type conf;
+    val_type conf;
 
     subject_name subj_name;
     index_type subj_index;

@@ -65,41 +65,16 @@ namespace andromeda
     uint64_t hash;
 
     std::set<std::string> labels;
-    //uint64_t dhash;
-    //uint64_t index;
-    
-    //std::set<std::string> applied_models, labels;
-
-    //std::vector<base_property> properties;
-    //std::vector<base_entity> entities;
-    //std::vector<base_relation> relations;
   };
 
   subject<PARAGRAPH>::subject():
-    base_subject(),
-
-    //hash(-1),
-    //dhash(-1),
-    
-    //applied_models(),
-    labels()//,
-    
-    //properties({}),
-    //entities({}),
-    //relations({})
+    base_subject(PARAGRAPH),
+    labels()
   {}
 
   subject<PARAGRAPH>::subject(uint64_t dhash, prov_element& prov):
-    base_subject(dhash, {prov}),
-    
-    //hash(provenance.get_hash()),
-    
-    //applied_models(),
-    labels()//,
-    
-    //properties({}),
-    //entities({}),
-    //relations({})
+    base_subject(dhash, PARAGRAPH, {prov}),
+    labels()
   {}
   
   subject<PARAGRAPH>::~subject()
@@ -275,8 +250,9 @@ namespace andromeda
 
   nlohmann::json subject<PARAGRAPH>::to_json()
   {
-    nlohmann::json result = nlohmann::json::object({});
-
+    //nlohmann::json result = nlohmann::json::object({});
+    nlohmann::json result = base_subject::to_json();
+    
     {
       result["hash"] = text_element::hash;
       
@@ -286,6 +262,7 @@ namespace andromeda
       result["word-tokens"] = andromeda::to_json(text_element::word_tokens, text);
     }
 
+    /*
     result["applied-models"] = applied_models;
     
     {
@@ -322,7 +299,8 @@ namespace andromeda
 	  data.push_back(relations.at(l).to_json_row());
 	}      
     }
-
+    */
+    
     return result;
   }
 

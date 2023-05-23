@@ -58,60 +58,39 @@ namespace andromeda
     void set_hash();
     
   public:
-
-    //bool valid;
-    //uint64_t hash;
-    
-    //uint64_t dhash;
     
     std::vector<subject<PARAGRAPH> > captions;
     std::vector<subject<PARAGRAPH> > footnotes;
+    std::vector<subject<PARAGRAPH> > mentions;
     
     uint64_t nrows, ncols;
     std::vector<std::vector<table_element_type> > data;
   };
 
   subject<TABLE>::subject():
-    base_subject(),
-    //valid(false),
-
-    //hash(-1),
-    //dhash(-1),
-    //index(-1),
+    base_subject(TABLE),
 
     captions({}),
     footnotes({}),
+    mentions({}),
     
     nrows(0),
     ncols(0),
-    data({})//,
 
-    //applied_models(),
-    
-    //properties({}),
-    //entities({}),
-    //relations({})
+    data({})
   {}
   
   subject<TABLE>::subject(uint64_t dhash, prov_element& prov):
-    base_subject(dhash, prov),
-    //valid(false),
-
-    //hash(-1),
-    //dhash(dhash),
-    //index(index),
+    base_subject(dhash, TABLE, prov),
 
     captions({}),
     footnotes({}),    
+    mentions({}),
     
-    nrows(0), ncols(0),
-    data()//,
+    nrows(0),
+    ncols(0),
 
-    //applied_models(),
-    
-    //properties({}),
-    //entities({}),
-    //relations({})
+    data()
   {}
   
   subject<TABLE>::~subject()
@@ -120,29 +99,20 @@ namespace andromeda
   void subject<TABLE>::clear()
   {
     base_subject::clear();
-    //valid = false;
-
-    //hash=-1;
-    //dhash=-1;
-    //index=-1;
     
     captions.clear();
     footnotes.clear();
+    mentions.clear();
     
     nrows=0;
     ncols=0;
 
     data.clear();
-
-    //applied_models.clear();
-    
-    //properties.clear();
-    //entities.clear();
-    //relations.clear();
   }
   
   nlohmann::json subject<TABLE>::to_json()
   {
+    /*
     nlohmann::json result = nlohmann::json::object({});
 
     {
@@ -185,7 +155,40 @@ namespace andromeda
 	  rels_data.push_back(relations.at(l).to_json_row());
 	}      
     }
+    */
 
+    nlohmann::json result = base_subject::to_json();
+
+    {
+      nlohmann::json& _ = result[base_subject::captions_lbl];
+      _ = nlohmann::json::array({});
+      
+      for(auto& caption:captions)
+	{
+	  _.push_back(caption.to_json());
+	}
+    }
+
+    {
+      nlohmann::json& _ = result[base_subject::footnotes_lbl];
+      _ = nlohmann::json::array({});
+      
+      for(auto& footnote:footnotes)
+	{
+	  _.push_back(footnote.to_json());
+	}
+    }
+
+    {
+      nlohmann::json& _ = result[base_subject::mentions_lbl];
+      _ = nlohmann::json::array({});
+      
+      for(auto& mention:mentions)
+	{
+	  _.push_back(mention.to_json());
+	}
+    }        
+          
     return result;
   }
   

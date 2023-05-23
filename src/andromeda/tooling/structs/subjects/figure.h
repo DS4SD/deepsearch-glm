@@ -34,20 +34,23 @@ namespace andromeda
 
     std::vector<subject<PARAGRAPH> > captions;
     std::vector<subject<PARAGRAPH> > footnotes;
+    std::vector<subject<PARAGRAPH> > mentions;
   };
 
   subject<FIGURE>::subject():
-    base_subject(),
+    base_subject(FIGURE),
 
     captions({}),
-    footnotes({})
+    footnotes({}),
+    mentions({})
   {}
   
   subject<FIGURE>::subject(uint64_t dhash, prov_element& prov):
-    base_subject(dhash, prov),
+    base_subject(dhash, FIGURE, prov),
 
     captions({}),
-    footnotes({})
+    footnotes({}),
+    mentions({})
   {}
   
   subject<FIGURE>::~subject()
@@ -59,6 +62,7 @@ namespace andromeda
 
     captions.clear();
     footnotes.clear();
+    mentions.clear();
   }
 
   nlohmann::json subject<FIGURE>::to_json()
@@ -66,7 +70,7 @@ namespace andromeda
     nlohmann::json result = nlohmann::json::object({});
 
     {
-      nlohmann::json& _ = result["captions"];
+      nlohmann::json& _ = result[base_subject::captions_lbl];
       _ = nlohmann::json::array({});
       
       for(auto& caption:captions)
@@ -76,14 +80,24 @@ namespace andromeda
     }
 
     {
-      nlohmann::json& _ = result["footnotes"];
+      nlohmann::json& _ = result[base_subject::footnotes_lbl];
       _ = nlohmann::json::array({});
       
       for(auto& footnote:footnotes)
 	{
 	  _.push_back(footnote.to_json());
 	}
-    }    
+    }
+
+    {
+      nlohmann::json& _ = result[base_subject::mentions_lbl];
+      _ = nlohmann::json::array({});
+      
+      for(auto& mention:mentions)
+	{
+	  _.push_back(mention.to_json());
+	}
+    }        
     
     return result;
   }

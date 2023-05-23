@@ -16,6 +16,7 @@ namespace andromeda
 
     const static inline std::string keep_text_lbl = "keep-text";
     const static inline std::string keep_table_lbl = "keep-tables";
+    const static inline std::string keep_figure_lbl = "keep-figures";
     
     typedef doc_type subject_type;
     
@@ -76,7 +77,7 @@ namespace andromeda
 
     std::size_t curr_docs;
     
-    bool keep_text, keep_tables;
+    bool keep_text, keep_tables, keep_figures;
   };
 
   producer<DOCUMENT>::producer():
@@ -85,7 +86,8 @@ namespace andromeda
     curr_docs(0),
     
     keep_text(true),
-    keep_tables(true)
+    keep_tables(true),
+    keep_figures(true)
   {}
 
   producer<DOCUMENT>::producer(std::vector<model_ptr_type> models):
@@ -94,7 +96,8 @@ namespace andromeda
     curr_docs(0),
     
     keep_text(true),
-    keep_tables(true)
+    keep_tables(true),
+    keep_figures(true)
   {}
   
   producer<DOCUMENT>::producer(nlohmann::json config,
@@ -136,6 +139,7 @@ namespace andromeda
       
       config[keep_text_lbl] = keep_text;
       config[keep_table_lbl] = keep_tables;
+      config[keep_figure_lbl] = keep_figures;
       
       configs.push_back(config);
     }
@@ -150,6 +154,7 @@ namespace andromeda
     
     keep_text = this->configuration.value(keep_text_lbl, keep_text);
     keep_tables = this->configuration.value(keep_table_lbl, keep_tables);
+    keep_figures = this->configuration.value(keep_figure_lbl, keep_figurs);
 
     return reset_pointer();
   }
@@ -233,6 +238,8 @@ namespace andromeda
         model->apply(subject);
       }
 
+    subject.finalise();
+    
     return true;
   }
 
