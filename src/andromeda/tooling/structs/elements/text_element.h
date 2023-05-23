@@ -5,14 +5,13 @@
 
 namespace andromeda
 {
-  class text_element
+  class text_element: public base_types
   {
   public:
 
-    typedef typename word_token::hash_type hash_type;
-
-    typedef typename word_token::index_type index_type;
-    typedef typename word_token::range_type range_type;
+    //typedef typename word_token::hash_type hash_type;
+    //typedef typename word_token::index_type index_type;
+    //typedef typename word_token::range_type range_type;
     
     typedef std::tuple<index_type, index_type, std::string> candidate_type;
 

@@ -21,6 +21,7 @@ namespace andromeda
     bool is_valid() { return (base_subject::valid); }
     
     nlohmann::json to_json();
+
     bool from_json(const nlohmann::json& data);
     
     bool set_data(nlohmann::json& data) { return true; }
@@ -31,57 +32,22 @@ namespace andromeda
     
   public:
 
-    //bool valid;
-    //uint64_t hash;
-    
-    //uint64_t dhash;
-    //uint64_t index;
-
     std::vector<subject<PARAGRAPH> > captions;
     std::vector<subject<PARAGRAPH> > footnotes;
-    
-    //std::set<std::string> applied_models;
-    
-    //std::vector<base_property> properties;
-    //std::vector<base_entity> entities;
-    //std::vector<base_relation> relations;
-    
   };
 
   subject<FIGURE>::subject():
     base_subject(),
-    //valid(false),
-
-    //hash(-1),
-    //dhash(-1),
-    //index(-1),
 
     captions({}),
-    footnotes({})//,
-
-    //applied_models(),
-    
-    //properties({}),
-    //entities({}),
-    //relations({})
+    footnotes({})
   {}
   
   subject<FIGURE>::subject(uint64_t dhash, prov_element& prov):
     base_subject(dhash, prov),
-    //valid(false),
-
-    //hash(-1),
-    //dhash(dhash),
-    //index(index),
 
     captions({}),
-    footnotes({})//,
-    
-    //applied_models(),
-    
-    //properties({}),
-    //entities({}),
-    //relations({})
+    footnotes({})
   {}
   
   subject<FIGURE>::~subject()
@@ -90,20 +56,36 @@ namespace andromeda
   void subject<FIGURE>::clear()
   {
     base_subject::clear();
-    //valid = false;
-
-    //hash=-1;
-    //dhash=-1;
-    //index=-1;
 
     captions.clear();
     footnotes.clear();
+  }
 
-    //applied_models.clear();
+  nlohmann::json subject<FIGURE>::to_json()
+  {
+    nlohmann::json result = nlohmann::json::object({});
+
+    {
+      nlohmann::json& _ = result["captions"];
+      _ = nlohmann::json::array({});
+      
+      for(auto& caption:captions)
+	{
+	  _.push_back(caption.to_json());
+	}
+    }
+
+    {
+      nlohmann::json& _ = result["footnotes"];
+      _ = nlohmann::json::array({});
+      
+      for(auto& footnote:footnotes)
+	{
+	  _.push_back(footnote.to_json());
+	}
+    }    
     
-    //properties.clear();
-    //entities.clear();
-    //relations.clear();
+    return result;
   }
   
 }

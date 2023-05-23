@@ -21,11 +21,6 @@ namespace andromeda
       
       typedef float  sval_type;
       typedef double dval_type;      
-
-      // FIXME: remove these types at some point ...
-      //typedef flvr_type flavor_type;
-      //typedef sval_type value_type;
-
     };
 
   }

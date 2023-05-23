@@ -6,24 +6,12 @@
 namespace andromeda
 {
 
-  class base_subject
+  class base_subject: public base_types
   {
-  public:
-
-    typedef float    fval_type;
-    typedef uint16_t flvr_type;
-    typedef uint64_t hash_type;
-
-    typedef            uint64_t     index_type;
-    typedef std::array<uint64_t, 2> range_type;
-    typedef std::array<uint64_t, 2> coord_type;
-
   public:
 
     base_subject();
     base_subject(uint64_t dhash, prov_element& prov);
-
-
     
     void clear();
 
@@ -73,14 +61,10 @@ namespace andromeda
     properties({}),
     entities({}),
     relations({})
-  {
-    LOG_S(INFO) << "#-provs: " << provs.size();
-  }
+  {}
 
   void base_subject::clear()
   {
-    LOG_S(INFO) << __FUNCTION__;
-    
     valid = false;
 
     hash = -1;
