@@ -147,7 +147,7 @@ namespace andromeda
     val_type conf;
 
     subject_name subj_name;
-    index_type subj_index;
+    std::string subj_path;
 
     range_type coor; // table-coors (ignore for text)
     range_type span; // table-spans (ignore for text)
@@ -174,7 +174,7 @@ namespace andromeda
     conf(1.0),
 
     subj_name(PARAGRAPH),
-    subj_index(DEFAULT_INDEX),
+    subj_path("#"),
 
     coor(DEFAULT_COOR),
     span(DEFAULT_SPAN),
@@ -211,7 +211,7 @@ namespace andromeda
     conf(1.0),
 
     subj_name(PARAGRAPH),
-    subj_index(DEFAULT_INDEX),
+    subj_path("#"),
 
     coor(DEFAULT_COOR),
     span(DEFAULT_SPAN),
@@ -249,7 +249,7 @@ namespace andromeda
     conf(1.0),
 
     subj_name(TABLE),
-    subj_index(DEFAULT_INDEX),
+    subj_path("#"),
 
     coor(coor),
     span(span),
@@ -288,7 +288,7 @@ namespace andromeda
     conf(1.0),
 
     subj_name(subj_name),
-    subj_index(subj_index),
+    subj_path("#"),
 
     coor(coor),
     span(span),

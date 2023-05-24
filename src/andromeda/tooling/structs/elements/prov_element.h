@@ -16,15 +16,14 @@ namespace andromeda
 
     prov_element(int16_t maintext_ind,
 		 std::string dref, std::string name, std::string type);
-    
-    static std::pair<std::string, int16_t> from_ref(std::string dref);
+
+    std::string to_path();
+    static std::pair<std::string, int16_t> from_path(std::string dref);
 
     bool overlaps_x(const prov_element& rhs) const;
     bool overlaps_y(const prov_element& rhs) const;
     
     friend bool operator<(const prov_element& lhs, const prov_element& rhs);
-    
-    std::string to_path();
     
     void set(const nlohmann::json& data);
 
@@ -35,10 +34,10 @@ namespace andromeda
     
   public:
     
-    int16_t maintext_ind;
+    int32_t maintext_ind;
     std::string name, type;
 
-    std::pair<std::string, int16_t> path;
+    std::pair<std::string, int32_t> path;
 
     bool ignore;
     uint16_t page;
@@ -86,14 +85,14 @@ namespace andromeda
     coor_range({0,0})
   {}
 
-  prov_element::prov_element(int16_t maintext_ind,
-			     std::string doc_path, std::string name, std::string type):
+  prov_element::prov_element(int16_t maintext_ind, std::string doc_path,
+			     std::string name, std::string type):
     maintext_ind(maintext_ind),
 
     name(name),
     type(type),
-      
-    path(from_ref(doc_path)),
+    
+    path(from_path(doc_path)),
     ignore(false),
     
     page(0),
@@ -105,9 +104,17 @@ namespace andromeda
     coor_range({0,0})
   {}
 
-  std::pair<std::string, int16_t> prov_element::from_ref(std::string dref)
+  std::string prov_element::to_path()
   {
-    std::vector<std::string> parts = utils::split(dref, "/");
+    std::stringstream ss;
+    ss << "#" << "/" << path.first << "/" << path.second;
+
+    return ss.str();
+  }
+  
+  std::pair<std::string, int16_t> prov_element::from_path(std::string doc_path)
+  {
+    std::vector<std::string> parts = utils::split(doc_path, "/");
     assert(parts.size()==3 and parts.at(0)=="#");
     
     return std::pair<std::string, int16_t>{parts.at(1), std::stoi(parts.at(2))};

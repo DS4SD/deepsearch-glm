@@ -106,8 +106,7 @@ namespace andromeda
     if(result.count("main-text"))
       {
         std::vector<std::string> keys
-	  = { "hash",
-	      "orig", "text",
+	  = { "hash", "orig", "text",
 	      "properties", "entities", "relations"};
 
         for(std::size_t l=0; l<paragraphs.size(); l++)
@@ -131,9 +130,8 @@ namespace andromeda
     if(result.count("tables"))
       {
         std::vector<std::string> keys
-	  = { "hash",
-	      "captions", "footnotes", "mentions", 
-	      "properties", "entities", "relations"};
+	  = { "hash", "captions", "footnotes", "mentions", 
+	  "properties", "entities", "relations"};
 
         for(std::size_t l=0; l<tables.size(); l++)
           {
@@ -156,8 +154,7 @@ namespace andromeda
     if(result.count("figures"))
       {
         std::vector<std::string> keys
-	  = { "hash", 
-	      "captions", "footnotes", "mentions", 
+	  = { "hash",  "captions", "footnotes", "mentions", 
 	      "properties", "entities", "relations"};
 
         for(std::size_t l=0; l<figures.size(); l++)
@@ -701,6 +698,7 @@ namespace andromeda
     LOG_S(INFO) << "document: " << filepath;    
     LOG_S(INFO) << "properties: \n" << tabulate(properties);
     LOG_S(INFO) << "entities: \n" << tabulate(entities);
+    LOG_S(INFO) << "relations: \n" << tabulate(relations);
 
     std::string tmp;
     std::cin >> tmp;
@@ -799,7 +797,7 @@ namespace andromeda
 	    entities.push_back(ent);
 	    
 	    entities.back().subj_name = PARAGRAPH;
-	    entities.back().subj_index = paragraph.provs.at(0).maintext_ind;
+	    entities.back().subj_path = paragraph.provs.at(0).to_path();
 	  }
       }
 
@@ -810,7 +808,7 @@ namespace andromeda
 	    entities.push_back(ent);
 
 	    entities.back().subj_name = TABLE;
-	    entities.back().subj_index = table.provs.at(0).maintext_ind;
+	    entities.back().subj_path = paragraph.provs.at(0).to_path();
 	  }
       }
 
@@ -821,7 +819,7 @@ namespace andromeda
 	    entities.push_back(ent);
 
 	    entities.back().subj_name = FIGURE;
-	    entities.back().subj_index = figure.provs.at(0).maintext_ind;	    
+	    entities.back().subj_path = paragraph.provs.at(0).to_path();
 	  }
       }    
 
@@ -830,7 +828,24 @@ namespace andromeda
 
   bool subject<DOCUMENT>::finalise_relations()
   {
+    relations.clear();
 
+    for(subject<PARAGRAPH>& paragraph:paragraphs)
+      {
+	for(auto& rel:paragraph.relations)
+	  {	    
+	    relations.push_back(rel);
+	  }
+      }
+
+    for(subject<TABLE>& table:tables)
+      {
+	for(auto& ent:table.relations)
+	  {
+	    relations.push_back(rel);
+	  }
+      }    
+    
     return true;
   }
   
