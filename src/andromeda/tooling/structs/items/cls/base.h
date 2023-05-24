@@ -35,6 +35,8 @@ namespace andromeda
     nlohmann::json to_json_row();
     bool from_json_row(const nlohmann::json& row);
 
+    friend bool operator<(const base_property& lhs, const base_property& rhs);
+    
   private:
 
     std::string type;
@@ -97,6 +99,18 @@ namespace andromeda
     
     return false;
   }    
+
+  bool operator<(const base_property& lhs, const base_property& rhs)
+  {
+    if(lhs.type==rhs.type)
+      {
+	return lhs.conf>rhs.conf;
+      }
+    else
+      {
+	return (lhs.type<rhs.type);
+      }
+  }
   
 }
 

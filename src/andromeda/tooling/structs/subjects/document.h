@@ -42,7 +42,7 @@ namespace andromeda
              std::shared_ptr<utils::char_normaliser> char_normaliser,
              std::shared_ptr<utils::text_normaliser> text_normaliser);
 
-    void finalise();
+    bool finalise();
     
   private:
 
@@ -56,10 +56,12 @@ namespace andromeda
     bool remove_headers_and_footers(std::vector<prov_element>& provs);
 
     bool init_tables(std::vector<prov_element>& provs);
-
     bool init_figures(std::vector<prov_element>& provs);
-
     bool init_paragraphs(std::vector<prov_element>& provs);
+
+    bool finalise_properties();
+    bool finalise_entities();
+    bool finalise_relations();
     
   public:
 
@@ -236,7 +238,9 @@ namespace andromeda
   }
 
   void subject<DOCUMENT>::init_provs(std::vector<prov_element>& provs)
-  {    
+  {
+    LOG_S(INFO) << __FUNCTION__;
+    
     provs.clear();
 
     for(std::size_t l=0; l<orig["main-text"].size(); l++)
@@ -293,6 +297,8 @@ namespace andromeda
 
   void subject<DOCUMENT>::order_items()
   {
+    LOG_S(INFO) << __FUNCTION__;
+    
     if(orig.count("main-text")==0)
       {
         return;
@@ -364,6 +370,7 @@ namespace andromeda
     std::vector<prov_element> provs={};
     init_provs(provs);
 
+    /*
     {
       std::vector<std::string> headers = prov_element::headers();
 
@@ -376,7 +383,8 @@ namespace andromeda
       LOG_S(INFO) << "sorted: " << "\n\n"
                   << utils::to_string(headers, rows, -1);
     }
-
+    */
+    
     {
       remove_headers_and_footers(provs);
       //clean_provs(provs);
@@ -431,7 +439,7 @@ namespace andromeda
     
     return true;
   }
-
+  
   bool subject<DOCUMENT>::clean_provs(std::vector<prov_element>& provs)
   {
     for(auto itr=provs.begin(); itr!=provs.end(); )
@@ -451,7 +459,7 @@ namespace andromeda
 
   bool subject<DOCUMENT>::remove_headers_and_footers(std::vector<prov_element>& provs)
   {
-    //LOG_S(INFO) << __FUNCTION__;
+    LOG_S(INFO) << __FUNCTION__;
     
     std::set<std::string> to_be_ignored={"page-header", "page-footer"};
     for(auto itr=provs.begin(); itr!=provs.end(); itr++)
@@ -464,6 +472,8 @@ namespace andromeda
 
   bool subject<DOCUMENT>::init_tables(std::vector<prov_element>& provs)				          
   {
+    LOG_S(INFO) << __FUNCTION__;
+    
     for(auto itr=provs.begin(); itr!=provs.end(); itr++)
       {
 	if(itr->ignore)
@@ -530,6 +540,8 @@ namespace andromeda
 
   bool subject<DOCUMENT>::init_figures(std::vector<prov_element>& provs)
   {
+    LOG_S(INFO) << __FUNCTION__;
+    
     for(auto itr=provs.begin(); itr!=provs.end(); itr++)
       {
 	if(itr->ignore)
@@ -579,6 +591,8 @@ namespace andromeda
 
   bool subject<DOCUMENT>::init_paragraphs(std::vector<prov_element>& provs)
   {
+    LOG_S(INFO) << __FUNCTION__;
+    
     paragraphs.clear();
     for(auto itr=provs.begin(); itr!=provs.end(); itr++)
       {
@@ -608,6 +622,8 @@ namespace andromeda
   bool subject<DOCUMENT>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
                                      std::shared_ptr<utils::text_normaliser> text_normaliser)
   {
+    LOG_S(INFO) << __FUNCTION__;
+    
     for(auto& paragraph:paragraphs)
       {
         bool valid = paragraph.set_tokens(char_normaliser, text_normaliser);
@@ -648,6 +664,8 @@ namespace andromeda
                               std::shared_ptr<utils::char_normaliser> char_normaliser,
                               std::shared_ptr<utils::text_normaliser> text_normaliser)
   {
+    LOG_S(INFO) << __FUNCTION__;
+    
     if(set_data(data))
       {
         return set_tokens(char_normaliser, text_normaliser);
@@ -660,6 +678,8 @@ namespace andromeda
                               std::shared_ptr<utils::char_normaliser> char_normaliser,
                               std::shared_ptr<utils::text_normaliser> text_normaliser)
   {
+    LOG_S(INFO) << __FUNCTION__;
+    
     if(set_data(filepath, data))
       {
         return set_tokens(char_normaliser, text_normaliser);
@@ -670,57 +690,146 @@ namespace andromeda
 
   bool subject<DOCUMENT>::finalise()
   {
+    LOG_S(INFO) << __FUNCTION__;
+    
     bool valid_props = finalise_properties();
 
-    return valid_props;
+    bool valid_ents = finalise_entities();
+
+    bool valid_rels = finalise_relations();
+
+    LOG_S(INFO) << "document: " << filepath;    
+    LOG_S(INFO) << "properties: \n" << tabulate(properties);
+    LOG_S(INFO) << "entities: \n" << tabulate(entities);
+
+    std::string tmp;
+    std::cin >> tmp;
+    
+    return (valid_props and valid_ents and valid_rels);
   }
 
   bool subject<DOCUMENT>::finalise_properties()
   {
-    std::map<std::string, std::size_t> property_mapping;
+    std::map<std::string, val_type>                         property_total;
+    std::map<std::pair<std::string, std::string>, val_type> property_label_mapping;
 
-    std::size_t total=0;
-    for(subject<PARAGRAPH>& para:subj.paragraphs)
+    for(subject<PARAGRAPH>& paragraph:paragraphs)
       {
-	for(auto& prop:para.properties)
+	for(auto& prop:paragraph.properties)
 	  {
-	    std::string key = prop.get_name();
-	    std::size_t dst = para.dst;
+	    std::string mdl = prop.get_type();
+	    std::string lbl = prop.get_name();
+	    val_type   conf = prop.get_conf();
+	    val_type    dst = paragraph.dst;
+
+	    /*
+	    LOG_S(INFO) << std::setw(16) << mdl
+			<< std::setw(16) << lbl
+			<< std::setw(16) << conf 
+			<< std::setw(16) << dst; 
+	    */
 	    
-	    if(lang_mapping.count(key)==1)
+	    if(property_total.count(mdl)==1)
 	      {
-		lang_mapping[key] += dst;
-		total += dst;
+		property_total[mdl] += dst;
 	      }
 	    else
 	      {
-		lang_mapping[key] = dst;
-		total += dst;
+		property_total[mdl] = dst;
+	      }
+
+	    std::pair<std::string, std::string> key={mdl,lbl};
+	    if(property_label_mapping.count(key)==1)
+	      {
+		property_label_mapping[key] += dst*conf;
+	      }
+	    else
+	      {
+		property_label_mapping[key] = dst*conf;
 	      }
 	  }
       }
 
-    base_property prop(this->get_key(), "null", 0.0);
-    for(auto itr=property_mapping.begin(); itr!=property_mapping.end(); itr++)
+    properties.clear();
+    for(auto itr=property_label_mapping.begin(); itr!=property_label_mapping.end(); itr++)
       {
-	double confidence = std::round(1000*(itr->second)/(0.0+total))/1000.0;
-	
-	if(itr==lang_mapping.begin())
-	  {
-	    prop.set_name(itr->first);
-	    prop.set_conf(confidence);
-	  }
-	else if(prop.get_conf()<confidence)
-	  {
-	    prop.set_name(itr->first);
-	    prop.set_conf(confidence);	    
-	  }
-	else
-	  {}
+	std::string mdl = (itr->first).first;
+	itr->second /= (property_total.at(mdl));
+
+	base_property prop((itr->first).first, (itr->first).second, itr->second);
+	properties.push_back(prop);
       }
 
-    subj.properties.push_back(prop);
+    //LOG_S(INFO) << "properties: \n\n" << tabulate(properties);
+    
+    std::sort(properties.begin(), properties.end());
 
+    //LOG_S(INFO) << "properties: \n\n" << tabulate(properties);
+    
+    for(auto itr=properties.begin(); itr!=properties.end(); )
+      {
+	auto next = itr;
+	next++;
+
+	if(itr==properties.end() or next==properties.end())
+	  {
+	    break;
+	  }
+	else if(itr->get_type()==next->get_type())
+	  {
+	    properties.erase(next);
+	  }
+	else
+	  {
+	    itr++;
+	  }
+      }
+
+    return true;
+  }
+
+  bool subject<DOCUMENT>::finalise_entities()
+  {
+    entities.clear();
+    
+    for(subject<PARAGRAPH>& paragraph:paragraphs)
+      {
+	for(auto& ent:paragraph.entities)
+	  {	    
+	    entities.push_back(ent);
+	    
+	    entities.back().subj_name = PARAGRAPH;
+	    entities.back().subj_index = paragraph.provs.at(0).maintext_ind;
+	  }
+      }
+
+    for(subject<TABLE>& table:tables)
+      {
+	for(auto& ent:table.entities)
+	  {
+	    entities.push_back(ent);
+
+	    entities.back().subj_name = TABLE;
+	    entities.back().subj_index = table.provs.at(0).maintext_ind;
+	  }
+      }
+
+    for(subject<FIGURE>& figure:figures)
+      {
+	for(auto& ent:figure.entities)
+	  {
+	    entities.push_back(ent);
+
+	    entities.back().subj_name = FIGURE;
+	    entities.back().subj_index = figure.provs.at(0).maintext_ind;	    
+	  }
+      }    
+
+    return true;
+  }
+
+  bool subject<DOCUMENT>::finalise_relations()
+  {
 
     return true;
   }

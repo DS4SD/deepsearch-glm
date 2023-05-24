@@ -107,7 +107,8 @@ namespace andromeda
     curr_docs(0),
     
     keep_text(true),
-    keep_tables(true)
+    keep_tables(true),
+    keep_figures(true)
   {
     initialise(config);
   }
@@ -154,7 +155,7 @@ namespace andromeda
     
     keep_text = this->configuration.value(keep_text_lbl, keep_text);
     keep_tables = this->configuration.value(keep_table_lbl, keep_tables);
-    keep_figures = this->configuration.value(keep_figure_lbl, keep_figurs);
+    keep_figures = this->configuration.value(keep_figure_lbl, keep_figures);
 
     return reset_pointer();
   }

@@ -40,11 +40,11 @@ namespace andromeda
 
     base_producer(nlohmann::json& config,
 		  std::vector<model_ptr_type>& models);
-
+    
     base_producer(nlohmann::json& config,
 		  std::vector<model_ptr_type>& models,
 		  bool verbose);
-
+    
     virtual ~base_producer() {}
 
     virtual subject_name get_subject_name()=0;
@@ -294,11 +294,14 @@ namespace andromeda
     else
       {
 	LOG_S(INFO) << "found " << (this->paths).size() << " files to ingest!";
+
 	//for(auto itr=paths.begin(); itr!=paths.end(); itr++)
 	//{
 	//LOG_S(INFO) << "\t path: " << *itr;
 	//}
       }
+
+    std::sort(paths.begin(), paths.end());
     
     return true;
   }
