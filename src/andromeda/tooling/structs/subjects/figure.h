@@ -26,6 +26,9 @@ namespace andromeda
     
     bool set_data(nlohmann::json& data) { return true; }
 
+    bool set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
+		    std::shared_ptr<utils::text_normaliser> text_normaliser);
+    
   private:
 
     void set_hash();
@@ -100,6 +103,12 @@ namespace andromeda
     }        
     
     return result;
+  }
+
+  bool subject<FIGURE>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
+				   std::shared_ptr<utils::text_normaliser> text_normaliser)
+  {
+    return true;
   }
   
 }

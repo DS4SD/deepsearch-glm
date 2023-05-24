@@ -69,26 +69,20 @@ namespace andromeda
     std::string doc_name;
     uint64_t doc_hash;
 
-    //std::vector<subject<PARAGRAPH> > paragraphs;
-    //std::vector<subject<TABLE> > tables;
-    //std::vector<subject<FIGURE> > figures;
+    std::vector<subject<PARAGRAPH> > paragraphs;
+    std::vector<subject<TABLE> > tables;
+    std::vector<subject<FIGURE> > figures;
   };
 
   subject<DOCUMENT>::subject():
     base_subject(DOCUMENT),
-    //valid(true),
-    //applied_models(),
 
     doc_name(""),
     doc_hash(-1),
 
     paragraphs(),
     tables(),
-    figures()//,
-
-    //properties(),
-    //entities(),
-    //relations()
+    figures()
   {}
 
   subject<DOCUMENT>::~subject()
@@ -676,7 +670,9 @@ namespace andromeda
 
   bool subject<DOCUMENT>::finalise()
   {
-    
+    bool valid_props = finalise_properties();
+
+    return valid_props;
   }
 
   bool subject<DOCUMENT>::finalise_properties()
@@ -724,7 +720,9 @@ namespace andromeda
       }
 
     subj.properties.push_back(prop);
-    applied
+
+
+    return true;
   }
   
 }
