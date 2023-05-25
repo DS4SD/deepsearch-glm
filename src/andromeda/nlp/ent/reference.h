@@ -245,7 +245,7 @@ namespace andromeda
 	    std::string orig = subj.from_char_range(char_range);
 	    std::string name = subj.from_ctok_range(ctok_range);
 	    
-	    subj.entities.emplace_back(//utils::to_hash(name),
+	    subj.entities.emplace_back(subj.get_hash(),
 				       REFERENCE, label,
 				       name, orig, 
 				       char_range, ctok_range, wtok_range);	

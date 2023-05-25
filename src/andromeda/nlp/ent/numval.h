@@ -173,7 +173,7 @@ namespace andromeda
 		    std::string orig = subj.from_char_range(char_range);
 		    std::string name = subj.from_ctok_range(ctok_range);
 		    
-		    subj.entities.emplace_back(//utils::to_hash(name),
+		    subj.entities.emplace_back(subj.get_hash(),
 					       NUMVAL, expr.get_subtype(),
 					       name, orig, 
 					       char_range, ctok_range, wtok_range);
@@ -232,7 +232,8 @@ namespace andromeda
 			    std::string orig = subj(i,j).from_char_range(char_range);
 			    std::string name = subj(i,j).from_ctok_range(ctok_range);
 			    
-			    subj.entities.emplace_back(NUMVAL, expr.get_subtype(),
+			    subj.entities.emplace_back(subj.get_hash(),
+						       NUMVAL, expr.get_subtype(),
 						       name, orig, 
 						       subj(i,j).get_coor(), subj(i,j).get_span(),
 						       char_range, ctok_range, wtok_range);

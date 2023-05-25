@@ -697,8 +697,8 @@ namespace andromeda
 
     LOG_S(INFO) << "document: " << filepath;    
     LOG_S(INFO) << "properties: \n" << tabulate(properties);
-    LOG_S(INFO) << "entities: \n" << tabulate(entities);
-    LOG_S(INFO) << "relations: \n" << tabulate(relations);
+    LOG_S(INFO) << "entities: \n" << tabulate(entities, false);
+    LOG_S(INFO) << "relations: \n" << tabulate(entities, relations);
 
     std::string tmp;
     std::cin >> tmp;
@@ -790,38 +790,38 @@ namespace andromeda
   {
     entities.clear();
     
-    for(subject<PARAGRAPH>& paragraph:paragraphs)
+    for(auto& subj:paragraphs)
       {
-	for(auto& ent:paragraph.entities)
+	for(auto& ent:subj.entities)
 	  {	    
-	    entities.push_back(ent);
-	    
-	    entities.back().subj_name = PARAGRAPH;
-	    entities.back().subj_path = paragraph.provs.at(0).to_path();
+	    entities.emplace_back(subj.get_hash(),
+				  subj.get_name(),
+				  subj.get_path(),
+				  ent);
 	  }
       }
 
-    for(subject<TABLE>& table:tables)
+    for(auto& subj:tables)
       {
-	for(auto& ent:table.entities)
-	  {
-	    entities.push_back(ent);
-
-	    entities.back().subj_name = TABLE;
-	    entities.back().subj_path = paragraph.provs.at(0).to_path();
+	for(auto& ent:subj.entities)
+	  {	    
+	    entities.emplace_back(subj.get_hash(),
+				  subj.get_name(),
+				  subj.get_path(),
+				  ent);
 	  }
       }
 
-    for(subject<FIGURE>& figure:figures)
+    for(auto& subj:figures)
       {
-	for(auto& ent:figure.entities)
-	  {
-	    entities.push_back(ent);
-
-	    entities.back().subj_name = FIGURE;
-	    entities.back().subj_path = paragraph.provs.at(0).to_path();
+	for(auto& ent:subj.entities)
+	  {	    
+	    entities.emplace_back(subj.get_hash(),
+				  subj.get_name(),
+				  subj.get_path(),
+				  ent);
 	  }
-      }    
+      }
 
     return true;
   }
@@ -840,7 +840,7 @@ namespace andromeda
 
     for(subject<TABLE>& table:tables)
       {
-	for(auto& ent:table.relations)
+	for(auto& rel:table.relations)
 	  {
 	    relations.push_back(rel);
 	  }

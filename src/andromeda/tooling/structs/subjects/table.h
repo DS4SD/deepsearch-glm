@@ -112,51 +112,6 @@ namespace andromeda
   
   nlohmann::json subject<TABLE>::to_json()
   {
-    /*
-    nlohmann::json result = nlohmann::json::object({});
-
-    {
-      result["hash"] = hash;
-    }
-
-    result["applied-models"] = applied_models;
-    
-    {
-      nlohmann::json& props = result["properties"];
-      andromeda::to_json(properties, props);
-    }
-
-    {
-      nlohmann::json& ents = result["entities"];
-      ents = nlohmann::json::object({});
-
-      ents["headers"] = base_entity::headers(TABLE);
-
-      nlohmann::json& ents_data = ents["data"];      
-      ents_data = nlohmann::json::array({});
-
-      for(std::size_t l=0; l<entities.size(); l++)
-	{
-	  ents_data.push_back(entities.at(l).to_json_row(TABLE));
-	}
-    }
-
-    {
-      nlohmann::json& rels = result["relations"];
-      rels = nlohmann::json::object({});
-
-      rels["headers"] = base_relation::headers();
-
-      nlohmann::json& rels_data = rels["data"];      
-      rels_data = nlohmann::json::array({});
-      
-      for(std::size_t l=0; l<relations.size(); l++)
-	{
-	  rels_data.push_back(relations.at(l).to_json_row());
-	}      
-    }
-    */
-
     nlohmann::json result = base_subject::to_json();
 
     {
@@ -238,7 +193,7 @@ namespace andromeda
       {
 	for(std::size_t j=0; j<data.at(i).size(); j++)
 	  {
-	    hashes.push_back(data.at(i).at(j).hash);
+	    hashes.push_back(data.at(i).at(j).text_hash);
 	  }
       }
 
@@ -280,7 +235,7 @@ namespace andromeda
   {
     range_type min_range = {0, 0};
     
-    base_entity fake(NULL_MODEL, "fake", "fake", "fake", coor, {1,1},
+    base_entity fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake", coor, {1,1},
 		     min_range, min_range, min_range);
 
     return std::lower_bound(entities.begin(), entities.end(), fake);    
@@ -292,7 +247,7 @@ namespace andromeda
       { std::numeric_limits<uint64_t>::max(),
 	std::numeric_limits<uint64_t>::max()};
     
-    base_entity fake(NULL_MODEL, "fake", "fake", "fake", coor, {1,1},
+    base_entity fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake", coor, {1,1},
 		     max_range, max_range, max_range);
 
     return std::upper_bound(entities.begin(), entities.end(), fake);    

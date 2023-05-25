@@ -40,7 +40,7 @@ namespace andromeda
     
     bool get_property_label(const std::string name, std::string& label);
 
-    uint64_t get_hash() const { return hash; }
+    //uint64_t get_hash() const { return base_suhhash; }
     std::string get_text() const;
 
     std::string get_text(range_type rng);
@@ -61,8 +61,6 @@ namespace andromeda
               bool rels=true);
 
   public:
-
-    uint64_t hash;
 
     std::set<std::string> labels;
   };
@@ -92,8 +90,8 @@ namespace andromeda
   {
     text_element::set_text(ctext);
 
-    std::vector<uint64_t> hashes={dhash, hash};
-    hash = utils::to_hash(hashes);
+    std::vector<uint64_t> hashes={dhash, text_element::text_hash};
+    base_subject::hash = utils::to_hash(hashes);
 
     return text_element::valid;
   }
@@ -148,7 +146,7 @@ namespace andromeda
 
   typename std::vector<base_entity>::iterator subject<PARAGRAPH>::ents_beg(std::array<uint64_t, 2> char_rng)
   {
-    base_entity fake(NULL_MODEL, "fake", "fake", "fake",
+    base_entity fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake",
 		     char_rng, {0,0}, {0,0});
     
     return std::lower_bound(entities.begin(), entities.end(), fake);    
@@ -156,7 +154,7 @@ namespace andromeda
   
   typename std::vector<base_entity>::iterator subject<PARAGRAPH>::ents_end(std::array<uint64_t, 2> char_rng)
   {
-    base_entity fake(NULL_MODEL, "fake", "fake", "fake",
+    base_entity fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake",
 		     char_rng, {0,0}, {0,0});
 
     return std::upper_bound(entities.begin(), entities.end(), fake);    
@@ -250,15 +248,13 @@ namespace andromeda
 
   nlohmann::json subject<PARAGRAPH>::to_json()
   {
-    //nlohmann::json result = nlohmann::json::object({});
     nlohmann::json result = base_subject::to_json();
     
-    {
-      result["hash"] = text_element::hash;
-      
+    {      
       result["orig"] = text_element::orig;
       result["text"] = text_element::text;
-
+      result["text-hash"] = text_element::text_hash;
+      
       result["word-tokens"] = andromeda::to_json(text_element::word_tokens, text);
     }
 
@@ -309,7 +305,8 @@ namespace andromeda
     if(data.count("hash")>0 and data.count("applied-models")>0 and
        data.count("orig")>0 and data.count("text")>0)
       {
-	text_element::hash = data.value("hash", text_element::hash);
+	text_element::text_hash = data.value("text-hash", text_element::text_hash);
+
 	applied_models = data.value("applied-models", applied_models);
 	
 	text_element::orig = data.value("orig", text_element::orig);

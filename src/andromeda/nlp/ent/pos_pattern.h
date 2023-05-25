@@ -223,7 +223,8 @@ namespace andromeda
 	   not contains(char_range, ranges_02) and
 	   (char_range[1]-char_range[0])>1)
 	  {
-	    subj.entities.emplace_back(name, subtype,
+	    subj.entities.emplace_back(subj.get_hash(),
+				       name, subtype,
 				       text, orig,
 				       char_range, ctok_range, wtok_range);
 	  }
@@ -277,7 +278,8 @@ namespace andromeda
 	   not contains(char_range, ranges_02) and
 	   (char_range[1]-char_range[0])>1)
 	  {
-	    subj.entities.emplace_back(name, subtype,
+	    subj.entities.emplace_back(subj.get_hash(),
+				       name, subtype,
 				       text, orig,
 				       coor, span,
 				       char_range, ctok_range, wtok_range);

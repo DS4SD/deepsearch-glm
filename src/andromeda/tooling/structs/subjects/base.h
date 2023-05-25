@@ -28,6 +28,10 @@ namespace andromeda
     base_subject(subject_name name);
     
     base_subject(uint64_t dhash, subject_name name, prov_element& prov);
+
+    subject_name get_name() const { return name; };    
+    hash_type get_hash() const { return hash; }
+    std::string get_path() const { return (provs.size()>0? provs.at(0).to_path():"#"); }
     
     void clear();
 
@@ -40,8 +44,8 @@ namespace andromeda
     bool valid;
     subject_name name;
     
-    uint64_t hash;
-    uint64_t dhash;
+    hash_type hash;
+    hash_type dhash;
 
     std::vector<prov_element> provs;
 

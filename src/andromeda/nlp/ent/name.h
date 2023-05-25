@@ -165,7 +165,7 @@ namespace andromeda
 
 		    if(keep)
 		      {
-			subj.entities.emplace_back(//utils::to_hash(name),
+			subj.entities.emplace_back(subj.get_hash(),
 						   NAME, expr.get_subtype(),
 						   name, orig, 
 						   char_range, ctok_range, wtok_range);

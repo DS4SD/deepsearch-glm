@@ -103,10 +103,10 @@ namespace andromeda
     flvr(to_flvr(name)),    
     conf(conf),
 
-    hash_i(ent_i.hash),
+    hash_i(ent_i.ehash),
     ihash_i(ent_i.ihash),
 
-    hash_j(ent_j.hash),
+    hash_j(ent_j.ehash),
     ihash_j(ent_j.ihash),
 
     name_i(ent_i.name),

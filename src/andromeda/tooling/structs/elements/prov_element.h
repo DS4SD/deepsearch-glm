@@ -17,7 +17,7 @@ namespace andromeda
     prov_element(int16_t maintext_ind,
 		 std::string dref, std::string name, std::string type);
 
-    std::string to_path();
+    std::string to_path() const;
     static std::pair<std::string, int16_t> from_path(std::string dref);
 
     bool overlaps_x(const prov_element& rhs) const;
@@ -104,7 +104,7 @@ namespace andromeda
     coor_range({0,0})
   {}
 
-  std::string prov_element::to_path()
+  std::string prov_element::to_path() const
   {
     std::stringstream ss;
     ss << "#" << "/" << path.first << "/" << path.second;

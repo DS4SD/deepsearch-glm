@@ -399,8 +399,7 @@ namespace andromeda
                       }
                     //LOG_S(INFO) << __FUNCTION__ << " " << l << ": " << orig;
 
-                    subj.entities.emplace_back(//++max_id, //subj.entities.size(),
-                                               //utils::to_hash(name),
+                    subj.entities.emplace_back(subj.get_hash(),
                                                EXPRESSION, expr.get_subtype(),
                                                name, orig,
                                                char_range, ctok_range, wtok_range);
@@ -443,8 +442,7 @@ namespace andromeda
                     orig = subj.from_ctok_range(ctok_range);
                     name = utils::replace(orig, "'", "");
 
-                    subj.entities.emplace_back(//++max_id, //subj.entities.size(),
-                                               //utils::to_hash(name),
+                    subj.entities.emplace_back(subj.get_hash(),
                                                EXPRESSION, expr.get_subtype(),
                                                name, orig,
                                                char_range, ctok_range, wtok_range);
@@ -485,7 +483,7 @@ namespace andromeda
                     orig = subj.from_ctok_range(ctok_range);
                     name = utils::replace(orig, ".", "");
 
-                    subj.entities.emplace_back(//utils::to_hash(name),
+                    subj.entities.emplace_back(subj.get_hash(),
                                                EXPRESSION, expr.get_subtype(),
                                                name, orig,
                                                char_range, ctok_range, wtok_range);
@@ -557,7 +555,8 @@ namespace andromeda
 
                     if(keep)
                       {
-                        subj.entities.emplace_back(EXPRESSION, expr.get_subtype(),
+                        subj.entities.emplace_back(subj.get_hash(),
+						   EXPRESSION, expr.get_subtype(),
                                                    name, orig,
                                                    char_range, ctok_range, wtok_range);
                       }
@@ -618,7 +617,8 @@ namespace andromeda
 
                             if(keep)
                               {
-                                subj.entities.emplace_back(EXPRESSION, expr.get_subtype(),
+                                subj.entities.emplace_back(subj.get_hash(),
+							   EXPRESSION, expr.get_subtype(),
                                                            name, orig,
                                                            subj(i,j).get_coor(),
                                                            subj(i,j).get_span(),
@@ -681,8 +681,7 @@ namespace andromeda
                         orig = subj.from_ctok_range(ctok_range);
                         name = normalise(orig);
 
-                        subj.entities.emplace_back(//++max_id,
-                                                   //utils::to_hash(name),
+                        subj.entities.emplace_back(subj.get_hash(),
                                                    EXPRESSION, expr.get_subtype(),
                                                    name, orig,
                                                    char_range, ctok_range, wtok_range);
@@ -818,8 +817,7 @@ namespace andromeda
           {
             //std::size_t max_id = subj.get_max_ent_hash();
 
-            subj.entities.emplace_back(//++max_id, //subj.entities.size(),
-                                       //utils::to_hash(name),
+            subj.entities.emplace_back(subj.get_hash(),
                                        EXPRESSION, "wtoken-concatenation",
                                        name, orig,
                                        char_range, ctok_range, wtok_range);

@@ -13,14 +13,17 @@ namespace andromeda
     hash_to_name.clear();
     for(const auto& ent:entities)
       {
-        hash_to_name.insert({ent.hash, ent.name});
+        hash_to_name.insert({ent.ehash, ent.name});
       }
   }
 
-  std::string tabulate(std::vector<base_entity>& entities)
+  std::string tabulate(std::vector<base_entity>& entities, bool sort=true)
   {
-    std::sort(entities.begin(), entities.end());
-
+    if(sort)
+      {
+	std::sort(entities.begin(), entities.end());
+      }
+    
     std::stringstream ss;
 
     std::vector<std::string> headers={};
@@ -54,6 +57,11 @@ namespace andromeda
           {
             data.push_back(ent.to_row(col_width));
           }
+	else
+	  {
+	    LOG_S(WARNING) << "inconsistent sizes: "
+			   << headers.size() << " versus " << row.size();
+	  }
       }
 
     ss << "\nentities: " << entities.size() << "\n"

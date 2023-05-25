@@ -93,7 +93,7 @@ namespace andromeda
 	   (not filter_01.match(ent_j.orig)) and  // no all lower-case words
 	   (not filter_02.match(ent_j.orig))) // no numbers
 	  {
-	    subj.entities.emplace_back(//utils::to_hash(ent_j.name),
+	    subj.entities.emplace_back(subj.get_hash(),
 				       ABBREVIATION, ent_j.model_subtype,
 				       ent_j.name, ent_j.orig,
 				       crng, ctok_rng, wtok_rng);
