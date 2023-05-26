@@ -348,8 +348,8 @@ namespace andromeda
     return true;
   }
 
-  bool get_output_file(std::filesystem::path& out,
-		       std::filesystem::path& ifilename)
+  bool base_producer::get_output_file(std::filesystem::path& out,
+				      std::filesystem::path& ifilename)
   {
     if(opath!=null_opath and path_itr==path_end)
       {
@@ -358,7 +358,7 @@ namespace andromeda
 	std::string ofile = utils::replace(ifilename.c_str(), iformat, oformat);
 	std::filesystem::path ofilename(ofile.c_str());
 	
-	out = odir / otfilename;	
+	out = odir / ofilename;	
       }
     
     return true;

@@ -257,19 +257,24 @@ namespace andromeda
 	return false;
       }
     
-    LOG_S(WARNING) << "writing: " << ofile.c_str();
+    LOG_S(WARNING) << "writing: " << opath.c_str();
     
     std::ofstream ofs;
-    ofs.open(ofile.c_str(), std::ofstream::out);
+    ofs.open(opath.c_str(), std::ofstream::out);
     
     if(ofs.good())
       {
 	nlohmann::json data = subj.to_json();
 
-	if(opath.ends_with("json"))
+	std::string ext=opath.extension();
+	if(ext==".json")
 	  {
 	    ofs << std::setw(4) << data;
 	  }
+	else if(ext==".jsonl")
+	  {
+	    ofs << data << "\n";
+	  }	
 	else
 	  {
 	    ofs << data << "\n";

@@ -99,15 +99,16 @@ namespace andromeda
 
       for(auto& elem:base.items())
 	{
+	  //LOG_S(INFO) << "updating " << elem.key();
 	  result[elem.key()] = elem.value();
 	}
     }
     
     if(result.count("main-text"))
       {
-        std::vector<std::string> keys
-	  = { "hash", "orig", "text",
-	      "properties", "entities", "relations"};
+        //std::vector<std::string> keys
+	//= { "hash", "orig", "text",
+	//"properties", "entities", "relations"};
 
         for(std::size_t l=0; l<paragraphs.size(); l++)
           {   	    
@@ -116,7 +117,7 @@ namespace andromeda
 		auto& paragraph = paragraphs.at(l);
 		
 		auto& prov = paragraph.provs.at(0);
-                auto& item = result[prov.path.first][prov.path.first];
+                auto& item = result[prov.path.first][prov.path.second];
 		
                 auto _ = paragraph.to_json();
                 for(auto& elem:_.items())
@@ -129,9 +130,9 @@ namespace andromeda
 
     if(result.count("tables"))
       {
-        std::vector<std::string> keys
-	  = { "hash", "captions", "footnotes", "mentions", 
-	  "properties", "entities", "relations"};
+        //std::vector<std::string> keys
+	//= { "hash", "captions", "footnotes", "mentions", 
+	//"properties", "entities", "relations"};
 
         for(std::size_t l=0; l<tables.size(); l++)
           {
@@ -140,7 +141,7 @@ namespace andromeda
 		auto& table = tables.at(l);
 		
 		auto& prov = table.provs.at(0);
-                auto& item = result[prov.path.first][prov.path.first];
+                auto& item = result[prov.path.first][prov.path.second];
 		
                 auto _ = table.to_json();
 		for(auto& elem:_.items())
@@ -153,9 +154,9 @@ namespace andromeda
 
     if(result.count("figures"))
       {
-        std::vector<std::string> keys
-	  = { "hash",  "captions", "footnotes", "mentions", 
-	      "properties", "entities", "relations"};
+        //std::vector<std::string> keys
+	//= { "hash",  "captions", "footnotes", "mentions", 
+	//"properties", "entities", "relations"};
 
         for(std::size_t l=0; l<figures.size(); l++)
           {
@@ -164,7 +165,7 @@ namespace andromeda
 		auto& figure = figures.at(l);
 		
 		auto& prov = figure.provs.at(0);
-                auto& item = result[prov.path.first][prov.path.first];
+                auto& item = result[prov.path.first][prov.path.second];
 		
                 auto _ = figure.to_json();
                 for(auto& elem:_.items())
