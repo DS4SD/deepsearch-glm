@@ -26,7 +26,7 @@ namespace andromeda
     producer(std::vector<model_ptr_type> models);
     producer(nlohmann::json config, std::vector<model_ptr_type> models);
 
-    producer(const producer<DOCUMENT>& other);
+    //producer(const producer<DOCUMENT>& other);
 
     ~producer();
 
@@ -37,7 +37,7 @@ namespace andromeda
     virtual bool initialise(nlohmann::json& config);
     virtual bool reset_pointer();
 
-    virtual bool set_ofs(std::filesystem::path path);
+    virtual bool set_ofs(std::filesystem::path odir);
     
     /* next */
     
@@ -62,7 +62,6 @@ namespace andromeda
     virtual bool write(table_type& subj) { return false; };
     virtual bool write(paragraph_type& subj) { return false; };
 
-    //virtual bool write(webdoc_type& subj) { return false; };
     virtual bool write(doc_type& subj);    
 
     /* apply */
@@ -70,7 +69,6 @@ namespace andromeda
     virtual bool apply(table_type& subj) { return false; };
     virtual bool apply(paragraph_type& subj) { return false; };
 
-    //virtual bool apply(webdoc_type& subj) { return false; };
     virtual bool apply(doc_type& subj);
 
   private:
@@ -101,7 +99,7 @@ namespace andromeda
   {}
   
   producer<DOCUMENT>::producer(nlohmann::json config,
-			     std::vector<model_ptr_type> models):
+			       std::vector<model_ptr_type> models):
     base_producer(models),
 
     curr_docs(0),
@@ -113,8 +111,8 @@ namespace andromeda
     initialise(config);
   }
 
-  producer<DOCUMENT>::producer(const producer<DOCUMENT>& other)
-  {}
+  //producer<DOCUMENT>::producer(const producer<DOCUMENT>& other):    
+  //{}
 
   producer<DOCUMENT>::~producer()
   {}
@@ -151,6 +149,7 @@ namespace andromeda
   bool producer<DOCUMENT>::initialise(nlohmann::json& config)
   {
     base_producer::initialise(config);
+
     base_producer::find_filepaths();
     
     keep_text = this->configuration.value(keep_text_lbl, keep_text);
@@ -173,6 +172,8 @@ namespace andromeda
   bool producer<DOCUMENT>::set_ofs(std::filesystem::path path)
   {
     base_producer::opath = path;
+    base_producer::write_output = true;
+    
     return true;
   }
   
@@ -205,7 +206,7 @@ namespace andromeda
 
     while((not valid) and (path_itr!=path_end))
       {
-	//LOG_S(INFO) << "reading: " << path_itr->c_str();
+	LOG_S(INFO) << "reading: " << path_itr->c_str();
 
 	std::ifstream ifs(path_itr->c_str());
 	if(ifs)
@@ -246,12 +247,18 @@ namespace andromeda
 
   bool producer<DOCUMENT>::write(doc_type& subj)
   {
-    std::filesystem::path ofile;
-    if(not get_output_file(ofile))
+    std::filesystem::path filepath = subj.filepath;
+    std::filesystem::path filename = filepath.filename();
+    
+    std::filesystem::path opath;
+    if(not get_output_file(opath, filename))
       {
+	LOG_S(ERROR) << "can not write: " << opath.c_str();
 	return false;
       }
-
+    
+    LOG_S(WARNING) << "writing: " << ofile.c_str();
+    
     std::ofstream ofs;
     ofs.open(ofile.c_str(), std::ofstream::out);
     

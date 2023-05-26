@@ -687,7 +687,7 @@ namespace andromeda
 
   bool subject<DOCUMENT>::finalise()
   {
-    LOG_S(INFO) << __FUNCTION__;
+    //LOG_S(INFO) << __FUNCTION__;
     
     bool valid_props = finalise_properties();
 
@@ -695,13 +695,10 @@ namespace andromeda
 
     bool valid_rels = finalise_relations();
 
-    LOG_S(INFO) << "document: " << filepath;    
-    LOG_S(INFO) << "properties: \n" << tabulate(properties);
-    LOG_S(INFO) << "entities: \n" << tabulate(entities, false);
-    LOG_S(INFO) << "relations: \n" << tabulate(entities, relations);
-
-    std::string tmp;
-    std::cin >> tmp;
+    //LOG_S(INFO) << "document: " << filepath;    
+    //LOG_S(INFO) << "properties: \n" << tabulate(properties);
+    //LOG_S(INFO) << "entities: \n" << tabulate(entities, false);
+    //LOG_S(INFO) << "relations: \n" << tabulate(entities, relations);
     
     return (valid_props and valid_ents and valid_rels);
   }
@@ -720,13 +717,6 @@ namespace andromeda
 	    val_type   conf = prop.get_conf();
 	    val_type    dst = paragraph.dst;
 
-	    /*
-	    LOG_S(INFO) << std::setw(16) << mdl
-			<< std::setw(16) << lbl
-			<< std::setw(16) << conf 
-			<< std::setw(16) << dst; 
-	    */
-	    
 	    if(property_total.count(mdl)==1)
 	      {
 		property_total[mdl] += dst;

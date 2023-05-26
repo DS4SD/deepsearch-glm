@@ -12,7 +12,7 @@ namespace andromeda
 
     const static inline std::string head_lbl = "headers";
     const static inline std::string data_lbl = "data";
-    
+
     const static inline std::string captions_lbl = "captions";
     const static inline std::string footnotes_lbl = "footnotes";
     const static inline std::string mentions_lbl = "mentions";
@@ -21,29 +21,30 @@ namespace andromeda
     const static inline std::string ents_lbl = "entities";
     const static inline std::string rels_lbl = "relations";
     const static inline std::string recs_lbl = "records";
-    
+
   public:
 
     base_subject();
     base_subject(subject_name name);
-    
+
     base_subject(uint64_t dhash, subject_name name, prov_element& prov);
 
-    subject_name get_name() const { return name; };    
+    subject_name get_name() const { return name; };
     hash_type get_hash() const { return hash; }
     std::string get_path() const { return (provs.size()>0? provs.at(0).to_path():"#"); }
-    
+
     void clear();
 
     void clear_models();
 
     nlohmann::json to_json();
+    bool from_json(const nlohmann::json& item);
     
   public:
 
     bool valid;
     subject_name name;
-    
+
     hash_type hash;
     hash_type dhash;
 
@@ -62,7 +63,7 @@ namespace andromeda
 
     hash(-1),
     dhash(-1),
-    
+
     provs({}),
 
     applied_models({}),
@@ -78,7 +79,7 @@ namespace andromeda
 
     hash(-1),
     dhash(-1),
-    
+
     provs({}),
 
     applied_models({}),
@@ -91,10 +92,10 @@ namespace andromeda
   base_subject::base_subject(uint64_t dhash, subject_name name, prov_element& prov):
     valid(true),
     name(name),
-    
+
     hash(-1),
     dhash(dhash),
-    
+
     provs({prov}),
 
     applied_models({}),
@@ -115,11 +116,11 @@ namespace andromeda
 
     clear_models();
   }
-  
+
   void base_subject::clear_models()
-  {    
+  {
     applied_models.clear();
-    
+
     properties.clear();
     entities.clear();
     relations.clear();
@@ -131,12 +132,9 @@ namespace andromeda
 
     {
       result["hash"] = hash;
-    }
-
-    {
       result["applied-models"] = applied_models;
     }
-    
+
     {
       nlohmann::json& props = result[prps_lbl];
       andromeda::to_json(properties, props);
@@ -144,37 +142,50 @@ namespace andromeda
 
     {
       nlohmann::json& ents = result[ents_lbl];
-      ents = nlohmann::json::object({});
-
-      ents[head_lbl] = base_entity::headers(name);
-
-      nlohmann::json& ents_data = ents[data_lbl];      
-      ents_data = nlohmann::json::array({});
-
-      for(std::size_t l=0; l<entities.size(); l++)
-	{
-	  ents_data.push_back(entities.at(l).to_json_row(name));
-	}
+      andromeda::to_json(entities, ents);
     }
 
     {
       nlohmann::json& rels = result[rels_lbl];
-      rels = nlohmann::json::object({});
-
-      rels[head_lbl] = base_relation::headers();
-
-      nlohmann::json& rels_data = rels[data_lbl];      
-      rels_data = nlohmann::json::array({});
-      
-      for(std::size_t l=0; l<relations.size(); l++)
-	{
-	  rels_data.push_back(relations.at(l).to_json_row());
-	}      
+      andromeda::to_json(relations, rels);
     }
+
 
     return result;
   }
-  
+
+  bool base_subject::from_json(const nlohmann::json& item)
+  {
+    hash = item.value("hash", hash);
+    applied_models = item.value("applied-models", applied_models);
+
+    bool read_props=false, read_ents=false, read_rels=false;
+
+    properties.clear();
+    if(item.count(prps_lbl))
+      {
+        const nlohmann::json& props = item[prps_lbl];
+        read_props = andromeda::from_json(properties, props);
+      }
+
+    entities.clear();
+    if(item.count(ents_lbl))
+      {
+        const nlohmann::json& ents = item[ents_lbl];
+        read_ents = andromeda::from_json(entities, ents);
+      }
+
+    relations.clear();
+    if(item.count(rels_lbl))
+      {
+        const nlohmann::json& rels = item[rels_lbl];
+        read_rels = andromeda::from_json(relations, rels);
+      }
+
+    return (read_props and read_ents and read_rels);
+
+  }
+
 }
 
 #endif

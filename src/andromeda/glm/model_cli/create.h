@@ -299,11 +299,23 @@ namespace andromeda
 
       if(configuration.write_nlp_output)
 	{
-	  std::filesystem::path file = "nlp-"+std::to_string(thread_id) + ".jsonl";	  
-	  std::filesystem::path path = configuration.nlp_output_dir / file;
-
-	  LOG_S(WARNING) << "writing NLP to: " << path;
-	  configuration.write_nlp_output = nlp.set_ofs(path);
+	  if(nlp.get_subject_name()==PARAGRAPH)
+	    {
+	      std::filesystem::path file = "nlp-"+std::to_string(thread_id) + ".jsonl";	  
+	      std::filesystem::path path = configuration.nlp_output_dir / file;
+	      
+	      LOG_S(WARNING) << "writing NLP to: " << path;
+	      configuration.write_nlp_output = nlp.set_ofs(path);
+	    }
+	  else if(nlp.get_subject_name()==DOCUMENT)
+	    {
+	      std::filesystem::path odir = configuration.nlp_output_dir;
+	      
+	      LOG_S(WARNING) << "writing NLP to: " << odir;
+	      configuration.write_nlp_output = nlp.set_ofs(odir);
+	    }
+	  else
+	    {}
 	}
       
       while(true)

@@ -6,6 +6,43 @@
 namespace andromeda
 {
 
+  void to_json(std::vector<base_entity>& entities, nlohmann::json& ents)
+  {
+    ents = nlohmann::json::object({});
+
+    ents["headers"] = base_entity::HEADERS;
+
+    nlohmann::json& data = ents["data"];      
+    data = nlohmann::json::array({});
+    
+    for(std::size_t l=0; l<entities.size(); l++)
+      {
+	data.push_back(entities.at(l).to_json_row());
+      }
+  }
+
+  bool from_json(std::vector<base_entity>& entities, const nlohmann::json& ents)
+  {
+    auto& data = ents["data"];      
+
+    bool success=true;
+    
+    base_entity ent;
+    for(auto& row:data)
+      {
+	if(ent.from_json_row(row))
+	  {
+	    entities.push_back(ent);
+	  }
+	else
+	  {
+	    success=false;
+	  }
+      }
+
+    return success;
+  }
+  
   template<typename index_type>
   void create_hash_to_name(std::vector<base_entity>& entities,
                            std::map<index_type, std::string>& hash_to_name)

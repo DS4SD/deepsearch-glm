@@ -27,6 +27,7 @@ namespace andromeda
 
     const static inline std::vector<std::string> HEADERS =
       { "type", "subtype",
+	"subj_hash", "subj_name", "subj_path",
         "conf",
         "hash", "ihash",
         "coor_i", "coor_j",
@@ -79,11 +80,14 @@ namespace andromeda
 
   public:
 
+    static std::vector<std::string> headers();
     static std::vector<std::string> headers(subject_name subj);
 
     static std::vector<std::string> short_text_headers();
     static std::vector<std::string> short_table_headers();
 
+    base_entity();
+    
     base_entity(hash_type subj_hash,
                 model_name type,
                 range_type char_range,
@@ -130,6 +134,10 @@ namespace andromeda
     std::string get_reference() const;
 
     nlohmann::json to_json() const;
+
+    nlohmann::json to_json_row() const;
+    bool from_json_row(const nlohmann::json& row);
+
     nlohmann::json to_json_row(subject_name subj) const;
 
     std::vector<std::string> to_row(std::size_t col_width);
@@ -152,8 +160,6 @@ namespace andromeda
     subject_name subj_name;
     std::string subj_path;
 
-
-
     hash_type ehash; // entity-hash
     hash_type ihash; // instance-hash: combination of subj-hash, ent-hash and position
 
@@ -174,6 +180,9 @@ namespace andromeda
     bool wtok_range_match; // this indicates if the entity is a perfect match in the word_token vector, essentially
   };
 
+  base_entity::base_entity()
+  {}
+  
   base_entity::base_entity(hash_type subj_hash,
                            model_name type,
                            range_type char_range,
@@ -366,6 +375,68 @@ namespace andromeda
     return wtok_range_match;
   }
 
+  std::vector<std::string> base_entity::headers()
+  {
+    return HEADERS;
+  }
+  
+  nlohmann::json base_entity::to_json_row() const
+  {
+    auto row = nlohmann::json::array({to_key(model_type), model_subtype,
+				      subj_hash, to_string(subj_name), subj_path,
+				      conf, ehash, ihash,
+				      coor[0], coor[1],
+				      char_range[0], char_range[1],
+				      ctok_range[0], ctok_range[1],
+				      wtok_range[0], wtok_range[1],
+				      wtok_range_match,
+				      name, orig});
+
+    assert(row.size()==headers().size());
+
+    return row;    
+  }
+
+  bool base_entity::from_json_row(const nlohmann::json& row)
+  {
+    if((not row.is_array()) or row.size()!=19)
+      {
+	LOG_S(ERROR) << "inconsistent entity-row: " << row.dump();
+	return false;
+      }
+    
+    model_type = to_modelname(row.at(0).get<std::string>());
+    model_subtype = row.at(1).get<std::string>();
+
+    subj_hash = row.at(2).get<hash_type>();
+    subj_name = to_subject_name(row.at(3).get<std::string>());
+    subj_path = row.at(4).get<std::string>();
+
+    conf = row.at(5).get<val_type>();
+
+    ehash = row.at(6).get<hash_type>();
+    ihash = row.at(7).get<hash_type>();
+
+    coor.at(0) = row.at(8).get<ind_type>();
+    coor.at(1) = row.at(9).get<ind_type>();
+
+    char_range.at(0) = row.at(10).get<ind_type>();
+    char_range.at(1) = row.at(11).get<ind_type>();
+
+    ctok_range.at(0) = row.at(12).get<ind_type>();
+    ctok_range.at(1) = row.at(13).get<ind_type>();
+
+    wtok_range.at(0) = row.at(14).get<ind_type>();
+    wtok_range.at(1) = row.at(15).get<ind_type>();
+
+    wtok_range_match = row.at(16).get<bool>();
+    
+    name = row.at(17).get<std::string>();
+    orig = row.at(18).get<std::string>();    
+    
+    return true;
+  }
+  
   std::vector<std::string> base_entity::headers(subject_name subj)
   {
     switch(subj)
