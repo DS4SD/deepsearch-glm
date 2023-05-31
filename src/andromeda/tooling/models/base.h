@@ -89,8 +89,8 @@ namespace andromeda
         return false;
       }
 
-    //LOG_S(INFO) << "apply " << get_key() << " on document: " << subj.doc_name;
-    
+    LOG_S(INFO) << "apply " << get_key() << " on document: " << subj.doc_name;
+
     for(subject<PARAGRAPH>& paragraph:subj.paragraphs)
       {
         this->apply(paragraph);

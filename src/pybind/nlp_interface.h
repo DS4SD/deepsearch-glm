@@ -22,17 +22,16 @@ namespace andromeda_py
     nlohmann::json apply(nlohmann::json& config);
     nlohmann::json train(nlohmann::json& config);
     
-    nlohmann::json apply_on_text(std::string& text);
-    
-    nlohmann::json apply_on_pdfdoc(nlohmann::json& doc);
+    nlohmann::json apply_on_text(std::string& text);    
+    nlohmann::json apply_on_doc(nlohmann::json& doc);
 
   private:
 
     void apply_paragraphs(std::shared_ptr<andromeda::producer<andromeda::PARAGRAPH> > producer,
 			  nlohmann::json& results);
 
-    void apply_pdfdocs(std::shared_ptr<andromeda::producer<andromeda::DOCUMENT> > producer,
-		       nlohmann::json& results);
+    void apply_docs(std::shared_ptr<andromeda::producer<andromeda::DOCUMENT> > producer,
+		    nlohmann::json& results);
     
   private:
 
@@ -128,7 +127,7 @@ namespace andromeda_py
 	      typedef andromeda::producer<andromeda::PARAGRAPH> producer_type;
 	      auto producer = std::dynamic_pointer_cast<producer_type>(base_producer);
 
-	      apply_paragraphs(producer, /*exporter,*/ results);
+	      apply_paragraphs(producer, results);
 	    }
 	    break;
 
@@ -137,14 +136,14 @@ namespace andromeda_py
 	      typedef andromeda::producer<andromeda::DOCUMENT> producer_type;
 	      auto producer = std::dynamic_pointer_cast<producer_type>(base_producer);
 
-	      apply_pdfdocs(producer, /*exporter,*/ results);
+	      apply_docs(producer, results);
 	    }
 	    break;	    
 
 	  default:
 	    {
-	      LOG_S(WARNING) << "nlp-model (" << __FILE__ << ":" << __LINE__
-			     << ") does not support producer-type: "
+	      LOG_S(WARNING) << "nlp-model (" << __FILE__ << ":" << __LINE__ << ") "
+			     << "does not support producer-type: "
 			     << to_string(base_producer->get_subject_name());
 	    }
 
@@ -191,8 +190,8 @@ namespace andromeda_py
       }
   }
   
-  void nlp_model::apply_pdfdocs(std::shared_ptr<andromeda::producer<andromeda::DOCUMENT> > producer,
-				nlohmann::json& results)
+  void nlp_model::apply_docs(std::shared_ptr<andromeda::producer<andromeda::DOCUMENT> > producer,
+			     nlohmann::json& results)
   {
     andromeda::subject<andromeda::DOCUMENT> subj;
 
@@ -294,10 +293,10 @@ namespace andromeda_py
     return result;
   }
 
-  nlohmann::json nlp_model::apply_on_pdfdoc(nlohmann::json& data)
+  nlohmann::json nlp_model::apply_on_doc(nlohmann::json& data)
   {
-    andromeda::subject<andromeda::DOCUMENT> pdfdoc;    
-    bool valid = pdfdoc.set(data, char_normaliser, text_normaliser);
+    andromeda::subject<andromeda::DOCUMENT> doc;    
+    bool valid = doc.set(data, char_normaliser, text_normaliser);
 
     bool success=false;
     std::stringstream ss;    
@@ -306,19 +305,20 @@ namespace andromeda_py
       {
 	for(auto& model:models)
 	  {
-	    model->apply(pdfdoc);
+	    model->apply(doc);
 	  }
-
-	success=true;
+	doc.finalise();
+	
+	success = true;
 	ss << "success";	
       }
     else
       {
-	success=true;
-        ss << "pdfdoc is not compliant ... aborting";
+	success = false;
+        ss << "document is not compliant with schema!";
       }
 
-    nlohmann::json result = pdfdoc.to_json();
+    nlohmann::json result = doc.to_json();
     {
       nlohmann::json& application = result["model-application"];
       {

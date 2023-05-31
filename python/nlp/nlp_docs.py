@@ -9,6 +9,7 @@ import textwrap
 import argparse
 
 from tabulate import tabulate
+from PIL import Image, ImageDraw
 
 import subprocess
 
@@ -172,66 +173,182 @@ def show_nlp_on_docs(sdir):
             
         input(" ... ")
 
+def resolve_item(item, doc):
+
+    if "$ref" in item:
+
+        path = item["$ref"].split("/")
+        return doc[path[1]][int(path[2])]
+
+    elif "__ref" in item:
+
+        path = item["__ref"].split("/")
+        return doc[path[1]][int(path[2])]
+
+    else:
+        return item
+    
+def viz_page(doc, text, page=1):
+
+    for dim in doc["page-dimensions"]:
+
+        pn = dim["page"]
+
+        if pn!=page:
+            continue
+        
+        ih = int(dim["height"])
+        iw = int(dim["width"])
+
+        rects=[]
+        for item in doc["main-text"]:
+
+            ritem = resolve_item(item, doc)
+            
+            if ritem["prov"][0]["page"]==pn:
+                rects.append(ritem["prov"][0]["bbox"])
+
+        # creating new Image object
+        img = Image.new("RGB", (iw, ih))
+        drw = ImageDraw.Draw(img)
+
+        drw.text((iw/2, 1), text, fill=(255, 255, 255))
+        
+        p0=(0,0)        
+        for ind,rect in enumerate(rects):
+
+            shape = ((rect[0], ih-rect[3]), (rect[2], ih-rect[1]))
+            drw.rectangle(shape, outline ="red")
+
+            p1=((rect[0]+rect[2])/2, (2*ih-rect[3]-rect[1])/2)
+            drw.line((p0, p1), fill="blue")
+            drw.text(p1, f"{ind}", fill=(255, 255, 255))
+
+            p0=p1
+            
+        img.show()
+
+def viz_docs(doc_i, doc_j, page=1):
+
+    for dim in doc_i["page-dimensions"]:
+
+        pn = dim["page"]
+
+        if pn!=page:
+            continue
+        
+        ih = int(dim["height"])
+        iw = int(dim["width"])
+    
+        rects_i=[]
+        for item in doc_i["main-text"]:
+
+            ritem = resolve_item(item, doc_i)
+            
+            if ritem["prov"][0]["page"]==pn:
+                rects_i.append(ritem["prov"][0]["bbox"])    
+
+        rects_j=[]
+        for item in doc_j["main-text"]:
+
+            ritem = resolve_item(item, doc_j)
+            
+            if ritem["prov"][0]["page"]==pn:
+                rects_j.append(ritem["prov"][0]["bbox"])    
+
+        img = Image.new("RGB", (2*iw, ih))
+        drw = ImageDraw.Draw(img)
+
+        drw.text((1*iw/2, 1), "ORIGINAL", fill=(255, 255, 255))
+        drw.text((3*iw/2, 1), "ORDERED", fill=(255, 255, 255))
+
+        drw.rectangle((( 0, 0), (1*iw-1, ih-1)), outline="white")
+        drw.rectangle(((iw, 0), (2*iw-1, ih-1)), outline="white")
+
+        orig=(0,0)
+        p0=orig        
+        for ind,rect in enumerate(rects_i):
+
+            shape = ((orig[0]+rect[0], ih-rect[3]), (orig[0]+rect[2], ih-rect[1]))
+            drw.rectangle(shape, outline ="red")
+
+            p1=(orig[0]+(rect[0]+rect[2])/2, (2*ih-rect[3]-rect[1])/2)
+            drw.line((p0, p1), fill="blue")
+            drw.text(p1, f"{ind}", fill=(255, 255, 255))
+
+            p0=p1
+
+        orig=(iw,0)
+        p0=orig        
+        for ind,rect in enumerate(rects_j):
+
+            shape = ((orig[0]+rect[0], ih-rect[3]), (orig[0]+rect[2], ih-rect[1]))
+            drw.rectangle(shape, outline ="red")
+
+            p1=(orig[0]+(rect[0]+rect[2])/2, (2*ih-rect[3]-rect[1])/2)
+            drw.line((p0, p1), fill="blue")
+            drw.text(p1, f"{ind}", fill=(255, 255, 255))
+
+            p0=p1
+            
+        img.show()
+        
 def run_nlp_on_docs(sdir):
 
     filenames = glob.glob(os.path.join(sdir, "*.json"))
     print("filenames: ", filenames)
     
     model = andromeda_nlp.nlp_model()
-    model.initialise("term;language;reference;abbreviation")
+    model.initialise("language;term")
+
+    page_num=1
     
     for filename in filenames:
 
         if(filename.endswith(".nlp.json")):
             continue
+
+        #if #"2106" not in filename:# and \
+        if "boka_da_vinci" not in filename:
+            continue
         
         print(f"reading {filename}")
 
         fr = open(filename, "r")
-        doc = json.load(fr)
+        doc_i = json.load(fr)
         fr.close()
-
-        doc_ = model.apply_on_pdfdoc(doc)
         
-        filename_ = filename+".nlp.json" 
+        doc_j = model.apply_on_doc(doc_i)
 
-        print(f" --> writing {filename_}")
-        fw = open(filename_, "w")        
-        fw.write(json.dumps(doc_, indent=2))
+        for page_num in range(1,3):
+            viz_docs(doc_i, doc_j, page=page_num)
+
+        """
+        table = []
+        for _ in ["properties", "entities", "relations"]:
+            table.append([_, len(doc_j[_]["data"])])
+
+        mtable = []
+        for i,item in enumerate(doc_j["main-text"]):
+            print(item)
+            if "text" in item:
+                mtable.append([i,
+                               len(item["properties"]["data"]),
+                               len(item["entities"]["data"]),
+                               len(item["relations"]["data"])])            
+            
+
+
+        print(tabulate(mtable))
+        print(tabulate(table))
+        """
+
+        filename_j = filename+".nlp.json"
+        print(f" --> writing {filename_j}")
+        
+        fw = open(filename_j, "w")        
+        fw.write(json.dumps(doc_j, indent=2))
         fw.close()
-
-        
-def viz_page(doc):
-
-    mtext = doc["main-text"]
-        
-def viz_nlp_on_docs(sdir):
-
-    filenames = glob.glob(os.path.join(sdir, "*.json"))
-    print("filenames: ", filenames)
-    
-    model = andromeda_nlp.nlp_model()
-    model.initialise("term;language;reference;abbreviation")
-    
-    for filename in filenames:
-
-        if(filename.endswith(".nlp.json")):
-            continue
-        
-        print(f"reading {filename}")
-
-        fr = open(filename, "r")
-        doc = json.load(fr)
-        fr.close()
-
-        doc_ = model.apply_on_pdfdoc(doc)
-        
-        filename_ = filename.replace(".json", ".nlp.json") 
-
-        print(f" --> writing {filename_}")
-        fw = open(filename_, "w")        
-        fw.write(json.dumps(doc_, indent=2))
-        fw.close()        
     
 if __name__ == '__main__':
 
