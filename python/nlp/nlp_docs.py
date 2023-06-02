@@ -119,9 +119,15 @@ def show_nlp_on_docs(sdir):
 
     filenames = glob.glob(os.path.join(sdir, "*.json"))
     print("filenames: ", filenames)
+
+    config = {
+        "mode" : "prodict",
+        "order" : True,
+        "models": "name;term;language;reference"
+    }
     
     model = andromeda_nlp.nlp_model()
-    model.initialise("name;term;language;reference")
+    model.initialise(config)
     
     for filename in filenames:
 
@@ -296,10 +302,14 @@ def viz_docs(doc_i, doc_j, page=1):
 def run_nlp_on_docs(sdir):
 
     filenames = glob.glob(os.path.join(sdir, "*.json"))
-    print("filenames: ", filenames)
-    
+    print("filenames: ", json.dumps(filenames, indent=2))
+
     model = andromeda_nlp.nlp_model()
-    model.initialise("language;term")
+
+    config = model.get_apply_configs()[0]
+    config["models"] = "name;term;language;reference"
+    
+    model.initialise(config)
 
     page_num=1
     

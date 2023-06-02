@@ -14,6 +14,8 @@ namespace andromeda
   {
   public:
 
+    const static inline std::string order_text_lbl = "order-text";
+    
     const static inline std::string keep_text_lbl = "keep-text";
     const static inline std::string keep_table_lbl = "keep-tables";
     const static inline std::string keep_figure_lbl = "keep-figures";
@@ -74,6 +76,8 @@ namespace andromeda
   private:
 
     std::size_t curr_docs;
+
+    bool order_text;
     
     bool keep_text, keep_tables, keep_figures;
   };
@@ -82,6 +86,8 @@ namespace andromeda
     base_producer(),
 
     curr_docs(0),
+
+    order_text(true),
     
     keep_text(true),
     keep_tables(true),
@@ -92,6 +98,8 @@ namespace andromeda
     base_producer(models),
 
     curr_docs(0),
+
+    order_text(true),
     
     keep_text(true),
     keep_tables(true),
@@ -103,6 +111,8 @@ namespace andromeda
     base_producer(models),
 
     curr_docs(0),
+
+    order_text(true),
     
     keep_text(true),
     keep_tables(true),
@@ -135,6 +145,8 @@ namespace andromeda
 
       config[write_output_lbl] = true;
       config[opath_lbl] = "<optional:output-directory-of-json-files>";
+
+      config[order_text_lbl] = order_text;
       
       config[keep_text_lbl] = keep_text;
       config[keep_table_lbl] = keep_tables;
@@ -151,6 +163,8 @@ namespace andromeda
     base_producer::initialise(config);
 
     base_producer::find_filepaths();
+
+    order_text = this->configuration.value(order_text_lbl, order_text);
     
     keep_text = this->configuration.value(keep_text_lbl, keep_text);
     keep_tables = this->configuration.value(keep_table_lbl, keep_tables);
@@ -214,7 +228,7 @@ namespace andromeda
 	    nlohmann::json data;
 	    ifs >> data;
 
-	    valid = subject.set_data(*path_itr, data);
+	    valid = subject.set_data(*path_itr, data, order_text);
 	  }
 
 	success = ((valid) and (path_itr!=path_end));

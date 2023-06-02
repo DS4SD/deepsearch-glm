@@ -10,6 +10,8 @@ namespace andromeda
   {
   private:
 
+    const static inline val_type eps = 1.0;
+    
     const static inline int x0 = 0;
     const static inline int y0 = 1;
     const static inline int x1 = 2;
@@ -203,13 +205,13 @@ namespace andromeda
   {
     assert(page==rhs.page);
 
-    return (bbox.at(y0)>rhs.bbox.at(y1));
+    return (bbox.at(y0)+eps>rhs.bbox.at(y1));
   }
   
   bool prov_element::is_left_of(const prov_element& rhs) const
   {
     assert(page==rhs.page);
-
+    
     return (bbox.at(x0)<rhs.bbox.at(x0));
   }
 
@@ -217,7 +219,7 @@ namespace andromeda
   {
     assert(page==rhs.page);
 
-    return (bbox.at(x1)<rhs.bbox.at(x0));
+    return (bbox.at(x1)<rhs.bbox.at(x0)+eps);
   }
   
   bool prov_element::is_horizontally_connected(const prov_element& elem_i,

@@ -14,8 +14,9 @@ namespace andromeda_py
     nlp_model();
     ~nlp_model();
 
-    void initialise(const std::string model_expr="term");
-
+    //void initialise(const std::string model_expr="term");
+    bool initialise(const nlohmann::json config_);
+    
     nlohmann::json get_apply_configs();
     nlohmann::json get_train_configs();
     
@@ -34,7 +35,11 @@ namespace andromeda_py
 		    nlohmann::json& results);
     
   private:
+    
+    nlohmann::json config;
 
+    bool order_text;
+    
     std::vector<std::shared_ptr<andromeda::base_nlp_model> > models;
 
     std::shared_ptr<andromeda::utils::char_normaliser> char_normaliser;
@@ -42,6 +47,9 @@ namespace andromeda_py
   };
 
   nlp_model::nlp_model():
+    config(nlohmann::json::value_t::null),
+    
+    order_text(false),
     models({}),
 
     char_normaliser(andromeda::text_element::create_char_normaliser(false)),
@@ -50,10 +58,35 @@ namespace andromeda_py
   
   nlp_model::~nlp_model()
   {}
-  
+
+  /*
   void nlp_model::initialise(const std::string model_expr)
   {
-    andromeda::to_models(model_expr, this->models, false);
+  andromeda::to_models(model_expr, this->models, false);
+  }
+  */
+  
+  bool nlp_model::initialise(const nlohmann::json config_)
+  {       
+    std::string mode = config_["mode"].get<std::string>();
+    
+    if(mode=="apply")
+      {
+	config = config_;
+	
+	order_text = true;
+	order_text = config.value("order-text", order_text);
+	
+	std::string models_expr = "term";
+	models_expr = config.value("models", models_expr);
+
+	return andromeda::to_models(models_expr, this->models, false);
+      }
+    else
+      {
+	LOG_S(WARNING) << "could not initialise nlp_model";	
+	return false;
+      }
   }
 
   nlohmann::json nlp_model::get_apply_configs()
@@ -63,7 +96,9 @@ namespace andromeda_py
     {
       nlohmann::json config;
       {
-	config["mode"] = "predict";
+	config["mode"] = "apply";
+
+	config["order-text"] = true;
 	
 	config["models"] = "reference;conn;term;verb";
 	config["interactive"] = true;
@@ -295,35 +330,55 @@ namespace andromeda_py
 
   nlohmann::json nlp_model::apply_on_doc(nlohmann::json& data)
   {
-    andromeda::subject<andromeda::DOCUMENT> doc;    
-    bool valid = doc.set(data, char_normaliser, text_normaliser);
+    andromeda::subject<andromeda::DOCUMENT> doc;
 
-    bool success=false;
-    std::stringstream ss;    
+    bool update_maintext=true;
+    update_maintext = config.value("order-text", update_maintext);
+
+    nlohmann::json result = nlohmann::json::object();
     
-    if(valid)
+    if(not doc.set_data(data, update_maintext))
       {
-	for(auto& model:models)
-	  {
-	    model->apply(doc);
-	  }
-	doc.finalise();
-	
-	success = true;
-	ss << "success";	
+	std::string message = "could not set data for document";
+	LOG_S(ERROR) << message;
+
+	nlohmann::json& application = result["model-application"];
+	{
+	  application["success"] = false;
+	  application["message"] = message;
+	}
+
+	return result;	
       }
-    else
+    
+    if(not doc.set_tokens(char_normaliser, text_normaliser))
       {
-	success = false;
-        ss << "document is not compliant with schema!";
+	std::string message = "could not set tokens for document";
+	LOG_S(ERROR) << message;
+
+	nlohmann::json& application = result["model-application"];
+	{
+	  application["success"] = false;
+	  application["message"] = message;
+	}
+
+	return result;
       }
 
-    nlohmann::json result = doc.to_json();
     {
-      nlohmann::json& application = result["model-application"];
+      for(auto& model:models)
+	{
+	  model->apply(doc);
+	}
+      doc.finalise();
+      
+      result = doc.to_json();
       {
-	application["success"] = success;
-	application["message"] = ss.str();
+	nlohmann::json& application = result["model-application"];
+	{
+	  application["success"] = true;
+	  application["message"] = "success";
+	}
       }
     }
     

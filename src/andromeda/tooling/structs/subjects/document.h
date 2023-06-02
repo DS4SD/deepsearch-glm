@@ -26,45 +26,53 @@ namespace andromeda
               bool ctokens=false, bool wtokens=true,
               bool prps=true, bool ents=true, bool rels=true);
 
-    bool set_data(nlohmann::json& data);
+    bool set_data(nlohmann::json& data, bool order_maintext);
 
     bool set_data(std::filesystem::path filepath,
-                  nlohmann::json& data);
+                  nlohmann::json& data, bool order_maintext);
 
     bool set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
                     std::shared_ptr<utils::text_normaliser> text_normaliser);
 
-    bool set(nlohmann::json& data,
-             std::shared_ptr<utils::char_normaliser> char_normaliser,
-             std::shared_ptr<utils::text_normaliser> text_normaliser);
+    /*
+      bool set(nlohmann::json& data,
+      std::shared_ptr<utils::char_normaliser> char_normaliser,
+      std::shared_ptr<utils::text_normaliser> text_normaliser);
 
-    bool set(std::filesystem::path filepath, nlohmann::json& data,
-             std::shared_ptr<utils::char_normaliser> char_normaliser,
-             std::shared_ptr<utils::text_normaliser> text_normaliser);
+      bool set(std::filesystem::path filepath, nlohmann::json& data,
+      std::shared_ptr<utils::char_normaliser> char_normaliser,
+      std::shared_ptr<utils::text_normaliser> text_normaliser);
+    */
 
     bool finalise();
 
+    void init_provs(std::vector<prov_element>& provs);
+    void show_provs(std::vector<prov_element>& provs);
+
   private:
 
-    void init_provs(std::vector<prov_element>& provs);
     bool clean_provs(std::vector<prov_element>& provs); // remove all provs with ignore==true
 
-    void order_items();
+    /*
+      void order_items();
 
-    bool toposort(std::vector<prov_element>& provs);
-    std::vector<prov_element> toposort_on_page(std::vector<prov_element>& provs);
+      bool toposort(std::vector<prov_element>& provs);
+      std::vector<prov_element> toposort_on_page(std::vector<prov_element>& provs);
+    */
 
     /*
-    void walk_matrix(int ind, int N,
-                     std::vector<int>& order,
-                     std::vector<std::vector<int> >& matrix,
-                     std::vector<bool>& visited);
+      void walk_matrix(int ind, int N,
+      std::vector<int>& order,
+      std::vector<std::vector<int> >& matrix,
+      std::vector<bool>& visited);
     */
-    
-    void depth_first_search(int j, std::vector<int>& order,
-			    std::vector<bool>& visited,
-			    std::map<ind_type, std::vector<ind_type> >& dn_map);
-    
+
+    /*
+      void depth_first_search(int j, std::vector<int>& order,
+      std::vector<bool>& visited,
+      std::map<ind_type, std::vector<ind_type> >& dn_map);
+    */
+
     bool init_items();
 
     bool remove_headers_and_footers(std::vector<prov_element>& provs);
@@ -222,13 +230,14 @@ namespace andromeda
       }
   }
 
-  bool subject<DOCUMENT>::set_data(std::filesystem::path filepath, nlohmann::json& data)
+  bool subject<DOCUMENT>::set_data(std::filesystem::path filepath, nlohmann::json& data,
+                                   bool update_maintext)
   {
     this->filepath = filepath;
-    return set_data(data);
+    return set_data(data, update_maintext);
   }
 
-  bool subject<DOCUMENT>::set_data(nlohmann::json& data)
+  bool subject<DOCUMENT>::set_data(nlohmann::json& data, bool update_maintext)
   {
     //LOG_S(INFO) << __FUNCTION__;
 
@@ -250,9 +259,14 @@ namespace andromeda
 
         orig = data;
 
-    order_items();
+    {
+      reading_order sorter;
+      sorter.order_maintext(*this, update_maintext);
+    }
 
-    init_items();
+    {
+      init_items();
+    }
 
     return true;
   }
@@ -315,430 +329,21 @@ namespace andromeda
       }
   }
 
-  void subject<DOCUMENT>::order_items()
+  void subject<DOCUMENT>::show_provs(std::vector<prov_element>& provs)
   {
     //LOG_S(INFO) << __FUNCTION__;
+    std::vector<std::string> headers = prov_element::headers();
 
-    if(orig.count("main-text")==0)
+    std::vector<std::vector<std::string> > rows={};
+    for(auto& item:provs)
       {
-        return;
+        rows.push_back(item.to_row());
       }
 
-    std::vector<prov_element> provs={};
-    init_provs(provs);
-
-    /*
-      {
-      std::vector<std::string> headers = prov_element::headers();
-
-      std::vector<std::vector<std::string> > rows={};
-      for(auto& item:provs)
-      {
-      rows.push_back(item.to_row());
-      }
-
-      LOG_S(INFO) << "filepath: " << filepath << "\n\n"
-      << utils::to_string(headers, rows, -1);
-
-      }
-    */
-
-    //LOG_S(WARNING) << "sorting ... ";
-
-    //sort(provs.begin(), provs.end());
-
-    toposort(provs);
-
-    /*
-      {
-      std::vector<std::string> headers = prov_element::headers();
-
-      std::vector<std::vector<std::string> > rows={};
-      for(auto& item:provs)
-      {
-      rows.push_back(item.to_row());
-      }
-
-      LOG_S(INFO) << "sorted: " << "\n\n"
-      << utils::to_string(headers, rows, -1);
-
-      std::string tmp;
-      std::cin >> tmp;
-      }
-    */
-
-    {
-      // copy ...
-      nlohmann::json maintext = orig["main-text"];
-      for(std::size_t l=0; l<provs.size(); l++)
-        {
-          maintext[l] = orig["main-text"][provs.at(l).maintext_ind];
-          maintext[l]["pdf-order"] = provs.at(l).maintext_ind;
-        }
-
-          // overwrite ...
-          orig["main-text"] = maintext;
-    }
+    LOG_S(INFO) << "filepath: " << filepath << "\n\n"
+                << utils::to_string(headers, rows, -1);
   }
 
-  bool subject<DOCUMENT>::toposort(std::vector<prov_element>& provs)
-  {
-    LOG_S(WARNING) << __FUNCTION__;
-
-    std::map<std::size_t, std::vector<prov_element> > page_provs={};
-
-    for(auto& prov:provs)
-      {
-        if(page_provs.count(prov.page))
-          {
-            page_provs.at(prov.page).push_back(prov);
-          }
-        else
-          {
-            page_provs[prov.page] = {prov};
-          }
-      }
-
-    provs.clear();
-    for(auto itr=page_provs.begin(); itr!=page_provs.end(); itr++)
-      {
-        std::vector<prov_element>& local = itr->second;
-
-        std::vector<prov_element> order = toposort_on_page(local);
-
-        for(auto& item:order)
-          {
-            provs.push_back(item);
-          }
-      }
-
-    return true;
-  }
-
-  std::vector<prov_element> subject<DOCUMENT>::toposort_on_page(std::vector<prov_element>& provs)
-  {
-    std::size_t N=provs.size();
-
-    if(N<2)
-      {
-        return provs;
-      }
-
-    //sort(provs.begin(), provs.end());
-    std::map<ind_type, ind_type> h2i_map={}, i2h_map={};
-    for(std::size_t i=0; i<N; i++)
-      {
-	auto h = provs.at(i).maintext_ind;
-	i2h_map[i] = h;
-	h2i_map[h] = i;
-      }
-    
-    std::map<ind_type, ind_type> l2r_map={}, r2l_map={};
-    for(std::size_t i=0; i<N; i++)
-      {
-        for(std::size_t j=0; j<N; j++)
-          {
-            auto& prov_i = provs.at(i);
-            auto& prov_j = provs.at(j);
-
-            if(prov_i.follows_maintext_order(prov_j) and
-               prov_i.is_strictly_left_of(prov_j) and
-               //prov_i.overlaps_y(prov_j)
-               prov_i.overlaps_y(prov_j, 0.8)
-               )
-              {
-                l2r_map[i] = j;
-                r2l_map[j] = i;
-              }
-          }
-      }
-
-    LOG_S(WARNING) << provs.at(0).page << ": " << l2r_map.size();
-    for(auto& _:l2r_map)
-      {
-        LOG_S(INFO) << "\t" << _.first << " => " << _.second;
-      }
-    
-    //return provs;
-
-    // every col-j shows relations to previous element on row-i
-    //std::vector<std::vector<int> > matrix(N, std::vector<int>(N,0));
-
-    std::map<ind_type, std::vector<ind_type> > up_map={}, dn_map={};
-
-    for(std::size_t ind=0; ind<N; ind++)
-      {
-	dn_map[ind]={};
-	up_map[ind]={};
-      }
-    
-    for(std::size_t j=0; j<N; j++)
-      {
-	LOG_S(INFO) << "node-" << j;
-	
-        if(r2l_map.count(j)==1)
-          {
-	    std::size_t i = r2l_map.at(j);
-	    
-	    dn_map[i] = {j};
-	    up_map[j] = {i};	    
-	    
-            continue;
-          }
-
-        auto& prov_j = provs.at(j);
-
-        for(std::size_t i=0; i<N; i++)
-          {
-	    if(i==j)
-	      {
-		continue;
-	      }
-	    
-            auto& prov_i = provs.at(i);
-
-            bool is_horizontally_connected=false;
-            bool is_i_just_above_j = (prov_i.overlaps_x(prov_j) and prov_i.is_strictly_above(prov_j));
-	    
-	    //LOG_S(WARNING) << "(" << i << ", " << j << "): " << prov_i.overlaps_x(prov_j) << "\t" << is_i_just_above_j;
-	    
-            for(std::size_t w=0; w<N; w++)
-              {
-                auto& prov_w = provs.at(w);
-
-                if(not is_horizontally_connected)
-                  {
-                    is_horizontally_connected = provs.at(w).is_horizontally_connected(prov_i, prov_j);
-                  }
-
-                // ensure there is no other element that is between i and j vertically
-                if(is_i_just_above_j and (prov_i.overlaps_x(prov_w) or prov_j.overlaps_x(prov_w)))
-                  {
-                    bool i_above_w = prov_i.is_strictly_above(prov_w);
-                    bool w_above_j = prov_w.is_strictly_above(prov_j);
-
-                    is_i_just_above_j = (not (i_above_w and w_above_j));
-                  }
-              }
-	    
-            if(is_i_just_above_j)
-              {
-                while(l2r_map.count(i))
-                  {
-                    i = l2r_map.at(i);
-                  }
-                //matrix.at(i).at(j) = 1;
-
-		dn_map.at(i).push_back(j);
-		up_map.at(j).push_back(i);
-
-                //break;
-              }
-          }
-      }
-
-    LOG_S(INFO) << "page-edges: ";
-    //for(auto& _:dn_map)
-    for(std::size_t ind=0; ind<N; ind++)
-      {
-	LOG_S(INFO) << ind << ": " << up_map.at(ind).size() << "\t" << dn_map.at(ind).size();
-	for(auto j:dn_map.at(ind))
-	  {
-	    LOG_S(INFO) << "\t" << ind << " -[dn]-> " << j;
-	  }
-	
-	for(auto j:up_map.at(ind))
-	  {
-	    LOG_S(INFO) << "\t" << ind << " -[up]-> " << j;
-	  }
-      }
-
-    std::vector<int> heads={};
-    {
-      std::vector<prov_element> head_provs={};
-      for(auto& _:up_map)
-	{
-	  if(_.second.size()==0)
-	    {
-	      head_provs.push_back(provs.at(_.first));
-	    }
-	}
-
-      std::sort(head_provs.begin(), head_provs.end());
-
-      for(auto& _:head_provs)
-	{
-	  heads.push_back(h2i_map.at(_.maintext_ind));
-	}
-    }
-
-    {
-      for(auto& item:dn_map)
-	{
-	  std::vector<prov_element> child_provs={};
-	  for(auto& ind:item.second)
-	    {
-	      child_provs.push_back(provs.at(ind));
-	    }
-
-	  std::sort(child_provs.begin(), child_provs.end());
-
-	  item.second.clear();
-	  for(auto& child:child_provs)
-	    {
-	      item.second.push_back(h2i_map.at(child.maintext_ind));
-	    }	  
-	}
-    }
-    
-    std::vector<int> order={};    
-    std::vector<bool> visited(N,false);
-
-    for(auto& j:heads)
-      {
-	if(not visited.at(j))
-	  {
-	    LOG_S(INFO) << "head ind: " << j;
-	    
-	    order.push_back(j);
-	    visited.at(j) = true;
-
-	    depth_first_search(j, order, visited, dn_map);
-	  }
-      }
-    
-    assert(order.size()==N);
-    std::vector<prov_element> result={};
-    for(auto ind:order)
-      {
-        result.push_back(provs.at(ind));
-      }
-
-    return result;
-
-    /*
-    for(std::size_t ind=0; ind<N; ind++)
-      {
-	int j = ind;
-	
-	if(not visited.at(j))
-	  {
-	    order.push_back(j);
-
-	    visited.at(j) = true;
-	  }
-
-	while(next_map.count(j))
-	  {
-	    j = next_map.at(j);
-
-	    if(not visited.at(j))
-	      {
-		order.push_back(j);
-		visited.at(j) = true;
-	      }
-	    else
-	      {
-		break;
-	      }
-	  }
-      }
-    */
-        
-    /*
-      if(prov_i.overlaps_x(prov_j) and prov_i.is_above(prov_j))
-      {
-      matrix.at(i).at(j) = 1;
-      }
-      else
-      {
-
-      bool is_horizontally_connected=false;
-      for(std::size_t w=0; w<N; w++)
-      {
-      is_horizontally_connected = provs.at(w).is_horizontally_connected(prov_i, prov_j);
-
-      if(is_horizontally_connected)
-      {
-      break;
-      }
-      }
-
-      if(is_horizontally_connected and
-      prov_i.is_strictly_left_of(prov_j))
-      {
-      matrix.at(i).at(j) = 1;
-      }
-      }
-    */
-
-    /*
-    std::vector<int> order={};
-
-    std::vector<bool> visited(N,false);
-    for(std::size_t i=0; i<N; i++)
-      {
-        walk_matrix(i, N, order, matrix, visited);
-      }
-
-    assert(order.size()==N);
-    std::vector<prov_element> result={};
-    for(auto ind:order)
-      {
-        result.push_back(provs.at(ind));
-      }
-
-      return result;
-    */
-
-    //return provs;
-  }
-
-  void subject<DOCUMENT>::depth_first_search(int j, std::vector<int>& order,
-					     std::vector<bool>& visited,
-					     std::map<ind_type, std::vector<ind_type> >& dn_map)
-  {
-    std::vector<ind_type>& inds = dn_map.at(j);
-
-    for(auto& i:inds)
-      {
-	if(not visited.at(i))
-	  {
-	    LOG_S(INFO) << " -> next ind: " << i;
-	    
-	    order.push_back(i);
-	    visited.at(i) = true;
-
-	    depth_first_search(i, order, visited, dn_map);
-	  }
-      }
-  }
-  
-  /*
-  void subject<DOCUMENT>::walk_matrix(int ind, int N,
-                                      std::vector<int>& order,
-                                      std::vector<std::vector<int> >& matrix,
-                                      std::vector<bool>& visited)
-  {
-    if(visited.at(ind))
-      {
-        return;
-      }
-
-    visited.at(ind) = true;
-
-    for(int i=0; i<N; i++)
-      {
-        if(matrix.at(i).at(ind)!=0)
-          {
-            walk_matrix(i, N, order, matrix, visited);
-          }
-      }
-
-        order.push_back(ind);
-  }
-  */
-  
   bool subject<DOCUMENT>::init_items()
   {
     //LOG_S(INFO) << __FUNCTION__;
@@ -766,42 +371,9 @@ namespace andromeda
       //clean_provs(provs);
     }
 
-    /*
-      {
-      std::vector<std::string> headers = prov_element::headers();
-
-      std::vector<std::vector<std::string> > rows={};
-      for(auto& item:provs)
-      {
-      rows.push_back(item.to_row());
-      }
-
-      LOG_S(INFO) << "sorted: " << "\n\n"
-      << utils::to_string(headers, rows, -1);
-      }
-    */
-
     {
       init_paragraphs(provs);
     }
-
-    /*
-      {
-      for(auto& item:paragraphs)
-      {
-      item.show(true, false, false, false, false, false, false);
-      }
-
-      //for(auto& item:tables)
-      //{
-      //item.show(false, false, false);
-      //}
-
-      LOG_S(WARNING) << "set doc ...";
-      std::string tmp;
-      std::cin >> tmp;
-      }
-    */
 
     return true;
   }
@@ -1026,33 +598,35 @@ namespace andromeda
     return true;
   }
 
-  bool subject<DOCUMENT>::set(nlohmann::json& data,
-                              std::shared_ptr<utils::char_normaliser> char_normaliser,
-                              std::shared_ptr<utils::text_normaliser> text_normaliser)
-  {
+  /*
+    bool subject<DOCUMENT>::set(nlohmann::json& data,
+    std::shared_ptr<utils::char_normaliser> char_normaliser,
+    std::shared_ptr<utils::text_normaliser> text_normaliser)
+    {
     //LOG_S(INFO) << __FUNCTION__;
 
-    if(set_data(data))
-      {
-        return set_tokens(char_normaliser, text_normaliser);
-      }
+    if(set_data(data, order_text))
+    {
+    return set_tokens(char_normaliser, text_normaliser);
+    }
 
     return false;
-  }
+    }
 
-  bool subject<DOCUMENT>::set(std::filesystem::path filepath, nlohmann::json& data,
-                              std::shared_ptr<utils::char_normaliser> char_normaliser,
-                              std::shared_ptr<utils::text_normaliser> text_normaliser)
-  {
+    bool subject<DOCUMENT>::set(std::filesystem::path filepath, nlohmann::json& data,
+    std::shared_ptr<utils::char_normaliser> char_normaliser,
+    std::shared_ptr<utils::text_normaliser> text_normaliser)
+    {
     //LOG_S(INFO) << __FUNCTION__;
 
-    if(set_data(filepath, data))
-      {
-        return set_tokens(char_normaliser, text_normaliser);
-      }
+    if(set_data(filepath, data, order_text))
+    {
+    return set_tokens(char_normaliser, text_normaliser);
+    }
 
     return false;
-  }
+    }
+  */
 
   bool subject<DOCUMENT>::finalise()
   {
