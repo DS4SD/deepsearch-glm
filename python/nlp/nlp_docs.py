@@ -359,7 +359,102 @@ def run_nlp_on_docs(sdir):
         fw = open(filename_j, "w")        
         fw.write(json.dumps(doc_j, indent=2))
         fw.close()
+
+def resolve(doc, ref):
+
+    parts = ref.split("/")
+    return doc[parts[1]][int(parts[2])]
     
+def get_label(item, model):
+
+    if "properties" not in item:
+        return None, None
+    
+    #print(tabulate(item["properties"]["data"], headers=item["properties"]["headers"]))
+    
+    mind = item["properties"]["headers"].index("type")
+    lind = item["properties"]["headers"].index("label")
+    cind = item["properties"]["headers"].index("confidence")
+    
+    for row in item["properties"]["data"]:
+        if model==row[mind]:
+            return row[lind], row[cind]
+
+    return None, None
+        
+def run_nlp_on_doc(filename):
+
+    model = andromeda_nlp.nlp_model()
+
+    config = model.get_apply_configs()[0]
+    config["models"] = "name;term;language;reference"
+    
+    model.initialise(config)
+    
+    fr = open(filename, "r")
+    doc_i = json.load(fr)
+    fr.close()
+    
+    doc_j = model.apply_on_doc(doc_i)
+
+    mtext=[]
+    
+    print("\n\n")            
+    print("main-text: ", len(doc_j["main-text"]))
+    for i,item in enumerate(doc_j["main-text"]):
+
+        lanlabel, lconf = get_label(item, "language")
+        semlabel, sconf = get_label(item, "semantic")
+        
+        if(("text" in item)):# and ("type" in item) and (item["type"] in ["paragraph", "subtitle-level-1"])):
+
+            page = item["prov"][0]["page"]
+            
+            text = item["text"]
+            if len(text)>64:
+                text = item["text"][0:32] + " ... " + item["text"][len(text)-27:len(text)]
+            
+            mtext.append([i, page, item["type"], item["name"], semlabel, sconf, lanlabel, text])
+
+        elif "__ref" in item:
+
+            ritem = resolve(doc_j, item["__ref"]) 
+            page = ritem["prov"][0]["page"]
+            
+            mtext.append([i, page, item["type"], item["name"], semlabel, sconf, lanlabel, "..."])
+
+        elif "$ref" in item:
+
+            ritem = resolve(doc_j, item["$ref"]) 
+            page = ritem["prov"][0]["page"]
+            
+            mtext.append([i, page, item["type"], item["name"], semlabel, sconf, lanlabel, "..."])                        
+            
+    print(tabulate(mtext, headers=["index", "page", "type", "name", "semantic", "confidence", "language", "text"]))
+            
+    print("\n\n")            
+    print("tables: ", len(doc_j["tables"]))
+    for i,table in enumerate(doc_j["tables"]):
+        if "captions" in table and len(table["captions"])>0:
+            print(i, "\tpage: ", table["prov"][0]["page"], "\t", table["captions"][0]["text"][0:78])
+        else:
+            print(i, "\tpage: ", table["prov"][0]["page"], "\t", None)
+
+    print("\n\n")            
+    print("figures: ", len(doc_j["figures"]))
+    for i,figure in enumerate(doc_j["figures"]):
+        if "captions" in figure and len(figure["captions"])>0:
+            print(i, "\tpage: ", figure["prov"][0]["page"], "\t", figure["captions"][0]["text"][0:78])
+        else:
+            print(i, "\tpage: ", figure["prov"][0]["page"], "\t", None)
+    
+    filename_j = filename.replace(".json", ".nlp.json")
+    print(f" --> writing {filename_j}")
+    
+    fw = open(filename_j, "w")        
+    fw.write(json.dumps(doc_j, indent=2))
+    fw.close()        
+        
 if __name__ == '__main__':
 
     mode, sdir, models, uname, pword = parse_arguments()
@@ -377,6 +472,8 @@ if __name__ == '__main__':
         show_nlp_on_docs(sdir)
     elif mode=="run":
         run_nlp_on_docs(sdir)
+    elif mode=="run-doc":
+        run_nlp_on_doc(sdir)        
     else:
         print(tc.red(f"unknown {mode}"))
         

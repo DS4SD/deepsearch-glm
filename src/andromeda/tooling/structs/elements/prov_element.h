@@ -21,9 +21,9 @@ namespace andromeda
 
     prov_element();
 
-    prov_element(ind_type maintext_ind, std::string name, std::string type);
+    prov_element(ind_type pdforder_ind, ind_type maintext_ind, std::string name, std::string type);
 
-    prov_element(ind_type maintext_ind,
+    prov_element(ind_type pdforder_ind, ind_type maintext_ind,
 		 std::string dref, std::string name, std::string type);
 
     std::string to_path() const;
@@ -55,7 +55,7 @@ namespace andromeda
     
   public:
     
-    ind_type maintext_ind;
+    ind_type pdforder_ind, maintext_ind;
     std::string name, type;
 
     std::pair<std::string, ind_type> path;
@@ -71,6 +71,7 @@ namespace andromeda
   };
   
   prov_element::prov_element():
+    pdforder_ind(-1),
     maintext_ind(-1),
 
     name("undef"),
@@ -88,7 +89,9 @@ namespace andromeda
     coor_range({0,0})
   {}
 
-  prov_element::prov_element(ind_type maintext_ind, std::string name, std::string type):
+  prov_element::prov_element(ind_type pdforder_ind, ind_type maintext_ind,
+			     std::string name, std::string type):
+    pdforder_ind(pdforder_ind),
     maintext_ind(maintext_ind),
 
     name(name),
@@ -106,8 +109,9 @@ namespace andromeda
     coor_range({0,0})
   {}
 
-  prov_element::prov_element(ind_type maintext_ind, std::string doc_path,
-			     std::string name, std::string type):
+  prov_element::prov_element(ind_type pdforder_ind, ind_type maintext_ind,
+			     std::string doc_path, std::string name, std::string type):
+    pdforder_ind(pdforder_ind),
     maintext_ind(maintext_ind),
 
     name(name),

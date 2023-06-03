@@ -17,44 +17,44 @@ namespace andromeda
 
     template<typename doc_type>
     void update_document(doc_type& doc, std::vector<prov_element>& provs);
-    
+
   private:
-    
+
     bool sort_provs(std::vector<prov_element>& provs);
 
     std::vector<prov_element> sort_page_provs(std::vector<prov_element>& provs);
 
     void init_h2i_map(std::vector<prov_element>& provs,
-		      std::map<ind_type, ind_type>& h2i_map,
-		      std::map<ind_type, ind_type>& i2h_map);
+                      std::map<ind_type, ind_type>& h2i_map,
+                      std::map<ind_type, ind_type>& i2h_map);
 
     void init_l2r_map(std::vector<prov_element>& provs,
-		      std::map<ind_type, ind_type>& l2r_map,
-		      std::map<ind_type, ind_type>& r2l_map);
+                      std::map<ind_type, ind_type>& l2r_map,
+                      std::map<ind_type, ind_type>& r2l_map);
 
     void init_ud_maps(std::vector<prov_element>& provs,
-		      std::map<ind_type, ind_type>& l2r_map,
-		      std::map<ind_type, ind_type>& r2l_map,
-		      std::map<ind_type, std::vector<ind_type> >& up_map,
-		      std::map<ind_type, std::vector<ind_type> >& dn_map);
+                      std::map<ind_type, ind_type>& l2r_map,
+                      std::map<ind_type, ind_type>& r2l_map,
+                      std::map<ind_type, std::vector<ind_type> >& up_map,
+                      std::map<ind_type, std::vector<ind_type> >& dn_map);
 
     std::vector<ind_type> find_heads(std::vector<prov_element>& provs,
-				     std::map<ind_type, ind_type>& h2i_map,
-				     std::map<ind_type, ind_type>& i2h_map,
-				     std::map<ind_type, std::vector<ind_type> >& up_map,
-				     std::map<ind_type, std::vector<ind_type> >& dn_map);
+                                     std::map<ind_type, ind_type>& h2i_map,
+                                     std::map<ind_type, ind_type>& i2h_map,
+                                     std::map<ind_type, std::vector<ind_type> >& up_map,
+                                     std::map<ind_type, std::vector<ind_type> >& dn_map);
 
     void sort_ud_maps(std::vector<prov_element>& provs,
-		      std::map<ind_type, ind_type>& h2i_map,
-		      std::map<ind_type, ind_type>& i2h_map,
-		      std::map<ind_type, std::vector<ind_type> >& up_map,
-		      std::map<ind_type, std::vector<ind_type> >& dn_map);
-    
+                      std::map<ind_type, ind_type>& h2i_map,
+                      std::map<ind_type, ind_type>& i2h_map,
+                      std::map<ind_type, std::vector<ind_type> >& up_map,
+                      std::map<ind_type, std::vector<ind_type> >& dn_map);
+
     std::vector<ind_type> find_order(std::vector<prov_element>& provs,
-				     std::vector<ind_type>& heads,
-				     std::map<ind_type, std::vector<ind_type> >& up_map,
-				     std::map<ind_type, std::vector<ind_type> >& dn_map);
-    
+                                     std::vector<ind_type>& heads,
+                                     std::map<ind_type, std::vector<ind_type> >& up_map,
+                                     std::map<ind_type, std::vector<ind_type> >& dn_map);
+
     void depth_first_search(ind_type node_ind,
                             std::vector<ind_type>& order,
                             std::vector<bool>& visited,
@@ -68,16 +68,17 @@ namespace andromeda
   template<typename doc_type>
   void reading_order::order_maintext(doc_type& doc, bool update)
   {
-    LOG_S(INFO);
-    
     std::vector<prov_element> provs={};
-    doc.init_provs(provs);
 
-    sort_provs(provs);
-
+    {
+      doc.init_provs(provs);
+      
+      sort_provs(provs);
+    }
+    
     if(update)
       {
-	update_document(doc, provs);
+        update_document(doc, provs);
       }
   }
 
@@ -85,15 +86,12 @@ namespace andromeda
   void reading_order::update_document(doc_type& doc,
                                       std::vector<prov_element>& provs)
   {
-    LOG_S(INFO);
-    
     // copy ...
     nlohmann::json maintext = doc.orig["main-text"];
 
     for(std::size_t l=0; l<provs.size(); l++)
       {
         maintext.at(l) = doc.orig["main-text"][provs.at(l).maintext_ind];
-        maintext.at(l)["pdf-order"] = provs.at(l).maintext_ind;
       }
 
     // overwrite ...
@@ -102,7 +100,7 @@ namespace andromeda
 
   bool reading_order::sort_provs(std::vector<prov_element>& provs)
   {
-    LOG_S(WARNING) << __FUNCTION__;
+    //LOG_S(WARNING) << __FUNCTION__;
 
     std::map<std::size_t, std::vector<prov_element> > page_provs={};
 
@@ -136,8 +134,6 @@ namespace andromeda
 
   std::vector<prov_element> reading_order::sort_page_provs(std::vector<prov_element>& provs)
   {
-    LOG_S(WARNING) << __FUNCTION__;
-    
     std::size_t N=provs.size();
 
     if(N<2)
@@ -148,45 +144,45 @@ namespace andromeda
     // hash-to-pageindex
     std::map<ind_type, ind_type> h2i_map={}, i2h_map={};
     init_h2i_map(provs, h2i_map, i2h_map);
-    
+
     // left-to-right from PDF order
     std::map<ind_type, ind_type> l2r_map={}, r2l_map={};
     init_l2r_map(provs, l2r_map, r2l_map);
-    
+
     /*
-    LOG_S(WARNING) << provs.at(0).page << ": " << l2r_map.size();
+    //LOG_S(WARNING) << provs.at(0).page << ": " << l2r_map.size();
     for(auto& _:l2r_map)
-      {
-        LOG_S(INFO) << "\t" << _.first << " => " << _.second;
-      }
+    {
+    //LOG_S(INFO) << "\t" << _.first << " => " << _.second;
+    }
     */
-    
+
     std::map<ind_type, std::vector<ind_type> > up_map={}, dn_map={};
     init_ud_maps(provs, l2r_map, r2l_map, up_map, dn_map);
 
     /*
-    LOG_S(INFO) << "page-edges: ";
+    //LOG_S(INFO) << "page-edges: ";
     //for(auto& _:dn_map)
     for(std::size_t ind=0; ind<N; ind++)
-      {
-        LOG_S(INFO) << ind << ": " << up_map.at(ind).size() << "\t" << dn_map.at(ind).size();
-        for(auto j:dn_map.at(ind))
-          {
-            LOG_S(INFO) << "\t" << ind << " -[dn]-> " << j;
-          }
+    {
+    LOG_S(INFO) << ind << ": " << up_map.at(ind).size() << "\t" << dn_map.at(ind).size();
+    for(auto j:dn_map.at(ind))
+    {
+    LOG_S(INFO) << "\t" << ind << " -[dn]-> " << j;
+    }
 
-        for(auto j:up_map.at(ind))
-          {
-            LOG_S(INFO) << "\t" << ind << " -[up]-> " << j;
-          }
-      }
+    for(auto j:up_map.at(ind))
+    {
+    LOG_S(INFO) << "\t" << ind << " -[up]-> " << j;
+    }
+    }
     */
-    
+
     std::vector<ind_type> heads = find_heads(provs, h2i_map, i2h_map, up_map, dn_map);
 
     sort_ud_maps(provs, h2i_map, i2h_map, up_map, dn_map);
 
-    std::vector<ind_type> order = find_order(provs, heads, up_map, dn_map);    
+    std::vector<ind_type> order = find_order(provs, heads, up_map, dn_map);
 
     std::vector<prov_element> result={};
     for(auto ind:order)
@@ -198,11 +194,9 @@ namespace andromeda
   }
 
   void reading_order::init_h2i_map(std::vector<prov_element>& provs,
-				   std::map<ind_type, ind_type>& h2i_map,
-				   std::map<ind_type, ind_type>& i2h_map)
+                                   std::map<ind_type, ind_type>& h2i_map,
+                                   std::map<ind_type, ind_type>& i2h_map)
   {
-    LOG_S(WARNING) << __FUNCTION__;
-    
     // hash-to-pageindex
     for(std::size_t i=0; i<provs.size(); i++)
       {
@@ -213,11 +207,9 @@ namespace andromeda
   }
 
   void reading_order::init_l2r_map(std::vector<prov_element>& provs,
-				   std::map<ind_type, ind_type>& l2r_map,
-				   std::map<ind_type, ind_type>& r2l_map)
+                                   std::map<ind_type, ind_type>& l2r_map,
+                                   std::map<ind_type, ind_type>& r2l_map)
   {
-    LOG_S(WARNING) << __FUNCTION__;
-    
     for(std::size_t i=0; i<provs.size(); i++)
       {
         for(std::size_t j=0; j<provs.size(); j++)
@@ -239,13 +231,11 @@ namespace andromeda
   }
 
   void reading_order::init_ud_maps(std::vector<prov_element>& provs,
-				   std::map<ind_type, ind_type>& l2r_map,
-				   std::map<ind_type, ind_type>& r2l_map,
-				   std::map<ind_type, std::vector<ind_type> >& up_map,
-				   std::map<ind_type, std::vector<ind_type> >& dn_map)
+                                   std::map<ind_type, ind_type>& l2r_map,
+                                   std::map<ind_type, ind_type>& r2l_map,
+                                   std::map<ind_type, std::vector<ind_type> >& up_map,
+                                   std::map<ind_type, std::vector<ind_type> >& dn_map)
   {
-    LOG_S(WARNING) << __FUNCTION__;
-    
     for(std::size_t ind=0; ind<provs.size(); ind++)
       {
         dn_map[ind]={};
@@ -254,7 +244,7 @@ namespace andromeda
 
     for(std::size_t j=0; j<provs.size(); j++)
       {
-	if(r2l_map.count(j)==1)
+        if(r2l_map.count(j)==1)
           {
             std::size_t i = r2l_map.at(j);
 
@@ -277,8 +267,6 @@ namespace andromeda
 
             bool is_horizontally_connected=false;
             bool is_i_just_above_j = (prov_i.overlaps_x(prov_j) and prov_i.is_strictly_above(prov_j));
-
-            //LOG_S(WARNING) << "(" << i << ", " << j << "): " << prov_i.overlaps_x(prov_j) << "\t" << is_i_just_above_j;
 
             for(std::size_t w=0; w<provs.size(); w++)
               {
@@ -310,74 +298,66 @@ namespace andromeda
                 up_map.at(j).push_back(i);
               }
           }
-      }    
-  }  
+      }
+  }
 
   std::vector<base_types::ind_type> reading_order::find_heads(std::vector<prov_element>& provs,
-							      std::map<ind_type, ind_type>& h2i_map,
-							      std::map<ind_type, ind_type>& i2h_map,
-							      std::map<ind_type, std::vector<ind_type> >& up_map,
-							      std::map<ind_type, std::vector<ind_type> >& dn_map)
+                                                              std::map<ind_type, ind_type>& h2i_map,
+                                                              std::map<ind_type, ind_type>& i2h_map,
+                                                              std::map<ind_type, std::vector<ind_type> >& up_map,
+                                                              std::map<ind_type, std::vector<ind_type> >& dn_map)
   {
-    LOG_S(WARNING) << __FUNCTION__;
-    
     std::vector<ind_type> heads = {};
-      
+
     std::vector<prov_element> head_provs={};
     for(auto& item:up_map)
       {
-	LOG_S(INFO) << item.first << ": " << item.second.size();
-
-	if(item.second.size()==0)
-	  {
-	    head_provs.push_back(provs.at(item.first));
-	  }
+        if(item.second.size()==0)
+          {
+            head_provs.push_back(provs.at(item.first));
+          }
       }
 
     std::sort(head_provs.begin(), head_provs.end());
-    
+
     for(auto& item:head_provs)
       {
-	LOG_S(INFO) << item.maintext_ind << ": " << h2i_map.count(item.maintext_ind);
-	heads.push_back(h2i_map.at(item.maintext_ind));
+        //LOG_S(INFO) << item.maintext_ind << ": " << h2i_map.count(item.maintext_ind);
+        heads.push_back(h2i_map.at(item.maintext_ind));
       }
 
     return heads;
   }
-  
+
   void reading_order::sort_ud_maps(std::vector<prov_element>& provs,
-				   std::map<ind_type, ind_type>& h2i_map,
-				   std::map<ind_type, ind_type>& i2h_map,
-				   std::map<ind_type, std::vector<ind_type> >& up_map,
-				   std::map<ind_type, std::vector<ind_type> >& dn_map)
+                                   std::map<ind_type, ind_type>& h2i_map,
+                                   std::map<ind_type, ind_type>& i2h_map,
+                                   std::map<ind_type, std::vector<ind_type> >& up_map,
+                                   std::map<ind_type, std::vector<ind_type> >& dn_map)
   {
-    LOG_S(WARNING) << __FUNCTION__;
-    
     for(auto& item:dn_map)
       {
-	std::vector<prov_element> child_provs={};
-	for(auto& ind:item.second)
-	  {
-	    child_provs.push_back(provs.at(ind));
-	  }
-	
-	std::sort(child_provs.begin(), child_provs.end());
-	
-	item.second.clear();
-	for(auto& child:child_provs)
-	  {
-	    item.second.push_back(h2i_map.at(child.maintext_ind));
-	  }
+        std::vector<prov_element> child_provs={};
+        for(auto& ind:item.second)
+          {
+            child_provs.push_back(provs.at(ind));
+          }
+
+        std::sort(child_provs.begin(), child_provs.end());
+
+        item.second.clear();
+        for(auto& child:child_provs)
+          {
+            item.second.push_back(h2i_map.at(child.maintext_ind));
+          }
       }
   }
 
   std::vector<base_types::ind_type> reading_order::find_order(std::vector<prov_element>& provs,
-							      std::vector<ind_type>& heads,
-							      std::map<ind_type, std::vector<ind_type> >& up_map,
-							      std::map<ind_type, std::vector<ind_type> >& dn_map)
+                                                              std::vector<ind_type>& heads,
+                                                              std::map<ind_type, std::vector<ind_type> >& up_map,
+                                                              std::map<ind_type, std::vector<ind_type> >& dn_map)
   {
-    LOG_S(WARNING) << __FUNCTION__;
-    
     std::vector<ind_type> order={};
 
     std::vector<bool> visited(provs.size(), false);
@@ -386,8 +366,6 @@ namespace andromeda
       {
         if(not visited.at(j))
           {
-            LOG_S(INFO) << "head ind: " << j;
-
             order.push_back(j);
             visited.at(j) = true;
 
@@ -395,25 +373,21 @@ namespace andromeda
           }
       }
     assert(order.size()==provs.size());
-    
+
     return order;
   }
-  
+
   void reading_order::depth_first_search(ind_type j,
                                          std::vector<ind_type>& order,
                                          std::vector<bool>& visited,
                                          std::map<ind_type, std::vector<ind_type> >& dn_map)
   {
-    LOG_S(WARNING) << __FUNCTION__;
-    
     std::vector<ind_type>& inds = dn_map.at(j);
 
     for(auto& i:inds)
       {
         if(not visited.at(i))
           {
-            LOG_S(INFO) << " -> next ind: " << i;
-
             order.push_back(i);
             visited.at(i) = true;
 

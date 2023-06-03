@@ -11,6 +11,21 @@ namespace andromeda
   {
   public:
 
+    const static inline std::string mtexts_lbl = "main-text";
+    const static inline std::string tables_lbl = "tables";
+    const static inline std::string figures_lbl = "figures";
+
+    const static inline std::string pdforder_lbl = "pdf-order";
+
+    const static inline std::string prov_lbl = "prov";
+    const static inline std::string text_lbl = "text";
+    const static inline std::string data_lbl = "data";
+
+    const static inline std::string mtext_name_lbl = "name";
+    const static inline std::string mtext_type_lbl = "type";
+    
+  public:
+
     subject();
     ~subject();
 
@@ -34,16 +49,6 @@ namespace andromeda
     bool set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
                     std::shared_ptr<utils::text_normaliser> text_normaliser);
 
-    /*
-      bool set(nlohmann::json& data,
-      std::shared_ptr<utils::char_normaliser> char_normaliser,
-      std::shared_ptr<utils::text_normaliser> text_normaliser);
-
-      bool set(std::filesystem::path filepath, nlohmann::json& data,
-      std::shared_ptr<utils::char_normaliser> char_normaliser,
-      std::shared_ptr<utils::text_normaliser> text_normaliser);
-    */
-
     bool finalise();
 
     void init_provs(std::vector<prov_element>& provs);
@@ -51,27 +56,9 @@ namespace andromeda
 
   private:
 
+    void set_orig(nlohmann::json& data);
+    
     bool clean_provs(std::vector<prov_element>& provs); // remove all provs with ignore==true
-
-    /*
-      void order_items();
-
-      bool toposort(std::vector<prov_element>& provs);
-      std::vector<prov_element> toposort_on_page(std::vector<prov_element>& provs);
-    */
-
-    /*
-      void walk_matrix(int ind, int N,
-      std::vector<int>& order,
-      std::vector<std::vector<int> >& matrix,
-      std::vector<bool>& visited);
-    */
-
-    /*
-      void depth_first_search(int j, std::vector<int>& order,
-      std::vector<bool>& visited,
-      std::map<ind_type, std::vector<ind_type> >& dn_map);
-    */
 
     bool init_items();
 
@@ -92,7 +79,7 @@ namespace andromeda
 
     std::string doc_name;
     uint64_t doc_hash;
-
+    
     std::vector<subject<PARAGRAPH> > paragraphs;
     std::vector<subject<TABLE> > tables;
     std::vector<subject<FIGURE> > figures;
@@ -125,7 +112,7 @@ namespace andromeda
         }
     }
 
-    if(result.count("main-text"))
+    if(result.count(mtexts_lbl))
       {
         //std::set<std::string> keys
         //= { "hash", "orig", "text", "properties"};
@@ -257,8 +244,10 @@ namespace andromeda
         doc_hash = utils::to_hash(doc_name);
       }
 
-        orig = data;
-
+    {
+      set_orig(data);
+    }
+    
     {
       reading_order sorter;
       sorter.order_maintext(*this, update_maintext);
@@ -271,24 +260,48 @@ namespace andromeda
     return true;
   }
 
+  void subject<DOCUMENT>::set_orig(nlohmann::json& data)
+  {
+    orig = data;
+
+    if(orig.count(mtexts_lbl)==0)
+      {
+	LOG_S(WARNING) << "no `main-text` identified";
+	return;
+      }
+
+    auto& main_text = orig.at(mtexts_lbl);
+    for(std::size_t pdforder=0; pdforder<main_text.size(); pdforder++)
+      {
+	main_text.at(pdforder)[pdforder_lbl] = pdforder;
+      }
+  }
+  
   void subject<DOCUMENT>::init_provs(std::vector<prov_element>& provs)
   {
-    //LOG_S(INFO) << __FUNCTION__;
-
     provs.clear();
 
-    for(std::size_t l=0; l<orig["main-text"].size(); l++)
+    for(std::size_t l=0; l<orig[mtexts_lbl].size(); l++)
       {
-        auto& item = orig["main-text"][l];
+        auto& item = orig[mtexts_lbl][l];
 
+	ind_type pdforder = item[pdforder_lbl].get<ind_type>();
+	ind_type maintext = l;
+
+	std::string name = item[mtext_name_lbl].get<std::string>();
+	std::string type = item[mtext_type_lbl].get<std::string>();
+	
         if(item.count("$ref"))
           {
-            prov_element prov(l, item["$ref"], item["name"], item["type"]);
+	    std::string ref = item["$ref"].get<std::string>();	    
+	    
+            prov_element prov(pdforder, maintext,
+			      ref, name, type);
 
             if(orig.count(prov.path.first))
               {
                 auto& ref_item = orig[prov.path.first][prov.path.second];
-                prov.set(ref_item["prov"][0]);
+                prov.set(ref_item[prov_lbl][0]);
 
                 provs.push_back(prov);
               }
@@ -300,12 +313,15 @@ namespace andromeda
           }
         else if(item.count("__ref"))
           {
-            prov_element prov(l, item["__ref"], item["name"], item["type"]);
+	    std::string ref = item["$ref"].get<std::string>();	    
+	    
+            prov_element prov(pdforder, maintext,
+			      ref, name, type);
 
             if(orig.count(prov.path.first))
               {
                 auto& ref_item = orig[prov.path.first][prov.path.second];
-                prov.set(ref_item["prov"][0]);
+                prov.set(ref_item[prov_lbl][0]);
 
                 provs.push_back(prov);
               }
@@ -315,16 +331,17 @@ namespace andromeda
                                << prov.path.first;
               }
           }
-        else if(item.count("prov") and item["prov"].size()==1)
+        else if(item.count(prov_lbl) and
+		item[prov_lbl].size()==1)
           {
-            prov_element prov(l, item["name"], item["type"]);
-            prov.set(item["prov"][0]);
+            prov_element prov(pdforder, maintext, name, type);
+            prov.set(item[prov_lbl][0]);
 
             provs.push_back(prov);
           }
         else
           {
-            LOG_S(WARNING) << "undefined: " << item.dump();
+            LOG_S(ERROR) << "undefined prov for main-text item: " << item.dump();
           }
       }
   }
@@ -348,7 +365,7 @@ namespace andromeda
   {
     //LOG_S(INFO) << __FUNCTION__;
 
-    if(not orig.count("main-text"))
+    if(not orig.count(mtexts_lbl))
       {
         return false;
       }
@@ -414,49 +431,96 @@ namespace andromeda
 
     for(auto itr=provs.begin(); itr!=provs.end(); itr++)
       {
+	/*
         if(itr->ignore)
           {
             continue;
           }
 
-        else if(itr->type=="table")
+        else
+	*/
+	if(itr->type=="table")
           {
             subject<TABLE> table(doc_hash, *itr);
 
             auto item = orig[(itr->path).first][(itr->path).second];
             bool valid_table = table.set_data(item);
 
-            if(valid_table)
+            if(not valid_table)
               {
-                itr->ignore=true;
-                tables.push_back(table);
-              }
+		LOG_S(WARNING) << "found invalid table: " << item.dump();
+	      }
+	    
+	    itr->ignore=true;
+	    tables.push_back(table);
           }
       }
 
+    LOG_S(WARNING) << "orig #-tables: " << orig["tables"].size();
+    LOG_S(WARNING) << "list #-tables: " << tables.size();
+
+    int cnt=0;
+    
+    // FIXME: we need to factor this out in another class
     for(auto& table:tables)
       {
         auto mtext_ind = table.provs.at(0).maintext_ind;
 
-        auto caption_ind = mtext_ind-1;
-        if(caption_ind>=0 and caption_ind<provs.size() and
-           provs.at(caption_ind).type=="caption")
+        auto ind_m1 = mtext_ind-1;
+        auto ind_p1 = mtext_ind+1;
+
+	LOG_S(INFO) << "table-" << (++cnt) << " => ("
+		    << "m1: " << provs.at(ind_m1).type << "; "
+		    << "p1: " << provs.at(ind_p1).type << ")";
+	
+        if(ind_m1>=0 and ind_m1<provs.size() and
+           (not provs.at(ind_m1).ignore) and
+           provs.at(ind_m1).type=="caption")
           {
-            auto caption_prov = provs.at(caption_ind);
-            subject<PARAGRAPH> caption(doc_hash, provs.at(caption_ind));
+            auto caption_prov = provs.at(ind_m1);
+            subject<PARAGRAPH> caption(doc_hash, provs.at(ind_m1));
 
             auto item = orig[caption_prov.path.first][caption_prov.path.second];
             bool valid = caption.set_data(item);
 
+	    //LOG_S(INFO) << "table-caption text: " << caption.text;
+	    
             if(valid)
               {
                 table.captions.push_back(caption);
-                provs.at(caption_ind).ignore = true;
+                provs.at(ind_m1).ignore = true;
               }
+	    else
+	      {
+		LOG_S(WARNING) << "found invalid table-caption: " << item.dump();
+	      }
+          }
+        else if(ind_p1>=0 and ind_p1<provs.size() and
+                (not provs.at(ind_p1).ignore) and
+                provs.at(ind_p1).type=="caption")
+          {
+            auto caption_prov = provs.at(ind_p1);
+            subject<PARAGRAPH> caption(doc_hash, provs.at(ind_p1));
+
+            auto item = orig[caption_prov.path.first][caption_prov.path.second];
+            bool valid = caption.set_data(item);
+
+	    //LOG_S(INFO) << "table-caption text: " << caption.text;
+	    
+            if(valid)
+              {
+                table.captions.push_back(caption);
+                provs.at(ind_p1).ignore = true;
+              }
+	    else
+	      {
+		LOG_S(WARNING) << "found invalid table-caption: " << item.dump();
+	      }
           }
 
         auto fnote_ind = mtext_ind+1;
         if(fnote_ind>=0 and fnote_ind<provs.size() and
+           (not provs.at(fnote_ind).ignore) and
            provs.at(fnote_ind).type=="footnote")
           {
             auto footnote_prov = provs.at(fnote_ind);
@@ -506,21 +570,28 @@ namespace andromeda
       {
         auto mtext_ind = figure.provs.at(0).maintext_ind;
 
-        auto caption_ind = mtext_ind+1;
-        if(caption_ind>=0 and caption_ind<provs.size() and
-           provs.at(caption_ind).type=="caption")
+        auto ind_p1 = mtext_ind+1;
+        if(ind_p1>=0 and ind_p1<provs.size() and
+           (not provs.at(ind_p1).ignore) and
+           provs.at(ind_p1).type=="caption")
           {
-            auto caption_prov = provs.at(caption_ind);
-            subject<PARAGRAPH> caption(doc_hash, provs.at(caption_ind));
+            auto caption_prov = provs.at(ind_p1);
+            subject<PARAGRAPH> caption(doc_hash, provs.at(ind_p1));
 
             auto item = orig[caption_prov.path.first][caption_prov.path.second];
             bool valid = caption.set_data(item);
 
+	    LOG_S(INFO) << "table-caption text: " << caption.text;
+	    
             if(valid)
               {
                 figure.captions.push_back(caption);
-                provs.at(caption_ind).ignore = true;
+                provs.at(ind_p1).ignore = true;
               }
+	    else
+	      {
+		LOG_S(WARNING) << "found invalid figure-caption: " << item.dump();
+	      }	    
           }
       }
 
@@ -534,13 +605,16 @@ namespace andromeda
     paragraphs.clear();
     for(auto itr=provs.begin(); itr!=provs.end(); itr++)
       {
-        if(itr->ignore)
-          {
-            continue;
-          }
+        //if(itr->ignore)
+	//{
+	//continue;
+	//}
 
-        if(itr->type=="paragraph" or
-           itr->type=="subtitle-level-1")
+        if(itr->type=="title" or
+	   itr->type=="paragraph" or
+	   itr->type=="subtitle-level-1" or
+	   itr->type=="caption" or
+	   itr->type=="footnote")
           {
             auto item = orig[(itr->path).first][(itr->path).second];
 
