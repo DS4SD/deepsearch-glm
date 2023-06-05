@@ -447,6 +447,12 @@ namespace andromeda
 	this->classify(sample.second, pred_label, conf);
 
 	conf_matrix.update(true_label, pred_label);
+
+	if(true_label=="caption" or pred_label=="caption")
+	  {
+	    LOG_S(INFO) << "true: " << true_label << "; pred: " << pred_label
+			<< " => text: " << sample.second;
+	  }
       }
 
     conf_matrix.compute();

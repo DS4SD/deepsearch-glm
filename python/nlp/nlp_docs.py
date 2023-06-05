@@ -121,7 +121,7 @@ def show_nlp_on_docs(sdir):
     print("filenames: ", filenames)
 
     config = {
-        "mode" : "prodict",
+        "mode" : "apply",
         "order" : True,
         "models": "name;term;language;reference"
     }
@@ -332,26 +332,6 @@ def run_nlp_on_docs(sdir):
 
         for page_num in range(1,3):
             viz_docs(doc_i, doc_j, page=page_num)
-
-        """
-        table = []
-        for _ in ["properties", "entities", "relations"]:
-            table.append([_, len(doc_j[_]["data"])])
-
-        mtable = []
-        for i,item in enumerate(doc_j["main-text"]):
-            print(item)
-            if "text" in item:
-                mtable.append([i,
-                               len(item["properties"]["data"]),
-                               len(item["entities"]["data"]),
-                               len(item["relations"]["data"])])            
-            
-
-
-        print(tabulate(mtable))
-        print(tabulate(table))
-        """
 
         filename_j = filename+".nlp.json"
         print(f" --> writing {filename_j}")

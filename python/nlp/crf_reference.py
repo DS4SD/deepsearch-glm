@@ -131,8 +131,15 @@ def shorten_text(text):
         
 def extract_references(directory, sfile, rfile):
 
+    config = {
+        "mode" : "apply",
+        "order" : True,
+        "models": "numval,link"
+    }
+    
     model = andromeda_nlp.nlp_model()
-    model.initialise("numval,link")
+    #model.initialise("numval,link")
+    model.initialise(config)
     
     MINLEN = 5
     
@@ -608,9 +615,14 @@ if __name__ == '__main__':
     if mode=="prepare" or mode=="all":
         prepare_for_crf(afile)
 
-    if mode=="train" or mode=="all":
+    if mode=="classify" or mode=="pure-classify" or mode=="all":
 
+        if mode=="classify":
+            extract_references(sdir, sfile, rfile)
+            
         train_fst(sfile, fst_model_file, fst_model_file+".metrics.txt")
 
+    if mode=="crf" or mode=="all":
+        
         train_crf(afile, crf_model_file, crf_model_file+".metrics.txt")
         
