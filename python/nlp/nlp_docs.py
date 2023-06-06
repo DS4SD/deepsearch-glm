@@ -318,10 +318,6 @@ def run_nlp_on_docs(sdir):
         if(filename.endswith(".nlp.json")):
             continue
 
-        #if #"2106" not in filename:# and \
-        if "boka_da_vinci" not in filename:
-            continue
-        
         print(f"reading {filename}")
 
         fr = open(filename, "r")
@@ -340,11 +336,6 @@ def run_nlp_on_docs(sdir):
         fw.write(json.dumps(doc_j, indent=2))
         fw.close()
 
-def resolve(doc, ref):
-
-    parts = ref.split("/")
-    return doc[parts[1]][int(parts[2])]
-    
 def get_label(item, model):
 
     if "properties" not in item:
@@ -361,7 +352,73 @@ def get_label(item, model):
             return row[lind], row[cind]
 
     return None, None
+
+def display_maintext(doc_j):
+
+    mtext=[]
+    
+    print("\n\n")            
+    print("main-text: ", len(doc_j["main-text"]))
+    for i,item in enumerate(doc_j["main-text"]):
+
+        ritem = resolve_item(item, doc_j)
+
+        name_ = item["name"]
+        type_ = item["type"]
         
+        page = ritem["prov"][0]["page"]
+        
+        lanlabel, lconf = get_label(ritem, "language")
+        semlabel, sconf = get_label(ritem, "semantic")
+
+        text = " ... "
+        if "text" in ritem:# and ("type" in item) and (item["type"] in ["paragraph", "subtitle-level-1"])):
+            
+            text = ritem["text"]
+            if len(text)>64:
+                text = ritem["text"][0:32] + " ... " + ritem["text"][len(text)-27:len(text)]
+                
+        mtext.append([i, page, type_, name_, semlabel, sconf, lanlabel, text])
+
+    headers=["index", "page", "type", "name", "semantic", "confidence", "language", "text"]
+    print(tabulate(mtext, headers=headers))
+    
+def display_tables(doc_j):
+
+    print("\n\n")            
+    print("tables: ", len(doc_j["tables"]))
+    for i,table in enumerate(doc_j["tables"]):
+        if "captions" in table and len(table["captions"])>0:
+
+            text = None
+            if "captions" in table and len(table["captions"])>0:
+                text = table["captions"][0]["text"][0:78]
+
+            if len(text)>64:
+                text = text[0:32] + " ... " + text[len(text)-27:len(text)]
+            
+            print(i, "\tpage: ", table["prov"][0]["page"], "\t", text)
+        else:
+            print(i, "\tpage: ", table["prov"][0]["page"], "\t", None)
+
+def display_figures(doc_j):            
+
+    print("\n\n")            
+    print("figures: ", len(doc_j["figures"]))
+    for i,figure in enumerate(doc_j["figures"]):
+        if "captions" in figure and len(figure["captions"])>0:
+
+            text = None
+            if "captions" in figure and len(figure["captions"])>0:
+                text = figure["captions"][0]["text"][0:78]
+
+            if len(text)>64:
+                text = text[0:32] + " ... " + text[len(text)-27:len(text)]
+            
+            print(i, "\tpage: ", figure["prov"][0]["page"], "\t", text)
+        else:
+            print(i, "\tpage: ", figure["prov"][0]["page"], "\t", None)
+    
 def run_nlp_on_doc(filename):
 
     model = andromeda_nlp.nlp_model()
@@ -379,55 +436,12 @@ def run_nlp_on_doc(filename):
 
     mtext=[]
     
-    print("\n\n")            
-    print("main-text: ", len(doc_j["main-text"]))
-    for i,item in enumerate(doc_j["main-text"]):
+    display_maintext(doc_j)
 
-        lanlabel, lconf = get_label(item, "language")
-        semlabel, sconf = get_label(item, "semantic")
-        
-        if(("text" in item)):# and ("type" in item) and (item["type"] in ["paragraph", "subtitle-level-1"])):
+    display_tables(doc_j)
+          
+    display_figures(doc_j)            
 
-            page = item["prov"][0]["page"]
-            
-            text = item["text"]
-            if len(text)>64:
-                text = item["text"][0:32] + " ... " + item["text"][len(text)-27:len(text)]
-            
-            mtext.append([i, page, item["type"], item["name"], semlabel, sconf, lanlabel, text])
-
-        elif "__ref" in item:
-
-            ritem = resolve(doc_j, item["__ref"]) 
-            page = ritem["prov"][0]["page"]
-            
-            mtext.append([i, page, item["type"], item["name"], semlabel, sconf, lanlabel, "..."])
-
-        elif "$ref" in item:
-
-            ritem = resolve(doc_j, item["$ref"]) 
-            page = ritem["prov"][0]["page"]
-            
-            mtext.append([i, page, item["type"], item["name"], semlabel, sconf, lanlabel, "..."])                        
-            
-    print(tabulate(mtext, headers=["index", "page", "type", "name", "semantic", "confidence", "language", "text"]))
-            
-    print("\n\n")            
-    print("tables: ", len(doc_j["tables"]))
-    for i,table in enumerate(doc_j["tables"]):
-        if "captions" in table and len(table["captions"])>0:
-            print(i, "\tpage: ", table["prov"][0]["page"], "\t", table["captions"][0]["text"][0:78])
-        else:
-            print(i, "\tpage: ", table["prov"][0]["page"], "\t", None)
-
-    print("\n\n")            
-    print("figures: ", len(doc_j["figures"]))
-    for i,figure in enumerate(doc_j["figures"]):
-        if "captions" in figure and len(figure["captions"])>0:
-            print(i, "\tpage: ", figure["prov"][0]["page"], "\t", figure["captions"][0]["text"][0:78])
-        else:
-            print(i, "\tpage: ", figure["prov"][0]["page"], "\t", None)
-    
     filename_j = filename.replace(".json", ".nlp.json")
     print(f" --> writing {filename_j}")
     

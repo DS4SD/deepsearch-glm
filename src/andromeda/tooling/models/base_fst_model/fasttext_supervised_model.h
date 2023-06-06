@@ -448,11 +448,21 @@ namespace andromeda
 
 	conf_matrix.update(true_label, pred_label);
 
-	if(true_label=="caption" or pred_label=="caption")
-	  {
-	    LOG_S(INFO) << "true: " << true_label << "; pred: " << pred_label
-			<< " => text: " << sample.second;
-	  }
+	if(true_label!=pred_label)
+	 {
+	   if(sample.second.size()<64)
+	     {
+	       LOG_S(INFO) << "true: " << std::setw(24) << true_label << "; "
+			   << "pred: " << std::setw(24) << pred_label
+			   << " => text: " << sample.second;
+	     }
+	   else
+	     {
+	       LOG_S(INFO) << "true: " << std::setw(24) << true_label << "; "
+			   << "pred: " << std::setw(24) << pred_label
+			   << " => text: " << sample.second.substr(0,64);
+	     }
+	 }
       }
 
     conf_matrix.compute();

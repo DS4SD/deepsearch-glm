@@ -572,6 +572,15 @@ def train_crf(train_file, model_file, metrics_file):
     
             model.train(config)
 
+
+# To train a FST model with HPO, one can use
+# 
+# `./fasttext supervised -input <path-to-train.txt> -output model_name -autotune-validation <<path-to-valid.txt>> -autotune-duration 600 -autotune-modelsize 1M`
+#
+#  => the parameters can be found via
+#
+# `./fasttext dump model_cooking.bin args`
+#
 def train_fst(train_file, model_file, metrics_file):
 
     model = andromeda_nlp.nlp_model()

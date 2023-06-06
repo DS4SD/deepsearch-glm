@@ -34,6 +34,8 @@ namespace andromeda
     
     virtual bool apply(subject<PARAGRAPH>& subj);
     virtual bool apply(subject<TABLE>& subj);
+
+    //virtual bool apply(subject<DOCUMENT>& subj);
     
   private:
 
@@ -63,6 +65,7 @@ namespace andromeda
     
     resources_dir(andromeda::RESOURCES_DIR / "models/fasttext/semantic"),
     model_path("semantic-latest.bin")
+    //model_path("semantic-v02.ftz")
   {
     initialise();    
   }
@@ -72,6 +75,7 @@ namespace andromeda
 
     resources_dir(resources_dir / "models/fasttext/semantic"),
     model_path("semantic-latest.bin")
+    //model_path("semantic-v02.ftz")
   {
     initialise();
   }
@@ -454,6 +458,14 @@ namespace andromeda
     return fasttext_supervised_model::classify(subj);
   }
 
+  /*
+  bool nlp_model<CLS, SEMANTIC>::apply(subject<DOCUMENT>& subj)
+  {
+    LOG_S(WARNING) << __FUNCTION__ << " on document";
+    return false;
+  }
+  */
+  
 }
 
 #endif
