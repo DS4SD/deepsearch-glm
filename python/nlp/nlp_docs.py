@@ -5,7 +5,6 @@ import os
 import json
 import glob
 
-import textwrap
 import argparse
 
 from tabulate import tabulate
@@ -13,6 +12,7 @@ from PIL import Image, ImageDraw
 
 import subprocess
 
+import pandas as pd
 import textwrap as tw
 import textColor as tc
 
@@ -31,11 +31,17 @@ def parse_arguments():
         epilog = 'Text at the bottom of help')
 
     parser.add_argument('-m', '--mode', required=False, default="show",
-                        help="mode [convert;show;run]")
-    parser.add_argument('-d', '--directory', required=False,
+                        help="mode [convert;show;run-doc;run-docs]")
+    parser.add_argument('-i', '--input-data', required=False,
+                        help="input directory or filename",
                         default="../data/documents/reports")
 
-    parser.add_argument('--models', required=False, default="term;abbreviation")
+    parser.add_argument('-v', '--vpage', required=False, help="visualise reading order on page-number",
+                        default=None)
+
+    parser.add_argument('--models', required=False, help="set NLP models (e.g. `term;sentence`)",
+                        default="term;abbreviation")
+
     
     parser.add_argument('-u', '--username', required=False, default="<email>",
                         help="username or email from DS host")
@@ -44,7 +50,7 @@ def parse_arguments():
     
     args = parser.parse_args()
 
-    return args.mode, args.directory, args.models, args.username, args.password
+    return args.mode, args.input_data, args.models, args.vpage, args.username, args.password
 
 def convert(sdirectory, username, password):
 
@@ -114,7 +120,8 @@ def process_zip_files(sdir):
     cellsfiles = sorted(glob.glob(os.path.join(sdir, "*.cells")))
     for i,cellsfile in enumerate(cellsfiles):
         subprocess.call(["rm", cellsfile])            
-        
+
+"""
 def show_nlp_on_docs(sdir):
 
     filenames = glob.glob(os.path.join(sdir, "*.json"))
@@ -178,6 +185,7 @@ def show_nlp_on_docs(sdir):
 
             
         input(" ... ")
+"""
 
 def resolve_item(item, doc):
 
@@ -193,7 +201,8 @@ def resolve_item(item, doc):
 
     else:
         return item
-    
+
+"""
 def viz_page(doc, text, page=1):
 
     for dim in doc["page-dimensions"]:
@@ -233,6 +242,7 @@ def viz_page(doc, text, page=1):
             p0=p1
             
         img.show()
+"""
 
 def viz_docs(doc_i, doc_j, page=1):
 
@@ -336,7 +346,7 @@ def run_nlp_on_docs(sdir):
         fw.write(json.dumps(doc_j, indent=2))
         fw.close()
 
-def get_label(item, model):
+def get_label(item, model_name):
 
     if "properties" not in item:
         return None, None
@@ -348,11 +358,54 @@ def get_label(item, model):
     cind = item["properties"]["headers"].index("confidence")
     
     for row in item["properties"]["data"]:
-        if model==row[mind]:
+        if model_name==row[mind]:
             return row[lind], row[cind]
 
     return None, None
 
+def get_ents(item, model_name):
+
+    print(item["entities"]["headers"])
+    
+    text = item["text"]
+    
+    mind = item["entities"]["headers"].index("type")
+    sind = item["entities"]["headers"].index("subj_path")
+    oind = item["entities"]["headers"].index("original")
+
+    result=[]
+    
+    for row in item["entities"]["data"]:
+        if model_name==row[mind]:
+            result.append([row[mind], row[sind], "\n".join(tw.wrap(row[oind]))])
+
+    return result, ["type", "path", "sentence"]
+        
+def display_sentences(doc_j):
+
+    sentences=[]
+    
+    for i,item in enumerate(doc_j["main-text"]):
+
+        print(item["name"])
+        
+        if item["type"]!="paragraph":
+            continue
+
+        page = item["prov"][0]["page"]
+        
+        ents, headers = get_ents(item, "sentence")
+
+        for ent in ents:
+            sentences.append([page]+ent)
+
+
+    print("\n\n")            
+    print("sentences: ", len(sentences))            
+    print(tabulate(sentences))
+
+    input("continue ...")
+            
 def display_maintext(doc_j):
 
     mtext=[]
@@ -392,7 +445,7 @@ def display_tables(doc_j):
 
             text = None
             if "captions" in table and len(table["captions"])>0:
-                text = table["captions"][0]["text"][0:78]
+                text = table["captions"][0]["text"]
 
             if len(text)>64:
                 text = text[0:32] + " ... " + text[len(text)-27:len(text)]
@@ -410,7 +463,7 @@ def display_figures(doc_j):
 
             text = None
             if "captions" in figure and len(figure["captions"])>0:
-                text = figure["captions"][0]["text"][0:78]
+                text = figure["captions"][0]["text"]
 
             if len(text)>64:
                 text = text[0:32] + " ... " + text[len(text)-27:len(text)]
@@ -419,7 +472,7 @@ def display_figures(doc_j):
         else:
             print(i, "\tpage: ", figure["prov"][0]["page"], "\t", None)
     
-def run_nlp_on_doc(filename):
+def run_nlp_on_doc(filename, vpage):
 
     model = andromeda_nlp.nlp_model()
 
@@ -434,8 +487,22 @@ def run_nlp_on_doc(filename):
     
     doc_j = model.apply_on_doc(doc_i)
 
-    mtext=[]
+    #print(doc_j.keys())
+    #print(tabulate(doc_j["entities"]["data"], doc_j["entities"]["headers"]))
+
+    df = pd.DataFrame(doc_j["entities"]["data"],
+                      columns=doc_j["entities"]["headers"])
+    print(df)
+
+    input("...")
     
+    mtext=[]
+
+    if vpage!=None:
+        viz_docs(doc_i, doc_j, page=int(vpage))
+
+    #display_sentences(doc_j)
+
     display_maintext(doc_j)
 
     display_tables(doc_j)
@@ -451,7 +518,7 @@ def run_nlp_on_doc(filename):
         
 if __name__ == '__main__':
 
-    mode, sdir, models, uname, pword = parse_arguments()
+    mode, sdir, models, vpage, uname, pword = parse_arguments()
 
     found_new_pdfs=False
     if uname!="<email>" and pword!="<API_KEY>":
@@ -462,12 +529,12 @@ if __name__ == '__main__':
 
     if mode=="convert" and found_new_pdfs:
         print(tc.blue(f"converted files located in {sdir}"))
-    elif mode=="show":
-        show_nlp_on_docs(sdir)
-    elif mode=="run":
-        run_nlp_on_docs(sdir)
+    #elif mode=="show":
+    #    show_nlp_on_docs(sdir)
     elif mode=="run-doc":
-        run_nlp_on_doc(sdir)        
+        run_nlp_on_doc(sdir, vpage)                
+    #elif mode=="run-docs":
+    #    run_nlp_on_docs(sdir)
     else:
         print(tc.red(f"unknown {mode}"))
         

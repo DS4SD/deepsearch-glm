@@ -12,10 +12,12 @@ namespace andromeda
   public:
 
     subject();
-    subject(uint64_t dhash, prov_element& prov);
+    subject(uint64_t dhash, std::shared_ptr<prov_element> prov);
     
     ~subject();
 
+    std::string get_path() const { return (provs.size()>0? (provs.at(0)->to_path()):"#"); }
+    
     void clear();
 
     bool is_valid() { return (base_subject::valid); }
@@ -35,6 +37,8 @@ namespace andromeda
     
   public:
 
+    std::vector<std::shared_ptr<prov_element> > provs;
+    
     std::vector<subject<PARAGRAPH> > captions;
     std::vector<subject<PARAGRAPH> > footnotes;
     std::vector<subject<PARAGRAPH> > mentions;
@@ -43,14 +47,18 @@ namespace andromeda
   subject<FIGURE>::subject():
     base_subject(FIGURE),
 
+    provs({}),
+    
     captions({}),
     footnotes({}),
     mentions({})
   {}
   
-  subject<FIGURE>::subject(uint64_t dhash, prov_element& prov):
-    base_subject(dhash, FIGURE, prov),
+  subject<FIGURE>::subject(uint64_t dhash, std::shared_ptr<prov_element> prov):
+    base_subject(dhash, FIGURE),
 
+    provs({prov}),
+    
     captions({}),
     footnotes({}),
     mentions({})
@@ -63,6 +71,8 @@ namespace andromeda
   {
     base_subject::clear();
 
+    provs.clear();
+    
     captions.clear();
     footnotes.clear();
     mentions.clear();

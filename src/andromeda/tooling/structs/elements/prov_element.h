@@ -16,9 +16,9 @@ namespace andromeda
     const static inline int y0 = 1;
     const static inline int x1 = 2;
     const static inline int y1 = 3;
-    
-  public:
 
+  public:
+    
     prov_element();
 
     prov_element(ind_type pdforder_ind, ind_type maintext_ind, std::string name, std::string type);
@@ -26,6 +26,11 @@ namespace andromeda
     prov_element(ind_type pdforder_ind, ind_type maintext_ind,
 		 std::string dref, std::string name, std::string type);
 
+    static std::vector<std::string> get_headers();
+
+    std::vector<std::string> to_row();
+    nlohmann::json to_json_row();
+    
     std::string to_path() const;
     static std::pair<std::string, ind_type> from_path(std::string dref);
 
@@ -48,17 +53,13 @@ namespace andromeda
     
     void set(const nlohmann::json& data);
 
-    static std::vector<std::string> headers();
-    
-    std::vector<std::string> to_row();
-    nlohmann::json to_json_row();
-    
   public:
     
     ind_type pdforder_ind, maintext_ind;
     std::string name, type;
 
     std::pair<std::string, ind_type> path;
+    std::pair<subject_name, ind_type> dref;
 
     bool ignore;
     ind_type page;
@@ -78,6 +79,8 @@ namespace andromeda
     type("undef"),
     
     path("undef", -1),
+    dref(UNDEF, -1),
+    
     ignore(false),
     
     page(0),
@@ -98,6 +101,8 @@ namespace andromeda
     type(type),
     
     path("main-text", maintext_ind),
+    dref(UNDEF, -1),
+    
     ignore(false),
     
     page(0),
@@ -118,6 +123,8 @@ namespace andromeda
     type(type),
     
     path(from_path(doc_path)),
+    dref(UNDEF, -1),
+
     ignore(false),
     
     page(0),
@@ -145,6 +152,16 @@ namespace andromeda
     return std::pair<std::string, ind_type>{parts.at(1), std::stoi(parts.at(2))};
   }
 
+  /*
+  std::string prov_element::to_dref() const
+  {
+    std::stringstream ss;
+    ss << "#" << "/" << to_string(dref.first) << "/" << path.second;
+    
+    return ss.str();
+  }
+  */
+  
   bool prov_element::follows_maintext_order(const prov_element& rhs) const
   {
     return (maintext_ind+1==rhs.maintext_ind);
@@ -290,9 +307,9 @@ namespace andromeda
     bbox = data.value("bbox", bbox);
   }
 
-  std::vector<std::string> prov_element::headers()
+  std::vector<std::string> prov_element::get_headers()
   {
-    std::vector<std::string> row
+    static std::vector<std::string> row
       = { "mtext", "path-key", "path-ind", "name", "type", "page", "x0", "y0", "x1", "y1"};
     return row;
   }
@@ -308,6 +325,29 @@ namespace andromeda
     return row;
   }
 
+  nlohmann::json prov_element::to_json_row()
+  {
+    nlohmann::json row = nlohmann::json::array();
+
+    {
+      row.push_back(maintext_ind);
+      row.push_back(path.first);
+      row.push_back(path.second);
+      row.push_back(pdforder_ind);
+      row.push_back(name);
+      row.push_back(type);
+      row.push_back(x0);
+      row.push_back(y0);
+      row.push_back(x1);
+      row.push_back(y1);
+    }
+    assert(row.size()==prov_element::get_headers().size());
+    
+    return row;
+  }
+  
+
+  
   /*
   class provenance
   {

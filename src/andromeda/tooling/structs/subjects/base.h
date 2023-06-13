@@ -27,11 +27,10 @@ namespace andromeda
     base_subject();
     base_subject(subject_name name);
 
-    base_subject(uint64_t dhash, subject_name name, prov_element& prov);
+    base_subject(uint64_t dhash, subject_name name);//, prov_element& prov);
 
     subject_name get_name() const { return name; };
     hash_type get_hash() const { return hash; }
-    std::string get_path() const { return (provs.size()>0? provs.at(0).to_path():"#"); }
 
     void clear();
 
@@ -48,8 +47,6 @@ namespace andromeda
     hash_type hash;
     hash_type dhash;
 
-    std::vector<prov_element> provs;
-
     std::set<std::string> applied_models;
 
     std::vector<base_property> properties;
@@ -64,7 +61,7 @@ namespace andromeda
     hash(-1),
     dhash(-1),
 
-    provs({}),
+    //provs({}),
 
     applied_models({}),
 
@@ -80,7 +77,7 @@ namespace andromeda
     hash(-1),
     dhash(-1),
 
-    provs({}),
+    //provs({}),
 
     applied_models({}),
 
@@ -89,14 +86,14 @@ namespace andromeda
     relations({})
   {}
 
-  base_subject::base_subject(uint64_t dhash, subject_name name, prov_element& prov):
+  base_subject::base_subject(uint64_t dhash, subject_name name)://, prov_element& prov):
     valid(true),
     name(name),
 
     hash(-1),
     dhash(dhash),
 
-    provs({prov}),
+    //provs({prov}),
 
     applied_models({}),
 
@@ -112,7 +109,7 @@ namespace andromeda
     hash = -1;
     dhash = -1;
 
-    provs.clear();
+    //provs.clear();
 
     clear_models();
   }
@@ -149,7 +146,6 @@ namespace andromeda
       nlohmann::json& rels = result[rels_lbl];
       andromeda::to_json(relations, rels);
     }
-
 
     return result;
   }

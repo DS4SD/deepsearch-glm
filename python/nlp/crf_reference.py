@@ -37,7 +37,7 @@ def parse_arguments():
         epilog = 'python ./nlp/crf_reference.py -m all -d <directory-of-pdfs> -t <target-dir> -u <username of DS> -p <API-key of DS>')
 
     parser.add_argument('-m', '--mode', required=False, default="all",
-                        help="parse: [convert,extract,annotate,prepare,all]")
+                        help="parse: [convert,extract,annotate,classify,pure-classify,crf,pure-crf,all]")
     parser.add_argument('-d', '--source-directory', required=False, default="data/documents/articles",
                         help="directory with pdfs")
     parser.add_argument('-t', '--target-directory', required=False, default="data/models/",
@@ -621,17 +621,17 @@ if __name__ == '__main__':
     if mode=="annotate" or mode=="all":
         annotate(rfile, afile)
 
-    if mode=="prepare" or mode=="all":
-        prepare_for_crf(afile)
+    if "classify" in mode or mode=="all":
 
-    if mode=="classify" or mode=="pure-classify" or mode=="all":
-
-        if mode=="classify":
+        if mode=="classify" or mode==all:
             extract_references(sdir, sfile, rfile)
             
         train_fst(sfile, fst_model_file, fst_model_file+".metrics.txt")
 
-    if mode=="crf" or mode=="all":
+    if "crf" in mode or mode=="all":
+
+        if mode=="crf" or mode=="all":
+            prepare_for_crf(afile)
         
         train_crf(afile, crf_model_file, crf_model_file+".metrics.txt")
         

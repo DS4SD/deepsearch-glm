@@ -90,6 +90,14 @@ namespace andromeda
 		      R"((?P<name>(([A-Z][a-z]+)(\-|\s+\-|\-\s+|\s+\-\s+)+)+([A-Z][a-z]+)))");
       exprs.push_back(expr);
     }
+
+    // `U.S.`, `B.P.B.`
+    {
+      pcre2_expr expr(this->get_key(), "abbreviation-name",
+		      R"((?P<name>(([A-Z]\.){2,})))");
+      exprs.push_back(expr);
+    }    
+
     
     return true;
   }

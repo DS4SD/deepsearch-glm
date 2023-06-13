@@ -259,12 +259,19 @@ namespace andromeda
         common_names.push_back("etc");
       }
 
-      // example `...``
+      // example `...`
       {
         pcre2_expr expr(this->get_key(), "common", R"((?<expr>((\.\s*){2,}\.)))");
         common_exprs.push_back(expr);
         common_names.push_back("etc");
       }
+
+      // example `Grant No. 1`
+      {
+        pcre2_expr expr(this->get_key(), "common", R"((?<expr>((N|n)o\.)))");
+        common_exprs.push_back(expr);
+        common_names.push_back("number");
+      }      
     }
 
     {

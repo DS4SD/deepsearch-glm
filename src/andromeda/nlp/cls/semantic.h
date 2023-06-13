@@ -277,17 +277,19 @@ namespace andromeda
 	std::vector<pcre2_item> items;
 	expr.find_all(text, items);
 
+	
 	for(auto& item:items)
 	  {
 	    //LOG_S(WARNING) << "\t" << item.text;
 	    text = utils::replace(text, item.text, "__caption_ref__");		    		    	    
 	  }
-	
-	//if(items.size()>0)
-	///{
-	//text = "__caption_ref__";
-	//}
-	
+
+	/*
+	if(items.size()>0)
+	  {
+	    text = "__caption_ref__";
+	  }
+	*/	
       }
 
     /*

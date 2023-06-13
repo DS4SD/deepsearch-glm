@@ -11,7 +11,9 @@ namespace andromeda
   {
   public:
 
-    const static inline std::string mtexts_lbl = "main-text";
+    const static inline std::string provs_lbl = "document-items";
+    
+    const static inline std::string maintext_lbl = "main-text";
     const static inline std::string tables_lbl = "tables";
     const static inline std::string figures_lbl = "figures";
 
@@ -21,8 +23,8 @@ namespace andromeda
     const static inline std::string text_lbl = "text";
     const static inline std::string data_lbl = "data";
 
-    const static inline std::string mtext_name_lbl = "name";
-    const static inline std::string mtext_type_lbl = "type";
+    const static inline std::string maintext_name_lbl = "name";
+    const static inline std::string maintext_type_lbl = "type";
     
   public:
 
@@ -51,19 +53,23 @@ namespace andromeda
 
     bool finalise();
 
-    void init_provs(std::vector<prov_element>& provs);
-    void show_provs(std::vector<prov_element>& provs);
+    void init_provs();
+    void show_provs();
 
   private:
 
+    void set_meta(nlohmann::json& data);
     void set_orig(nlohmann::json& data);
     
     bool clean_provs(std::vector<prov_element>& provs); // remove all provs with ignore==true
 
     bool init_items();
+    bool link_items();
 
     bool remove_headers_and_footers(std::vector<prov_element>& provs);
 
+    bool identify_repeating_text(std::vector<prov_element>& provs);
+    
     bool init_tables(std::vector<prov_element>& provs);
     bool init_figures(std::vector<prov_element>& provs);
     bool init_paragraphs(std::vector<prov_element>& provs);
@@ -75,10 +81,14 @@ namespace andromeda
   public:
 
     std::filesystem::path filepath;
-    nlohmann::json orig;
 
     std::string doc_name;
     uint64_t doc_hash;
+
+    nlohmann::json orig, dscr;
+
+    //std::vector<prov_element> provs;
+    std::vector<std::shared_ptr<prov_element> > provs;
     
     std::vector<subject<PARAGRAPH> > paragraphs;
     std::vector<subject<TABLE> > tables;
@@ -88,9 +98,13 @@ namespace andromeda
   subject<DOCUMENT>::subject():
     base_subject(DOCUMENT),
 
+    filepath("<undef>"),
+    
     doc_name(""),
     doc_hash(-1),
 
+    provs(),
+    
     paragraphs(),
     tables(),
     figures()
@@ -112,7 +126,21 @@ namespace andromeda
         }
     }
 
-    if(result.count(mtexts_lbl))
+    {
+      nlohmann::json& doc_provs = result[provs_lbl];
+      doc_provs = nlohmann::json::object({});
+
+      doc_provs[base_subject::head_lbl] = prov_element::get_headers();
+      doc_provs[base_subject::data_lbl] = nlohmann::json::array({});
+
+      auto& data = doc_provs.at(base_subject::data_lbl);
+      for(auto& prov:provs)
+	{
+	  data.push_back(prov->to_json_row());
+	}
+    }
+    
+    if(result.count(maintext_lbl))
       {
         //std::set<std::string> keys
         //= { "hash", "orig", "text", "properties"};
@@ -125,7 +153,7 @@ namespace andromeda
                 auto& paragraph = paragraphs.at(l);
 
                 auto& prov = paragraph.provs.at(0);
-                auto& item = result[prov.path.first][prov.path.second];
+                auto& item = result[prov->path.first][prov->path.second];
 
                 auto _ = paragraph.to_json();
                 for(auto& elem:_.items())
@@ -152,7 +180,7 @@ namespace andromeda
                 auto& table = tables.at(l);
 
                 auto& prov = table.provs.at(0);
-                auto& item = result[prov.path.first][prov.path.second];
+                auto& item = result[prov->path.first][prov->path.second];
 
                 auto _ = table.to_json();
                 for(auto& elem:_.items())
@@ -179,7 +207,7 @@ namespace andromeda
                 auto& figure = figures.at(l);
 
                 auto& prov = figure.provs.at(0);
-                auto& item = result[prov.path.first][prov.path.second];
+                auto& item = result[prov->path.first][prov->path.second];
 
                 auto _ = figure.to_json();
                 for(auto& elem:_.items())
@@ -217,19 +245,47 @@ namespace andromeda
       }
   }
 
-  bool subject<DOCUMENT>::set_data(std::filesystem::path filepath, nlohmann::json& data,
+  bool subject<DOCUMENT>::set_data(std::filesystem::path filepath,
+				   nlohmann::json& data,
                                    bool update_maintext)
   {
     this->filepath = filepath;
+
     return set_data(data, update_maintext);
   }
 
   bool subject<DOCUMENT>::set_data(nlohmann::json& data, bool update_maintext)
   {
-    //LOG_S(INFO) << __FUNCTION__;
-
     clear();
 
+    {
+      set_meta(data);      
+      set_orig(data);
+    }
+
+    {
+      init_provs();
+    }
+
+    if(update_maintext)
+      {
+	doc_order sorter;
+	sorter.order_maintext(*this);
+      }
+
+    {
+      init_items();
+    }
+
+    {
+      link_items();
+    }
+    
+    return true;
+  }
+
+  void subject<DOCUMENT>::set_meta(nlohmann::json& data)
+  {
     if(data.count("file-info") and
        data["file-info"].count("document-hash"))
       {
@@ -244,98 +300,95 @@ namespace andromeda
         doc_hash = utils::to_hash(doc_name);
       }
 
-    {
-      set_orig(data);
-    }
-    
-    {
-      reading_order sorter;
-      sorter.order_maintext(*this, update_maintext);
-    }
-
-    {
-      init_items();
-    }
-
-    return true;
+    if(data.count("description"))
+      {
+	dscr = data.at("description");
+      }    
   }
-
+  
   void subject<DOCUMENT>::set_orig(nlohmann::json& data)
   {
     orig = data;
 
-    if(orig.count(mtexts_lbl)==0)
+    if(orig.count(maintext_lbl)==0)
       {
 	LOG_S(WARNING) << "no `main-text` identified";
 	return;
       }
 
-    auto& main_text = orig.at(mtexts_lbl);
+    auto& main_text = orig.at(maintext_lbl);
     for(std::size_t pdforder=0; pdforder<main_text.size(); pdforder++)
       {
 	main_text.at(pdforder)[pdforder_lbl] = pdforder;
       }
   }
   
-  void subject<DOCUMENT>::init_provs(std::vector<prov_element>& provs)
+  void subject<DOCUMENT>::init_provs()
   {
     provs.clear();
 
-    for(std::size_t l=0; l<orig[mtexts_lbl].size(); l++)
+    for(std::size_t l=0; l<orig[maintext_lbl].size(); l++)
       {
-        auto& item = orig[mtexts_lbl][l];
+        auto& item = orig[maintext_lbl][l];
 
+	std::stringstream ss;
+	ss << "#/" << maintext_lbl << "/" << l;
+
+	std::string ref = ss.str();
+	
 	ind_type pdforder = item[pdforder_lbl].get<ind_type>();
 	ind_type maintext = l;
 
-	std::string name = item[mtext_name_lbl].get<std::string>();
-	std::string type = item[mtext_type_lbl].get<std::string>();
+	std::string name = item[maintext_name_lbl].get<std::string>();
+	std::string type = item[maintext_type_lbl].get<std::string>();
 	
         if(item.count("$ref"))
           {
-	    std::string ref = item["$ref"].get<std::string>();	    
-	    
-            prov_element prov(pdforder, maintext,
-			      ref, name, type);
+	    ref = item["$ref"].get<std::string>();	    
 
-            if(orig.count(prov.path.first))
+	    auto prov = std::make_shared<prov_element>(pdforder, maintext,
+						       ref, name, type);
+	    
+            if(orig.count(prov->path.first))
               {
-                auto& ref_item = orig[prov.path.first][prov.path.second];
-                prov.set(ref_item[prov_lbl][0]);
+                auto& ref_item = orig[(prov->path).first][(prov->path).second];
+                prov->set(ref_item[prov_lbl][0]);
 
                 provs.push_back(prov);
               }
             else
               {
                 LOG_S(WARNING) << "undefined reference path in document: "
-                               << prov.path.first;
+                               << prov->path.first;
               }
           }
         else if(item.count("__ref"))
           {
-	    std::string ref = item["$ref"].get<std::string>();	    
-	    
-            prov_element prov(pdforder, maintext,
-			      ref, name, type);
+	    ref = item["__ref"].get<std::string>();	    
 
-            if(orig.count(prov.path.first))
+	    auto prov = std::make_shared<prov_element>(pdforder, maintext,
+						       ref, name, type);
+	    
+            if(orig.count(prov->path.first))
               {
-                auto& ref_item = orig[prov.path.first][prov.path.second];
-                prov.set(ref_item[prov_lbl][0]);
+		auto& ref_item = orig[(prov->path).first][(prov->path).second];
+                prov->set(ref_item[prov_lbl][0]);
 
                 provs.push_back(prov);
               }
             else
               {
                 LOG_S(WARNING) << "undefined reference path in document: "
-                               << prov.path.first;
+                               << prov->path.first;
               }
           }
         else if(item.count(prov_lbl) and
 		item[prov_lbl].size()==1)
           {
-            prov_element prov(pdforder, maintext, name, type);
-            prov.set(item[prov_lbl][0]);
+	    auto prov = std::make_shared<prov_element>(pdforder, maintext,
+						       ref, name, type);
+
+            prov->set(item[prov_lbl][0]);
 
             provs.push_back(prov);
           }
@@ -346,36 +399,126 @@ namespace andromeda
       }
   }
 
-  void subject<DOCUMENT>::show_provs(std::vector<prov_element>& provs)
+  bool subject<DOCUMENT>::init_items()
+  {
+    tables.clear();
+    figures.clear();
+    paragraphs.clear();
+
+    std::set<std::string> is_ignored = {"page-header", "page-footer"};
+    std::set<std::string> is_text = {"title", "subtitle-level-1", "paragraph",
+				   "footnote", "caption"};
+
+    std::set<std::string> is_table = {"table"};
+    std::set<std::string> is_figure = {"figure"};
+    
+    //for(auto itr=provs.begin(); itr!=provs.end(); itr++)
+    for(auto& prov:provs)
+      {
+	auto item = orig.at((prov->path).first).at((prov->path).second);
+
+	if(is_ignored.count(prov->type))
+	  {
+	    prov->ignore=true;
+	  }	
+	else if(is_text.count(prov->type))
+          {
+            subject<PARAGRAPH> subj(doc_hash, prov);
+            bool valid = subj.set_data(item);
+
+            if(valid)
+              {
+		prov->dref = {PARAGRAPH, paragraphs.size()};
+		paragraphs.push_back(subj);
+              }
+	    else
+	      {
+		LOG_S(WARNING) << "found invalid paragraph: " << item.dump();	
+	      }
+	  }
+	else if(is_table.count(prov->type))
+	  {
+            subject<TABLE> table(doc_hash, prov);
+            bool valid = table.set_data(item);
+
+            if(valid)
+              {
+		prov->dref = {TABLE, tables.size()};
+		tables.push_back(table);
+	      }
+	    else
+	      {
+		LOG_S(WARNING) << "found table without structure";// << item.dump();
+	      }
+	  }
+	else if(is_figure.count(prov->type))
+	  {
+            subject<FIGURE> figure(doc_hash, prov);
+            bool valid = figure.set_data(item);
+
+            if(valid)
+              {
+		prov->dref = {FIGURE, figures.size()};
+		figures.push_back(figure);
+	      }
+	    else
+	      {
+		LOG_S(WARNING) << "found figure without structure";// << item.dump();
+	      }
+	  }
+	else
+	  {
+	    LOG_S(WARNING) << "ignoring: " << prov->type;		  
+	  }
+      }
+
+    return true;    
+  }
+
+  void subject<DOCUMENT>::show_provs()
   {
     //LOG_S(INFO) << __FUNCTION__;
-    std::vector<std::string> headers = prov_element::headers();
+    std::vector<std::string> headers = prov_element::get_headers();
 
     std::vector<std::vector<std::string> > rows={};
-    for(auto& item:provs)
+    for(auto& prov:provs)
       {
-        rows.push_back(item.to_row());
+        rows.push_back(prov->to_row());
       }
 
     LOG_S(INFO) << "filepath: " << filepath << "\n\n"
                 << utils::to_string(headers, rows, -1);
   }
+  
+  bool subject<DOCUMENT>::link_items()
+  {
+    //show_provs();    
 
+    {
+      doc_linker linker;
+      linker.find_captions(*this);
+    }
+    
+    return true;
+  }
+  
+
+
+  
+  /*
   bool subject<DOCUMENT>::init_items()
   {
     //LOG_S(INFO) << __FUNCTION__;
 
-    if(not orig.count(mtexts_lbl))
+    if(not orig.count(maintext_lbl))
       {
         return false;
       }
 
-    std::vector<prov_element> provs={};
     init_provs(provs);
 
     {
       remove_headers_and_footers(provs);
-      //clean_provs(provs);
     }
 
     {
@@ -411,7 +554,7 @@ namespace andromeda
 
     return true;
   }
-
+  
   bool subject<DOCUMENT>::remove_headers_and_footers(std::vector<prov_element>& provs)
   {
     //LOG_S(INFO) << __FUNCTION__;
@@ -425,20 +568,77 @@ namespace andromeda
     return true;
   }
 
+  bool subject<DOCUMENT>::identify_repeating_text(std::vector<prov_element>& provs)
+  {
+    typedef std::array<ind_type, 4> key_type;
+    typedef std::vector<std::array<ind_type, 3> > val_type;
+
+    std::set<std::string> text_types
+      = { "title", "paragraph", "subtitle-level-1", "caption", "footnote"};
+
+    std::map<key_type, val_type> bbox_to_ind={};
+    for(ind_type ind=0; ind<provs.size(); ind++)
+      {
+	auto& prov = provs.at(ind);
+	
+	if(prov.ignore or text_types.count(prov.type)==0)
+	  {
+	    continue;
+	  }
+	
+	std::array<ind_type, 4> bbox
+	  = { ind_type(prov.bbox.at(0)),
+	      ind_type(prov.bbox.at(1)),
+	      ind_type(prov.bbox.at(2)),
+	      ind_type(prov.bbox.at(3))};
+
+	bbox_to_ind[bbox].push_back({prov.page, prov.maintext_ind, ind});
+      }
+
+    for(auto itr=bbox_to_ind.begin(); itr!=bbox_to_ind.end(); itr++)
+      {
+	bool repeating = (itr->second).size()>1;
+	std::string text="", other="";
+
+	auto& maintext = orig[maintext_lbl];
+	
+	if(repeating)
+	  {
+	    ind_type mind = (itr->second).at(0).at(1);
+	    text = maintext[mind]["text"].get<std::string>();
+
+	    for(auto coor:itr->second)
+	      {
+		other = maintext[coor.at(1)]["text"].get<std::string>();
+
+		if(text!=other)
+		  {
+		    repeating=false;		    
+		  }
+	      }
+	  }
+
+	if(repeating)
+	  {
+	    for(auto coor:itr->second)
+	      {
+		provs.at(coor.at(2)).ignore = true;
+
+		other = maintext[coor.at(1)]["text"].get<std::string>();
+		//LOG_S(WARNING) << "ignoring: " << other;
+	      }
+	  }
+      }
+
+    return true;
+  }
+  
   bool subject<DOCUMENT>::init_tables(std::vector<prov_element>& provs)
   {
     //LOG_S(INFO) << __FUNCTION__;
 
     for(auto itr=provs.begin(); itr!=provs.end(); itr++)
       {
-	/*
-        if(itr->ignore)
-          {
-            continue;
-          }
-
-        else
-	*/
 	if(itr->type=="table")
           {
             subject<TABLE> table(doc_hash, *itr);
@@ -448,7 +648,7 @@ namespace andromeda
 
             if(not valid_table)
               {
-		LOG_S(WARNING) << "found invalid table: " << item.dump();
+		LOG_S(WARNING) << "found table without structure";// << item.dump();
 	      }
 	    
 	    itr->ignore=true;
@@ -456,10 +656,10 @@ namespace andromeda
           }
       }
 
-    LOG_S(WARNING) << "orig #-tables: " << orig["tables"].size();
-    LOG_S(WARNING) << "list #-tables: " << tables.size();
+    //LOG_S(WARNING) << "orig #-tables: " << orig["tables"].size();
+    //LOG_S(WARNING) << "list #-tables: " << tables.size();
 
-    int cnt=0;
+    //int cnt=0;
     
     // FIXME: we need to factor this out in another class
     for(auto& table:tables)
@@ -469,9 +669,9 @@ namespace andromeda
         auto ind_m1 = mtext_ind-1;
         auto ind_p1 = mtext_ind+1;
 
-	LOG_S(INFO) << "table-" << (++cnt) << " => ("
-		    << "m1: " << provs.at(ind_m1).type << "; "
-		    << "p1: " << provs.at(ind_p1).type << ")";
+	//LOG_S(INFO) << "table-" << (++cnt) << " => ("
+	//<< "m1: " << provs.at(ind_m1).type << "; "
+	//<< "p1: " << provs.at(ind_p1).type << ")";
 	
         if(ind_m1>=0 and ind_m1<provs.size() and
            (not provs.at(ind_m1).ignore) and
@@ -536,7 +736,7 @@ namespace andromeda
               }
           }
       }
-
+    
     return true;
   }
 
@@ -580,8 +780,6 @@ namespace andromeda
 
             auto item = orig[caption_prov.path.first][caption_prov.path.second];
             bool valid = caption.set_data(item);
-
-	    LOG_S(INFO) << "table-caption text: " << caption.text;
 	    
             if(valid)
               {
@@ -594,22 +792,15 @@ namespace andromeda
 	      }	    
           }
       }
-
+    
     return true;
   }
 
   bool subject<DOCUMENT>::init_paragraphs(std::vector<prov_element>& provs)
   {
-    //LOG_S(INFO) << __FUNCTION__;
-
     paragraphs.clear();
     for(auto itr=provs.begin(); itr!=provs.end(); itr++)
       {
-        //if(itr->ignore)
-	//{
-	//continue;
-	//}
-
         if(itr->type=="title" or
 	   itr->type=="paragraph" or
 	   itr->type=="subtitle-level-1" or
@@ -630,7 +821,8 @@ namespace andromeda
 
     return true;
   }
-
+  */
+  
   bool subject<DOCUMENT>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
                                      std::shared_ptr<utils::text_normaliser> text_normaliser)
   {
@@ -671,36 +863,6 @@ namespace andromeda
 
     return true;
   }
-
-  /*
-    bool subject<DOCUMENT>::set(nlohmann::json& data,
-    std::shared_ptr<utils::char_normaliser> char_normaliser,
-    std::shared_ptr<utils::text_normaliser> text_normaliser)
-    {
-    //LOG_S(INFO) << __FUNCTION__;
-
-    if(set_data(data, order_text))
-    {
-    return set_tokens(char_normaliser, text_normaliser);
-    }
-
-    return false;
-    }
-
-    bool subject<DOCUMENT>::set(std::filesystem::path filepath, nlohmann::json& data,
-    std::shared_ptr<utils::char_normaliser> char_normaliser,
-    std::shared_ptr<utils::text_normaliser> text_normaliser)
-    {
-    //LOG_S(INFO) << __FUNCTION__;
-
-    if(set_data(filepath, data, order_text))
-    {
-    return set_tokens(char_normaliser, text_normaliser);
-    }
-
-    return false;
-    }
-  */
 
   bool subject<DOCUMENT>::finalise()
   {

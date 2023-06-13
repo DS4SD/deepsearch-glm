@@ -12,10 +12,12 @@ namespace andromeda
   public:
 
     subject();
-    subject(uint64_t dhash, prov_element& prov);
+    subject(uint64_t dhash, std::shared_ptr<prov_element> prov);
     
     ~subject();
 
+    std::string get_path() const { return (provs.size()>0? (provs.at(0)->to_path()):"#"); }
+    
     void clear();
 
     bool is_valid() { return (base_subject::valid and text_element::valid); }
@@ -63,16 +65,20 @@ namespace andromeda
   public:
 
     std::set<std::string> labels;
+
+    std::vector<std::shared_ptr<prov_element> > provs;
   };
 
   subject<PARAGRAPH>::subject():
     base_subject(PARAGRAPH),
-    labels()
+    labels({}),
+    provs({})
   {}
 
-  subject<PARAGRAPH>::subject(uint64_t dhash, prov_element& prov):
-    base_subject(dhash, PARAGRAPH, {prov}),
-    labels()
+  subject<PARAGRAPH>::subject(uint64_t dhash, std::shared_ptr<prov_element> prov):
+    base_subject(dhash, PARAGRAPH),
+    labels({}),
+    provs({prov})
   {}
   
   subject<PARAGRAPH>::~subject()
@@ -84,6 +90,7 @@ namespace andromeda
     text_element::clear();
     
     labels.clear();
+    provs.clear();
   }
 
   bool subject<PARAGRAPH>::set_text(const std::string& ctext)
@@ -112,10 +119,10 @@ namespace andromeda
 	return false;
       }
 
-    for(auto& prov:base_subject::provs)
+    for(auto& prov:provs)
       {
-	labels.insert(prov.name);
-	labels.insert(prov.type);
+	labels.insert(prov->name);
+	labels.insert(prov->type);
       }
     
     return valid;
@@ -349,15 +356,15 @@ namespace andromeda
   {
     std::stringstream ss;
 
-    if(base_subject::provs.size()>0)
+    if(provs.size()>0)
       {
 	ss << "prov: "
-	   << base_subject::provs.at(0).page << ", "
+	   << provs.at(0)->page << ", "
 	   << " ["
-	   << base_subject::provs.at(0).bbox[0] << ", "
-	   << base_subject::provs.at(0).bbox[1] << ", "
-	   << base_subject::provs.at(0).bbox[2] << ", "
-	   << base_subject::provs.at(0).bbox[3]
+	   << provs.at(0)->bbox[0] << ", "
+	   << provs.at(0)->bbox[1] << ", "
+	   << provs.at(0)->bbox[2] << ", "
+	   << provs.at(0)->bbox[3]
 	   << "]\n";
       }
     else
