@@ -407,12 +407,11 @@ namespace andromeda
 
     std::set<std::string> is_ignored = {"page-header", "page-footer"};
     std::set<std::string> is_text = {"title", "subtitle-level-1", "paragraph",
-				   "footnote", "caption"};
+				     "footnote", "caption", "formula"};
 
     std::set<std::string> is_table = {"table"};
     std::set<std::string> is_figure = {"figure"};
     
-    //for(auto itr=provs.begin(); itr!=provs.end(); itr++)
     for(auto& prov:provs)
       {
 	auto item = orig.at((prov->path).first).at((prov->path).second);
