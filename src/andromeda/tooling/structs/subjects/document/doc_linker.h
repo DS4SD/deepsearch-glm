@@ -204,10 +204,10 @@ namespace andromeda
 	      }
 
 	    if(table_inds.at(page_num).count(ind))
-	      {		
+	      {
 		for(auto cind:table_caption_inds.at(page_num))
 		  {
-		    if(is_assigned.count(cind)==1)
+		    if(is_assigned.count(cind)==0)
 		      {
 			obj_to_caption.at(ind) = {cind};
 			is_assigned.insert(cind);
@@ -218,7 +218,7 @@ namespace andromeda
 	      {
 		for(auto cind:figure_caption_inds.at(page_num))
 		  {
-		    if(is_assigned.count(cind)==1)
+		    if(is_assigned.count(cind)==0)
 		      {
 			obj_to_caption.at(ind) = {cind};
 			is_assigned.insert(cind);
