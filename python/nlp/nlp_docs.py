@@ -403,8 +403,6 @@ def display_sentences(doc_j):
     print("\n\n")            
     print("sentences: ", len(sentences))            
     print(tabulate(sentences))
-
-    input("continue ...")
             
 def display_maintext(doc_j):
 
@@ -487,14 +485,9 @@ def run_nlp_on_doc(filename, vpage):
     
     doc_j = model.apply_on_doc(doc_i)
 
-    #print(doc_j.keys())
-    #print(tabulate(doc_j["entities"]["data"], doc_j["entities"]["headers"]))
-
-    df = pd.DataFrame(doc_j["entities"]["data"],
-                      columns=doc_j["entities"]["headers"])
-    print(df)
-
-    input("...")
+    #df = pd.DataFrame(doc_j["entities"]["data"],
+    #                  columns=doc_j["entities"]["headers"])
+    #print(df)
     
     mtext=[]
 

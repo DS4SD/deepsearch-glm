@@ -65,7 +65,7 @@ namespace andromeda
 
   public:
 
-    bool valid;
+    bool text_valid;
 
     uint64_t text_hash; // hash of normalised text
     
@@ -90,7 +90,7 @@ namespace andromeda
   }
 
   text_element::text_element():
-    valid(true),
+    text_valid(true),
     text_hash(-1),
     
     len(0),
@@ -105,7 +105,7 @@ namespace andromeda
 
   void text_element::clear()
   {
-    valid = true;
+    text_valid = true;
     text_hash = -1;
     
     len=0;
@@ -120,7 +120,7 @@ namespace andromeda
 
   bool text_element::is_valid()
   {
-    return valid;
+    return text_valid;
   }
 
   bool text_element::set(const std::string& ctext,
@@ -149,10 +149,10 @@ namespace andromeda
 
     len = orig.size();
 
-    valid = utf8::is_valid(orig.c_str(), orig.c_str()+len);
+    text_valid = utf8::is_valid(orig.c_str(), orig.c_str()+len);
     text_hash = utils::to_hash(orig);
     
-    return valid;
+    return text_valid;
   }
 
   bool text_element::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
@@ -162,11 +162,11 @@ namespace andromeda
 
     len = text.size();
 
-    valid = utf8::is_valid(text.c_str(), text.c_str()+len);
+    text_valid = utf8::is_valid(text.c_str(), text.c_str()+len);
 
-    if(not valid)
+    if(not text_valid)
       {
-        return valid;
+        return text_valid;
       }
 
     dst = utf8::distance(text.c_str(), text.c_str()+len);

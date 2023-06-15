@@ -67,7 +67,7 @@ namespace andromeda
   {
     for(auto& paragraph:doc.paragraphs)
       {
-	this->apply(paragraph);
+	this->apply(*paragraph);
       }
 
     return true;

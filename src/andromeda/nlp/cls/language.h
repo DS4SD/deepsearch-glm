@@ -125,9 +125,9 @@ namespace andromeda
 	return false;
       }  
 
-    for(subject<PARAGRAPH>& para:subj.paragraphs)
+    for(auto& para:subj.paragraphs)
       {
-	this->apply(para);
+	this->apply(*para);
       }
 
     for(subject<TABLE>& table:subj.tables)
@@ -138,15 +138,15 @@ namespace andromeda
     std::map<std::string, std::size_t> lang_mapping;
 
     std::size_t total=0;
-    for(subject<PARAGRAPH>& para:subj.paragraphs)
+    for(auto& para:subj.paragraphs)
       {
-	this->apply(para);
+	this->apply(*para);
 
 	base_property prop("null", "null", 0.0);
-	if(get(para, prop))
+	if(get(*para, prop))
 	  {
 	    std::string key = prop.get_name();
-	    std::size_t dst = para.dst;
+	    std::size_t dst = para->dst;
 
 	    if(lang_mapping.count(key)==1)
 	      {

@@ -20,10 +20,12 @@ namespace andromeda
     
     void clear();
 
-    bool is_valid() { return (base_subject::valid and text_element::valid); }
+    bool is_valid() { return (base_subject::valid and text_element::text_valid); }
     
     nlohmann::json to_json();
     bool from_json(const nlohmann::json& data);
+
+    bool concatenate(std::shared_ptr<subject<PARAGRAPH> > other);
     
     bool set_text(const std::string& ctext);
     bool set_data(const nlohmann::json& item);
@@ -93,6 +95,19 @@ namespace andromeda
     provs.clear();
   }
 
+  bool subject<PARAGRAPH>::concatenate(std::shared_ptr<subject<PARAGRAPH> > other)
+  {
+    for(auto& prov:other->provs)
+      {
+	this->provs.push_back(prov);
+      }
+
+    std::string ctext = text_element::text;
+    ctext += other->text;
+
+    return set_text(ctext);
+  }
+  
   bool subject<PARAGRAPH>::set_text(const std::string& ctext)
   {
     text_element::set_text(ctext);
@@ -100,7 +115,7 @@ namespace andromeda
     std::vector<uint64_t> hashes={dhash, text_element::text_hash};
     base_subject::hash = utils::to_hash(hashes);
 
-    return text_element::valid;
+    return text_element::text_valid;
   }
 
   bool subject<PARAGRAPH>::set_data(const nlohmann::json& item)

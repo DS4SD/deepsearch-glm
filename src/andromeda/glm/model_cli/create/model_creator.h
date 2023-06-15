@@ -404,7 +404,7 @@ namespace andromeda
 
       for(auto& paragraph:subj.paragraphs)
         {
-          this->update(paragraph, doc_ents);
+          this->update(*paragraph, doc_ents);
         }
       
       for(auto& table:subj.tables)
@@ -418,15 +418,6 @@ namespace andromeda
 	  fdoc_node = nodes.insert(fdoc_node, false);
 	}      
     }
-
-
-
-
-
-
-
-
-
     
     void model_creator::contract_tokens(subject<PARAGRAPH>& subj)
     {
@@ -437,17 +428,17 @@ namespace andromeda
 
     void model_creator::contract_tokens(subject<TABLE>& subj)
     {
-
+      
     }
 
     void model_creator::contract_tokens(subject<DOCUMENT>& subj)
     {
-      for(auto item:subj.paragraphs)
+      for(auto& item:subj.paragraphs)
         {
-          contract_tokens(item);
+          contract_tokens(*item);
         }
 
-      for(auto item:subj.tables)
+      for(auto& item:subj.tables)
         {
           contract_tokens(item);
         }

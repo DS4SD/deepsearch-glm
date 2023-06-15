@@ -90,7 +90,7 @@ namespace andromeda
     //std::vector<prov_element> provs;
     std::vector<std::shared_ptr<prov_element> > provs;
     
-    std::vector<subject<PARAGRAPH> > paragraphs;
+    std::vector<std::shared_ptr<subject<PARAGRAPH> > > paragraphs;
     std::vector<subject<TABLE> > tables;
     std::vector<subject<FIGURE> > figures;
   };
@@ -148,14 +148,14 @@ namespace andromeda
 
         for(std::size_t l=0; l<paragraphs.size(); l++)
           {
-            if(paragraphs.at(l).is_valid())
+            if(paragraphs.at(l)->is_valid())
               {
                 auto& paragraph = paragraphs.at(l);
 
-                auto& prov = paragraph.provs.at(0);
+                auto& prov = paragraph->provs.at(0);
                 auto& item = result[prov->path.first][prov->path.second];
 
-                auto _ = paragraph.to_json();
+                auto _ = paragraph->to_json();
                 for(auto& elem:_.items())
                   {
                     //if(keys.count(elem.key()))
@@ -241,7 +241,7 @@ namespace andromeda
   {
     for(auto paragraph:paragraphs)
       {
-        paragraph.show(txt,mdls, ctok,wtok, prps,ents,rels);
+        paragraph->show(txt,mdls, ctok,wtok, prps,ents,rels);
       }
   }
 
@@ -422,8 +422,9 @@ namespace andromeda
 	  }	
 	else if(is_text.count(prov->type))
           {
-            subject<PARAGRAPH> subj(doc_hash, prov);
-            bool valid = subj.set_data(item);
+            //subject<PARAGRAPH> subj(doc_hash, prov);
+	    auto subj = std::make_shared<subject<PARAGRAPH> >(doc_hash, prov);
+            bool valid = subj->set_data(item);
 
             if(valid)
               {
@@ -495,332 +496,38 @@ namespace andromeda
 
     {
       doc_linker linker;
-      linker.find_captions(*this);
+      linker.find_and_link_captions(*this);
+    }
+
+    /*
+    {
+      int cnt=0;
+      for(auto& paragraph:paragraphs)
+	{
+	  if(paragraph.use_count()==1)
+	    {
+	      LOG_S(INFO) << cnt++ << "\t" << paragraph.use_count() << "\t" << paragraph->provs.at(0)->type;
+	    }
+	  else
+	    {
+	      LOG_S(WARNING) << cnt++ << "\t" << paragraph.use_count() << "\t" << paragraph->provs.at(0)->type;
+	    }
+	}
+    }
+    */
+
+    {
+      doc_linker linker;
+      linker.filter_maintext(*this);
+    }
+    
+    {
+      doc_linker linker;
+      linker.concatenate_maintext(*this);
     }
     
     return true;
   }
-  
-
-
-  
-  /*
-  bool subject<DOCUMENT>::init_items()
-  {
-    //LOG_S(INFO) << __FUNCTION__;
-
-    if(not orig.count(maintext_lbl))
-      {
-        return false;
-      }
-
-    init_provs(provs);
-
-    {
-      remove_headers_and_footers(provs);
-    }
-
-    {
-      init_tables(provs);
-      //clean_provs(provs);
-    }
-
-    {
-      init_figures(provs);
-      //clean_provs(provs);
-    }
-
-    {
-      init_paragraphs(provs);
-    }
-
-    return true;
-  }
-
-  bool subject<DOCUMENT>::clean_provs(std::vector<prov_element>& provs)
-  {
-    for(auto itr=provs.begin(); itr!=provs.end(); )
-      {
-        if(itr->ignore)
-          {
-            itr = provs.erase(itr);
-          }
-        else
-          {
-            itr++;
-          }
-      }
-
-    return true;
-  }
-  
-  bool subject<DOCUMENT>::remove_headers_and_footers(std::vector<prov_element>& provs)
-  {
-    //LOG_S(INFO) << __FUNCTION__;
-
-    std::set<std::string> to_be_ignored={"page-header", "page-footer"};
-    for(auto itr=provs.begin(); itr!=provs.end(); itr++)
-      {
-        itr->ignore = to_be_ignored.count(itr->type)? true:false;
-      }
-
-    return true;
-  }
-
-  bool subject<DOCUMENT>::identify_repeating_text(std::vector<prov_element>& provs)
-  {
-    typedef std::array<ind_type, 4> key_type;
-    typedef std::vector<std::array<ind_type, 3> > val_type;
-
-    std::set<std::string> text_types
-      = { "title", "paragraph", "subtitle-level-1", "caption", "footnote"};
-
-    std::map<key_type, val_type> bbox_to_ind={};
-    for(ind_type ind=0; ind<provs.size(); ind++)
-      {
-	auto& prov = provs.at(ind);
-	
-	if(prov.ignore or text_types.count(prov.type)==0)
-	  {
-	    continue;
-	  }
-	
-	std::array<ind_type, 4> bbox
-	  = { ind_type(prov.bbox.at(0)),
-	      ind_type(prov.bbox.at(1)),
-	      ind_type(prov.bbox.at(2)),
-	      ind_type(prov.bbox.at(3))};
-
-	bbox_to_ind[bbox].push_back({prov.page, prov.maintext_ind, ind});
-      }
-
-    for(auto itr=bbox_to_ind.begin(); itr!=bbox_to_ind.end(); itr++)
-      {
-	bool repeating = (itr->second).size()>1;
-	std::string text="", other="";
-
-	auto& maintext = orig[maintext_lbl];
-	
-	if(repeating)
-	  {
-	    ind_type mind = (itr->second).at(0).at(1);
-	    text = maintext[mind]["text"].get<std::string>();
-
-	    for(auto coor:itr->second)
-	      {
-		other = maintext[coor.at(1)]["text"].get<std::string>();
-
-		if(text!=other)
-		  {
-		    repeating=false;		    
-		  }
-	      }
-	  }
-
-	if(repeating)
-	  {
-	    for(auto coor:itr->second)
-	      {
-		provs.at(coor.at(2)).ignore = true;
-
-		other = maintext[coor.at(1)]["text"].get<std::string>();
-		//LOG_S(WARNING) << "ignoring: " << other;
-	      }
-	  }
-      }
-
-    return true;
-  }
-  
-  bool subject<DOCUMENT>::init_tables(std::vector<prov_element>& provs)
-  {
-    //LOG_S(INFO) << __FUNCTION__;
-
-    for(auto itr=provs.begin(); itr!=provs.end(); itr++)
-      {
-	if(itr->type=="table")
-          {
-            subject<TABLE> table(doc_hash, *itr);
-
-            auto item = orig[(itr->path).first][(itr->path).second];
-            bool valid_table = table.set_data(item);
-
-            if(not valid_table)
-              {
-		LOG_S(WARNING) << "found table without structure";// << item.dump();
-	      }
-	    
-	    itr->ignore=true;
-	    tables.push_back(table);
-          }
-      }
-
-    //LOG_S(WARNING) << "orig #-tables: " << orig["tables"].size();
-    //LOG_S(WARNING) << "list #-tables: " << tables.size();
-
-    //int cnt=0;
-    
-    // FIXME: we need to factor this out in another class
-    for(auto& table:tables)
-      {
-        auto mtext_ind = table.provs.at(0).maintext_ind;
-
-        auto ind_m1 = mtext_ind-1;
-        auto ind_p1 = mtext_ind+1;
-
-	//LOG_S(INFO) << "table-" << (++cnt) << " => ("
-	//<< "m1: " << provs.at(ind_m1).type << "; "
-	//<< "p1: " << provs.at(ind_p1).type << ")";
-	
-        if(ind_m1>=0 and ind_m1<provs.size() and
-           (not provs.at(ind_m1).ignore) and
-           provs.at(ind_m1).type=="caption")
-          {
-            auto caption_prov = provs.at(ind_m1);
-            subject<PARAGRAPH> caption(doc_hash, provs.at(ind_m1));
-
-            auto item = orig[caption_prov.path.first][caption_prov.path.second];
-            bool valid = caption.set_data(item);
-
-	    //LOG_S(INFO) << "table-caption text: " << caption.text;
-	    
-            if(valid)
-              {
-                table.captions.push_back(caption);
-                provs.at(ind_m1).ignore = true;
-              }
-	    else
-	      {
-		LOG_S(WARNING) << "found invalid table-caption: " << item.dump();
-	      }
-          }
-        else if(ind_p1>=0 and ind_p1<provs.size() and
-                (not provs.at(ind_p1).ignore) and
-                provs.at(ind_p1).type=="caption")
-          {
-            auto caption_prov = provs.at(ind_p1);
-            subject<PARAGRAPH> caption(doc_hash, provs.at(ind_p1));
-
-            auto item = orig[caption_prov.path.first][caption_prov.path.second];
-            bool valid = caption.set_data(item);
-
-	    //LOG_S(INFO) << "table-caption text: " << caption.text;
-	    
-            if(valid)
-              {
-                table.captions.push_back(caption);
-                provs.at(ind_p1).ignore = true;
-              }
-	    else
-	      {
-		LOG_S(WARNING) << "found invalid table-caption: " << item.dump();
-	      }
-          }
-
-        auto fnote_ind = mtext_ind+1;
-        if(fnote_ind>=0 and fnote_ind<provs.size() and
-           (not provs.at(fnote_ind).ignore) and
-           provs.at(fnote_ind).type=="footnote")
-          {
-            auto footnote_prov = provs.at(fnote_ind);
-            subject<PARAGRAPH> footnote(doc_hash, footnote_prov);
-
-            auto item = orig[footnote_prov.path.first][footnote_prov.path.second];
-            bool valid = footnote.set_data(item);
-
-            if(valid)
-              {
-                table.footnotes.push_back(footnote);
-                provs.at(fnote_ind).ignore = true;
-              }
-          }
-      }
-    
-    return true;
-  }
-
-  bool subject<DOCUMENT>::init_figures(std::vector<prov_element>& provs)
-  {
-    //LOG_S(INFO) << __FUNCTION__;
-
-    for(auto itr=provs.begin(); itr!=provs.end(); itr++)
-      {
-        if(itr->ignore)
-          {
-            continue;
-          }
-
-        if(itr->type=="figure")
-          {
-            auto item = orig[(itr->path).first][(itr->path).second];
-
-            subject<FIGURE> figure(doc_hash, *itr);
-            bool valid_figure = figure.set_data(item);
-
-            if(valid_figure)
-              {
-                itr->ignore=true;
-                figures.push_back(figure);
-              }
-          }
-      }
-
-    for(auto& figure:figures)
-      {
-        auto mtext_ind = figure.provs.at(0).maintext_ind;
-
-        auto ind_p1 = mtext_ind+1;
-        if(ind_p1>=0 and ind_p1<provs.size() and
-           (not provs.at(ind_p1).ignore) and
-           provs.at(ind_p1).type=="caption")
-          {
-            auto caption_prov = provs.at(ind_p1);
-            subject<PARAGRAPH> caption(doc_hash, provs.at(ind_p1));
-
-            auto item = orig[caption_prov.path.first][caption_prov.path.second];
-            bool valid = caption.set_data(item);
-	    
-            if(valid)
-              {
-                figure.captions.push_back(caption);
-                provs.at(ind_p1).ignore = true;
-              }
-	    else
-	      {
-		LOG_S(WARNING) << "found invalid figure-caption: " << item.dump();
-	      }	    
-          }
-      }
-    
-    return true;
-  }
-
-  bool subject<DOCUMENT>::init_paragraphs(std::vector<prov_element>& provs)
-  {
-    paragraphs.clear();
-    for(auto itr=provs.begin(); itr!=provs.end(); itr++)
-      {
-        if(itr->type=="title" or
-	   itr->type=="paragraph" or
-	   itr->type=="subtitle-level-1" or
-	   itr->type=="caption" or
-	   itr->type=="footnote")
-          {
-            auto item = orig[(itr->path).first][(itr->path).second];
-
-            subject<PARAGRAPH> subj(doc_hash, *itr);
-            bool valid = subj.set_data(item);
-
-            if(valid)
-              {
-                paragraphs.push_back(subj);
-              }
-          }
-      }
-
-    return true;
-  }
-  */
   
   bool subject<DOCUMENT>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
                                      std::shared_ptr<utils::text_normaliser> text_normaliser)
@@ -829,7 +536,7 @@ namespace andromeda
 
     for(auto& paragraph:paragraphs)
       {
-        bool valid = paragraph.set_tokens(char_normaliser, text_normaliser);
+        bool valid = paragraph->set_tokens(char_normaliser, text_normaliser);
 
         if(not valid)
           {
@@ -886,14 +593,14 @@ namespace andromeda
     std::map<std::string, val_type>                         property_total;
     std::map<std::pair<std::string, std::string>, val_type> property_label_mapping;
 
-    for(subject<PARAGRAPH>& paragraph:paragraphs)
+    for(auto& paragraph:paragraphs)
       {
-        for(auto& prop:paragraph.properties)
+        for(auto& prop:paragraph->properties)
           {
             std::string mdl = prop.get_type();
             std::string lbl = prop.get_name();
             val_type   conf = prop.get_conf();
-            val_type    dst = paragraph.dst;
+            val_type    dst = paragraph->dst;
 
             if(property_total.count(mdl)==1)
               {
@@ -962,11 +669,11 @@ namespace andromeda
       {
         //LOG_S(INFO) << __FUNCTION__ << ": " << subj.entities.size();
 
-        for(auto& ent:subj.entities)
+        for(auto& ent:subj->entities)
           {
-            entities.emplace_back(subj.get_hash(),
-                                  subj.get_name(),
-                                  subj.get_path(),
+            entities.emplace_back(subj->get_hash(),
+                                  subj->get_name(),
+                                  subj->get_path(),
                                   ent);
           }
       }
@@ -1001,9 +708,9 @@ namespace andromeda
   {
     relations.clear();
 
-    for(subject<PARAGRAPH>& paragraph:paragraphs)
+    for(auto& paragraph:paragraphs)
       {
-        for(auto& rel:paragraph.relations)
+        for(auto& rel:paragraph->relations)
           {
             relations.push_back(rel);
           }

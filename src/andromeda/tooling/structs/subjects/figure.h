@@ -39,9 +39,9 @@ namespace andromeda
 
     std::vector<std::shared_ptr<prov_element> > provs;
     
-    std::vector<subject<PARAGRAPH> > captions;
-    std::vector<subject<PARAGRAPH> > footnotes;
-    std::vector<subject<PARAGRAPH> > mentions;
+    std::vector<std::shared_ptr<subject<PARAGRAPH> > > captions;
+    std::vector<std::shared_ptr<subject<PARAGRAPH> > > footnotes;
+    std::vector<std::shared_ptr<subject<PARAGRAPH> > > mentions;
   };
 
   subject<FIGURE>::subject():
@@ -88,7 +88,7 @@ namespace andromeda
       
       for(auto& caption:captions)
 	{
-	  _.push_back(caption.to_json());
+	  _.push_back(caption->to_json());
 	}
     }
 
@@ -98,7 +98,7 @@ namespace andromeda
       
       for(auto& footnote:footnotes)
 	{
-	  _.push_back(footnote.to_json());
+	  _.push_back(footnote->to_json());
 	}
     }
 
@@ -108,7 +108,7 @@ namespace andromeda
       
       for(auto& mention:mentions)
 	{
-	  _.push_back(mention.to_json());
+	  _.push_back(mention->to_json());
 	}
     }        
     
