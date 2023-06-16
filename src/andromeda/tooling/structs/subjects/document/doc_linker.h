@@ -374,7 +374,7 @@ namespace andromeda
 	    LOG_S(WARNING) << "attempting to concat text: \n`" << curr_text << "`"
 			   << "\n with \n`" << next_text << "`";
 	    
-	    curr->concatenate(next);	    
+	    curr->concatenate(next);
 	    next->valid=false;
 	  }
       }

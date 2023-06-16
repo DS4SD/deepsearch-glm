@@ -267,7 +267,7 @@ def viz_docs(doc_i, doc_j, page=1):
         rects_j=[]
         for item in doc_j["main-text"]:
 
-            ritem = resolve_item(item, doc_j)
+            ritem = item #resolve_item(item, doc_j)
             
             if ritem["prov"][0]["page"]==pn:
                 rects_j.append(ritem["prov"][0]["bbox"])    
@@ -412,11 +412,15 @@ def display_maintext(doc_j):
     print("main-text: ", len(doc_j["main-text"]))
     for i,item in enumerate(doc_j["main-text"]):
 
+        print(item)
         ritem = resolve_item(item, doc_j)
 
+        print(" -> ", ritem)
+        
         name_ = item["name"]
         type_ = item["type"]
-        
+
+        print(" -> ", ritem["prov"][0])        
         page = ritem["prov"][0]["page"]
         
         lanlabel, lconf = get_label(ritem, "language")
@@ -485,6 +489,20 @@ def run_nlp_on_doc(filename, vpage):
     
     doc_j = model.apply_on_doc(doc_i)
 
+    table=[]
+    for i,item in enumerate(doc_j["page-items"]):
+        table.append([i, item["__ref"], len(item["prov"]), item["type"]])
+
+    print("# page-items: ", len(table))
+    print(tabulate(table, headers=["index", "ref", "#-provs", "type"]))
+    
+    table=[]
+    for i,item in enumerate(doc_j["main-text"]):
+        table.append([i, item["__ref"], len(item["prov"]), item["type"]])
+
+    print("# main-items: ", len(table))
+    print(tabulate(table, headers=["index", "ref", "#-provs", "type"]))
+        
     #df = pd.DataFrame(doc_j["entities"]["data"],
     #                  columns=doc_j["entities"]["headers"])
     #print(df)

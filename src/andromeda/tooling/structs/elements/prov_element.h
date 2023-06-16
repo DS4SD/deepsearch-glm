@@ -29,11 +29,15 @@ namespace andromeda
     static std::vector<std::string> get_headers();
 
     std::vector<std::string> to_row();
-    nlohmann::json to_json_row();
-    
-    std::string to_path() const;
+
+    nlohmann::json to_json(std::string ref="");
+    nlohmann::json to_json_row(std::string ref="");
+
     static std::pair<std::string, ind_type> from_path(std::string dref);
 
+    std::string to_path() const;
+    std::string to_dref() const;
+    
     bool follows_maintext_order(const prov_element& rhs) const;
     
     bool overlaps_x(const prov_element& rhs) const;
@@ -143,7 +147,7 @@ namespace andromeda
 
     return ss.str();
   }
-  
+
   std::pair<std::string, typename prov_element::ind_type> prov_element::from_path(std::string doc_path)
   {
     std::vector<std::string> parts = utils::split(doc_path, "/");
@@ -305,19 +309,53 @@ namespace andromeda
   {
     page = data.value("page", page);
     bbox = data.value("bbox", bbox);
+    char_range = data.value("span", char_range);
   }
 
   std::vector<std::string> prov_element::get_headers()
   {
     static std::vector<std::string> row
-      = { "mtext", "path-key", "path-ind", "name", "type", "page", "x0", "y0", "x1", "y1"};
+      = { "mtext", //"path-key", "path-ind",
+	  "path",
+	  "name", "type",
+	  "page",
+	  "x0", "y0", "x1", "y1"};
     return row;
+  }
+  
+  nlohmann::json prov_element::to_json(std::string ref)
+  {
+    nlohmann::json result = nlohmann::json::object();
+
+    result["type"] = type;
+    result["name"] = name;
+
+    if(ref=="")
+      {
+	ref = to_path();
+      }
+
+    result["__ref"] = ref;
+    
+    auto elem = nlohmann::json::object();
+    {
+      elem["__ref"] = ref;
+
+      elem["page"] = page;
+      elem["bbox"] = bbox;
+      elem["span"] = char_range;
+    }
+    result["prov"].push_back(elem);
+    
+    return result;
   }
   
   std::vector<std::string> prov_element::to_row()
   {
     std::vector<std::string> row
-      = { std::to_string(maintext_ind), path.first, std::to_string(path.second),
+      = { std::to_string(maintext_ind),
+	  //path.first, std::to_string(path.second),
+	  to_path(),
 	  name, type, std::to_string(page),
 	  std::to_string(bbox[0]), std::to_string(bbox[1]),
 	  std::to_string(bbox[2]), std::to_string(bbox[3]) };
@@ -325,14 +363,15 @@ namespace andromeda
     return row;
   }
 
-  nlohmann::json prov_element::to_json_row()
+  nlohmann::json prov_element::to_json_row(std::string ref)
   {
     nlohmann::json row = nlohmann::json::array();
 
     {
       row.push_back(maintext_ind);
-      row.push_back(path.first);
-      row.push_back(path.second);
+      //row.push_back(path.first);
+      //row.push_back(path.second);
+      row.push_back(ref);
       row.push_back(pdforder_ind);
       row.push_back(name);
       row.push_back(type);

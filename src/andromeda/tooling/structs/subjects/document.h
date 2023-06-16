@@ -11,9 +11,10 @@ namespace andromeda
   {
   public:
 
-    const static inline std::string provs_lbl = "document-items";
-    
+    const static inline std::string provs_lbl = "page-items";    
     const static inline std::string maintext_lbl = "main-text";
+
+    const static inline std::string flowtext_lbl = "flow-text";
     const static inline std::string tables_lbl = "tables";
     const static inline std::string figures_lbl = "figures";
 
@@ -58,6 +59,8 @@ namespace andromeda
 
   private:
 
+    std::string to_dref(const prov_element& prov);
+    
     void set_meta(nlohmann::json& data);
     void set_orig(nlohmann::json& data);
     
@@ -91,6 +94,10 @@ namespace andromeda
     std::vector<std::shared_ptr<prov_element> > provs;
     
     std::vector<std::shared_ptr<subject<PARAGRAPH> > > paragraphs;
+
+    std::vector<std::shared_ptr<subject<PARAGRAPH> > > captions;
+    std::vector<std::shared_ptr<subject<PARAGRAPH> > > footnotes;
+
     std::vector<subject<TABLE> > tables;
     std::vector<subject<FIGURE> > figures;
   };
@@ -106,6 +113,10 @@ namespace andromeda
     provs(),
     
     paragraphs(),
+
+    captions(),
+    footnotes(),
+    
     tables(),
     figures()
   {}
@@ -113,10 +124,37 @@ namespace andromeda
   subject<DOCUMENT>::~subject()
   {}
 
+  std::string subject<DOCUMENT>::to_dref(const prov_element& prov)
+  {    
+    std::stringstream ss;
+
+    switch(prov.dref.first)
+      {
+      case PARAGRAPH:
+	{
+	  ss << "#" << "/" << flowtext_lbl << "/" << prov.dref.second;
+	}
+	break;
+
+      case TABLE:
+	{
+	  ss << "#" << "/" << tables_lbl << "/" << prov.dref.second;
+	}
+	break;	
+
+      default:
+	{
+	  ss << prov.to_path();
+	}
+      }
+    
+    return ss.str();
+  }
+  
   nlohmann::json subject<DOCUMENT>::to_json()
   {
     nlohmann::json result = orig;
-
+    
     {
       nlohmann::json base = base_subject::to_json();
 
@@ -126,104 +164,133 @@ namespace andromeda
         }
     }
 
+    // page-items contain everything on the document pages including page-header/footer,
+    // title, subtitle, paragraph, table, figure, etc
     {
-      nlohmann::json& doc_provs = result[provs_lbl];
-      doc_provs = nlohmann::json::object({});
+      nlohmann::json& page_items = result[provs_lbl];
+      page_items = nlohmann::json::array({});
 
-      doc_provs[base_subject::head_lbl] = prov_element::get_headers();
-      doc_provs[base_subject::data_lbl] = nlohmann::json::array({});
-
-      auto& data = doc_provs.at(base_subject::data_lbl);
       for(auto& prov:provs)
 	{
-	  data.push_back(prov->to_json_row());
+	  std::string ref = to_dref(*prov);
+	  page_items.push_back(prov->to_json());
 	}
     }
     
-    if(result.count(maintext_lbl))
-      {
-        //std::set<std::string> keys
-        //= { "hash", "orig", "text", "properties"};
-        //"entities", "relations"};
+    // the main-text will only have page-item prov and references to other
+    // other parts of the document (text, table, figure, page-header/footer, footnotes)
+    {
+      nlohmann::json& main_text = result[maintext_lbl];
+      main_text = nlohmann::json::array({});
+      
+      for(auto& prov:provs)
+	{
+	  switch(prov->dref.first)
+	    {
+	    case PARAGRAPH:
+	    case TABLE:
+	    case FIGURE:
+	      {
+		std::string ref = to_dref(*prov);
+		main_text.push_back(prov->to_json(ref));
+	      }
+	      break;
 
-        for(std::size_t l=0; l<paragraphs.size(); l++)
-          {
-            if(paragraphs.at(l)->is_valid())
-              {
-                auto& paragraph = paragraphs.at(l);
+	    default:
+	      {}
+	    }
+	}
+    }
+    
+    {
+      std::set<std::string> keys
+	= { "hash", "orig", "text", "prov", "properties", "word-tokens"};
+      //"entities", "relations"};
 
-                auto& prov = paragraph->provs.at(0);
-                auto& item = result[prov->path.first][prov->path.second];
+      auto& flowtext = result[flowtext_lbl];
+      flowtext = nlohmann::json::array({});
+      
+      for(std::size_t l=0; l<paragraphs.size(); l++)
+	{
+	  if(not paragraphs.at(l)->is_valid())
+	    {
+	      continue;
+	    }
 
-                auto _ = paragraph->to_json();
-                for(auto& elem:_.items())
-                  {
-                    //if(keys.count(elem.key()))
-                    //{
-                    item[elem.key()] = elem.value();
-                    //  }
-                  }
-              }
-          }
-      }
+	  nlohmann::json item = nlohmann::json::object({});
+	  
+	  auto& paragraph = paragraphs.at(l);	  
+	  //auto& prov = paragraph->provs.at(0);
+	  //auto& item = result[prov->path.first][prov->path.second];
+	  
+	  auto _ = paragraph->to_json();
+	  for(auto& elem:_.items())
+	    {
+	      if(keys.count(elem.key()))
+		{
+		  item[elem.key()] = elem.value();
+		}
+	    }
 
-    if(result.count("tables"))
-      {
-        std::set<std::string> keys
-          = { "hash", "captions", "footnotes", "mentions", "properties"};
-        //"entities", "relations"};
+	  flowtext.push_back(item);
+	}
+    }
+    
+    {
+      std::set<std::string> keys
+	= { "hash", "captions", "footnotes", "mentions", "properties"};
+      //"entities", "relations"};
+      
+      for(std::size_t l=0; l<tables.size(); l++)
+	{
+	  if(tables.at(l).is_valid())
+	    {
+	      auto& table = tables.at(l);
+	      
+	      auto& prov = table.provs.at(0);
+	      auto& item = result[prov->path.first][prov->path.second];
+	      
+	      auto _ = table.to_json();
+	      for(auto& elem:_.items())
+		{
+		  //if(keys.count(elem.key()))
+		  //{
+		  item[elem.key()] = elem.value();
+		  //}
+		}
+	    }
+	}
+    }
 
-        for(std::size_t l=0; l<tables.size(); l++)
-          {
-            if(tables.at(l).is_valid())
-              {
-                auto& table = tables.at(l);
-
-                auto& prov = table.provs.at(0);
-                auto& item = result[prov->path.first][prov->path.second];
-
-                auto _ = table.to_json();
-                for(auto& elem:_.items())
-                  {
-                    //if(keys.count(elem.key()))
-                    //{
-                    item[elem.key()] = elem.value();
-                    //}
-                  }
-              }
-          }
-      }
-
-    if(result.count("figures"))
-      {
-        //std::vector<std::string> keys
-        //= { "hash",  "captions", "footnotes", "mentions", "properties"};
-        //, "entities", "relations"};
-
-        for(std::size_t l=0; l<figures.size(); l++)
-          {
-            if(figures.at(l).is_valid())
-              {
-                auto& figure = figures.at(l);
-
-                auto& prov = figure.provs.at(0);
-                auto& item = result[prov->path.first][prov->path.second];
-
-                auto _ = figure.to_json();
-                for(auto& elem:_.items())
-                  {
-                    //if(keys.count(elem.key()))
-                    //{
-                    item[elem.key()] = elem.value();
-                    //}
-                  }
-              }
-          }
-      }
-
+    {
+      //std::vector<std::string> keys
+      //= { "hash",  "captions", "footnotes", "mentions", "properties"};
+      //, "entities", "relations"};
+      
+      for(std::size_t l=0; l<figures.size(); l++)
+	{
+	  if(figures.at(l).is_valid())
+	    {
+	      auto& figure = figures.at(l);
+	      
+	      auto& prov = figure.provs.at(0);
+	      auto& item = result[prov->path.first][prov->path.second];
+	      
+	      auto _ = figure.to_json();
+	      for(auto& elem:_.items())
+		{
+		  //if(keys.count(elem.key()))
+		  //{
+		  item[elem.key()] = elem.value();
+		  //}
+		}
+	    }
+	}
+    }
+    
     return result;
   }
-
+  
   void subject<DOCUMENT>::clear()
   {
     base_subject::clear();
@@ -234,7 +301,7 @@ namespace andromeda
     tables.clear();
     figures.clear();
   }
-
+  
   void subject<DOCUMENT>::show(bool txt, bool mdls,
                                bool ctok, bool wtok,
                                bool prps, bool ents, bool rels)
@@ -401,9 +468,11 @@ namespace andromeda
 
   bool subject<DOCUMENT>::init_items()
   {
+    paragraphs.clear();
+    
     tables.clear();
     figures.clear();
-    paragraphs.clear();
+
 
     std::set<std::string> is_ignored = {"page-header", "page-footer"};
     std::set<std::string> is_text = {"title", "subtitle-level-1", "paragraph",
@@ -572,8 +641,6 @@ namespace andromeda
 
   bool subject<DOCUMENT>::finalise()
   {
-    //LOG_S(INFO) << __FUNCTION__;
-
     bool valid_props = finalise_properties();
 
     bool valid_ents = finalise_entities();
@@ -599,8 +666,9 @@ namespace andromeda
           {
             std::string mdl = prop.get_type();
             std::string lbl = prop.get_name();
-            val_type   conf = prop.get_conf();
-            val_type    dst = paragraph->dst;
+
+            val_type conf = prop.get_conf();
+            val_type dst = paragraph->dst;
 
             if(property_total.count(mdl)==1)
               {
@@ -657,7 +725,7 @@ namespace andromeda
             itr++;
           }
       }
-
+    
     return true;
   }
 

@@ -95,16 +95,31 @@ namespace andromeda
     provs.clear();
   }
 
+  // FIXME: we might need to add some rules for the text-concatenation ...
   bool subject<PARAGRAPH>::concatenate(std::shared_ptr<subject<PARAGRAPH> > other)
   {
-    for(auto& prov:other->provs)
-      {
-	this->provs.push_back(prov);
-      }
-
     std::string ctext = text_element::text;
-    ctext += other->text;
+    auto offset = ctext.size();
 
+    // FIXME ...
+    ctext += other->text;
+    
+    if(provs.size()>0)
+      {
+	auto ind = provs.front()->dref.second;
+
+	for(auto& prov:other->provs)
+	  {
+	    prov->char_range.at(0) += offset;
+	    prov->char_range.at(1) += offset;
+	    
+	    LOG_S(WARNING) << "updating prov ind (" <<prov->dref.second << ") to " << ind;
+	    prov->dref.second = ind;
+	    
+	    this->provs.push_back(prov);	
+	  }
+      }
+    
     return set_text(ctext);
   }
   
@@ -275,49 +290,22 @@ namespace andromeda
     {      
       result["orig"] = text_element::orig;
       result["text"] = text_element::text;
+
       result["text-hash"] = text_element::text_hash;
       
       result["word-tokens"] = andromeda::to_json(text_element::word_tokens, text);
-    }
 
-    /*
-    result["applied-models"] = applied_models;
-    
-    {
-      nlohmann::json& props = result["properties"];
-      andromeda::to_json(properties, props);
-    }
-
-    {
-      nlohmann::json& ents = result["entities"];
-      ents = nlohmann::json::object({});
-
-      ents["headers"] = base_entity::headers(PARAGRAPH);
-
-      nlohmann::json& data = ents["data"];      
-      data = nlohmann::json::array({});
-
-      for(std::size_t l=0; l<entities.size(); l++)
+      result["prov"] = nlohmann::json::array({});
+      for(auto prov:provs)
 	{
-	  data.push_back(entities.at(l).to_json_row(PARAGRAPH));
+	  nlohmann::json item = prov->to_json();
+
+	  if(item.count("prov"))
+	    {
+	      result["prov"].push_back(item.at("prov"));
+	    }
 	}
     }
-
-    {
-      nlohmann::json& rels = result["relations"];
-      rels = nlohmann::json::object({});
-
-      rels["headers"] = base_relation::headers();
-
-      nlohmann::json& data = rels["data"];      
-      data = nlohmann::json::array({});
-      
-      for(std::size_t l=0; l<relations.size(); l++)
-	{
-	  data.push_back(relations.at(l).to_json_row());
-	}      
-    }
-    */
     
     return result;
   }
