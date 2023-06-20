@@ -130,9 +130,9 @@ namespace andromeda
 	this->apply(*para);
       }
 
-    for(subject<TABLE>& table:subj.tables)
+    for(auto& table:subj.tables)
       {
-	this->apply(table);
+	this->apply(*table);
       }
 
     std::map<std::string, std::size_t> lang_mapping;

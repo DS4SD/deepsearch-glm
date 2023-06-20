@@ -16,7 +16,7 @@ namespace andromeda
     
     ~subject();
 
-    std::string get_path() const { return (provs.size()>0? (provs.at(0)->to_path()):"#"); }
+    std::string get_path() const { return (provs.size()>0? (provs.at(0)->path):"#"); }
     
     void clear();
 

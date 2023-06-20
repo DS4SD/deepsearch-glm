@@ -265,12 +265,14 @@ def viz_docs(doc_i, doc_j, page=1):
                 rects_i.append(ritem["prov"][0]["bbox"])    
 
         rects_j=[]
-        for item in doc_j["main-text"]:
+        #for item in doc_j["main-text"]:
+        for item in doc_j["page-items"]:
 
-            ritem = item #resolve_item(item, doc_j)
+            ritem = resolve_item(item, doc_j)
+            print(ritem)
             
-            if ritem["prov"][0]["page"]==pn:
-                rects_j.append(ritem["prov"][0]["bbox"])    
+            if ritem["page"]==pn:
+                rects_j.append(ritem["bbox"])    
 
         img = Image.new("RGB", (2*iw, ih))
         drw = ImageDraw.Draw(img)
@@ -491,17 +493,17 @@ def run_nlp_on_doc(filename, vpage):
 
     table=[]
     for i,item in enumerate(doc_j["page-items"]):
-        table.append([i, item["__ref"], len(item["prov"]), item["type"]])
+        table.append([i, item["__ref"], item["page"], item["type"]])
 
     print("# page-items: ", len(table))
-    print(tabulate(table, headers=["index", "ref", "#-provs", "type"]))
+    print(tabulate(table, headers=["index", "ref", "page", "type"]))
     
     table=[]
     for i,item in enumerate(doc_j["main-text"]):
-        table.append([i, item["__ref"], len(item["prov"]), item["type"]])
+        table.append([i, item["__ref"], item["page"], item["type"]])
 
     print("# main-items: ", len(table))
-    print(tabulate(table, headers=["index", "ref", "#-provs", "type"]))
+    print(tabulate(table, headers=["index", "ref", "page", "type"]))
         
     #df = pd.DataFrame(doc_j["entities"]["data"],
     #                  columns=doc_j["entities"]["headers"])

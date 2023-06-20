@@ -16,7 +16,7 @@ namespace andromeda
     
     ~subject();
 
-    std::string get_path() const { return (provs.size()>0? (provs.at(0)->to_path()):"#"); }
+    std::string get_path() const { return (provs.size()>0? (provs.at(0)->path):"#"); }
     
     void clear();
 
@@ -106,15 +106,12 @@ namespace andromeda
     
     if(provs.size()>0)
       {
-	auto ind = provs.front()->dref.second;
+	//auto ind = provs.front()->dref.second;
 
 	for(auto& prov:other->provs)
 	  {
 	    prov->char_range.at(0) += offset;
 	    prov->char_range.at(1) += offset;
-	    
-	    LOG_S(WARNING) << "updating prov ind (" <<prov->dref.second << ") to " << ind;
-	    prov->dref.second = ind;
 	    
 	    this->provs.push_back(prov);	
 	  }

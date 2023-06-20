@@ -19,7 +19,8 @@ namespace andromeda
 #include <andromeda/tooling/structs/subjects/figure.h>
 
 #include <andromeda/tooling/structs/subjects/document/doc_order.h>
-#include <andromeda/tooling/structs/subjects/document/doc_linker.h>
+#include <andromeda/tooling/structs/subjects/document/doc_captions.h>
+#include <andromeda/tooling/structs/subjects/document/doc_maintext.h>
 #include <andromeda/tooling/structs/subjects/document.h>
 
 

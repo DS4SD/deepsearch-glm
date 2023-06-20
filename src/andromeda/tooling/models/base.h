@@ -91,14 +91,14 @@ namespace andromeda
 
     LOG_S(INFO) << "apply " << get_key() << " on document: " << subj.doc_name;
 
-    for(auto& paragraph:subj.paragraphs)
+    for(auto& paragraph_ptr:subj.paragraphs)
       {
-        this->apply(*paragraph);
+        this->apply(*paragraph_ptr);
       }
     
-    for(subject<TABLE>& table:subj.tables)
+    for(auto& table_ptr:subj.tables)
       {
-        this->apply(table);
+        this->apply(*table_ptr);
       }
 
     return update_applied_models(subj);

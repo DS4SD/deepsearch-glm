@@ -409,7 +409,7 @@ namespace andromeda
       
       for(auto& table:subj.tables)
         {
-          this->update(table, doc_ents);
+          this->update(*table, doc_ents);
         }
       
       base_node fdoc_node(node_names::FDOC, subj.get_hash());      
@@ -440,7 +440,7 @@ namespace andromeda
 
       for(auto& item:subj.tables)
         {
-          contract_tokens(item);
+          contract_tokens(*item);
         }
     }
 

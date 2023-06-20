@@ -32,11 +32,12 @@ namespace andromeda
 
     nlohmann::json to_json(std::string ref="");
     nlohmann::json to_json_row(std::string ref="");
-
-    static std::pair<std::string, ind_type> from_path(std::string dref);
-
-    std::string to_path() const;
-    std::string to_dref() const;
+    
+    //static std::pair<std::string, ind_type> from_path(std::string dref);
+    //subject_name to_subject() const;
+    
+    //std::string to_path() const;
+    //std::string to_dref() const;
     
     bool follows_maintext_order(const prov_element& rhs) const;
     
@@ -62,8 +63,8 @@ namespace andromeda
     ind_type pdforder_ind, maintext_ind;
     std::string name, type;
 
-    std::pair<std::string, ind_type> path;
-    std::pair<subject_name, ind_type> dref;
+    std::string path;
+    //std::pair<subject_name, ind_type> dref;
 
     bool ignore;
     ind_type page;
@@ -82,8 +83,8 @@ namespace andromeda
     name("undef"),
     type("undef"),
     
-    path("undef", -1),
-    dref(UNDEF, -1),
+    path("#"),
+    //dref(UNDEF, -1),
     
     ignore(false),
     
@@ -104,8 +105,8 @@ namespace andromeda
     name(name),
     type(type),
     
-    path("main-text", maintext_ind),
-    dref(UNDEF, -1),
+    path("#/main-text/"+std::to_string(maintext_ind)),
+    //dref(UNDEF, -1),
     
     ignore(false),
     
@@ -118,16 +119,19 @@ namespace andromeda
     coor_range({0,0})
   {}
 
-  prov_element::prov_element(ind_type pdforder_ind, ind_type maintext_ind,
-			     std::string doc_path, std::string name, std::string type):
+  prov_element::prov_element(ind_type pdforder_ind,
+			     ind_type maintext_ind,
+			     std::string path,
+			     std::string name,
+			     std::string type):
     pdforder_ind(pdforder_ind),
     maintext_ind(maintext_ind),
 
     name(name),
     type(type),
     
-    path(from_path(doc_path)),
-    dref(UNDEF, -1),
+    path(path),
+    //dref(UNDEF, -1),
 
     ignore(false),
     
@@ -140,22 +144,21 @@ namespace andromeda
     coor_range({0,0})
   {}
 
-  std::string prov_element::to_path() const
-  {
-    std::stringstream ss;
-    ss << "#" << "/" << path.first << "/" << path.second;
+  //std::string prov_element::to_path() const
+  //{
+  //return path;
+  //}
 
-    return ss.str();
-  }
-
+  /*
   std::pair<std::string, typename prov_element::ind_type> prov_element::from_path(std::string doc_path)
   {
     std::vector<std::string> parts = utils::split(doc_path, "/");
-    assert(parts.size()==3 and parts.at(0)=="#");
+    //assert(parts.size()==3 and parts.at(0)=="#");
     
-    return std::pair<std::string, ind_type>{parts.at(1), std::stoi(parts.at(2))};
+    //return std::pair<std::string, ind_type>{parts.at(1), std::stoi(parts.at(2))};
   }
-
+  */
+  
   /*
   std::string prov_element::to_dref() const
   {
@@ -330,22 +333,14 @@ namespace andromeda
     result["type"] = type;
     result["name"] = name;
 
-    if(ref=="")
+    if(path!="")
       {
-	ref = to_path();
+	result["__ref"] = path;
       }
 
-    result["__ref"] = ref;
-    
-    auto elem = nlohmann::json::object();
-    {
-      elem["__ref"] = ref;
-
-      elem["page"] = page;
-      elem["bbox"] = bbox;
-      elem["span"] = char_range;
-    }
-    result["prov"].push_back(elem);
+    result["page"] = page;
+    result["bbox"] = bbox;
+    result["span"] = char_range;
     
     return result;
   }
@@ -354,9 +349,7 @@ namespace andromeda
   {
     std::vector<std::string> row
       = { std::to_string(maintext_ind),
-	  //path.first, std::to_string(path.second),
-	  to_path(),
-	  name, type, std::to_string(page),
+	  path, name, type, std::to_string(page),
 	  std::to_string(bbox[0]), std::to_string(bbox[1]),
 	  std::to_string(bbox[2]), std::to_string(bbox[3]) };
     
