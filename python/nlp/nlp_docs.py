@@ -260,20 +260,28 @@ def viz_docs(doc_i, doc_j, page=1):
         for item in doc_i["main-text"]:
 
             ritem = resolve_item(item, doc_i)
-            
-            if ritem["prov"][0]["page"]==pn:
-                rects_i.append(ritem["prov"][0]["bbox"])    
+
+            for prov in ritem["prov"]:
+                if prov["page"]==pn:
+                    rects_i.append(prov["bbox"])    
 
         rects_j=[]
         #for item in doc_j["main-text"]:
         for item in doc_j["page-items"]:
 
+            if item["page"]==pn:
+                print(item)
+                rects_j.append(item["bbox"])    
+            
+            """
             ritem = resolve_item(item, doc_j)
             print(ritem)
             
-            if ritem["page"]==pn:
-                rects_j.append(ritem["bbox"])    
-
+            for prov in ritem["prov"]:
+                if prov["page"]==pn:
+                    rects_j.append(prov["bbox"])    
+            """
+            
         img = Image.new("RGB", (2*iw, ih))
         drw = ImageDraw.Draw(img)
 
@@ -414,15 +422,14 @@ def display_maintext(doc_j):
     print("main-text: ", len(doc_j["main-text"]))
     for i,item in enumerate(doc_j["main-text"]):
 
-        print(item)
         ritem = resolve_item(item, doc_j)
-
-        print(" -> ", ritem)
+        print(item, " => ", len(ritem["prov"]))
+        #print(" -> ", ritem)
         
         name_ = item["name"]
         type_ = item["type"]
 
-        print(" -> ", ritem["prov"][0])        
+        #print(" -> ", ritem["prov"][0])        
         page = ritem["prov"][0]["page"]
         
         lanlabel, lconf = get_label(ritem, "language")
@@ -439,6 +446,8 @@ def display_maintext(doc_j):
 
     headers=["index", "page", "type", "name", "semantic", "confidence", "language", "text"]
     print(tabulate(mtext, headers=headers))
+
+    input("...")
     
 def display_tables(doc_j):
 
@@ -500,10 +509,10 @@ def run_nlp_on_doc(filename, vpage):
     
     table=[]
     for i,item in enumerate(doc_j["main-text"]):
-        table.append([i, item["__ref"], item["page"], item["type"]])
+        table.append([i, item["__ref"], item["type"]])
 
     print("# main-items: ", len(table))
-    print(tabulate(table, headers=["index", "ref", "page", "type"]))
+    print(tabulate(table, headers=["index", "ref", "type"]))
         
     #df = pd.DataFrame(doc_j["entities"]["data"],
     #                  columns=doc_j["entities"]["headers"])

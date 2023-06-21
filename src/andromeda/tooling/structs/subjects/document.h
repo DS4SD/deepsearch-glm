@@ -63,10 +63,6 @@ namespace andromeda
 
     void resolve_paths();
 
-    //subject_name to_subject(std::shared_ptr<prov_element>& prov);
-    
-    //std::string to_dref(const prov_element& prov);
-    
     void set_meta(nlohmann::json& data);
     void set_orig(nlohmann::json& data);
     
@@ -202,19 +198,26 @@ namespace andromeda
 	{
 	  std::string path = prov->path;
 	  
-	  if(paths.count(path))
+	  if(paths.count(path)==1) // skip items that have already been included
 	    {
 	      continue;
 	    }
 	  paths.insert(path);
 
+	  auto item = prov->to_json();
+	  {
+	    item.erase("page");
+	    item.erase("bbox");
+	    item.erase("span");
+	  }
+	  
 	  if(maintext_types.count(prov->type))
-	    {
-	      main_text.push_back(prov->to_json());
+	    {	      
+	      main_text.push_back(item);
 	    }
 	  else
 	    {
-	      other_text.push_back(prov->to_json());
+	      other_text.push_back(item);
 	    }
 	}
     }

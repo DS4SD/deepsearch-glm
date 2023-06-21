@@ -293,14 +293,10 @@ namespace andromeda
       result["word-tokens"] = andromeda::to_json(text_element::word_tokens, text);
 
       result["prov"] = nlohmann::json::array({});
-      for(auto prov:provs)
+      for(auto& prov:provs)
 	{
 	  nlohmann::json item = prov->to_json();
-
-	  if(item.count("prov"))
-	    {
-	      result["prov"].push_back(item.at("prov"));
-	    }
+	  result["prov"].push_back(item);
 	}
     }
     
