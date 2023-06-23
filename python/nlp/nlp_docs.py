@@ -41,7 +41,6 @@ def parse_arguments():
 
     parser.add_argument('--models', required=False, help="set NLP models (e.g. `term;sentence`)",
                         default="term;abbreviation")
-
     
     parser.add_argument('-u', '--username', required=False, default="<email>",
                         help="username or email from DS host")
@@ -121,72 +120,6 @@ def process_zip_files(sdir):
     for i,cellsfile in enumerate(cellsfiles):
         subprocess.call(["rm", cellsfile])            
 
-"""
-def show_nlp_on_docs(sdir):
-
-    filenames = glob.glob(os.path.join(sdir, "*.json"))
-    print("filenames: ", filenames)
-
-    config = {
-        "mode" : "apply",
-        "order" : True,
-        "models": "name;term;language;reference"
-    }
-    
-    model = andromeda_nlp.nlp_model()
-    model.initialise(config)
-    
-    for filename in filenames:
-
-        if(filename.endswith(".nlp.json")):
-            continue
-        
-        print(filename)
-
-        fr = open(filename, "r")
-        doc = json.load(fr)
-        fr.close()
-        
-        for i,item in enumerate(doc["main-text"]):
-            
-            if "text" not in item:
-                continue
-            
-            text = item["text"]
-
-            if len(text)<64:
-                continue
-            
-            res = model.apply_on_text(text)
-
-            print(tc.yellow("text:"),"\n", "\n".join(tw.wrap(text)))
-            
-            props = res["properties"]
-            print(tc.yellow("properties:"),"\n", tabulate(props["data"], headers=props["headers"]))
-            
-            ents = res["entities"]
-
-            for i,row in enumerate(ents["data"]):
-                if row[ents["headers"].index("type")]=="sentence":
-                    row[ents["headers"].index("name")] = row[ents["headers"].index("name")][0:16]+"..."
-                    row[ents["headers"].index("original")] = row[ents["headers"].index("original")][0:16] + "..."
-
-                elif len(row[ents["headers"].index("name")])>32:
-                    row[ents["headers"].index("name")] = row[ents["headers"].index("name")][0:16] + " ... "
-                    row[ents["headers"].index("original")] = row[ents["headers"].index("original")][0:16] + " ... "
-                else:
-                    continue
-
-            ents["data"] = sorted(ents["data"], key=lambda x: x[ents["headers"].index("char_i")])
-                
-            print(tc.yellow("entities:"),"\n", tabulate(ents["data"], headers=ents["headers"]))
-            
-            label, conf = get_label(props["data"], header=props["headers"], key="semantic")
-
-            
-        input(" ... ")
-"""
-
 def resolve_item(item, doc):
 
     if "$ref" in item:
@@ -201,48 +134,6 @@ def resolve_item(item, doc):
 
     else:
         return item
-
-"""
-def viz_page(doc, text, page=1):
-
-    for dim in doc["page-dimensions"]:
-
-        pn = dim["page"]
-
-        if pn!=page:
-            continue
-        
-        ih = int(dim["height"])
-        iw = int(dim["width"])
-
-        rects=[]
-        for item in doc["main-text"]:
-
-            ritem = resolve_item(item, doc)
-            
-            if ritem["prov"][0]["page"]==pn:
-                rects.append(ritem["prov"][0]["bbox"])
-
-        # creating new Image object
-        img = Image.new("RGB", (iw, ih))
-        drw = ImageDraw.Draw(img)
-
-        drw.text((iw/2, 1), text, fill=(255, 255, 255))
-        
-        p0=(0,0)        
-        for ind,rect in enumerate(rects):
-
-            shape = ((rect[0], ih-rect[3]), (rect[2], ih-rect[1]))
-            drw.rectangle(shape, outline ="red")
-
-            p1=((rect[0]+rect[2])/2, (2*ih-rect[3]-rect[1])/2)
-            drw.line((p0, p1), fill="blue")
-            drw.text(p1, f"{ind}", fill=(255, 255, 255))
-
-            p0=p1
-            
-        img.show()
-"""
 
 def viz_docs(doc_i, doc_j, page=1):
 
@@ -266,21 +157,21 @@ def viz_docs(doc_i, doc_j, page=1):
                     rects_i.append(prov["bbox"])    
 
         rects_j=[]
-        #for item in doc_j["main-text"]:
         for item in doc_j["page-items"]:
 
             if item["page"]==pn:
                 print(item)
                 rects_j.append(item["bbox"])    
-            
-            """
+
+        rects_k=[]                
+        for item in doc_j["main-text"]:
+                
             ritem = resolve_item(item, doc_j)
             print(ritem)
             
             for prov in ritem["prov"]:
                 if prov["page"]==pn:
-                    rects_j.append(prov["bbox"])    
-            """
+                    rects_k.append(prov["bbox"])    
             
         img = Image.new("RGB", (2*iw, ih))
         drw = ImageDraw.Draw(img)
@@ -319,43 +210,6 @@ def viz_docs(doc_i, doc_j, page=1):
             
         img.show()
         
-def run_nlp_on_docs(sdir):
-
-    filenames = glob.glob(os.path.join(sdir, "*.json"))
-    print("filenames: ", json.dumps(filenames, indent=2))
-
-    model = andromeda_nlp.nlp_model()
-
-    config = model.get_apply_configs()[0]
-    config["models"] = "name;term;language;reference"
-    
-    model.initialise(config)
-
-    page_num=1
-    
-    for filename in filenames:
-
-        if(filename.endswith(".nlp.json")):
-            continue
-
-        print(f"reading {filename}")
-
-        fr = open(filename, "r")
-        doc_i = json.load(fr)
-        fr.close()
-        
-        doc_j = model.apply_on_doc(doc_i)
-
-        for page_num in range(1,3):
-            viz_docs(doc_i, doc_j, page=page_num)
-
-        filename_j = filename+".nlp.json"
-        print(f" --> writing {filename_j}")
-        
-        fw = open(filename_j, "w")        
-        fw.write(json.dumps(doc_j, indent=2))
-        fw.close()
-
 def get_label(item, model_name):
 
     if "properties" not in item:
@@ -446,8 +300,6 @@ def display_maintext(doc_j):
 
     headers=["index", "page", "type", "name", "semantic", "confidence", "language", "text"]
     print(tabulate(mtext, headers=headers))
-
-    input("...")
     
 def display_tables(doc_j):
 
@@ -487,6 +339,8 @@ def display_figures(doc_j):
     
 def run_nlp_on_doc(filename, vpage):
 
+    print(f" --> writing {filename}")
+    
     model = andromeda_nlp.nlp_model()
 
     config = model.get_apply_configs()[0]
@@ -537,7 +391,29 @@ def run_nlp_on_doc(filename, vpage):
     fw = open(filename_j, "w")        
     fw.write(json.dumps(doc_j, indent=2))
     fw.close()        
-        
+
+def run_nlp_on_docs(sdir):
+
+    filenames = glob.glob(os.path.join(sdir, "*.json"))
+    print("filenames: ", json.dumps(filenames, indent=2))
+
+    model = andromeda_nlp.nlp_model()
+
+    config = model.get_apply_configs()[0]
+    config["models"] = "name;term;language;reference"
+    
+    model.initialise(config)
+
+    page_num=1
+    
+    for filename in filenames:
+
+        if(filename.endswith(".nlp.json")):
+            continue
+
+        print(f"reading {filename}")
+        run_nlp_on_doc(filename, vpage=-1)
+    
 if __name__ == '__main__':
 
     mode, sdir, models, vpage, uname, pword = parse_arguments()

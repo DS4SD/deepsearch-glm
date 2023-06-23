@@ -95,8 +95,8 @@ namespace andromeda
         char lc = curr_text.back();
         char fc = next_text.front();
 
-        if(lc=='-' and 'a'<=fc<='z' and
-           (curr_prov->is_strictly_left_of(*next_prov) or
+        if((lc=='-' and 'a'<=fc<='z') and
+           ((curr_prov->page==next_prov->page and curr_prov->is_strictly_left_of(*next_prov)) or
             (curr_prov->page)+1==next_prov->page))
           {
             LOG_S(WARNING) << "attempting to concat text: \n`" << curr_text << "`"
