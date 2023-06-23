@@ -30,7 +30,7 @@ namespace andromeda
     nlohmann::json to_json();
     bool from_json(const nlohmann::json& data);
     
-    bool set_data(nlohmann::json& data);
+    bool set_data(const nlohmann::json& data);
 
     bool set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
 		    std::shared_ptr<utils::text_normaliser> text_normaliser);
@@ -156,8 +156,53 @@ namespace andromeda
           
     return result;
   }
+
+  bool subject<TABLE>::from_json(const nlohmann::json& data)
+  {
+    {
+      set_data(data);
+    }
+    
+    {
+      captions.clear();
+      for(const nlohmann::json& item:data.at(base_subject::captions_lbl))
+	{
+	  std::shared_ptr<subject<PARAGRAPH> > ptr
+	    = std::make_shared<subject<PARAGRAPH> >();
+
+	  ptr->from_json(item);
+	  captions.push_back(ptr);
+	}
+    }
+
+    {
+      footnotes.clear();
+      for(const nlohmann::json& item:data.at(base_subject::footnotes_lbl))
+	{
+	  std::shared_ptr<subject<PARAGRAPH> > ptr
+	    = std::make_shared<subject<PARAGRAPH> >();
+
+	  ptr->from_json(item);
+	  footnotes.push_back(ptr);
+	}
+    }
+    
+    {
+      mentions.clear();
+      for(const nlohmann::json& item:data.at(base_subject::mentions_lbl))
+	{
+	  std::shared_ptr<subject<PARAGRAPH> > ptr
+	    = std::make_shared<subject<PARAGRAPH> >();
+
+	  ptr->from_json(item);
+	  mentions.push_back(ptr);
+	}
+    }        
+    
+    return true;
+  }
   
-  bool subject<TABLE>::set_data(nlohmann::json& item)
+  bool subject<TABLE>::set_data(const nlohmann::json& item)
   {
     base_subject::clear_models();
     data.clear();
@@ -167,15 +212,15 @@ namespace andromeda
 	nlohmann::json grid = item["data"];
 	
 	std::set<int> ncols={};
-	for(uint64_t i=0; i<grid.size(); i++)
+	for(ind_type i=0; i<grid.size(); i++)
 	  {
 	    data.push_back({});
-	    for(uint64_t j=0; j<grid[i].size(); j++)
+	    for(ind_type j=0; j<grid.at(i).size(); j++)
 	      {
 		std::string text = "";
-		if(grid[i][j].count("text"))
+		if(grid.at(i).at(j).count("text"))
 		  {		    
-		    text = grid[i][j]["text"];
+		    text = grid.at(i).at(j).at("text");
 		  }
 
 		data.back().emplace_back(i,j,text);

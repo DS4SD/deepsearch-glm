@@ -21,6 +21,8 @@ namespace andromeda
 #include <andromeda/tooling/structs/subjects/document/doc_order.h>
 #include <andromeda/tooling/structs/subjects/document/doc_captions.h>
 #include <andromeda/tooling/structs/subjects/document/doc_maintext.h>
+#include <andromeda/tooling/structs/subjects/document/doc_normalisation.h>
+
 #include <andromeda/tooling/structs/subjects/document.h>
 
 

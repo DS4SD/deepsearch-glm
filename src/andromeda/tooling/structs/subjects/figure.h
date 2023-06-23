@@ -26,7 +26,7 @@ namespace andromeda
 
     bool from_json(const nlohmann::json& data);
     
-    bool set_data(nlohmann::json& data) { return true; }
+    bool set_data(const nlohmann::json& data) { return true; }
 
     bool set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
 		    std::shared_ptr<utils::text_normaliser> text_normaliser);
@@ -114,7 +114,52 @@ namespace andromeda
     
     return result;
   }
+  
+  bool subject<FIGURE>::from_json(const nlohmann::json& data)
+  {
+    {
+      set_data(data);
+    }
+    
+    {
+      captions.clear();
+      for(const nlohmann::json& item:data.at(base_subject::captions_lbl))
+	{
+	  std::shared_ptr<subject<PARAGRAPH> > ptr
+	    = std::make_shared<subject<PARAGRAPH> >();
 
+	  ptr->from_json(item);
+	  captions.push_back(ptr);
+	}
+    }
+
+    {
+      footnotes.clear();
+      for(const nlohmann::json& item:data.at(base_subject::footnotes_lbl))
+	{
+	  std::shared_ptr<subject<PARAGRAPH> > ptr
+	    = std::make_shared<subject<PARAGRAPH> >();
+
+	  ptr->from_json(item);
+	  footnotes.push_back(ptr);
+	}
+    }
+    
+    {
+      mentions.clear();
+      for(const nlohmann::json& item:data.at(base_subject::mentions_lbl))
+	{
+	  std::shared_ptr<subject<PARAGRAPH> > ptr
+	    = std::make_shared<subject<PARAGRAPH> >();
+
+	  ptr->from_json(item);
+	  mentions.push_back(ptr);
+	}
+    }        
+    
+    return true;
+  }
+  
   bool subject<FIGURE>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
 				   std::shared_ptr<utils::text_normaliser> text_normaliser)
   {

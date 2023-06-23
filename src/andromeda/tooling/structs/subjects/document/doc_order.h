@@ -97,7 +97,6 @@ namespace andromeda
     nlohmann::json maintext = doc.orig["main-text"];
 
     // re-order
-    //prov_vec_type& provs = doc.provs;
     for(std::size_t l=0; l<provs.size(); l++)
       {
         maintext.at(l) = doc.orig["main-text"][provs.at(l).maintext_ind];
@@ -105,15 +104,10 @@ namespace andromeda
 
     // overwrite ...
     doc.orig["main-text"] = maintext;
-
-    // reset the provs ...
-    doc.init_provs();
   }
 
   bool doc_order::sort_provs(prov_vec_type& provs)
   {
-    //LOG_S(WARNING) << __FUNCTION__;
-
     std::map<ind_type, prov_vec_type> page_provs={};
 
     for(auto& prov:provs)

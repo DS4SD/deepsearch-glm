@@ -20,7 +20,6 @@ namespace andromeda
   public:
     
     prov_element();
-
     prov_element(ind_type pdforder_ind, ind_type maintext_ind, std::string name, std::string type);
 
     prov_element(ind_type pdforder_ind, ind_type maintext_ind,
@@ -32,12 +31,8 @@ namespace andromeda
 
     nlohmann::json to_json();
     nlohmann::json to_json_row();
-    
-    //static std::pair<std::string, ind_type> from_path(std::string dref);
-    //subject_name to_subject() const;
-    
-    //std::string to_path() const;
-    //std::string to_dref() const;
+
+    bool from_json(const nlohmann::json& item);
     
     bool follows_maintext_order(const prov_element& rhs) const;
     
@@ -324,6 +319,32 @@ namespace andromeda
 	  "page",
 	  "x0", "y0", "x1", "y1"};
     return row;
+  }
+
+  bool prov_element::from_json(const nlohmann::json& item)
+  {
+    type = item.at("type").get<std::string>();
+    name = item.at("name").get<std::string>();
+
+    if(item.count("__ref"))
+      {
+	path = item.at("__ref").get<std::string>();	
+      }
+    else if(item.count("$ref"))
+      {
+	path = item.at("$ref").get<std::string>();	
+      }
+    else
+      {
+	path = "#";
+      }
+    
+    page = item.at("page").get<ind_type>();
+    bbox = item.at("bbox").get<std::array<float, 4> >();
+    
+    char_range = item.at("span").get<range_type>();
+
+    return true;
   }
   
   nlohmann::json prov_element::to_json()

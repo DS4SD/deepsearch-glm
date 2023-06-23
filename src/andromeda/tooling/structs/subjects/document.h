@@ -65,19 +65,29 @@ namespace andromeda
 
     void set_meta(nlohmann::json& data);
     void set_orig(nlohmann::json& data);
+       
+    bool is_preprocessed();
+
+    void set_provs();
+    void set_paragraphs();
+    void set_other();
+    void set_tables();
+    void set_figures();
     
-    bool clean_provs(std::vector<prov_element>& provs); // remove all provs with ignore==true
-
-    bool init_items();
-    bool link_items();
-
-    bool remove_headers_and_footers(std::vector<prov_element>& provs);
-
-    bool identify_repeating_text(std::vector<prov_element>& provs);
+    //void set_pdforder();
     
-    bool init_tables(std::vector<prov_element>& provs);
-    bool init_figures(std::vector<prov_element>& provs);
-    bool init_paragraphs(std::vector<prov_element>& provs);
+    //bool clean_provs(std::vector<prov_element>& provs); // remove all provs with ignore==true
+
+    //bool init_items();
+    //bool link_items();
+
+    //bool remove_headers_and_footers(std::vector<prov_element>& provs);
+
+    //bool identify_repeating_text(std::vector<prov_element>& provs);
+    
+    //bool init_tables(std::vector<prov_element>& provs);
+    //bool init_figures(std::vector<prov_element>& provs);
+    //bool init_paragraphs(std::vector<prov_element>& provs);
 
     bool finalise_properties();
     bool finalise_entities();
@@ -112,9 +122,7 @@ namespace andromeda
     provs(),
     
     paragraphs(),
-
-    //captions(),
-    //footnotes(),
+    other(),
     
     tables(),
     figures()
@@ -123,35 +131,6 @@ namespace andromeda
   subject<DOCUMENT>::~subject()
   {}
 
-  /*
-  std::string subject<DOCUMENT>::to_dref(const prov_element& prov)
-  {    
-    std::stringstream ss;
-
-    switch(prov.dref.first)
-      {
-      case PARAGRAPH:
-	{
-	  ss << "#" << "/" << flowtext_lbl << "/" << prov.dref.second;
-	}
-	break;
-
-      case TABLE:
-	{
-	  ss << "#" << "/" << tables_lbl << "/" << prov.dref.second;
-	}
-	break;	
-
-      default:
-	{
-	  ss << prov.to_path();
-	}
-      }
-    
-    return ss.str();
-  }
-  */
-  
   nlohmann::json subject<DOCUMENT>::to_json()
   {
     nlohmann::json result = orig;
@@ -322,16 +301,10 @@ namespace andromeda
     return {parts.at(1), ind};
   }
   */
-  
+
+  /*
   void subject<DOCUMENT>::resolve_paths()
   {
-    //std::map<std::shared_ptr<prov_element>, std::pair<subject_name, index_type> > to_element={};
-
-    //for(index_type l=0; l<provs.size(); l++)
-    //{
-    //provs.at(l)->path = "#";
-    //}
-    
     for(index_type l=0; l<paragraphs.size(); l++)
       {
 	for(auto& prov:paragraphs.at(l)->provs)
@@ -387,14 +360,18 @@ namespace andromeda
 	  }	
       }        
   }
+  */
   
   void subject<DOCUMENT>::clear()
   {
     base_subject::clear();
 
+    dscr = nlohmann::json::object({});
     orig = nlohmann::json::object({});
 
     paragraphs.clear();
+    other.clear();
+    
     tables.clear();
     figures.clear();
   }
@@ -427,23 +404,49 @@ namespace andromeda
       set_orig(data);
     }
 
-    {
-      init_provs();
-    }
-
-    if(update_maintext)
+    if(is_preprocessed())
       {
-	doc_order sorter;
-	sorter.order_maintext(*this);
+	LOG_S(WARNING) << "set document ...";
+
+	set_provs();
+
+	set_paragraphs();
+	set_other();
+
+	set_tables();
+	set_figures();
+      }    
+    else
+      {
+	LOG_S(WARNING) << "pre-processing document ...";
+
+	doc_normalisation<subject<DOCUMENT> > normaliser(*this);
+	normaliser.execute();
+	
+	/*
+	{
+	  set_pdforder();
+	  init_provs();
+	}
+	
+	if(update_maintext)
+	  {
+	    doc_order sorter;
+	    sorter.order_maintext(*this);
+
+	    // reset the provs ...
+	    init_provs();
+	  }
+	
+	{
+	  init_items();
+	}
+	
+	{
+	  link_items();
+	}
+	*/
       }
-
-    {
-      init_items();
-    }
-
-    {
-      link_items();
-    }
     
     return true;
   }
@@ -473,7 +476,111 @@ namespace andromeda
   void subject<DOCUMENT>::set_orig(nlohmann::json& data)
   {
     orig = data;
+  }
 
+  bool subject<DOCUMENT>::is_preprocessed()
+  {
+    if(orig.count(provs_lbl) and
+       orig.count(maintext_lbl) and
+       orig.count(other_lbl) and
+       orig.count(texts_lbl) and
+       orig.count(tables_lbl) and
+       orig.count(figures_lbl))
+      {
+	return true;
+      }
+
+    return false;
+  }
+
+  void subject<DOCUMENT>::set_provs()
+  {
+    provs.clear();
+
+    for(ind_type l=0; l<orig.at(provs_lbl).size(); l++)
+      {
+	const nlohmann::json& item = orig.at(provs_lbl).at(l);
+	
+	std::shared_ptr<prov_element> ptr
+	  = std::make_shared<prov_element>();
+
+	ptr->from_json(item);
+	
+	provs.push_back(ptr);
+      }
+  }
+
+  void subject<DOCUMENT>::set_paragraphs()
+  {
+    paragraphs.clear();
+
+    for(ind_type l=0; l<orig.at(texts_lbl).size(); l++)
+      {
+	const nlohmann::json& item = orig.at(texts_lbl).at(l);
+	
+	std::shared_ptr<subject<PARAGRAPH> > ptr
+	  = std::make_shared<subject<PARAGRAPH> >();
+
+	ptr->from_json(item);
+	
+	paragraphs.push_back(ptr);
+      }
+  }
+
+  void subject<DOCUMENT>::set_other()
+  {
+    other.clear();
+
+    for(ind_type l=0; l<orig.at(other_lbl).size(); l++)
+      {
+	const nlohmann::json& item = orig.at(other_lbl).at(l);
+	
+	std::shared_ptr<subject<PARAGRAPH> > ptr
+	  = std::make_shared<subject<PARAGRAPH> >();
+
+	ptr->from_json(item);
+	
+	other.push_back(ptr);
+      }
+  }
+
+  void subject<DOCUMENT>::set_tables()
+  {
+    tables.clear();
+
+    for(ind_type l=0; l<orig.at(tables_lbl).size(); l++)
+      {
+	const nlohmann::json& item = orig.at(tables_lbl).at(l);
+	
+	std::shared_ptr<subject<TABLE> > ptr
+	  = std::make_shared<subject<TABLE> >();
+
+	ptr->from_json(item);
+	
+	tables.push_back(ptr);
+      }
+  }
+
+  void subject<DOCUMENT>::set_figures()
+  {
+    figures.clear();
+
+    for(ind_type l=0; l<orig.at(figures_lbl).size(); l++)
+      {
+	const nlohmann::json& item = orig.at(figures_lbl).at(l);
+	
+	std::shared_ptr<subject<FIGURE> > ptr
+	  = std::make_shared<subject<FIGURE> >();
+
+	ptr->from_json(item);
+	
+	figures.push_back(ptr);
+      }
+  }
+
+  /*
+  void subject<DOCUMENT>::set_pdforder()
+  {
     if(orig.count(maintext_lbl)==0)
       {
 	LOG_S(WARNING) << "no `main-text` identified";
@@ -486,7 +593,9 @@ namespace andromeda
 	main_text.at(pdforder)[pdforder_lbl] = pdforder;
       }
   }
-  
+  */
+
+  /*
   void subject<DOCUMENT>::init_provs()
   {
     provs.clear();
@@ -560,7 +669,9 @@ namespace andromeda
           }
       }
   }
+  */
 
+  /*
   bool subject<DOCUMENT>::init_items()
   {
     paragraphs.clear();
@@ -658,7 +769,8 @@ namespace andromeda
 
     return true;    
   }
-
+  */
+  
   void subject<DOCUMENT>::show_provs()
   {
     //LOG_S(INFO) << __FUNCTION__;
@@ -673,32 +785,14 @@ namespace andromeda
     LOG_S(INFO) << "filepath: " << filepath << "\n\n"
                 << utils::to_string(headers, rows, -1);
   }
-  
+
+  /*
   bool subject<DOCUMENT>::link_items()
   {
-    //show_provs();    
-
     {
       doc_captions linker;
       linker.find_and_link_captions(*this);
     }
-
-    /*
-    {
-      int cnt=0;
-      for(auto& paragraph:paragraphs)
-	{
-	  if(paragraph.use_count()==1)
-	    {
-	      LOG_S(INFO) << cnt++ << "\t" << paragraph.use_count() << "\t" << paragraph->provs.at(0)->type;
-	    }
-	  else
-	    {
-	      LOG_S(WARNING) << cnt++ << "\t" << paragraph.use_count() << "\t" << paragraph->provs.at(0)->type;
-	    }
-	}
-    }
-    */
 
     {
       doc_maintext linker;
@@ -709,6 +803,7 @@ namespace andromeda
     
     return true;
   }
+  */
   
   bool subject<DOCUMENT>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
                                      std::shared_ptr<utils::text_normaliser> text_normaliser)
