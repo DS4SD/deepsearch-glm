@@ -28,6 +28,13 @@ namespace andromeda
 
     const static inline std::string maintext_name_lbl = "name";
     const static inline std::string maintext_type_lbl = "type";
+
+    const static inline std::set<std::string> texts_types = {"title", "subtitle-level-1",
+							     "paragraph", "formula"};
+    
+    const static inline std::set<std::string> maintext_types = {"title", "subtitle-level-1",
+								"paragraph", "formula",
+								"table", "figure"};
     
   public:
 
@@ -61,8 +68,6 @@ namespace andromeda
 
   private:
 
-    void resolve_paths();
-
     void set_meta(nlohmann::json& data);
     void set_orig(nlohmann::json& data);
        
@@ -74,21 +79,6 @@ namespace andromeda
     void set_tables();
     void set_figures();
     
-    //void set_pdforder();
-    
-    //bool clean_provs(std::vector<prov_element>& provs); // remove all provs with ignore==true
-
-    //bool init_items();
-    //bool link_items();
-
-    //bool remove_headers_and_footers(std::vector<prov_element>& provs);
-
-    //bool identify_repeating_text(std::vector<prov_element>& provs);
-    
-    //bool init_tables(std::vector<prov_element>& provs);
-    //bool init_figures(std::vector<prov_element>& provs);
-    //bool init_paragraphs(std::vector<prov_element>& provs);
-
     bool finalise_properties();
     bool finalise_entities();
     bool finalise_relations();
@@ -144,8 +134,6 @@ namespace andromeda
         }
     }
 
-    resolve_paths();
-    
     // page-items contain everything on the document pages including page-header/footer,
     // title, subtitle, paragraph, table, figure, etc
     {
@@ -170,9 +158,6 @@ namespace andromeda
 
       std::set<std::string> paths={};
 
-      std::set<std::string> maintext_types={"title", "subtitle-level-1", "paragraph", "formula",
-					    "table", "figure"};
-      
       for(auto& prov:provs)
 	{
 	  std::string path = prov->path;
@@ -290,78 +275,6 @@ namespace andromeda
     return result;
   }
 
-  /*
-  std::pair<std::string, index_type> subject<DOCUMENT>::to_path(std::shared_ptr<prov_element>& prov)
-  {
-    std::vector<std::string> parts = utils::split(prov->path, "/");
-
-    // {'#', "<texts|tables|figures|other>", <index>, }
-    index_type ind = std::stoi(parts.at(2));
-    
-    return {parts.at(1), ind};
-  }
-  */
-
-  /*
-  void subject<DOCUMENT>::resolve_paths()
-  {
-    for(index_type l=0; l<paragraphs.size(); l++)
-      {
-	for(auto& prov:paragraphs.at(l)->provs)
-	  {
-	    std::stringstream ss;
-	    ss << "#/" << texts_lbl << "/" << l;
-
-	    prov->path = ss.str();
-	  }
-      }
-
-    for(index_type l=0; l<tables.size(); l++)
-      {
-	for(auto& prov:tables.at(l)->provs)
-	  {
-	    std::stringstream ss;
-	    ss << "#/" << tables_lbl << "/" << l;
-
-	    prov->path = ss.str();
-	  }
-
-	for(index_type k=0; k<tables.at(l)->captions.size(); k++)
-	  {
-	    for(auto& prov:tables.at(l)->captions.at(k)->provs)
-	      {
-		std::stringstream ss;
-		ss << "#/" << tables_lbl << "/" << l << "/" << captions_lbl << "/" << k;
-		
-		prov->path = ss.str();
-	      }
-	  }
-      }
-
-    for(index_type l=0; l<figures.size(); l++)
-      {
-	for(auto& prov:figures.at(l)->provs)
-	  {
-	    std::stringstream ss;
-	    ss << "#/" << figures_lbl << "/" << l;
-
-	    prov->path = ss.str();
-	  }
-
-	for(index_type k=0; k<figures.at(l)->captions.size(); k++)
-	  {
-	    for(auto& prov:figures.at(l)->captions.at(k)->provs)
-	      {
-		std::stringstream ss;
-		ss << "#/" << figures_lbl << "/" << l << "/" << captions_lbl << "/" << k;
-		
-		prov->path = ss.str();
-	      }
-	  }	
-      }        
-  }
-  */
-  
   void subject<DOCUMENT>::clear()
   {
     base_subject::clear();
@@ -406,7 +319,7 @@ namespace andromeda
 
     if(is_preprocessed())
       {
-	LOG_S(WARNING) << "set document ...";
+	//LOG_S(WARNING) << "set document ...";
 
 	set_provs();
 
@@ -418,34 +331,10 @@ namespace andromeda
       }    
     else
       {
-	LOG_S(WARNING) << "pre-processing document ...";
+	//LOG_S(WARNING) << "pre-processing document ...";
 
 	doc_normalisation<subject<DOCUMENT> > normaliser(*this);
 	normaliser.execute();
-	
-	/*
-	{
-	  set_pdforder();
-	  init_provs();
-	}
-	
-	if(update_maintext)
-	  {
-	    doc_order sorter;
-	    sorter.order_maintext(*this);
-
-	    // reset the provs ...
-	    init_provs();
-	  }
-	
-	{
-	  init_items();
-	}
-	
-	{
-	  link_items();
-	}
-	*/
       }
     
     return true;
@@ -578,199 +467,6 @@ namespace andromeda
       }
   }
 
-  /*
-  void subject<DOCUMENT>::set_pdforder()
-  {
-    if(orig.count(maintext_lbl)==0)
-      {
-	LOG_S(WARNING) << "no `main-text` identified";
-	return;
-      }
-
-    auto& main_text = orig.at(maintext_lbl);
-    for(std::size_t pdforder=0; pdforder<main_text.size(); pdforder++)
-      {
-	main_text.at(pdforder)[pdforder_lbl] = pdforder;
-      }
-  }
-  */
-
-  /*
-  void subject<DOCUMENT>::init_provs()
-  {
-    provs.clear();
-
-    for(std::size_t l=0; l<orig[maintext_lbl].size(); l++)
-      {
-        auto& item = orig[maintext_lbl][l];
-
-	std::stringstream ss;
-	ss << "#/" << maintext_lbl << "/" << l;
-
-	std::string ref = ss.str();
-	
-	ind_type pdforder = item[pdforder_lbl].get<ind_type>();
-	ind_type maintext = l;
-
-	std::string name = item[maintext_name_lbl].get<std::string>();
-	std::string type = item[maintext_type_lbl].get<std::string>();
-	
-        if(item.count("$ref") or
-	   item.count("__ref"))
-          {
-	    if(item.count("$ref"))
-	      {
-		ref = item["$ref"].get<std::string>();	    
-	      }
-	    else if(item.count("__ref"))
-	      {
-		ref = item["__ref"].get<std::string>();
-	      }
-	    else
-	      {
-		LOG_S(FATAL) << "no `$ref` or `__ref` defined in " << item.dump();
-	      }
-	    
-	    auto prov = std::make_shared<prov_element>(pdforder, maintext,
-						       ref, name, type);
-
-	    std::vector<std::string> parts = utils::split(prov->path, "/");	  
-	    assert(parts.size()>=3);
-	    
-	    std::string base = parts.at(1);
-	    std::size_t index = std::stoi(parts.at(2));
-	    
-            if(orig.count(base))
-              {
-                auto& ref_item = orig[base][index];
-                prov->set(ref_item[prov_lbl][0]);
-
-                provs.push_back(prov);
-              }
-            else
-              {
-                LOG_S(WARNING) << "undefined reference path in document: "
-                               << prov->path;
-              }
-          }
-        else if(item.count(prov_lbl) and
-		item[prov_lbl].size()==1)
-          {
-	    auto prov = std::make_shared<prov_element>(pdforder, maintext,
-						       ref, name, type);
-
-            prov->set(item[prov_lbl][0]);
-
-            provs.push_back(prov);
-          }
-        else
-          {
-            LOG_S(ERROR) << "undefined prov for main-text item: " << item.dump();
-          }
-      }
-  }
-  */
-
-  /*
-  bool subject<DOCUMENT>::init_items()
-  {
-    paragraphs.clear();
-    other.clear();
-    
-    tables.clear();
-    figures.clear();
-
-    std::set<std::string> is_ignored = {"page-header", "page-footer"};
-
-    std::set<std::string> is_text = {"title", "subtitle-level-1", "paragraph",
-				     "footnote", "caption", "formula"};
-
-    std::set<std::string> is_table = {"table"};
-    std::set<std::string> is_figure = {"figure"};
-    
-    for(auto& prov:provs)
-      {
-	//auto item = orig.at((prov->path).first).at((prov->path).second);
-
-	std::vector<std::string> parts = utils::split(prov->path, "/");	  
-	
-	std::string base = parts.at(1);
-	std::size_t index = std::stoi(parts.at(2));
-	  
-	auto item = orig.at(base).at(index);
-	
-	if(is_text.count(prov->type))
-          {
-	    auto subj = std::make_shared<subject<PARAGRAPH> >(doc_hash, prov);
-            bool valid = subj->set_data(item);
-
-            if(valid)
-              {
-		paragraphs.push_back(subj);
-              }
-	    else
-	      {
-		LOG_S(WARNING) << "found invalid paragraph: " << item.dump();	
-	      }
-	  }
-	else if(is_table.count(prov->type))
-	  {
-            //subject<TABLE> table(doc_hash, prov);
-	    auto subj = std::make_shared<subject<TABLE> >(doc_hash, prov);	      
-            bool valid = subj->set_data(item);
-
-            if(valid)
-              {
-		tables.push_back(subj);
-	      }
-	    else
-	      {
-		LOG_S(WARNING) << "found table without structure";// << item.dump();
-	      }
-	  }
-	else if(is_figure.count(prov->type))
-	  {
-            //subject<FIGURE> figure(doc_hash, prov);
-            //bool valid = figure.set_data(item);
-
-	    auto subj = std::make_shared<subject<FIGURE> >(doc_hash, prov);	      
-            bool valid = subj->set_data(item);
-	    
-            if(valid)
-              {
-		figures.push_back(subj);
-	      }
-	    else
-	      {
-		LOG_S(WARNING) << "found figure without structure";// << item.dump();
-	      }
-	  }
-	else
-	  {
-	    prov->ignore=true;
-	    if(not is_ignored.count(prov->type))
-	      {
-		LOG_S(WARNING) << "found new `other` type: " << prov->type;			
-	      }
-	    
-	    auto subj = std::make_shared<subject<PARAGRAPH> >(doc_hash, prov);
-            bool valid = subj->set_data(item);
-
-            if(valid)
-              {
-		other.push_back(subj);
-              }
-	    else
-	      {
-		LOG_S(WARNING) << "found invalid paragraph: " << item.dump();	
-	      }
-	  }
-      }
-
-    return true;    
-  }
-  */
-  
   void subject<DOCUMENT>::show_provs()
   {
     //LOG_S(INFO) << __FUNCTION__;
@@ -786,30 +482,9 @@ namespace andromeda
                 << utils::to_string(headers, rows, -1);
   }
 
-  /*
-  bool subject<DOCUMENT>::link_items()
-  {
-    {
-      doc_captions linker;
-      linker.find_and_link_captions(*this);
-    }
-
-    {
-      doc_maintext linker;
-
-      linker.filter_maintext(*this);
-      linker.concatenate_maintext(*this);
-    }
-    
-    return true;
-  }
-  */
-  
   bool subject<DOCUMENT>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
                                      std::shared_ptr<utils::text_normaliser> text_normaliser)
   {
-    //LOG_S(INFO) << __FUNCTION__;
-
     for(auto& paragraph:paragraphs)
       {
         bool valid = paragraph->set_tokens(char_normaliser, text_normaliser);
@@ -853,11 +528,6 @@ namespace andromeda
     bool valid_ents = finalise_entities();
 
     bool valid_rels = finalise_relations();
-
-    //LOG_S(INFO) << "document: " << filepath;
-    //LOG_S(INFO) << "properties: \n" << tabulate(properties);
-    //LOG_S(INFO) << "entities: \n" << tabulate(entities, false);
-    //LOG_S(INFO) << "relations: \n" << tabulate(entities, relations);
 
     return (valid_props and valid_ents and valid_rels);
   }

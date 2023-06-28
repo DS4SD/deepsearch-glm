@@ -54,6 +54,8 @@ namespace andromeda
     init_items();
 
     link_items();
+
+    resolve_paths();    
   }
 
   template<typename doc_type>
@@ -285,9 +287,6 @@ namespace andromeda
   template<typename doc_type>
   void doc_normalisation<doc_type>::resolve_paths()
   {
-    auto& orig = doc.orig;
-    auto& provs = doc.provs;
-    
     auto& paragraphs = doc.paragraphs;
     auto& tables = doc.tables;
     auto& figures = doc.figures;    

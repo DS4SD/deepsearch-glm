@@ -160,7 +160,6 @@ def viz_docs(doc_i, doc_j, page=1):
         for item in doc_j["page-items"]:
 
             if item["page"]==pn:
-                print(item)
                 rects_j.append(item["bbox"])    
 
         rects_k=[]                
@@ -229,7 +228,7 @@ def get_label(item, model_name):
 
 def get_ents(item, model_name):
 
-    print(item["entities"]["headers"])
+    #print(item["entities"]["headers"])
     
     text = item["text"]
     
@@ -251,7 +250,7 @@ def display_sentences(doc_j):
     
     for i,item in enumerate(doc_j["main-text"]):
 
-        print(item["name"])
+        #print(item["name"])
         
         if item["type"]!="paragraph":
             continue

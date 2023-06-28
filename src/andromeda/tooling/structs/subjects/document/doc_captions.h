@@ -308,18 +308,18 @@ namespace andromeda
 	    auto& table = prov_to_table.at(prov_i);
 
 	    
-            LOG_S(WARNING) << "table: "
-                           << prov_i->maintext_ind;
+            //LOG_S(WARNING) << "table: "
+	    //<< prov_i->maintext_ind;
 
             for(ind_type j:itr->second)
               {
                 auto& prov_j = provs.at(j);
 		auto& caption = prov_to_paragraph.at(prov_j);
 
-                LOG_S(WARNING) << "\tassigning caption "
-                               << prov_i->maintext_ind
-                               << " to table "
-                               << prov_j->maintext_ind;
+                //LOG_S(WARNING) << "\tassigning caption "
+		//<< prov_i->maintext_ind
+		//<< " to table "
+		//<< prov_j->maintext_ind;
 
                 //assert(prov_j->dref.first==PARAGRAPH);
                 table->captions.push_back(caption);
@@ -330,18 +330,18 @@ namespace andromeda
             //auto& figure = doc.figures.at(prov_i->dref.second);
 	    auto& figure = prov_to_figure.at(prov_i);
 	    
-            LOG_S(WARNING) << "figure: "
-                           << prov_i->maintext_ind;
+            //LOG_S(WARNING) << "figure: "
+	    //<< prov_i->maintext_ind;
 
             for(ind_type j:itr->second)
               {
                 auto& prov_j = provs.at(j);
 		auto& caption = prov_to_paragraph.at(prov_j);
 		
-                LOG_S(WARNING) << "\tassigning caption "
-                               << prov_i->maintext_ind
-                               << " to figure "
-                               << prov_j->maintext_ind;
+                //LOG_S(WARNING) << "\tassigning caption "
+		//<< prov_i->maintext_ind
+		//<< " to figure "
+		//<< prov_j->maintext_ind;
 
                 //assert(prov_j->dref.first==PARAGRAPH);
                 figure->captions.push_back(caption);

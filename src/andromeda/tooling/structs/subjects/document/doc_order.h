@@ -303,7 +303,6 @@ namespace andromeda
 
     for(auto& item:head_provs)
       {
-        //LOG_S(INFO) << item.maintext_ind << ": " << h2i_map.count(item.maintext_ind);
         heads.push_back(h2i_map.at(item.maintext_ind));
       }
 
@@ -347,8 +346,6 @@ namespace andromeda
       {
         if(not visited.at(j))
           {
-	    LOG_S(WARNING) << "register : " << j;
-
 	    order.push_back(j);
 	    visited.at(j) = true;
 	    
@@ -366,8 +363,6 @@ namespace andromeda
 								     ind_to_vec_type& dn_map,
 								     ind_to_vec_type& up_map)
   {
-    LOG_S(INFO) << " -> up: " << j;
-    
     ind_type k=j;
     
     auto& inds = up_map.at(j);
@@ -388,8 +383,6 @@ namespace andromeda
 					       ind_to_vec_type& dn_map,
 					       ind_to_vec_type& up_map)
   {
-    LOG_S(INFO) << " -> dn: " << j;
-    
     std::vector<ind_type>& inds = dn_map.at(j);
 
     for(auto& i:inds)
@@ -398,8 +391,6 @@ namespace andromeda
 	
         if(not visited.at(k))
           {
-	    LOG_S(WARNING) << "register : " << k;
-	    
             order.push_back(k);
             visited.at(k) = true;
 
