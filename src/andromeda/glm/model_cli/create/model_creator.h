@@ -302,10 +302,10 @@ namespace andromeda
     void model_creator::update(subject<TABLE>& subj,
 			       std::set<hash_type>& docs_cnt) // hashes of nodes already in doc`
     {      
-      auto& nodes = model->get_nodes();
-      auto& edges = model->get_edges();
+      auto& nodes = model_ptr->get_nodes();
+      auto& edges = model_ptr->get_edges();
 
-      auto& parameters = model->get_parameters();
+      auto& parameters = model_ptr->get_parameters();
 
       base_node table_node(node_names::TABL, subj.get_hash());      
       if(parameters.keep_tabls)
@@ -395,10 +395,10 @@ namespace andromeda
     
     void model_creator::update(subject<DOCUMENT>& subj, std::set<hash_type>& doc_insts)
     {
-      auto& nodes = model->get_nodes();
-      //auto& edges = model->get_edges();
+      auto& nodes = model_ptr->get_nodes();
+      //auto& edges = model_ptr->get_edges();
 
-      auto& parameters = model->get_parameters();
+      auto& parameters = model_ptr->get_parameters();
       
       doc_insts.clear();
 

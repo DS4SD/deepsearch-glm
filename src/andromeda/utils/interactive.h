@@ -64,7 +64,7 @@ namespace andromeda
 			   std::size_t max_width=32,
 			   std::size_t max_cols=6)
     {
-      std::size_t max_cols=0;
+      //std::size_t max_cols=0;
       for(std::size_t i=0; i<data.size(); i++)
         {
 	  max_cols = std::max(max_cols, data[i].size());
