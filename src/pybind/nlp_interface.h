@@ -14,7 +14,6 @@ namespace andromeda_py
     nlp_model();
     ~nlp_model();
 
-    //void initialise(const std::string model_expr="term");
     bool initialise(const nlohmann::json config_);
     
     nlohmann::json get_apply_configs();
@@ -59,13 +58,6 @@ namespace andromeda_py
   nlp_model::~nlp_model()
   {}
 
-  /*
-  void nlp_model::initialise(const std::string model_expr)
-  {
-  andromeda::to_models(model_expr, this->models, false);
-  }
-  */
-  
   bool nlp_model::initialise(const nlohmann::json config_)
   {       
     std::string mode = config_["mode"].get<std::string>();

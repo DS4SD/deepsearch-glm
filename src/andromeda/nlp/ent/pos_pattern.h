@@ -31,12 +31,12 @@ namespace andromeda
     bool contains(range_type& range,
                   std::vector<range_type >& ranges);
 
-    void add_entities(model_name name, subject<PARAGRAPH>& subj,
+    void add_instances(model_name name, subject<PARAGRAPH>& subj,
 		      std::vector<range_type >& ranges_01,
 		      std::vector<range_type >& ranges_02,
 		      std::vector<pcre2_item>& chunks);
 
-    void add_entities(model_name name, subject<TABLE>& subj,
+    void add_instances(model_name name, subject<TABLE>& subj,
 		      range_type coor, range_type span,
 		      std::vector<range_type >& ranges_01,
 		      std::vector<range_type >& ranges_02,
@@ -63,7 +63,7 @@ namespace andromeda
                                     std::vector<range_type>& ranges_01,
                                     std::vector<range_type>& ranges_02)
   {
-    for(auto& ent_i:subj.entities)
+    for(auto& ent_i:subj.instances)
       {
         if((ent_i.model_type==PARENTHESIS and ent_i.model_subtype=="reference") or
            (ent_i.model_type==LINK))
@@ -179,7 +179,7 @@ namespace andromeda
     return false;
   }
 
-  void base_pos_pattern::add_entities(model_name name, subject<PARAGRAPH>& subj,
+  void base_pos_pattern::add_instances(model_name name, subject<PARAGRAPH>& subj,
 				      std::vector<range_type >& ranges_01,
 				      std::vector<range_type >& ranges_02,
 				      std::vector<pcre2_item>& chunks)
@@ -223,7 +223,7 @@ namespace andromeda
 	   not contains(char_range, ranges_02) and
 	   (char_range[1]-char_range[0])>1)
 	  {
-	    subj.entities.emplace_back(subj.get_hash(),
+	    subj.instances.emplace_back(subj.get_hash(),
 				       name, subtype,
 				       text, orig,
 				       char_range, ctok_range, wtok_range);
@@ -231,7 +231,7 @@ namespace andromeda
       }
   }
 
-  void base_pos_pattern::add_entities(model_name name, subject<TABLE>& subj,
+  void base_pos_pattern::add_instances(model_name name, subject<TABLE>& subj,
 				      range_type coor, range_type span,
 				      std::vector<range_type >& ranges_01,
 				      std::vector<range_type >& ranges_02,
@@ -278,7 +278,7 @@ namespace andromeda
 	   not contains(char_range, ranges_02) and
 	   (char_range[1]-char_range[0])>1)
 	  {
-	    subj.entities.emplace_back(subj.get_hash(),
+	    subj.instances.emplace_back(subj.get_hash(),
 				       name, subtype,
 				       text, orig,
 				       coor, span,

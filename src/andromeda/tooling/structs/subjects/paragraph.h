@@ -16,6 +16,8 @@ namespace andromeda
     
     ~subject();
 
+    void finalise();
+    
     std::string get_path() const { return (provs.size()>0? (provs.at(0)->path):"#"); }
     
     void clear();
@@ -39,20 +41,19 @@ namespace andromeda
 
     void sort();
 
-    typename std::vector<base_entity>::iterator ents_beg(std::array<uint64_t, 2> char_rng);
-    typename std::vector<base_entity>::iterator ents_end(std::array<uint64_t, 2> char_rng);
+    typename std::vector<base_instance>::iterator insts_beg(std::array<uint64_t, 2> char_rng);
+    typename std::vector<base_instance>::iterator insts_end(std::array<uint64_t, 2> char_rng);
     
     bool get_property_label(const std::string name, std::string& label);
 
-    //uint64_t get_hash() const { return base_suhhash; }
     std::string get_text() const;
 
     std::string get_text(range_type rng);
 
     void apply_wtoken_contractions(std::vector<candidate_type>& candidates);
 
-    void contract_wtokens_from_entities(model_name name);
-    void contract_wtokens_from_entities(model_name name, std::string subtype);
+    void contract_wtokens_from_instances(model_name name);
+    void contract_wtokens_from_instances(model_name name, std::string subtype);
 
     void show(bool txt=true,
               bool mdls=false,
@@ -61,7 +62,7 @@ namespace andromeda
               bool wtokens=true,
 
               bool prps=true,
-              bool ents=true,
+              bool insts=true,
               bool rels=true);
 
   public:
@@ -86,6 +87,11 @@ namespace andromeda
   subject<PARAGRAPH>::~subject()
   {}
 
+  void subject<PARAGRAPH>::finalise()
+  {
+    // FIXME ...
+  }
+  
   void subject<PARAGRAPH>::clear()
   {
     base_subject::clear();
@@ -175,23 +181,23 @@ namespace andromeda
 
   void subject<PARAGRAPH>::sort()
   {
-    std::sort(entities.begin(), entities.end());
+    std::sort(instances.begin(), instances.end());
   }
 
-  typename std::vector<base_entity>::iterator subject<PARAGRAPH>::ents_beg(std::array<uint64_t, 2> char_rng)
+  typename std::vector<base_instance>::iterator subject<PARAGRAPH>::insts_beg(std::array<uint64_t, 2> char_rng)
   {
-    base_entity fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake",
-		     char_rng, {0,0}, {0,0});
+    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake",
+		       char_rng, {0,0}, {0,0});
     
-    return std::lower_bound(entities.begin(), entities.end(), fake);    
+    return std::lower_bound(instances.begin(), instances.end(), fake);    
   }
   
-  typename std::vector<base_entity>::iterator subject<PARAGRAPH>::ents_end(std::array<uint64_t, 2> char_rng)
+  typename std::vector<base_instance>::iterator subject<PARAGRAPH>::insts_end(std::array<uint64_t, 2> char_rng)
   {
-    base_entity fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake",
-		     char_rng, {0,0}, {0,0});
+    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake",
+		       char_rng, {0,0}, {0,0});
 
-    return std::upper_bound(entities.begin(), entities.end(), fake);    
+    return std::upper_bound(instances.begin(), instances.end(), fake);    
   }
   
   bool subject<PARAGRAPH>::get_property_label(const std::string name, std::string& label)
@@ -217,65 +223,65 @@ namespace andromeda
   {
     text_element::apply_word_contractions(candidates);
 
-    for(auto& ent:entities)
+    for(auto& inst:instances)
       {
-        ent.ctok_range = text_element::get_char_token_range(ent.char_range);
-        ent.wtok_range = text_element::get_word_token_range(ent.char_range);
+        inst.ctok_range = text_element::get_char_token_range(inst.char_range);
+        inst.wtok_range = text_element::get_word_token_range(inst.char_range);
 
-        ent.verify_wtok_range_match(word_tokens);
+        inst.verify_wtok_range_match(word_tokens);
       }
   }
 
-  void subject<PARAGRAPH>::contract_wtokens_from_entities(model_name name)
+  void subject<PARAGRAPH>::contract_wtokens_from_instances(model_name name)
   {
     std::vector<candidate_type> candidates={};
 
-    for(auto& ent:entities)
+    for(auto& inst:instances)
       {
-        if(ent.model_type==name and
-	   ent.wtok_range[0]<ent.wtok_range[1])
+        if(inst.model_type==name and
+	   inst.wtok_range[0]<inst.wtok_range[1])
           {
-            candidates.emplace_back(ent.wtok_range[0],
-                                    ent.wtok_range[1],
-                                    ent.name);
+            candidates.emplace_back(inst.wtok_range[0],
+                                    inst.wtok_range[1],
+                                    inst.name);
           }
       }
 
     apply_wtoken_contractions(candidates);
 
-    for(auto& ent:entities)
+    for(auto& inst:instances)
       {
-        if(ent.model_type==name and
-	   ent.wtok_range[0]<ent.wtok_range[1])
+        if(inst.model_type==name and
+	   inst.wtok_range[0]<inst.wtok_range[1])
           {
-            word_tokens.at(ent.wtok_range[0]).set_tag(ent.model_subtype);
+            word_tokens.at(inst.wtok_range[0]).set_tag(inst.model_subtype);
           }
       }
   }
 
-  void subject<PARAGRAPH>::contract_wtokens_from_entities(model_name name, std::string subtype)
+  void subject<PARAGRAPH>::contract_wtokens_from_instances(model_name name, std::string subtype)
   {
     std::vector<candidate_type> candidates={};
 
-    for(auto& ent:entities)
+    for(auto& inst:instances)
       {
-        if(ent.model_type==name and
-           ent.model_subtype==subtype)
+        if(inst.model_type==name and
+           inst.model_subtype==subtype)
           {
-            candidates.emplace_back(ent.wtok_range[0],
-                                    ent.wtok_range[1],
-                                    ent.name);
+            candidates.emplace_back(inst.wtok_range[0],
+                                    inst.wtok_range[1],
+                                    inst.name);
           }
       }
 
     apply_wtoken_contractions(candidates);
 
-    for(auto& ent:entities)
+    for(auto& inst:instances)
       {
-        if(ent.model_type==name and
-           ent.model_subtype==subtype)
+        if(inst.model_type==name and
+           inst.model_subtype==subtype)
           {
-            word_tokens.at(ent.wtok_range[0]).set_tag(ent.model_subtype);
+            word_tokens.at(inst.wtok_range[0]).set_tag(inst.model_subtype);
           }
       }
   }
@@ -348,7 +354,7 @@ namespace andromeda
   
   void subject<PARAGRAPH>::show(bool txt, bool mdls,
                                 bool ctok, bool wtok,
-                                bool prps, bool ents, bool rels)
+                                bool prps, bool insts, bool rels)
   {
     std::stringstream ss;
 
@@ -407,14 +413,14 @@ namespace andromeda
         ss << tabulate(properties);
       }
 
-    if(ents)
+    if(insts)
       {
-        ss << tabulate(text, entities);
+        ss << tabulate(text, instances);
       }
 
     if(rels)
       {
-        ss << tabulate(entities, relations);
+        ss << tabulate(instances, relations);
       }
 
     LOG_S(INFO) << "NLP-output: \n" << ss.str();

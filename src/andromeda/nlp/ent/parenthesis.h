@@ -119,7 +119,7 @@ namespace andromeda
                 std::string orig = subj.from_char_range(char_range);
                 std::string name = subj.from_ctok_range(ctok_range);
 
-                subj.entities.emplace_back(subj.get_hash(),
+                subj.instances.emplace_back(subj.get_hash(),
                                            PARENTHESIS, expr.get_subtype(),
                                            name, orig,
                                            char_range,
@@ -171,7 +171,7 @@ namespace andromeda
 		    auto coor = subj(i,j).get_coor();
 		    auto span = subj(i,j).get_span();
 		    
-                    subj.entities.emplace_back(subj.get_hash(),
+                    subj.instances.emplace_back(subj.get_hash(),
 					       PARENTHESIS, expr.get_subtype(),
                                                name, orig,
 					       coor, span,

@@ -245,21 +245,21 @@ namespace andromeda
 	    std::string orig = subj.from_char_range(char_range);
 	    std::string name = subj.from_ctok_range(ctok_range);
 	    
-	    subj.entities.emplace_back(subj.get_hash(),
+	    subj.instances.emplace_back(subj.get_hash(),
 				       REFERENCE, label,
 				       name, orig, 
 				       char_range, ctok_range, wtok_range);	
 	  }
       }
 
-    // delete all non-reference entities
+    // delete all non-reference instances
     {
-      auto itr=subj.entities.begin();
-      while(itr!=subj.entities.end())
+      auto itr=subj.instances.begin();
+      while(itr!=subj.instances.end())
 	{
 	  if(itr->model_type!=REFERENCE)
 	    {
-	      itr = subj.entities.erase(itr);
+	      itr = subj.instances.erase(itr);
 	    }
 	  else
 	    {

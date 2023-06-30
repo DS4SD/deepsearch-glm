@@ -18,7 +18,8 @@ namespace andromeda
     const static inline std::string mentions_lbl = "mentions";
 
     const static inline std::string prps_lbl = "properties";
-    const static inline std::string ents_lbl = "entities";
+    const static inline std::string insts_lbl = "instances";
+    //const static inline std::string ents_lbl = "entities";
     const static inline std::string rels_lbl = "relations";
     const static inline std::string recs_lbl = "records";
 
@@ -50,8 +51,10 @@ namespace andromeda
     std::set<std::string> applied_models;
 
     std::vector<base_property> properties;
-    std::vector<base_entity> entities;
+    std::vector<base_instance> instances;
     std::vector<base_relation> relations;
+
+    //std::vector<base_entity> entities;
   };
 
   base_subject::base_subject():
@@ -66,7 +69,7 @@ namespace andromeda
     applied_models({}),
 
     properties({}),
-    entities({}),
+    instances({}),
     relations({})
   {}
 
@@ -82,7 +85,7 @@ namespace andromeda
     applied_models({}),
 
     properties({}),
-    entities({}),
+    instances({}),
     relations({})
   {}
 
@@ -98,7 +101,7 @@ namespace andromeda
     applied_models({}),
 
     properties({}),
-    entities({}),
+    instances({}),
     relations({})
   {}
 
@@ -119,7 +122,7 @@ namespace andromeda
     applied_models.clear();
 
     properties.clear();
-    entities.clear();
+    instances.clear();
     relations.clear();
   }
 
@@ -138,8 +141,8 @@ namespace andromeda
     }
 
     {
-      nlohmann::json& ents = result[ents_lbl];
-      andromeda::to_json(entities, ents);
+      nlohmann::json& insts = result[insts_lbl];
+      andromeda::to_json(instances, insts);
     }
 
     {
@@ -155,7 +158,7 @@ namespace andromeda
     hash = item.value("hash", hash);
     applied_models = item.value("applied-models", applied_models);
 
-    bool read_props=false, read_ents=false, read_rels=false;
+    bool read_props=false, read_insts=false, read_rels=false;
 
     properties.clear();
     if(item.count(prps_lbl))
@@ -164,11 +167,11 @@ namespace andromeda
         read_props = andromeda::from_json(properties, props);
       }
 
-    entities.clear();
-    if(item.count(ents_lbl))
+    instances.clear();
+    if(item.count(insts_lbl))
       {
-        const nlohmann::json& ents = item[ents_lbl];
-        read_ents = andromeda::from_json(entities, ents);
+        const nlohmann::json& insts = item[insts_lbl];
+        read_insts = andromeda::from_json(instances, insts);
       }
 
     relations.clear();
@@ -178,7 +181,7 @@ namespace andromeda
         read_rels = andromeda::from_json(relations, rels);
       }
 
-    return (read_props and read_ents and read_rels);
+    return (read_props and read_insts and read_rels);
 
   }
 

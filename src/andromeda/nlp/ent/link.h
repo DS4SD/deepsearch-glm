@@ -31,7 +31,7 @@ namespace andromeda
 
     bool apply_regex(subject<PARAGRAPH>& subj);
     
-    bool post_process(nlohmann::json& ents);
+    bool post_process(nlohmann::json& insts);
 
   private:
 
@@ -129,7 +129,7 @@ namespace andromeda
 	    std::string orig = subj.from_char_range(char_range);
 	    std::string name = subj.from_ctok_range(ctok_range);
 	    
-	    subj.entities.emplace_back(subj.get_hash(),
+	    subj.instances.emplace_back(subj.get_hash(),
 				       LINK, expr.get_subtype(),
 				       name, orig,
 				       char_range, ctok_range, wtok_range);

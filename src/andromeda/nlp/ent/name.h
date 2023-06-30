@@ -30,7 +30,7 @@ namespace andromeda
 
     bool apply_regex(subject<PARAGRAPH>& subj);
     
-    bool post_process(nlohmann::json& ents);
+    bool post_process(nlohmann::json& insts);
     
   private:
 
@@ -167,13 +167,11 @@ namespace andromeda
 				keep = false;
 			      }
 			  }
-			
-			//LOG_S(WARNING) << name << " -> " << label << ", " << conf << " -> " << keep;
 		      }
 
 		    if(keep)
 		      {
-			subj.entities.emplace_back(subj.get_hash(),
+			subj.instances.emplace_back(subj.get_hash(),
 						   NAME, expr.get_subtype(),
 						   name, orig, 
 						   char_range, ctok_range, wtok_range);

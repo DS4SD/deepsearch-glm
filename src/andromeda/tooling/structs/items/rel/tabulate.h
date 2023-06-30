@@ -43,7 +43,7 @@ namespace andromeda
     return success;
   }
   
-  std::string tabulate(std::vector<base_entity>& entities,
+  std::string tabulate(std::vector<base_instance>& instances,
 		       std::vector<base_relation>& relations)
   {
     std::vector<std::string> header = base_relation::headers();

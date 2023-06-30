@@ -51,7 +51,7 @@ namespace andromeda
 
     void show(bool txt=true, bool mdls=false,
               bool ctokens=false, bool wtokens=true,
-              bool prps=true, bool ents=true, bool rels=true);
+              bool prps=true, bool insts=true, bool rels=true);
 
     bool set_data(nlohmann::json& data, bool order_maintext);
 
@@ -80,7 +80,7 @@ namespace andromeda
     void set_figures();
     
     bool finalise_properties();
-    bool finalise_entities();
+    bool finalise_instances();
     bool finalise_relations();
 
   public:
@@ -189,7 +189,7 @@ namespace andromeda
     {
       std::set<std::string> keys
 	= { "hash", "orig", "text", "prov", "properties", "word-tokens"};
-      //"entities", "relations"};
+      //"instances", "relations"};
 
       auto& texts = result[texts_lbl];
       texts = nlohmann::json::array({});
@@ -221,7 +221,7 @@ namespace andromeda
     {
       std::set<std::string> keys
 	= { "hash", "captions", "footnotes", "mentions", "properties"};
-      //"entities", "relations"};
+      //"instances", "relations"};
       
       for(std::size_t l=0; l<tables.size(); l++)
 	{
@@ -248,7 +248,7 @@ namespace andromeda
     {
       std::set<std::string> keys
 	= { "hash",  "captions", "footnotes", "mentions", "properties"};
-      //, "entities", "relations"};
+      //, "instances", "relations"};
       
       for(std::size_t l=0; l<figures.size(); l++)
 	{
@@ -291,11 +291,11 @@ namespace andromeda
   
   void subject<DOCUMENT>::show(bool txt, bool mdls,
                                bool ctok, bool wtok,
-                               bool prps, bool ents, bool rels)
+                               bool prps, bool insts, bool rels)
   {
     for(auto paragraph:paragraphs)
       {
-        paragraph->show(txt,mdls, ctok,wtok, prps,ents,rels);
+        paragraph->show(txt,mdls, ctok,wtok, prps,insts,rels);
       }
   }
 
@@ -525,11 +525,11 @@ namespace andromeda
   {
     bool valid_props = finalise_properties();
 
-    bool valid_ents = finalise_entities();
+    bool valid_insts = finalise_instances();
 
     bool valid_rels = finalise_relations();
 
-    return (valid_props and valid_ents and valid_rels);
+    return (valid_props and valid_insts and valid_rels);
   }
 
   bool subject<DOCUMENT>::finalise_properties()
@@ -606,44 +606,66 @@ namespace andromeda
     return true;
   }
 
-  bool subject<DOCUMENT>::finalise_entities()
+  bool subject<DOCUMENT>::finalise_instances()
   {
-    entities.clear();
+    instances.clear();
 
     for(auto& subj:paragraphs)
       {
-        //LOG_S(INFO) << __FUNCTION__ << ": " << subj.entities.size();
+        //LOG_S(INFO) << __FUNCTION__ << ": " << subj.instances.size();
 
-        for(auto& ent:subj->entities)
+        for(auto& ent:subj->instances)
           {
-            entities.emplace_back(subj->get_hash(),
+            instances.emplace_back(subj->get_hash(),
                                   subj->get_name(),
                                   subj->get_path(),
                                   ent);
           }
       }
-    //LOG_S(INFO) << "total #-ents: " << entities.size();
+    //LOG_S(INFO) << "total #-insts: " << instances.size();
 
     for(auto& subj:tables)
       {
-        for(auto& ent:subj->entities)
+        for(auto& ent:subj->instances)
           {
-            entities.emplace_back(subj->get_hash(),
+            instances.emplace_back(subj->get_hash(),
                                   subj->get_name(),
                                   subj->get_path(),
                                   ent);
           }
+
+        for(auto& capt:subj->captions)
+          {
+	    for(auto& ent:capt->instances)
+	      {
+		instances.emplace_back(capt->get_hash(),
+				      capt->get_name(),
+				      capt->get_path(),
+				      ent);
+	      }
+	  }
       }
 
     for(auto& subj:figures)
       {
-        for(auto& ent:subj->entities)
+        for(auto& ent:subj->instances)
           {
-            entities.emplace_back(subj->get_hash(),
+            instances.emplace_back(subj->get_hash(),
                                   subj->get_name(),
                                   subj->get_path(),
                                   ent);
           }
+
+        for(auto& capt:subj->captions)
+          {
+	    for(auto& ent:capt->instances)
+	      {
+		instances.emplace_back(capt->get_hash(),
+				      capt->get_name(),
+				      capt->get_path(),
+				      ent);
+	      }
+	  }	
       }
 
     return true;

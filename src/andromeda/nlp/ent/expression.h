@@ -333,7 +333,7 @@ namespace andromeda
 
     post_process(subj);
 
-    subj.contract_wtokens_from_entities(EXPRESSION);
+    subj.contract_wtokens_from_instances(EXPRESSION);
 
     //subj.show(false, false, false, true, false, true, false);
 
@@ -348,9 +348,9 @@ namespace andromeda
 
     apply_abbr_regex(subj);
 
-    subj.contract_wtokens_from_entities(EXPRESSION);
+    subj.contract_wtokens_from_instances(EXPRESSION);
 
-    for(auto& ent:subj.entities)
+    for(auto& ent:subj.instances)
       {
         if(ent.model_type==EXPRESSION and ent.model_subtype=="common" and ent.wtoken_len()==1)
           {
@@ -406,7 +406,7 @@ namespace andromeda
                       }
                     //LOG_S(INFO) << __FUNCTION__ << " " << l << ": " << orig;
 
-                    subj.entities.emplace_back(subj.get_hash(),
+                    subj.instances.emplace_back(subj.get_hash(),
                                                EXPRESSION, expr.get_subtype(),
                                                name, orig,
                                                char_range, ctok_range, wtok_range);
@@ -449,7 +449,7 @@ namespace andromeda
                     orig = subj.from_ctok_range(ctok_range);
                     name = utils::replace(orig, "'", "");
 
-                    subj.entities.emplace_back(subj.get_hash(),
+                    subj.instances.emplace_back(subj.get_hash(),
                                                EXPRESSION, expr.get_subtype(),
                                                name, orig,
                                                char_range, ctok_range, wtok_range);
@@ -490,7 +490,7 @@ namespace andromeda
                     orig = subj.from_ctok_range(ctok_range);
                     name = utils::replace(orig, ".", "");
 
-                    subj.entities.emplace_back(subj.get_hash(),
+                    subj.instances.emplace_back(subj.get_hash(),
                                                EXPRESSION, expr.get_subtype(),
                                                name, orig,
                                                char_range, ctok_range, wtok_range);
@@ -562,7 +562,7 @@ namespace andromeda
 
                     if(keep)
                       {
-                        subj.entities.emplace_back(subj.get_hash(),
+                        subj.instances.emplace_back(subj.get_hash(),
 						   EXPRESSION, expr.get_subtype(),
                                                    name, orig,
                                                    char_range, ctok_range, wtok_range);
@@ -624,7 +624,7 @@ namespace andromeda
 
                             if(keep)
                               {
-                                subj.entities.emplace_back(subj.get_hash(),
+                                subj.instances.emplace_back(subj.get_hash(),
 							   EXPRESSION, expr.get_subtype(),
                                                            name, orig,
                                                            subj(i,j).get_coor(),
@@ -650,7 +650,7 @@ namespace andromeda
     //std::string orig = subj.text;
     std::string text = subj.text;
 
-    for(auto& ent:subj.entities)
+    for(auto& ent:subj.instances)
       {
         if(ent.model_type==CITE)
           {
@@ -688,7 +688,7 @@ namespace andromeda
                         orig = subj.from_ctok_range(ctok_range);
                         name = normalise(orig);
 
-                        subj.entities.emplace_back(subj.get_hash(),
+                        subj.instances.emplace_back(subj.get_hash(),
                                                    EXPRESSION, expr.get_subtype(),
                                                    name, orig,
                                                    char_range, ctok_range, wtok_range);
@@ -706,7 +706,7 @@ namespace andromeda
   bool nlp_model<ENT, EXPRESSION>::find_concatenated_wtokens(subject<PARAGRAPH>& subj)
   {
     std::set<std::size_t> forbidden_inds={};
-    for(auto& ent:subj.entities)
+    for(auto& ent:subj.instances)
       {
         if(ent.model_type==CITE)
           {
@@ -824,7 +824,7 @@ namespace andromeda
           {
             //std::size_t max_id = subj.get_max_ent_hash();
 
-            subj.entities.emplace_back(subj.get_hash(),
+            subj.instances.emplace_back(subj.get_hash(),
                                        EXPRESSION, "wtoken-concatenation",
                                        name, orig,
                                        char_range, ctok_range, wtok_range);
@@ -834,11 +834,11 @@ namespace andromeda
 
   bool nlp_model<ENT, EXPRESSION>::post_process(subject<PARAGRAPH>& subj)
   {
-    auto& ents = subj.entities;
+    auto& insts = subj.instances;
 
-    auto itr=ents.begin();
+    auto itr=insts.begin();
 
-    while(itr!=ents.end())
+    while(itr!=insts.end())
       {
         auto& ent = *itr;
 
@@ -890,12 +890,12 @@ namespace andromeda
             if(orig.starts_with("(") and orig.ends_with(")"))
               {
                 //LOG_S(INFO) << " -> removing: " << ent.orig << "; " << ent.name;
-                itr = ents.erase(itr);
+                itr = insts.erase(itr);
               }
             else if(text.size()==0 or words.size()>=3)
               {
                 //LOG_S(INFO) << " -> removing: " << ent.orig;
-                itr = ents.erase(itr);
+                itr = insts.erase(itr);
               }
             else if(((cnt_$%2)!=0 or
                      diff_cnt_rb!=0 or
@@ -903,7 +903,7 @@ namespace andromeda
                      diff_cnt_sb!=0))
               {
                 //LOG_S(INFO) << " -> removing: " << ent.orig << "; " << ent.name;
-                itr = ents.erase(itr);
+                itr = insts.erase(itr);
               }
             else // keep it ...
               {
@@ -924,11 +924,11 @@ namespace andromeda
       {
         erasing=false;
 
-        //LOG_S(INFO) << "#-entities: " << ents.size();
+        //LOG_S(INFO) << "#-instances: " << insts.size();
 
-        for(auto itr_i=ents.begin(); itr_i!=ents.end(); itr_i++)
+        for(auto itr_i=insts.begin(); itr_i!=insts.end(); itr_i++)
           {
-            for(auto itr_j=ents.begin(); itr_j!=ents.end(); itr_j++)
+            for(auto itr_j=insts.begin(); itr_j!=insts.end(); itr_j++)
               {
                 auto cr_i = itr_i->char_range;
                 auto cr_j = itr_j->char_range;
@@ -941,7 +941,7 @@ namespace andromeda
                   {
                     //LOG_S(INFO) << "removing: " << itr_i->orig << "; " << itr_i->name;
 
-                    itr_i = ents.erase(itr_i);
+                    itr_i = insts.erase(itr_i);
                     erasing=true;
                   }
                 if(itr_i!=itr_j and
@@ -952,7 +952,7 @@ namespace andromeda
                   {
                     //LOG_S(INFO) << "removing: " << itr_i->orig << "; " << itr_i->name;
 
-                    itr_i = ents.erase(itr_i);
+                    itr_i = insts.erase(itr_i);
                     erasing=true;
                   }
                 else if(itr_i->model_type==EXPRESSION and
@@ -961,7 +961,7 @@ namespace andromeda
                   {
                     //LOG_S(INFO) << "removing: " << itr_i->orig << "; " << itr_i->name;
 
-                    itr_i = ents.erase(itr_i);
+                    itr_i = insts.erase(itr_i);
                     erasing=true;
                   }
                 else

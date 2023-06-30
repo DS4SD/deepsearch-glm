@@ -9,7 +9,7 @@ namespace andromeda
   {
     const static inline std::vector<std::string> SHRT_HEADERS = { "flvr", "name", "conf",
 								  "hash_i", "hash_j",
-								  "ihash_i", "ihash_j",
+								  //"ihash_i", "ihash_j",
 								  "name_i", "name_j"};
 
     inline static std::mutex mtx;
@@ -29,8 +29,8 @@ namespace andromeda
     base_relation();
     
     base_relation(std::string name, val_type conf,
-		  const base_entity& ent_i,
-		  const base_entity& ent_j);
+		  const base_instance& inst_i,
+		  const base_instance& inst_j);
 
     nlohmann::json to_json_row();
     bool from_json_row(const nlohmann::json& row);
@@ -42,16 +42,17 @@ namespace andromeda
     hash_type get_hash_i() { return hash_i; }
     hash_type get_hash_j() { return hash_j; }
 
-    hash_type get_ihash_i() { return ihash_i; }
-    hash_type get_ihash_j() { return ihash_j; }
+    //hash_type get_ihash_i() { return ihash_i; }
+    //hash_type get_ihash_j() { return ihash_j; }
     
   private:
 
     flvr_type flvr;
     val_type  conf;
 
-    hash_type hash_i, ihash_i;
-    hash_type hash_j, ihash_j;
+    hash_type hash_i, hash_j;
+    //hash_type hash_i, ihash_i;
+    //hash_type hash_j, ihash_j;
 
     std::string name_i, name_j;
   };
@@ -121,26 +122,26 @@ namespace andromeda
   {}
   
   base_relation::base_relation(std::string name, val_type conf,
-			       const base_entity& ent_i,
-			       const base_entity& ent_j):
+			       const base_instance& inst_i,
+			       const base_instance& inst_j):
     flvr(to_flvr(name)),    
     conf(conf),
 
-    hash_i(ent_i.ehash),
-    ihash_i(ent_i.ihash),
+    hash_i(inst_i.ehash),
+    //ihash_i(inst_i.ihash),
 
-    hash_j(ent_j.ehash),
-    ihash_j(ent_j.ihash),
+    hash_j(inst_j.ehash),
+    //ihash_j(inst_j.ihash),
 
-    name_i(ent_i.name),
-    name_j(ent_j.name)
+    name_i(inst_i.name),
+    name_j(inst_j.name)
   {}
   
   nlohmann::json base_relation::to_json_row()
   {
     nlohmann::json row = nlohmann::json::array({flvr, to_name(flvr), conf,
 						hash_i, hash_j,
-						ihash_i, ihash_j,
+						//ihash_i, ihash_j,
 						name_i, name_j});
 	  
     assert(row.size()==SHRT_HEADERS.size());
@@ -164,10 +165,10 @@ namespace andromeda
     conf = row.at(2).get<val_type>();
 
     hash_i = row.at(3).get<hash_type>();
-    ihash_i = row.at(4).get<hash_type>();
+    //ihash_i = row.at(4).get<hash_type>();
 
     hash_j = row.at(5).get<hash_type>();
-    ihash_j = row.at(6).get<hash_type>();
+    //ihash_j = row.at(6).get<hash_type>();
 
     name_i = row.at(7).get<std::string>();
     name_j = row.at(8).get<std::string>();
@@ -180,7 +181,7 @@ namespace andromeda
     std::vector<std::string> row =
       { std::to_string(flvr), to_name(flvr), std::to_string(conf),
 	std::to_string(hash_i), std::to_string(hash_j),
-	std::to_string(ihash_i), std::to_string(ihash_j),
+	//std::to_string(ihash_i), std::to_string(ihash_j),
 	name_i, name_j};
   
     assert(row.size()==SHRT_HEADERS.size());

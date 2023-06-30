@@ -41,10 +41,10 @@ namespace andromeda
 
     void sort();
 
-    typename std::vector<base_entity>::iterator ents_beg(std::array<uint64_t, 2> coor);
-    typename std::vector<base_entity>::iterator ents_end(std::array<uint64_t, 2> coor);
+    typename std::vector<base_instance>::iterator insts_beg(std::array<uint64_t, 2> coor);
+    typename std::vector<base_instance>::iterator insts_end(std::array<uint64_t, 2> coor);
     
-    void show(bool prps, bool ents, bool rels);
+    void show(bool prps, bool insts, bool rels);
 
     uint64_t get_hash() const { return hash; } 
     std::string get_text() const;
@@ -283,32 +283,32 @@ namespace andromeda
 
   void subject<TABLE>::sort()
   {
-    std::sort(entities.begin(), entities.end());
+    std::sort(instances.begin(), instances.end());
   }
 
-  typename std::vector<base_entity>::iterator subject<TABLE>::ents_beg(std::array<uint64_t, 2> coor)
+  typename std::vector<base_instance>::iterator subject<TABLE>::insts_beg(std::array<uint64_t, 2> coor)
   {
     range_type min_range = {0, 0};
     
-    base_entity fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake", coor, {1,1},
-		     min_range, min_range, min_range);
+    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake", coor, {1,1},
+		       min_range, min_range, min_range);
 
-    return std::lower_bound(entities.begin(), entities.end(), fake);    
+    return std::lower_bound(instances.begin(), instances.end(), fake);    
   }
   
-  typename std::vector<base_entity>::iterator subject<TABLE>::ents_end(std::array<uint64_t, 2> coor)
+  typename std::vector<base_instance>::iterator subject<TABLE>::insts_end(std::array<uint64_t, 2> coor)
   {
     range_type max_range =
       { std::numeric_limits<uint64_t>::max(),
 	std::numeric_limits<uint64_t>::max()};
     
-    base_entity fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake", coor, {1,1},
-		     max_range, max_range, max_range);
+    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake", coor, {1,1},
+		       max_range, max_range, max_range);
 
-    return std::upper_bound(entities.begin(), entities.end(), fake);    
+    return std::upper_bound(instances.begin(), instances.end(), fake);    
   }
   
-  void subject<TABLE>::show(bool prps, bool ents, bool rels)
+  void subject<TABLE>::show(bool prps, bool insts, bool rels)
   {
     std::vector<std::vector<std::string> > grid={};
     for(uint64_t i=0; i<data.size(); i++)
@@ -354,14 +354,14 @@ namespace andromeda
         ss << tabulate(properties);
       }
 
-    if(ents)
+    if(insts)
       {
-        ss << tabulate(entities);
+        ss << tabulate(instances);
       }
 
     if(rels)
       {
-        ss << tabulate(entities, relations);
+        ss << tabulate(instances, relations);
       }
 
     LOG_S(INFO) << "NLP-output: \n" << ss.str();

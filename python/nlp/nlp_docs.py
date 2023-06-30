@@ -166,7 +166,7 @@ def viz_docs(doc_i, doc_j, page=1):
         for item in doc_j["main-text"]:
                 
             ritem = resolve_item(item, doc_j)
-            print(ritem)
+            #print(ritem)
             
             for prov in ritem["prov"]:
                 if prov["page"]==pn:
@@ -276,7 +276,7 @@ def display_maintext(doc_j):
     for i,item in enumerate(doc_j["main-text"]):
 
         ritem = resolve_item(item, doc_j)
-        print(item, " => ", len(ritem["prov"]))
+        #print(item, " => ", len(ritem["prov"]))
         #print(" -> ", ritem)
         
         name_ = item["name"]

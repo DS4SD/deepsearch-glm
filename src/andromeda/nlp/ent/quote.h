@@ -28,7 +28,7 @@ namespace andromeda
     
     bool initialise();
 
-    bool post_process(nlohmann::json& ents);
+    bool post_process(nlohmann::json& insts);
     
   private:
 
@@ -85,11 +85,11 @@ namespace andromeda
       }
 
     std::string text = subj.text;
-    for(auto& ent:subj.entities)
+    for(auto& inst:subj.instances)
       {
-	if(dependencies.count(ent.model_type)==1)
+	if(dependencies.count(inst.model_type)==1)
 	  {
-	    utils::mask(text, ent.char_range);
+	    utils::mask(text, inst.char_range);
 	  }
       }
     
@@ -112,7 +112,7 @@ namespace andromeda
 		    std::string orig = subj.from_char_range(char_range);
 		    std::string name = subj.from_ctok_range(ctok_range);
 		    
-		    subj.entities.emplace_back(subj.get_hash(),
+		    subj.instances.emplace_back(subj.get_hash(),
 					       QUOTE, expr.get_subtype(),
 					       name, orig, 
 					       char_range, ctok_range, wtok_range);

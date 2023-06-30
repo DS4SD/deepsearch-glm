@@ -1,12 +1,11 @@
 //-*-C++-*-
 
-/*
-#ifndef ANDROMEDA_STRUCTS_ITEMS_ENT_BASE_H_
-#define ANDROMEDA_STRUCTS_ITEMS_ENT_BASE_H_
+#ifndef ANDROMEDA_STRUCTS_ITEMS_INSTANCE_BASE_H_
+#define ANDROMEDA_STRUCTS_ITEMS_INSTANCE_BASE_H_
 
 namespace andromeda
 {
-  class base_entity: public base_types
+  class base_instance: public base_types
   {
   public:
 
@@ -79,16 +78,16 @@ namespace andromeda
     static std::vector<std::string> short_text_headers();
     static std::vector<std::string> short_table_headers();
 
-    base_entity();
+    base_instance();
     
-    base_entity(hash_type subj_hash,
+    base_instance(hash_type subj_hash,
                 model_name type,
                 range_type char_range,
                 range_type ctok_range,
                 range_type wtok_range);
     
     // Paragraph entity
-    base_entity(hash_type subj_hash,
+    base_instance(hash_type subj_hash,
                 model_name type, std::string subtype,
                 std::string name, std::string orig,
                 range_type char_range,
@@ -96,7 +95,7 @@ namespace andromeda
                 range_type wtok_range);
     
     // Table entity
-    base_entity(hash_type subj_hash,
+    base_instance(hash_type subj_hash,
                 model_name type, std::string subtype,
                 std::string name, std::string orig,
                 range_type coor, range_type span,
@@ -105,8 +104,8 @@ namespace andromeda
                 range_type wtok_range);
 
     // Document entity
-    base_entity(hash_type subj_hash, subject_name subj_name, std::string subj_path,
-		const base_entity& other);
+    base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
+		const base_instance& other);
     
     bool verify_wtok_range_match(std::vector<word_token>& wtokens);
 
@@ -130,9 +129,9 @@ namespace andromeda
     std::vector<std::string> to_row(std::string& text,
                                     std::size_t name_width,
                                     std::size_t orig_width);
-    
-    friend bool operator<(const base_entity& lhs,
-                          const base_entity& rhs);
+
+    friend bool operator<(const base_instance& lhs,
+                          const base_instance& rhs);
 
   private:
 
@@ -165,10 +164,10 @@ namespace andromeda
     bool wtok_range_match; // this indicates if the entity is a perfect match in the word_token vector, essentially
   };
 
-  base_entity::base_entity()
+  base_instance::base_instance()
   {}
   
-  base_entity::base_entity(hash_type subj_hash,
+  base_instance::base_instance(hash_type subj_hash,
                            model_name type,
                            range_type char_range,
                            range_type ctok_range,
@@ -207,7 +206,7 @@ namespace andromeda
     wtok_range_match = (wtok_range[0]<wtok_range[1]);
   }
 
-  base_entity::base_entity(hash_type subj_hash,
+  base_instance::base_instance(hash_type subj_hash,
                            model_name type, std::string subtype,
                            std::string name, std::string orig,
                            range_type char_range,
@@ -247,7 +246,7 @@ namespace andromeda
     wtok_range_match = (wtok_range[0]<wtok_range[1]);
   }
 
-  base_entity::base_entity(hash_type subj_hash,
+  base_instance::base_instance(hash_type subj_hash,
                            model_name type, std::string subtype,
                            std::string name, std::string orig,
                            range_type coor, range_type span,
@@ -288,9 +287,16 @@ namespace andromeda
     wtok_range_match = (wtok_range[0]<wtok_range[1]);
   }
 
-  base_entity::base_entity(hash_type subj_hash, subject_name subj_name, std::string subj_path,
-			   const base_entity& other):
-
+  base_instance::base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
+			   const base_instance& other):
+    /*
+                           model_name type, std::string subtype,
+                           std::string name, std::string orig,
+                           range_type coor, range_type span,
+                           range_type char_range,
+                           range_type ctok_range,
+                           range_type wtok_range):
+    */
     subj_hash(subj_hash),
     subj_name(subj_name),
     subj_path(subj_path),
@@ -317,7 +323,7 @@ namespace andromeda
     wtok_range_match(other.wtok_range_match)
   {}
 
-  void base_entity::initialise_hashes()
+  void base_instance::initialise_hashes()
   {
     ehash = utils::to_hash(name);
 
@@ -335,7 +341,7 @@ namespace andromeda
   }
 
   // do the char-ranges line up with the word-ranges ...
-  bool base_entity::verify_wtok_range_match(std::vector<word_token>& word_tokens)
+  bool base_instance::verify_wtok_range_match(std::vector<word_token>& word_tokens)
   {
     if(wtok_range[0]==wtok_range[1] or wtok_range[1]==0)
       {
@@ -350,12 +356,12 @@ namespace andromeda
     return wtok_range_match;
   }
 
-  std::vector<std::string> base_entity::headers()
+  std::vector<std::string> base_instance::headers()
   {
     return HEADERS;
   }
   
-  nlohmann::json base_entity::to_json_row() const
+  nlohmann::json base_instance::to_json_row() const
   {
     auto row = nlohmann::json::array({to_key(model_type), model_subtype,
 				      subj_hash, to_string(subj_name), subj_path,
@@ -372,7 +378,7 @@ namespace andromeda
     return row;    
   }
 
-  bool base_entity::from_json_row(const nlohmann::json& row)
+  bool base_instance::from_json_row(const nlohmann::json& row)
   {
     if((not row.is_array()) or row.size()!=19)
       {
@@ -412,7 +418,7 @@ namespace andromeda
     return true;
   }
   
-  std::vector<std::string> base_entity::headers(subject_name subj)
+  std::vector<std::string> base_instance::headers(subject_name subj)
   {
     switch(subj)
       {
@@ -435,7 +441,7 @@ namespace andromeda
       }
   }
 
-  nlohmann::json base_entity::to_json_row(subject_name subj) const
+  nlohmann::json base_instance::to_json_row(subject_name subj) const
   {
     nlohmann::json row;
 
@@ -488,22 +494,22 @@ namespace andromeda
     return row;
   }
 
-  std::vector<std::string> base_entity::short_text_headers()
+  std::vector<std::string> base_instance::short_text_headers()
   {
     return SHORT_TEXT_HEADERS;
   }
 
-  std::vector<std::string> base_entity::short_table_headers()
+  std::vector<std::string> base_instance::short_table_headers()
   {
     return SHORT_TABLE_HEADERS;
   }
 
-  std::string base_entity::get_name() const
+  std::string base_instance::get_name() const
   {
     return name;
   }
 
-  std::string base_entity::get_reference() const
+  std::string base_instance::get_reference() const
   {
     std::string ref = subj_path;
 
@@ -517,7 +523,7 @@ namespace andromeda
     return ref;
   }
 
-  nlohmann::json base_entity::to_json() const
+  nlohmann::json base_instance::to_json() const
   {
     nlohmann::json result = nlohmann::json::object();
     {
@@ -546,7 +552,7 @@ namespace andromeda
   }
 
 
-  std::vector<std::string> base_entity::to_row(std::size_t col_width)
+  std::vector<std::string> base_instance::to_row(std::size_t col_width)
   {
     switch(subj_name)
       {
@@ -631,7 +637,7 @@ namespace andromeda
       }
   }
 
-  std::vector<std::string> base_entity::to_row(std::string& text,
+  std::vector<std::string> base_instance::to_row(std::string& text,
                                                std::size_t name_width,
                                                std::size_t orig_width)
   {
@@ -655,9 +661,9 @@ namespace andromeda
 
     return row;
   }
-
-  bool operator<(const base_entity& lhs,
-                 const base_entity& rhs)
+  
+  bool operator<(const base_instance& lhs,
+                 const base_instance& rhs)
   {
     if(lhs.subj_path==rhs.subj_path)
       {
@@ -693,4 +699,3 @@ namespace andromeda
 }
 
 #endif
-*/

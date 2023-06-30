@@ -6,33 +6,33 @@
 namespace andromeda
 {
 
-  void to_json(std::vector<base_entity>& entities, nlohmann::json& ents)
+  void to_json(std::vector<base_instance>& instances, nlohmann::json& insts)
   {
-    ents = nlohmann::json::object({});
+    insts = nlohmann::json::object({});
 
-    ents["headers"] = base_entity::HEADERS;
+    insts["headers"] = base_instance::HEADERS;
 
-    nlohmann::json& data = ents["data"];      
+    nlohmann::json& data = insts["data"];      
     data = nlohmann::json::array({});
     
-    for(std::size_t l=0; l<entities.size(); l++)
+    for(std::size_t l=0; l<instances.size(); l++)
       {
-	data.push_back(entities.at(l).to_json_row());
+	data.push_back(instances.at(l).to_json_row());
       }
   }
 
-  bool from_json(std::vector<base_entity>& entities, const nlohmann::json& ents)
+  bool from_json(std::vector<base_instance>& instances, const nlohmann::json& insts)
   {
-    auto& data = ents["data"];      
+    auto& data = insts["data"];      
 
     bool success=true;
     
-    base_entity ent;
+    base_instance ent;
     for(auto& row:data)
       {
 	if(ent.from_json_row(row))
 	  {
-	    entities.push_back(ent);
+	    instances.push_back(ent);
 	  }
 	else
 	  {
@@ -44,39 +44,39 @@ namespace andromeda
   }
   
   template<typename index_type>
-  void create_hash_to_name(std::vector<base_entity>& entities,
+  void create_hash_to_name(std::vector<base_instance>& instances,
                            std::map<index_type, std::string>& hash_to_name)
   {
     hash_to_name.clear();
-    for(const auto& ent:entities)
+    for(const auto& ent:instances)
       {
         hash_to_name.insert({ent.ehash, ent.name});
       }
   }
 
-  std::string tabulate(std::vector<base_entity>& entities, bool sort=true)
+  std::string tabulate(std::vector<base_instance>& instances, bool sort=true)
   {
     if(sort)
       {
-	std::sort(entities.begin(), entities.end());
+	std::sort(instances.begin(), instances.end());
       }
     
     std::stringstream ss;
 
     std::vector<std::string> headers={};
 
-    if(entities.size()==0)
+    if(instances.size()==0)
       {
-        ss << "\nentities: " << entities.size() << "\n";
+        ss << "\ninstances: " << instances.size() << "\n";
         return ss.str();
       }
-    else if(entities.at(0).subj_name==PARAGRAPH)
+    else if(instances.at(0).subj_name==PARAGRAPH)
       {
-        headers = base_entity::short_text_headers();
+        headers = base_instance::short_text_headers();
       }
-    else if(entities.at(0).subj_name==TABLE)
+    else if(instances.at(0).subj_name==TABLE)
       {
-        headers = base_entity::short_table_headers();
+        headers = base_instance::short_table_headers();
       }
     else
       {
@@ -87,7 +87,7 @@ namespace andromeda
     std::vector<std::vector<std::string> > data={};
 
     std::size_t col_width=32;
-    for(auto& ent:entities)
+    for(auto& ent:instances)
       {
         auto row = ent.to_row(col_width);
         if(row.size()==headers.size())
@@ -101,16 +101,16 @@ namespace andromeda
 	  }
       }
 
-    ss << "\nentities: " << entities.size() << "\n"
+    ss << "\ninstances: " << instances.size() << "\n"
        << utils::to_string(headers, data);
 
     return ss.str();
   }
 
-  std::string tabulate(std::string text, std::vector<base_entity>& entities)
+  std::string tabulate(std::string text, std::vector<base_instance>& instances)
   {
-    std::sort(entities.begin(), entities.end(),
-              [](const base_entity& lhs, const base_entity& rhs)
+    std::sort(instances.begin(), instances.end(),
+              [](const base_instance& lhs, const base_instance& rhs)
               {
                 if(lhs.char_range[0]==rhs.char_range[0])
                   {
@@ -120,26 +120,26 @@ namespace andromeda
                 return lhs.char_range[0]<rhs.char_range[0];
               });
 
-    std::vector<std::string> header = base_entity::short_text_headers();
+    std::vector<std::string> header = base_instance::short_text_headers();
     std::vector<std::vector<std::string> > data={};
 
     //std::size_t col_width=64;
     std::size_t name_width = 32;
     std::size_t orig_width = 48;
 
-    for(auto& ent:entities)
+    for(auto& ent:instances)
       {
         data.push_back(ent.to_row(text, name_width, orig_width));
       }
 
     std::stringstream ss;
-    if(entities.size()==0)
+    if(instances.size()==0)
       {
-        ss << "\nentities: " << entities.size() << "\n";
+        ss << "\ninstances: " << instances.size() << "\n";
       }
     else
       {
-        ss << "\nentities: " << entities.size() << "\n"
+        ss << "\ninstances: " << instances.size() << "\n"
            << utils::to_string(header, data);
       }
 

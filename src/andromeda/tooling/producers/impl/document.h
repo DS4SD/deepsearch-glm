@@ -28,8 +28,6 @@ namespace andromeda
     producer(std::vector<model_ptr_type> models);
     producer(nlohmann::json config, std::vector<model_ptr_type> models);
 
-    //producer(const producer<DOCUMENT>& other);
-
     ~producer();
 
     nlohmann::json to_json();
@@ -48,7 +46,6 @@ namespace andromeda
     virtual bool next(table_type& subj, std::size_t& cnt) { return false; };
     virtual bool next(paragraph_type& subj, std::size_t& cnt) { return false; };
 
-    //virtual bool next(webdoc_type& subj, std::size_t& cnt) { return false; };
     virtual bool next(doc_type& subj, std::size_t& cnt);
 
     /* read */
@@ -120,9 +117,6 @@ namespace andromeda
   {
     initialise(config);
   }
-
-  //producer<DOCUMENT>::producer(const producer<DOCUMENT>& other):    
-  //{}
 
   producer<DOCUMENT>::~producer()
   {}

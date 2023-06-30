@@ -346,6 +346,8 @@ namespace andromeda
         model->apply(subject);
       }
 
+    subject.finalise();
+    
     return true;
   }
 

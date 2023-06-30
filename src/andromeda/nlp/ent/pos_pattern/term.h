@@ -138,9 +138,9 @@ namespace andromeda
     }
 
     {
-      add_entities(get_name(), subj, ranges_01, ranges_02, enum_chunks);
+      add_instances(get_name(), subj, ranges_01, ranges_02, enum_chunks);
 
-      add_entities(get_name(), subj, ranges_01, ranges_02, single_chunks);
+      add_instances(get_name(), subj, ranges_01, ranges_02, single_chunks);
     }
     
     return update_applied_models(subj);
@@ -169,7 +169,7 @@ namespace andromeda
 	    
 	    get_chunks(subj(i,j), single_exprs, single_chunks);	    
 
-	    add_entities(get_name(), subj, subj(i,j).get_coor(), subj(i,j).get_span(),
+	    add_instances(get_name(), subj, subj(i,j).get_coor(), subj(i,j).get_span(),
 			 ranges_01, ranges_02, single_chunks);
 	  }
       }

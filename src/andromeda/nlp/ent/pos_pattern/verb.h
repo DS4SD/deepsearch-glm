@@ -60,7 +60,7 @@ namespace andromeda
     std::vector<pcre2_item> chunks;
     get_chunks(subj, exprs, chunks);
 
-    add_entities(get_name(), subj, ranges_01, ranges_02, chunks);
+    add_instances(get_name(), subj, ranges_01, ranges_02, chunks);
     
     return update_applied_models(subj);
   }

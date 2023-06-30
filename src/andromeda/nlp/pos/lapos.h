@@ -56,7 +56,7 @@ namespace andromeda
                       std::vector<pos_token_type>& pos_tokens,
                       std::map<index_type, index_type>& ptid_to_wtid);
     
-    bool post_process(nlohmann::json& ents);
+    bool post_process(nlohmann::json& insts);
 
   private:
 
@@ -152,17 +152,17 @@ namespace andromeda
     std::map<index_type, index_type> ptid_to_wtid={};
 
     auto& wtokens = subj.word_tokens;
-    auto& entities = subj.entities;
+    auto& instances = subj.instances;
 
     // iterate over the sentences ...
-    for(auto& ent:entities)
+    for(auto& inst:instances)
       {
-        if(ent.model_type!=SENTENCE)
+        if(inst.model_type!=SENTENCE)
           {
             continue;
           }
 
-        pre_process(wtokens, ent.wtok_range, pos_tokens, ptid_to_wtid);
+        pre_process(wtokens, inst.wtok_range, pos_tokens, ptid_to_wtid);
 
         pos_model->predict(pos_tokens);
 

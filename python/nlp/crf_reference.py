@@ -38,9 +38,9 @@ def parse_arguments():
 
     parser.add_argument('-m', '--mode', required=False, default="all",
                         help="parse: [convert,extract,annotate,classify,pure-classify,crf,pure-crf,all]")
-    parser.add_argument('-d', '--source-directory', required=False, default="data/documents/articles",
+    parser.add_argument('-d', '--source-directory', required=False, default="../data/documents/articles",
                         help="directory with pdfs")
-    parser.add_argument('-t', '--target-directory', required=False, default="data/models/",
+    parser.add_argument('-t', '--target-directory', required=False, default="../data/models/",
                         help="directory for target files")
     parser.add_argument('-u', '--username', required=False, help="username or email from DS host")
     parser.add_argument('-p', '--password', required=False, help="API-key from DS host")
@@ -121,16 +121,16 @@ def process_zip_files(sdir):
     cellsfiles = sorted(glob.glob(os.path.join(sdir, "*.cells")))
     for i,cellsfile in enumerate(cellsfiles):
         subprocess.call(["rm", cellsfile])            
-
+        
         
 def shorten_text(text):
-
+    
     ntext = text.replace("\n", "")
-
+    
     return ntext.strip()
         
 def extract_references(directory, sfile, rfile):
-
+    
     config = {
         "mode" : "apply",
         "order" : True,
@@ -138,7 +138,6 @@ def extract_references(directory, sfile, rfile):
     }
     
     model = andromeda_nlp.nlp_model()
-    #model.initialise("numval,link")
     model.initialise(config)
     
     MINLEN = 5
