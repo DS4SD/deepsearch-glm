@@ -60,9 +60,10 @@ namespace andromeda
     }
     
     std::string show_table(std::vector<std::vector<std::string> >& data,
-                           std::stringstream& ss, std::size_t max_width=70)
+                           std::stringstream& ss,
+			   std::size_t max_width=32,
+			   std::size_t max_cols=6)
     {
-      std::size_t max_cols=0;
       for(int i=0; i<data.size(); i++)
         {
 	  max_cols = std::max(max_cols, data[i].size());
@@ -95,7 +96,9 @@ namespace andromeda
     
     std::string show_table(std::vector<std::vector<std::string> >& data,
                            std::vector<std::string> headers,
-                           std::stringstream& ss, std::size_t max_width=70)
+                           std::stringstream& ss,
+			   std::size_t max_width=70,
+			   std::size_t max_cols=6)
     {
       std::vector<std::size_t> widths(headers.size(), 1);
       for(int j=0; j<headers.size(); j++)
@@ -109,6 +112,7 @@ namespace andromeda
           for(int j=0; j<headers.size(); j++)
             {
               auto elem = data.at(i).at(j);
+
               widths.at(j) = std::max(widths.at(j), elem.size());
               widths.at(j) = std::min(widths.at(j), max_width);
             }

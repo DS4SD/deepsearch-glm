@@ -1,0 +1,2469 @@
+{
+  "_name": "SEX DETECTION IN THE EARLY STAGE OF  FERTILIZED CHICKEN EGGSVIA IMAGE  RECOGNITION",
+  "_type": "pdf-document",
+  "bitmaps": [],
+  "description": {
+    "title": "SEX DETECTION IN THE EARLY STAGE OF  FERTILIZED CHICKEN EGGSVIA IMAGE  RECOGNITION",
+    "logs": [
+      {
+        "agent": "CCS",
+        "type": "parsing",
+        "comment": "CCS v0.0.0-dev parsing of documents",
+        "date": "2023-05-06T03:49:55.807174+00:00"
+      }
+    ]
+  },
+  "equations": [],
+  "figures": [
+    {
+      "bounding-box": {
+        "max": [
+          0,
+          329.92435,
+          595.32001,
+          472.76535
+        ],
+        "min": [
+          83.930419921875,
+          342.3988037109375,
+          536.8775024414062,
+          451.2568054199219
+        ]
+      },
+      "cells": {
+        "data": [],
+        "header": [
+          "x0",
+          "y0",
+          "x1",
+          "y1",
+          "font",
+          "text"
+        ]
+      },
+      "confidence": 0.9320425987243652,
+      "created_by": "high_conf_pred",
+      "prov": [
+        {
+          "bbox": [
+            83.930419921875,
+            342.3988037109375,
+            536.8775024414062,
+            451.2568054199219
+          ],
+          "page": 3,
+          "span": [
+            0,
+            0
+          ]
+        }
+      ],
+      "type": "picture"
+    },
+    {
+      "bounding-box": {
+        "max": [
+          0,
+          599.70441,
+          595.32001,
+          758.74866
+        ],
+        "min": [
+          88.1142578125,
+          631.871337890625,
+          220.2459106445312,
+          731.5213623046875
+        ]
+      },
+      "cells": {
+        "data": [],
+        "header": [
+          "x0",
+          "y0",
+          "x1",
+          "y1",
+          "font",
+          "text"
+        ]
+      },
+      "confidence": 0.9146454930305481,
+      "created_by": "high_conf_pred",
+      "prov": [
+        {
+          "bbox": [
+            88.1142578125,
+            631.871337890625,
+            220.2459106445312,
+            731.5213623046875
+          ],
+          "page": 4,
+          "span": [
+            0,
+            0
+          ]
+        }
+      ],
+      "type": "picture"
+    },
+    {
+      "bounding-box": {
+        "max": [
+          0,
+          228.61436,
+          595.32001,
+          395.34537
+        ],
+        "min": [
+          182.1677398681641,
+          263.5651245117188,
+          415.5619506835938,
+          374.8421325683594
+        ]
+      },
+      "cells": {
+        "data": [],
+        "header": [
+          "x0",
+          "y0",
+          "x1",
+          "y1",
+          "font",
+          "text"
+        ]
+      },
+      "confidence": 0.9088634252548218,
+      "created_by": "high_conf_pred",
+      "prov": [
+        {
+          "bbox": [
+            182.1677398681641,
+            263.5651245117188,
+            415.5619506835938,
+            374.8421325683594
+          ],
+          "page": 4,
+          "span": [
+            0,
+            0
+          ]
+        }
+      ],
+      "type": "picture"
+    },
+    {
+      "bounding-box": {
+        "max": [
+          0,
+          599.70441,
+          595.32001,
+          758.74866
+        ],
+        "min": [
+          233.8534851074219,
+          630.4324340820312,
+          365.8578796386719,
+          731.4295654296875
+        ]
+      },
+      "cells": {
+        "data": [],
+        "header": [
+          "x0",
+          "y0",
+          "x1",
+          "y1",
+          "font",
+          "text"
+        ]
+      },
+      "confidence": 0.8854847550392151,
+      "created_by": "high_conf_pred",
+      "prov": [
+        {
+          "bbox": [
+            233.8534851074219,
+            630.4324340820312,
+            365.8578796386719,
+            731.4295654296875
+          ],
+          "page": 4,
+          "span": [
+            0,
+            0
+          ]
+        }
+      ],
+      "type": "picture"
+    },
+    {
+      "bounding-box": {
+        "max": [
+          0,
+          599.70441,
+          595.32001,
+          758.74866
+        ],
+        "min": [
+          382.7058410644531,
+          632.5717163085938,
+          510.0417785644531,
+          730.9780883789062
+        ]
+      },
+      "cells": {
+        "data": [],
+        "header": [
+          "x0",
+          "y0",
+          "x1",
+          "y1",
+          "font",
+          "text"
+        ]
+      },
+      "confidence": 0.7795134782791138,
+      "created_by": "high_conf_pred",
+      "prov": [
+        {
+          "bbox": [
+            382.7058410644531,
+            632.5717163085938,
+            510.0417785644531,
+            730.9780883789062
+          ],
+          "page": 4,
+          "span": [
+            0,
+            0
+          ]
+        }
+      ],
+      "type": "picture"
+    },
+    {
+      "bounding-box": {
+        "max": [
+          0,
+          140.18964,
+          595.32001,
+          499.16534
+        ],
+        "min": [
+          220.61,
+          161.66864,
+          377.19998,
+          172.69437
+        ]
+      },
+      "cells": {
+        "data": [
+          [
+            220.61,
+            161.66864,
+            377.19998,
+            172.69437,
+            "/Times New Roman",
+            "Figure 4. Image processing techniques "
+          ]
+        ],
+        "header": [
+          "x0",
+          "y0",
+          "x1",
+          "y1",
+          "font",
+          "text"
+        ]
+      },
+      "confidence": 0.9333521723747253,
+      "created_by": "high_conf_pred",
+      "prov": [
+        {
+          "bbox": [
+            142.5305633544922,
+            161.66864,
+            446.8975524902344,
+            480.6903076171875
+          ],
+          "page": 5,
+          "span": [
+            0,
+            0
+          ]
+        }
+      ],
+      "text": " 5. DATA ANALYSIS ",
+      "type": "picture"
+    },
+    {
+      "bounding-box": {
+        "max": [
+          0,
+          478.74664,
+          595.32001,
+          688.91534
+        ],
+        "min": [
+          354.1864318847656,
+          492.1398315429688,
+          503.6905517578125,
+          660.941650390625
+        ]
+      },
+      "cells": {
+        "data": [],
+        "header": [
+          "x0",
+          "y0",
+          "x1",
+          "y1",
+          "font",
+          "text"
+        ]
+      },
+      "confidence": 0.9210362434387207,
+      "created_by": "high_conf_pred",
+      "prov": [
+        {
+          "bbox": [
+            354.1864318847656,
+            492.1398315429688,
+            503.6905517578125,
+            660.941650390625
+          ],
+          "page": 6,
+          "span": [
+            0,
+            0
+          ]
+        }
+      ],
+      "type": "picture"
+    }
+  ],
+  "file-info": {
+    "#-pages": 8,
+    "document-hash": "9c0bc792c6603637e94ee6f239b3a3877c16c8b82b1eb8808cf868fa2e941a00",
+    "filename": "2305.02325.pdf",
+    "page-hashes": [
+      {
+        "hash": "a2de2e90301d31bb7448111ce7047ec762cdd632d050e2fc8d93d07f2ab7d5fc",
+        "model": "model",
+        "page": 1
+      },
+      {
+        "hash": "dadd19466b3ed5a547375b587e192b9ba97102e93304cd82d1f52776089451da",
+        "model": "model",
+        "page": 2
+      },
+      {
+        "hash": "679b293e4b8f23c0bb3cc587a068887787ec9b33a92b0cf820b08343f60fe811",
+        "model": "model",
+        "page": 3
+      },
+      {
+        "hash": "da80384a4a42289e33eca1d9793537eddf4d5d504921b6a7bc9e466d1515f17a",
+        "model": "model",
+        "page": 4
+      },
+      {
+        "hash": "0ea77af0dd91a020c1311c088226e6eea1f00909fb6a9ca7550e3316389e4dbd",
+        "model": "model",
+        "page": 5
+      },
+      {
+        "hash": "09ed5cc13b658554c47e918a611317c0a1ef45efe3cd33db5f6f1de2064803ff",
+        "model": "model",
+        "page": 6
+      },
+      {
+        "hash": "53ed3121ff840e13bd00aad758fc638c416f712a1c7c436f90b76c557c450377",
+        "model": "model",
+        "page": 7
+      },
+      {
+        "hash": "273d6e2ca401109f29c2731cc6e32c533ed8b2c1a790e2166c54227b3bfc5833",
+        "model": "model",
+        "page": 8
+      }
+    ]
+  },
+  "footnotes": [],
+  "main-text": [
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            85.61502838134766,
+            757.45068359375,
+            511.38998,
+            769.77441
+          ],
+          "page": 1,
+          "span": [
+            0,
+            101
+          ]
+        }
+      ],
+      "text": "International Journal of Computer Science & Information Technology (IJCSIT) Vol 15, No 2, April 2023 ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            81.03611755371094,
+            70.08612060546875,
+            208.2719421386719,
+            83.274361
+          ],
+          "page": 1,
+          "span": [
+            0,
+            29
+          ]
+        }
+      ],
+      "text": "DOI:10.5121/ijcsit.2023.15202",
+      "type": "paragraph"
+    },
+    {
+      "$ref": "#/page-footers/0",
+      "name": "page-footer",
+      "type": "page-footer"
+    },
+    {
+      "name": "title",
+      "prov": [
+        {
+          "bbox": [
+            121.8757553100586,
+            661.90948,
+            476.79541,
+            729.45447
+          ],
+          "page": 1,
+          "span": [
+            0,
+            81
+          ]
+        }
+      ],
+      "text": "SEX DETECTION IN THE EARLY STAGE OF FERTILIZED CHICKEN EGGSVIA IMAGE RECOGNITION ",
+      "type": "title"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            218.57001,
+            634.1238403320312,
+            376.57159,
+            649.08734
+          ],
+          "page": 1,
+          "span": [
+            0,
+            28
+          ]
+        }
+      ],
+      "text": "Ufuk Asil and Efendi Nasibov",
+      "type": "paragraph"
+    },
+    {
+      "name": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            118.9917373657227,
+            607.5048217773438,
+            477.82001,
+            621.59204
+          ],
+          "page": 1,
+          "span": [
+            0,
+            70
+          ]
+        }
+      ],
+      "text": "Department of Computer Science, Dokuz Eylul University, Izmir, Turkey ",
+      "type": "subtitle-level-1"
+    },
+    {
+      "name": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            81.11862182617188,
+            579.3744506835938,
+            140.66,
+            594.81738
+          ],
+          "page": 1,
+          "span": [
+            0,
+            9
+          ]
+        }
+      ],
+      "text": "ABSTRACT ",
+      "type": "subtitle-level-1"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            81.05778503417969,
+            453.5309753417969,
+            516.374755859375,
+            568.74438
+          ],
+          "page": 1,
+          "span": [
+            0,
+            1031
+          ]
+        }
+      ],
+      "text": "Culling newly hatched male chicks in industrial hatcheries poses a serious ethical problem. Both laying and broiler breeders need males, but it is a problem because they are produced more than needed. Being able to determine the sex of chicks in the egg at the beginning or early stage of incubation can eliminate ethical problems as well as many additional costs. When we look at the literature, the methods used are very costly, low in applicability, invasive, inadequate in accuracy, or too late to eliminate ethical problems. Considering the embryo's development, the earliest observed candidate feature for sex determination is blood vessels. Detection from blood vessels can eliminate ethical issues, and these vessels can be seen when light is shined into the egg until the first seven days. In this study, sex determination was made by morphological analysis from embryonic vascular images obtained in the first week when the light was shined into the egg using a standard camera without any invasive procedure to the egg. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            81.5557632446289,
+            424.6951599121094,
+            144.74001,
+            440.71738
+          ],
+          "page": 1,
+          "span": [
+            0,
+            9
+          ]
+        }
+      ],
+      "text": "KEYWORDS ",
+      "type": "subtitle-level-1"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.1842269897461,
+            402.7017517089844,
+            417.893798828125,
+            414.64435
+          ],
+          "page": 1,
+          "span": [
+            0,
+            77
+          ]
+        }
+      ],
+      "text": "In Ovo Sexing, Sexing of Chicken Embryo, Chicken Egg Gender, Image Processing",
+      "type": "paragraph"
+    },
+    {
+      "name": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            81.01730346679688,
+            373.3255615234375,
+            189.2,
+            391.18310546875
+          ],
+          "page": 1,
+          "span": [
+            0,
+            16
+          ]
+        }
+      ],
+      "text": "1. INTRODUCTION ",
+      "type": "subtitle-level-1"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            81.34923553466797,
+            196.3030395507812,
+            517.380126953125,
+            361.84665
+          ],
+          "page": 1,
+          "span": [
+            0,
+            1219
+          ]
+        }
+      ],
+      "text": "If the chicks hatched in industrial hatcheries are male, the surplus of male chicks results in culling. It is a serious ethical problem to annihilate male chicks in hatcheries when they are only one day old. In Germany alone, approximately 42 million male chicks are culled annually. In Europe, 300 million overall. In France, with the decree published in the Official Gazette in 2022, killing the male chicks hatched from the eggs in the hatcheries that produce laying hens is prohibited. The law states that eggs can be killed by selection in the first 15 days of the 21-day incubation period, and any culling after 15 days is prohibited [1]. In Germany, a similar law will be enacted in 2024, banning embryo culling after the first seven days [2]. It is foreseen that such laws will become widespread daily, especially in Europe. In commercial hatcheries, eggs can be used as food when sexing is known before the eggs are incubated. This does not seem possible without an invasive method. Determining the sex in the early hatching stage can partially eliminate the ethical problems and additional costs. Eggs of male embryos can be used as an alternative feed raw material or as ingredients for industrial products. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            81.30730438232422,
+            167.0928344726562,
+            225.56,
+            184.5172119140625
+          ],
+          "page": 1,
+          "span": [
+            0,
+            21
+          ]
+        }
+      ],
+      "text": "2. LITERATURE REVIEW ",
+      "type": "subtitle-level-1"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.9437484741211,
+            91.82293701171875,
+            517.0042114257812,
+            155.89664
+          ],
+          "page": 1,
+          "span": [
+            0,
+            486
+          ]
+        }
+      ],
+      "text": "When we look at the literature, the methods used for sex determination in chicks can be divided into two: classical and modern [3]. Classical methods include looking at the cloaca of the chicks after hatching and looking at the color and shape of the feathers. Applying classical methods can create severe economic expenses, such as occupying space in the incubators, energy costs, and trained personnel, considering that half of the eggs in the facilities are male. Modern methods are ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            85.9191665649414,
+            757.7852783203125,
+            511.38998,
+            769.77441
+          ],
+          "page": 2,
+          "span": [
+            0,
+            101
+          ]
+        }
+      ],
+      "text": "International Journal of Computer Science & Information Technology (IJCSIT) Vol 15, No 2, April 2023 ",
+      "type": "paragraph"
+    },
+    {
+      "$ref": "#/page-footers/1",
+      "name": "page-footer",
+      "type": "page-footer"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            81.23963928222656,
+            687.5759887695312,
+            517.9835205078125,
+            751.77667
+          ],
+          "page": 2,
+          "span": [
+            0,
+            403
+          ]
+        }
+      ],
+      "text": "accepted, such as measuring estrogen from allantoic fluid, observing vessels, detection of ZZ/ZW chromosomes, and feather color analysis of the embryo. These methods could not be commercialized industrially due to the high cost, partial damage to the egg, low accuracy, or latestage sex determination. In addition, invasive methods such as needle insertion and perforation cause low hatching rates [4]. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            81.55294036865234,
+            661.3519287109375,
+            233.736572265625,
+            675.71204
+          ],
+          "page": 2,
+          "span": [
+            0,
+            28
+          ]
+        }
+      ],
+      "text": "2.1. Pre-Incubation Methods ",
+      "type": "subtitle-level-1"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.9267807006836,
+            547.3192749023438,
+            517.9746704101562,
+            649.41669
+          ],
+          "page": 2,
+          "span": [
+            0,
+            742
+          ]
+        }
+      ],
+      "text": "The Magnetic Resonance Imaging (MRI) technique can determine the exact location of the blastodermin the yolk [5]. Sex gene sequences can be obtained from 4-400 cells in the blastoderm by biopsy, and sex can be determined by PCR[6][7] With flow cytometry, cells in a suspension are passed through a chamber illuminated by laser light. The analysis is done by evaluating the fluorescent signals cells give as they pass in front of the light. Feedback may be the physical properties of the cell, such as size, as well as the information on the various fluorochromes that bind to the cell. Thus, information about multiple properties, such as cell DNA content, enzyme activities, cell membrane potential, and viability, can be collected [8] [9]. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.58795928955078,
+            509.0319213867188,
+            516.1943969726562,
+            535.50665
+          ],
+          "page": 2,
+          "span": [
+            0,
+            149
+          ]
+        }
+      ],
+      "text": "In some studies, it has been determined that there is a low correlation between the shape index of Branta canadensis goose eggs and embryo sex [10]. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            81.30989074707031,
+            483.2183227539062,
+            211.9802856445312,
+            497.5172424316406
+          ],
+          "page": 2,
+          "span": [
+            0,
+            24
+          ]
+        }
+      ],
+      "text": "2.2. Incubation Methods ",
+      "type": "subtitle-level-1"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.8757095336914,
+            406.8037719726562,
+            517.947998046875,
+            471.18665
+          ],
+          "page": 2,
+          "span": [
+            0,
+            444
+          ]
+        }
+      ],
+      "text": "The level of estrogen hormone from the mother decreases in the first developmental stage of the embryo in the egg, and each sex produces its hormone as the embryo develops. Hormones differ in growing embryos [11]. Sex can be determined by taking 20 \u03bcl of allantoic fluid from the incubated eggs (between 15-17 days) and analyzing oestradiol by the radio-immune method. Studies are ongoing to make this method commercially available [12] [13]. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            81.47816467285156,
+            330.9836120605469,
+            518.6881713867188,
+            395.20663
+          ],
+          "page": 2,
+          "span": [
+            0,
+            465
+          ]
+        }
+      ],
+      "text": "In another method developed by Weissmann et al., oestradiol, estrone sulfate, and testosterone levels in the allantoic fluid are analyzed by enzyme immunoassay Elisa method on the 9th day of incubation.This method can be used for gender determination at a rate of 98% [14]. However, this method is complex and invasive since a needle is inserted into the egg. Since the test results can be obtained in about 4 hours, its applicability in industrial poultry is low. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.88490295410156,
+            267.466796875,
+            518.0733032226562,
+            319.36664
+          ],
+          "page": 2,
+          "span": [
+            0,
+            294
+          ]
+        }
+      ],
+      "text": "Ultrasonography gets information by reflecting high-frequency sound waves (ultrasound) applied to incubated eggs from different tissue surfaces. Using real-time B-mode ultrasonography, the embryo's morphological structure, and developmental stage in the egg can be monitored every period [15]. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.37654876708984,
+            204.0400390625,
+            517.7930297851562,
+            256.09665
+          ],
+          "page": 2,
+          "span": [
+            0,
+            358
+          ]
+        }
+      ],
+      "text": "The number of heartbeats may differ according to gender in the embryo [16]. It isn't easy to monitor the heartbeat in embryos before the 15th day. Studies have shown that, as in adults, the heart rate of females in embryos between 15 and 20 days is different from that of males. Although the study is old, it is inspiring as the beginning of modern methods. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.79396057128906,
+            90.9923095703125,
+            518.5386962890625,
+            192.85664
+          ],
+          "page": 2,
+          "span": [
+            0,
+            752
+          ]
+        }
+      ],
+      "text": "Researchers at the University of Dresden, Germany, reported that using spectroscopic techniques, gender can be determined with an accuracy of 95% by studies based on the embryo's blood vessels in the egg [4]. On the 3rd day of embryo development, blood vessels begin to form, while nerve cells are not functional [17]. For this reason, the researchers idealized the 3rd day ethically in their studies.In the method, a small hole was drilled in the upper part of the egg without damaging the membrane, blood vessels and heart on the yolk were monitored, and the biochemical properties of the embryo vessels were visualized with a spectrometer. Researchers claim that 3.5-day-old male and female embryos can be classified with the help of computers [4]. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            85.5968246459961,
+            757.8010864257812,
+            511.38998,
+            769.77441
+          ],
+          "page": 3,
+          "span": [
+            0,
+            101
+          ]
+        }
+      ],
+      "text": "International Journal of Computer Science & Information Technology (IJCSIT) Vol 15, No 2, April 2023 ",
+      "type": "paragraph"
+    },
+    {
+      "$ref": "#/page-footers/2",
+      "name": "page-footer",
+      "type": "page-footer"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            81.04011535644531,
+            649.8638916015625,
+            516.3634033203125,
+            751.77667
+          ],
+          "page": 3,
+          "span": [
+            0,
+            713
+          ]
+        }
+      ],
+      "text": "In this method, the researchers stated that they could distinguish between sexes with 90% success by performing spectrum analysis in the blood circulating in the vessels of the outer part of the embryo [4]. The first day that the feathers of the embryos appear during the incubation period is the 9th day. Brown chickens are one of the dominant breeds in industrial chicken breeding farms. Gender discrimination can be made by looking at the color of thefeathers of these chickens after hatching. Studies claim that 95% of sex determination is made between 11-14 days of incubation with hyperspectral imaging [18]. It has not been foreseen that this gender determination method could be performed in all genders. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            81.06256103515625,
+            623.071044921875,
+            234.77,
+            637.672
+          ],
+          "page": 3,
+          "span": [
+            0,
+            29
+          ]
+        }
+      ],
+      "text": "2.3. Post-incubation methods ",
+      "type": "subtitle-level-1"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.4541015625,
+            547.9091796875,
+            516.923095703125,
+            611.46667
+          ],
+          "page": 3,
+          "span": [
+            0,
+            390
+          ]
+        }
+      ],
+      "text": "The vent method, one of the industry's most widely used traditional methods, was first described by Japanese scientists [19]. This method, in which 1-day-old chicks are selected by looking at the cloaca, is also known as the Japanese technique. Experts who receive serious training are expected to discriminate between 800-1200 chicks per hour with 1-3% error to meet industrial standards. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.77277374267578,
+            471.5960083007812,
+            518.4293823242188,
+            535.50665
+          ],
+          "page": 3,
+          "span": [
+            0,
+            455
+          ]
+        }
+      ],
+      "text": "Gender discrimination can be made by using the length of the feathers on the wings of a few days-old chicks [20] [21]. This feathering rate in chicks is determined by genes related to sex. Slow pubescence dominates fast pubescence [22]. Therefore, the difference in length between the wing feathers and cover feathers of a few day-old chicks can be easily distinguished. By using this feature, gender discrimination in many races can be made widely [23]. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            178.0218963623047,
+            317.5198364257812,
+            418.38998,
+            329.92435
+          ],
+          "page": 3,
+          "span": [
+            0,
+            60
+          ]
+        }
+      ],
+      "text": "Figure 1. Chick sex determination methods in the literature ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.95610046386719,
+            229.25537109375,
+            517.7319946289062,
+            305.80664
+          ],
+          "page": 3,
+          "span": [
+            0,
+            572
+          ]
+        }
+      ],
+      "text": "In Figure 1, the primary methods in the literature are visualized. Considering the methods, our method is an excellent candidate to eliminate ethical problems as it does not harm the egg and can only be observed in the first stage of the egg. Currently, various devices called ovoscopes are used in commercial hatcheries to check for anomalies in the egg and whether the egg is fertilized. The method we have developed provides an additional gain rather than an additional expense, as it can make all the diagnostics made by the ovoscope based on artificial intelligence. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            81.32710266113281,
+            199.5187377929688,
+            255.43999,
+            216.88965
+          ],
+          "page": 3,
+          "span": [
+            0,
+            24
+          ]
+        }
+      ],
+      "text": "3. MATERIAL AND METHODS ",
+      "type": "subtitle-level-1"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            81.48749542236328,
+            99.229248046875,
+            517.4301147460938,
+            188.41664
+          ],
+          "page": 3,
+          "span": [
+            0,
+            646
+          ]
+        }
+      ],
+      "text": "This study used broiler and Atak-S chicken eggs, the most used chicken breeds in industrial egg production. As seen in Figure 2a, the eggs were examined in 2 different incubation periods, with approximately 120 eggs in each incubation. Two 200-lumen LED light sources were given from two opposite poles to the inside of the eggs. LED light sources that emit less heat have been chosen because high heat can potentially damage embryo development in the egg. The light was turned on only during data collection so that the egg did not encounter high temperatures. Photos were taken on days 3,5 and 7 by rotating it in 10 steps to make a full tour. ",
+      "type": "paragraph"
+    },
+    {
+      "$ref": "#/figures/0",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            86.543999,
+            757.0970458984375,
+            511.38998,
+            769.77441
+          ],
+          "page": 4,
+          "span": [
+            0,
+            101
+          ]
+        }
+      ],
+      "text": "International Journal of Computer Science & Information Technology (IJCSIT) Vol 15, No 2, April 2023 ",
+      "type": "paragraph"
+    },
+    {
+      "$ref": "#/page-footers/3",
+      "name": "page-footer",
+      "type": "page-footer"
+    },
+    {
+      "name": "caption",
+      "prov": [
+        {
+          "bbox": [
+            231.1145172119141,
+            587.234130859375,
+            366.16,
+            599.70441
+          ],
+          "page": 4,
+          "span": [
+            0,
+            34
+          ]
+        }
+      ],
+      "text": "Figure 2. Data collection process ",
+      "type": "caption"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.28764343261719,
+            537.0991821289062,
+            519.501708984375,
+            575.7088623046875
+          ],
+          "page": 4,
+          "span": [
+            0,
+            210
+          ]
+        }
+      ],
+      "text": "As the eggs are numbered on the 18th day of hatching, as seen in Figure 2b, the eggs were placed in pouches so the chicks would not mix. The chicks hatched, as seen in Figure 2c, are renumbered with bracelets. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            81.07661437988281,
+            507.4193420410156,
+            219.43999,
+            524.61963
+          ],
+          "page": 4,
+          "span": [
+            0,
+            20
+          ]
+        }
+      ],
+      "text": "4. IMAGE PROCESSING ",
+      "type": "subtitle-level-1"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            81.44844055175781,
+            394.3019104003906,
+            518.6624145507812,
+            496.14664
+          ],
+          "page": 4,
+          "span": [
+            0,
+            754
+          ]
+        }
+      ],
+      "text": "It is well-known that image processing techniques in computer vision improve quality in applications such as classification. When we look at the literature, as seen in Figure 3, the embryo image in the first seven days of incubation is very similar to the eye image used for the diagnosis of Diabetic Retinopathy[24]. S tudies on sex determination from hatching eggs are still in their infancy, and there is no pioneering method in the literature. A field of study investigating how chick embryos' vascular structures in broods differ according to sex has not yet been developed. For this reason, in this study, some morphological processes were applied sequentially, as in Diabetic Retinopathy, to increase the visibility of embryo vessels as features. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            105.9355010986328,
+            216.5645141601562,
+            491.70999,
+            228.6185913085938
+          ],
+          "page": 4,
+          "span": [
+            0,
+            92
+          ]
+        }
+      ],
+      "text": "Figure 1. Similarity between Diabetic Retinopathy diagnosis and Incubation Embryo image[24] ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            81.10364532470703,
+            102.234130859375,
+            518.5994262695312,
+            204.49664
+          ],
+          "page": 4,
+          "span": [
+            0,
+            745
+          ]
+        }
+      ],
+      "text": "As shown in Figure 4 below, it aims to reduce unnecessary data input into the system in the photos obtained from the egg. Since egg sizes vary a lot, a threshold was applied on the grey image, and cropping was applied to all photos with this data. When we look at the overall photos of the embryo in the egg, one of the most critical problems is the inability to visualize the vessels originating from the eggshell. Although this blur effect seems to be a problem initially, the Gaussian blur effect can have a positive impact when used to extract data from the picture using methods such as Adaptive GaussianThresholding [25] [26]. Unfortunately, there is no study investigating the effect of the blur effect of eggshells on sex determination. ",
+      "type": "paragraph"
+    },
+    {
+      "$ref": "#/figures/1",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "$ref": "#/figures/2",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "$ref": "#/figures/3",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "$ref": "#/figures/4",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            86.11266326904297,
+            757.8180541992188,
+            511.38998,
+            769.77441
+          ],
+          "page": 5,
+          "span": [
+            0,
+            101
+          ]
+        }
+      ],
+      "text": "International Journal of Computer Science & Information Technology (IJCSIT) Vol 15, No 2, April 2023 ",
+      "type": "paragraph"
+    },
+    {
+      "$ref": "#/page-footers/4",
+      "name": "page-footer",
+      "type": "page-footer"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.91026306152344,
+            662.87158203125,
+            517.7529907226562,
+            751.77667
+          ],
+          "page": 5,
+          "span": [
+            0,
+            606
+          ]
+        }
+      ],
+      "text": "Histogram equalization (HE); aims to increase the features by spreading the region where the values in the picture are most intense to its neighbors, that is, by extending the density range. Contrast Limited Adaptive histogram equalization (CLAHE) unlike histogram equalization (HE), performs an equalization by dividing the image into blocks instead of the overall photos. Looking at the incubated eggs, it is seen that there are many different variable contrasts in vascularization. J.A. Stark clearly stated that contrast differences in vessel imaging with CLAHE eliminate the disadvantages of HE [27]. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.56573486328125,
+            624.3897705078125,
+            516.3812255859375,
+            650.6167
+          ],
+          "page": 5,
+          "span": [
+            0,
+            172
+          ]
+        }
+      ],
+      "text": "As shown in Figure 4, increasing the contrast with the Contrast Limited Adaptive histogram equalization (CLAHE) method is helpful for better visualization of vessels [27]. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.30755615234375,
+            586.6429443359375,
+            516.8964233398438,
+            612.66669
+          ],
+          "page": 5,
+          "span": [
+            0,
+            188
+          ]
+        }
+      ],
+      "text": "It is known that some noise may occur in the image with Histogram equalization, as shown in Figure 4. To reduce this noise effect, it is beneficial to apply Median blur to the photo [28]. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.51402282714844,
+            498.3295288085938,
+            517.3807983398438,
+            574.62665
+          ],
+          "page": 5,
+          "span": [
+            0,
+            513
+          ]
+        }
+      ],
+      "text": "The blood vessels were segmented, as shown in Figure 3 using the threshold So that The blood vessels are slightly more visible than the rest of the image. It is obvious that highlighting the features of segments carrying information in biological classifications will increase the success rate. By following the flowchart shown in Figure 4, the picture in which noise was removed with the median blur effect and the segmented picture of the veins were combined to maximize the meaningful data in the picture [29].",
+      "type": "paragraph"
+    },
+    {
+      "$ref": "#/figures/5",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "name": "caption",
+      "prov": [
+        {
+          "bbox": [
+            81.42501831054688,
+            123.5011596679688,
+            197.48,
+            140.216064453125
+          ],
+          "page": 5,
+          "span": [
+            0,
+            17
+          ]
+        }
+      ],
+      "text": "5. DATA ANALYSIS ",
+      "type": "caption"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            85.99994659423828,
+            757.8341674804688,
+            511.38998,
+            769.77441
+          ],
+          "page": 6,
+          "span": [
+            0,
+            101
+          ]
+        }
+      ],
+      "text": "International Journal of Computer Science & Information Technology (IJCSIT) Vol 15, No 2, April 2023 ",
+      "type": "paragraph"
+    },
+    {
+      "$ref": "#/page-footers/5",
+      "name": "page-footer",
+      "type": "page-footer"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.96549224853516,
+            675.6832275390625,
+            518.0676879882812,
+            751.77667
+          ],
+          "page": 6,
+          "span": [
+            0,
+            488
+          ]
+        }
+      ],
+      "text": "While small scores were obtained that would not make sense in classifications made without applying any image processing method, successful results were obtained in gender determination in the incubation early stage after image processing. 112 photos independent of training photos were taken from Atak-S and Broiler eggs on the 3,5 and 7 days of incubation and were classified using the Resnet-50 [30], Vgg-16 [31], and Inception-V4 [32] models. The results were obtained as in Table 1. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            80.81314849853516,
+            414.3799743652344,
+            518.4139404296875,
+            478.74664
+          ],
+          "page": 6,
+          "span": [
+            0,
+            436
+          ]
+        }
+      ],
+      "text": "After 7 days, the images obtained from the fertilized egg in the incubator were not considered as early stage and because the light transmittance of the egg was visibly reduced, no classification was made. As can be seen from Table 1, the clarification of veining with image processing in high-resolution photographs of fertilized eggs in the early hatching stage makes it partially possible to determine the sex of the hatched chicks. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            81.50642395019531,
+            364.2980346679688,
+            517.81298828125,
+            402.88663
+          ],
+          "page": 6,
+          "span": [
+            0,
+            299
+          ]
+        }
+      ],
+      "text": "As seen in Table 1, the highest score belongs to the classification algorithm of the Inception V4 model on the 5th day. This result shows that the light-operated cameras, which are related to the loss of light permeability of the fluid in the egg, can reveal the sex feature on the 5th day at best. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            81.13849639892578,
+            334.4097290039062,
+            180.6657867431641,
+            351.91965
+          ],
+          "page": 6,
+          "span": [
+            0,
+            14
+          ]
+        }
+      ],
+      "text": "6. CONCLUSION ",
+      "type": "subtitle-level-1"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            81.11129760742188,
+            183.45361328125,
+            518.4678955078125,
+            323.56665
+          ],
+          "page": 6,
+          "span": [
+            0,
+            1026
+          ]
+        }
+      ],
+      "text": "Considering the laws enacted by European countries regarding the culling of chicks, methods of sex determination in chicks will change radically around the world. In parallel with this, when we look at the literature, it is clear that pre-incubation and early-stage sex determinations are permanent solutions. The main reason why most of these methods are not commercialized is the cost, technical difficulty, and time factor. Our study is very open to improvement as it is the first study in the literature. Although our study did not have a high success rate, providing vascularization of the embryo close to the eggshell by methods such as obtaining the image from the bottom or not moving the egg for the first three days may allow us to get a clear and stable vascular picture in each egg. Likewise, since the data is not received with expensive industrial equipment, the method can be functional even with a mobile phone outside the industry. More stable methods can be developed by combining them with various methods. ",
+      "type": "paragraph"
+    },
+    {
+      "$ref": "#/figures/6",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            85.61752319335938,
+            757.3446044921875,
+            511.38998,
+            769.77441
+          ],
+          "page": 7,
+          "span": [
+            0,
+            101
+          ]
+        }
+      ],
+      "text": "International Journal of Computer Science & Information Technology (IJCSIT) Vol 15, No 2, April 2023 ",
+      "type": "paragraph"
+    },
+    {
+      "$ref": "#/page-footers/6",
+      "name": "page-footer",
+      "type": "page-footer"
+    },
+    {
+      "name": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            81.60266876220703,
+            737.3954467773438,
+            150.74001,
+            751.552
+          ],
+          "page": 7,
+          "span": [
+            0,
+            11
+          ]
+        }
+      ],
+      "text": "REFERENCES ",
+      "type": "subtitle-level-1"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.16136169433594,
+            701.9678955078125,
+            515.79199,
+            725.37439
+          ],
+          "page": 7,
+          "span": [
+            0,
+            143
+          ]
+        }
+      ],
+      "text": "[1] 'D\u00e9cret du 5 f\u00e9vrier 2022 et num\u00e9rot\u00e9 2022-137.' https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000045124750 (accessed Dec. 05, 2022). ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.71163940429688,
+            678.9789428710938,
+            515.7044067382812,
+            702.33441
+          ],
+          "page": 7,
+          "span": [
+            0,
+            158
+          ]
+        }
+      ],
+      "text": "[2] 'https://www.gesetze-im-internet.de/tierschg/BJNR012770972.html.' https://www.gesetze-iminternet.de/tierschg/BJNR012770972.html (accessed Dec. 05, 2022). ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.47517395019531,
+            644.7015991210938,
+            515.51978,
+            679.29437
+          ],
+          "page": 7,
+          "span": [
+            0,
+            242
+          ]
+        }
+      ],
+      "text": "[3] H.G\u00d6GER, 'CivcivCinsiyetiniKulu\u00e7kadan\u00c7\u0131kmadan\u00d6nceveyaG\u00fcnl\u00fckYa\u015ftaBelirlemeY\u00f6ntemleri,' Tavuk\u00e7ulukAra\u015ft\u0131rmaDergisi, vol. 14, no. 1, pp. 13-19, 2017, Accessed: Dec. 10, 2022. [Online]. Available: http://search/yayin/detay/258976 ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.75687408447266,
+            609.7955932617188,
+            515.7359619140625,
+            644.85437
+          ],
+          "page": 7,
+          "span": [
+            0,
+            198
+          ]
+        }
+      ],
+      "text": "[4] R. Galli et al., 'Sexing of chicken eggs by fluorescence and Raman spectroscopy through the shell membrane,' PLoS One, vol. 13, no. 2, p. e0192554, Feb. 2018, doi: 10.1371/JOURNAL.PONE.0192554. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.4346694946289,
+            575.67431640625,
+            516.1655883789062,
+            610.2644
+          ],
+          "page": 7,
+          "span": [
+            0,
+            241
+          ]
+        }
+      ],
+      "text": "[5] S. Klein, U. Baulain, M. Rokitta, G. Marx, J. Thielebein, and F. Ellendorff, Sexing the freshly laid egg-Development of embryos after manipulation; analytical approach and localization of the blastoderm in the intact egg, vol. 59. 2003. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            82.103996,
+            552.5164794921875,
+            516.06640625,
+            575.8244
+          ],
+          "page": 7,
+          "span": [
+            0,
+            180
+          ]
+        }
+      ],
+      "text": "[6] R. Hu, X. Geng, J. Ma, Y. Chen, Z. Li, and X. Ding, '[A simple and universal method for molecular sexing of birds],' Shi Yan Sheng Wu Xue Bao, vol. 36, pp. 401-404, Nov. 2003. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.26567077636719,
+            517.5006103515625,
+            515.8673706054688,
+            552.78436
+          ],
+          "page": 7,
+          "span": [
+            0,
+            253
+          ]
+        }
+      ],
+      "text": "[7] S. Klein and F. Ellendorff, 'Localization of Xho1 repetitive sequences on autosomes in addition to the W chromosome in chickens and its relevance for sex diagnosis,' Anim Genet, vol. 31, pp. 104-109, May 2000, doi: 10.1046/j.1365-2052.2000.00568.x. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.6941146850586,
+            483.5994567871094,
+            517.5054931640625,
+            518.34436
+          ],
+          "page": 7,
+          "span": [
+            0,
+            215
+          ]
+        }
+      ],
+      "text": "[8] C. Dunphy, 'Applications of flow cytometry and immunohistochemistry to diagnostic hematopathology,' Arch Pathol Lab Med, vol. 128, pp. 1004-1022, Oct. 2004, doi: 10.1043/1543-2165(2004)128<1004:AOFCAI>2.0.CO;2. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.5313949584961,
+            460.0595703125,
+            517.1680908203125,
+            483.78436
+          ],
+          "page": 7,
+          "span": [
+            0,
+            142
+          ]
+        }
+      ],
+      "text": "[9] A. Goeth and D. Booth, 'Temperature-dependent sex ratio in a bird,' Biol Lett, vol. 1, pp. 31-33, Apr. 2005, doi: 10.1098/rsbl.2004.0247. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.34455108642578,
+            425.828369140625,
+            517.9600830078125,
+            460.86435
+          ],
+          "page": 7,
+          "span": [
+            0,
+            235
+          ]
+        }
+      ],
+      "text": "[10] B. B\u00f6nneret al., 'Morphometric and allometric studies on eggshells and embryos of free-living Canada geese (Branta c. canadensis Linnaeus, 1758),' Eur J Wildl Res, vol. 50, pp. 179-186, Dec. 2004, doi: 10.1007/s10344-004-0061-0. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.30520629882812,
+            391.4617004394531,
+            518.729736328125,
+            426.28436
+          ],
+          "page": 7,
+          "span": [
+            0,
+            213
+          ]
+        }
+      ],
+      "text": "[11] C. M. Eising, W. M\u00fcller, and T. G. G. Groothuis, 'Avian mothers create different phenotypes by hormone deposition in their eggs,' Biol Lett, vol. 2, no. 1, pp. 20-22, Mar. 2006, doi: 10.1098/rsbl.2005.0391. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.2023696899414,
+            356.7807312011719,
+            518.1062622070312,
+            391.84436
+          ],
+          "page": 7,
+          "span": [
+            0,
+            225
+          ]
+        }
+      ],
+      "text": "[12] D. V. Gill, H. A. Robertson, and T. W. Betz, 'In vivo estrogen synthesis by the developing chicken (Gallus gallus) embryo,' Gen Comp Endocrinol, vol. 49, no. 2, pp. 176-186, Feb. 1983, doi: 10.1016/0016-6480(83)90134-X. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            82.103996,
+            333.455810546875,
+            516.2539672851562,
+            357.28436
+          ],
+          "page": 7,
+          "span": [
+            0,
+            145
+          ]
+        }
+      ],
+      "text": "[13] P. Phelps et al., 'Automated identification of male layer chicks prior to hatch,' in World's Poultry Science Journal, Dec. 2003, pp. 33-38. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            82.10234069824219,
+            299.1105346679688,
+            515.8594970703125,
+            334.36435
+          ],
+          "page": 7,
+          "span": [
+            0,
+            274
+          ]
+        }
+      ],
+      "text": "[14] A. Weissmann, S. Reitemeier, A. Hahn, J. Gottschalk, and A. Einspanier, 'Sexing domestic chicken before hatch: A new method for in ovo gender identification,' Theriogenology, vol. 80, no. 3, pp. 199-205, 2013, doi: https://doi.org/10.1016/j.theriogenology.2013.04.014. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            80.8942642211914,
+            264.589599609375,
+            515.5618896484375,
+            299.77435
+          ],
+          "page": 7,
+          "span": [
+            0,
+            254
+          ]
+        }
+      ],
+      "text": "[15] C. R. Pugh, E. D. Peebles, N. P. Pugh, and M. A. Latour, 'Ultrasonography as a Tool for Monitoring In Ovo Chicken Development.: 1. Technique and Morphological Findings,' Poult Sci, vol. 72, no. 12, pp. 2236-2246, Dec. 1993, doi: 10.3382/PS.0722236. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            82.103996,
+            219.74863,
+            515.37073,
+            265.33435
+          ],
+          "page": 7,
+          "span": [
+            0,
+            293
+          ]
+        }
+      ],
+      "text": "[16] Janet. Stromberg and Loyl. Stromberg, 'guide to better hatching,' p. 100, 1975, doi: 10.3/JQUERY-UI.JS. [17] R. Bellairs, 'The Development of the Nervous System in Chick Embryos, studied by Electron Microscopy,' Development, vol. 7, no. 1, pp. 94-115, Mar. 1959, doi: 10.1242/DEV.7.1.94. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.06903076171875,
+            172.5059814453125,
+            517.3384399414062,
+            219.25436
+          ],
+          "page": 7,
+          "span": [
+            0,
+            303
+          ]
+        }
+      ],
+      "text": "[18] D. G\u00f6hler, B. Fischer, and S. Meissner, 'In-ovo sexing of 14-day-old chicken embryos by pattern analysis in hyperspectral images (VIS/NIR spectra): A non-destructive method for layer lines with gender-specific down feather color,' Poult Sci, vol. 96, no. 1, pp. 1-4, 2017, doi: 10.3382/PS/PEW282. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.50743865966797,
+            148.88720703125,
+            517.095947265625,
+            173.29436
+          ],
+          "page": 7,
+          "span": [
+            0,
+            133
+          ]
+        }
+      ],
+      "text": "[19] Kiyoshi. Masui, Juro. Hashimoto, Hachiro. Okumura, and E. Alexander. Lloyd, 'Sexing baby chicks,' 1933, doi: 10.3/JQUERY-UI.JS. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.20162963867188,
+            115.0572509765625,
+            516.1923828125,
+            150.25436
+          ],
+          "page": 7,
+          "span": [
+            0,
+            249
+          ]
+        }
+      ],
+      "text": "[20] L. D. Bacon, E. Smith, L. B. Crittenden, and G. B. Havenstein, 'Association of the slow feathering (K) and an endogenous viral (ev21) gene on the Z chromosome of chickens,' Poult Sci, vol. 67, no. 2, pp. 191-197, 1988, doi: 10.3382/PS.0670191. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            80.93524932861328,
+            91.10809326171875,
+            516.1644287109375,
+            115.79436
+          ],
+          "page": 7,
+          "span": [
+            0,
+            184
+          ]
+        }
+      ],
+      "text": "[21] J. L. Campo and C. Alvarez, 'Genetics of the Birchen and Blue Plumage Patterns in Leonesa Chickens,' Poult Sci, vol. 72, no. 7, pp. 1218-1223, Jul. 1993, doi: 10.3382/PS.0721218. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            85.7401123046875,
+            757.7662353515625,
+            512.0987548828125,
+            769.77441
+          ],
+          "page": 8,
+          "span": [
+            0,
+            101
+          ]
+        }
+      ],
+      "text": "International Journal of Computer Science & Information Technology (IJCSIT) Vol 15, No 2, April 2023 ",
+      "type": "paragraph"
+    },
+    {
+      "$ref": "#/page-footers/7",
+      "name": "page-footer",
+      "type": "page-footer"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            82.03801727294922,
+            728.290283203125,
+            516.6947631835938,
+            751.77441
+          ],
+          "page": 8,
+          "span": [
+            0,
+            125
+          ]
+        }
+      ],
+      "text": "[22] C. R. Parkhurst and G. J. Mountney, 'Poultry Meat and Egg Production,' undefined, 1988, doi: 10.1007/978-1-4757-0683-3. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.16595458984375,
+            693.9449462890625,
+            516.7261962890625,
+            728.73438
+          ],
+          "page": 8,
+          "span": [
+            0,
+            229
+          ]
+        }
+      ],
+      "text": "[23] E. F. Kaleta and T. Redmann, 'Approaches to determine the sex prior to and after incubation of chicken eggs and of day-old chicks,' Worlds Poult Sci J, vol. 64, no. 3, pp. 391-399, Sep. 2008, doi: 10.1017/S0043933908000111. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.44113159179688,
+            659.0972900390625,
+            515.4791259765625,
+            694.29437
+          ],
+          "page": 8,
+          "span": [
+            0,
+            267
+          ]
+        }
+      ],
+      "text": "[24] S. S. M. Sheet, T. S. Tan, M. A. As'ari, W. H. W. Hitam, and J. S. Y. Sia, 'Retinal disease identification using upgraded CLAHE filter and transfer convolution neural network,' ICT Express, vol. 8, no. 1, pp. 142-150, Mar. 2022, doi: 10.1016/J.ICTE.2021.05.002. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.2493667602539,
+            624.4326171875,
+            515.24115,
+            659.73438
+          ],
+          "page": 8,
+          "span": [
+            0,
+            204
+          ]
+        }
+      ],
+      "text": "[25] R. C. Gonzalez and R. E. Woods, Digital image processing. Upper Saddle River, N.J.: Prentice Hall, 2008. [Online]. Available: http://www.amazon.com/Digital-Image-Processing-3rd-Edition/dp/013168728X ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.72245025634766,
+            601.0899658203125,
+            515.33752,
+            625.29437
+          ],
+          "page": 8,
+          "span": [
+            0,
+            126
+          ]
+        }
+      ],
+      "text": "[26] 'OpenCV: Image Thresholding.' https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html (accessed Dec. 05, 2022). ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.55943298339844,
+            578.4404296875,
+            515.32104,
+            602.22437
+          ],
+          "page": 8,
+          "span": [
+            0,
+            202
+          ]
+        }
+      ],
+      "text": "[27] J. A. Stark, 'Adaptive image contrast enhancement using generalizations of histogram equalization,' IEEE Transactions on Image Processing, vol. 9, no. 5, pp. 889-896, 2000, doi: 10.1109/83.841534. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            82.103996,
+            532.6080932617188,
+            515.83215,
+            579.30438
+          ],
+          "page": 8,
+          "span": [
+            0,
+            302
+          ]
+        }
+      ],
+      "text": "[28] S. Dua, N. Kandiraju, and H. W. Thompson, 'Design and implementation of a unique blood-vessel detection algorithm towards early diagnosis of Diabetic Retinopathy,' International Conference on Information Technology: Coding and Computing, ITCC, vol. 1, pp. 26-31, 2005, doi: 10.1109/ITCC.2005.120. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            80.78899383544922,
+            509.6137390136719,
+            516.546630859375,
+            533.22437
+          ],
+          "page": 8,
+          "span": [
+            0,
+            183
+          ]
+        }
+      ],
+      "text": "[29] A. A. Mudassar and S. Butt, 'Extraction of Blood Vessels in Retinal Images Using Four Different Techniques,' J Med Eng, vol. 2013, pp. 1-21, Dec. 2013, doi: 10.1155/2013/408120. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.43374633789062,
+            474.8743896484375,
+            515.7816162109375,
+            510.30435
+          ],
+          "page": 8,
+          "span": [
+            0,
+            262
+          ]
+        }
+      ],
+      "text": "[30] K. He, X. Zhang, S. Ren, and J. Sun, 'Deep Residual Learning for Image Recognition,' Proceedings of the IEEE Computer Society Conference on Computer Vision and Pattern Recognition, vol. 2016-December, pp. 770-778, Dec. 2015, doi: 10.48550/arxiv.1512.03385. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.26539611816406,
+            440.3942260742188,
+            516.3173828125,
+            475.74435
+          ],
+          "page": 8,
+          "span": [
+            0,
+            245
+          ]
+        }
+      ],
+      "text": "[31] K. Simonyan and A. Zisserman, 'Very Deep Convolutional Networks for Large-Scale Image Recognition,' 3rd International Conference on Learning Representations, ICLR 2015-Conference Track Proceedings, Sep. 2014, doi: 10.48550/arxiv.1409.1556. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "list-item",
+      "prov": [
+        {
+          "bbox": [
+            81.1977310180664,
+            405.6622314453125,
+            517.5626220703125,
+            441.28436
+          ],
+          "page": 8,
+          "span": [
+            0,
+            261
+          ]
+        }
+      ],
+      "text": "[32] C. Szegedy, S. Ioffe, V. Vanhoucke, and A. A. Alemi, 'Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning,' 31st AAAI Conference on Artificial Intelligence, AAAI 2017, pp. 4278-4284, Feb. 2016, doi: 10.48550/arxiv.1602.07261. ",
+      "type": "paragraph"
+    },
+    {
+      "name": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            80.82073211669922,
+            379.1097717285156,
+            134.1538238525391,
+            393.90198
+          ],
+          "page": 8,
+          "span": [
+            0,
+            8
+          ]
+        }
+      ],
+      "text": "AUTHORS ",
+      "type": "subtitle-level-1"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            81.68319702148438,
+            309.202880859375,
+            434.6864013671875,
+            367.60437
+          ],
+          "page": 8,
+          "span": [
+            0,
+            342
+          ]
+        }
+      ],
+      "text": "Ufuk Asil is a Ph.D. student at the Department of Computer Science, Dokuz Eylul University, Izmir, Turkey. He has been a Police officer since 2010. He received his master's degree in Nanoscience and Nanoengineering from Dokuz Eylul University. His research interests include Image Processing and Neuromorphic chip design. My personal website ",
+      "type": "paragraph"
+    },
+    {
+      "name": "text",
+      "prov": [
+        {
+          "bbox": [
+            81.9306411743164,
+            216.5921630859375,
+            434.6144714355469,
+            297.49435
+          ],
+          "page": 8,
+          "span": [
+            0,
+            548
+          ]
+        }
+      ],
+      "text": "Efendi Nasibov (Nasiboglu) received a B.Sc. and M.Sc. Degrees in the Applied Mathematics Department from Baku State University, Azerbaijan, and a Ph.D. degree in Mathematical Cybernetics (Moscow) and a Dr.Sc. of Computer Science degree from the Institute of Cybernetics of the Academy of Science of Azerbaijan. He is currently a full Professor at the Department of Computer Science, Dokuz Eylul University, Izmir, Turkey. His research interests are in the application of Fuzzy Modelling, Data Mining, and AI techniques in Decision-Making problems. ",
+      "type": "paragraph"
+    }
+  ],
+  "page-dimensions": [
+    {
+      "height": 841.91998,
+      "page": 1,
+      "width": 595.32001
+    },
+    {
+      "height": 841.91998,
+      "page": 2,
+      "width": 595.32001
+    },
+    {
+      "height": 841.91998,
+      "page": 3,
+      "width": 595.32001
+    },
+    {
+      "height": 841.91998,
+      "page": 4,
+      "width": 595.32001
+    },
+    {
+      "height": 841.91998,
+      "page": 5,
+      "width": 595.32001
+    },
+    {
+      "height": 841.91998,
+      "page": 6,
+      "width": 595.32001
+    },
+    {
+      "height": 841.91998,
+      "page": 7,
+      "width": 595.32001
+    },
+    {
+      "height": 841.91998,
+      "page": 8,
+      "width": 595.32001
+    }
+  ],
+  "page-footers": [
+    {
+      "prov": [
+        {
+          "bbox": [
+            502.2676086425781,
+            69.47564697265625,
+            516.2197875976562,
+            83.3985595703125
+          ],
+          "page": 1,
+          "span": [
+            0,
+            4
+          ]
+        }
+      ],
+      "text": " 19 ",
+      "type": "page-footer"
+    },
+    {
+      "prov": [
+        {
+          "bbox": [
+            502.2152404785156,
+            69.372802734375,
+            516.10004,
+            83.41375732421875
+          ],
+          "page": 2,
+          "span": [
+            0,
+            4
+          ]
+        }
+      ],
+      "text": " 20 ",
+      "type": "page-footer"
+    },
+    {
+      "prov": [
+        {
+          "bbox": [
+            502.3238830566406,
+            69.6832275390625,
+            516.10004,
+            83.274361
+          ],
+          "page": 3,
+          "span": [
+            0,
+            4
+          ]
+        }
+      ],
+      "text": " 21 ",
+      "type": "page-footer"
+    },
+    {
+      "prov": [
+        {
+          "bbox": [
+            502.3336791992188,
+            69.7056884765625,
+            516.2262573242188,
+            83.274361
+          ],
+          "page": 4,
+          "span": [
+            0,
+            4
+          ]
+        }
+      ],
+      "text": " 22 ",
+      "type": "page-footer"
+    },
+    {
+      "prov": [
+        {
+          "bbox": [
+            502.4343872070312,
+            69.887939453125,
+            516.10004,
+            83.274361
+          ],
+          "page": 5,
+          "span": [
+            0,
+            4
+          ]
+        }
+      ],
+      "text": " 23 ",
+      "type": "page-footer"
+    },
+    {
+      "prov": [
+        {
+          "bbox": [
+            502.2224426269531,
+            70.0765380859375,
+            516.7611083984375,
+            83.274361
+          ],
+          "page": 6,
+          "span": [
+            0,
+            4
+          ]
+        }
+      ],
+      "text": " 24 ",
+      "type": "page-footer"
+    },
+    {
+      "prov": [
+        {
+          "bbox": [
+            502.2565002441406,
+            69.19976806640625,
+            516.10004,
+            83.7923583984375
+          ],
+          "page": 7,
+          "span": [
+            0,
+            4
+          ]
+        }
+      ],
+      "text": " 25 ",
+      "type": "page-footer"
+    },
+    {
+      "prov": [
+        {
+          "bbox": [
+            502.3982238769531,
+            69.1650390625,
+            516.10004,
+            83.35162353515625
+          ],
+          "page": 8,
+          "span": [
+            0,
+            4
+          ]
+        }
+      ],
+      "text": " 26 ",
+      "type": "page-footer"
+    }
+  ],
+  "page-headers": [],
+  "references": [],
+  "tables": [],
+  "conversion_settings": {
+    "model_pipeline": {
+      "clusters": [
+        {
+          "type": "LayoutSegmentationModel",
+          "name": "LayoutSegmentationModel",
+          "version": "NA"
+        }
+      ],
+      "page": [],
+      "normalization": [],
+      "tables": [
+        {
+          "type": "TableStructureModel",
+          "name": "TableStructureModel",
+          "version": "NA"
+        }
+      ]
+    }
+  },
+  "version": 2
+}

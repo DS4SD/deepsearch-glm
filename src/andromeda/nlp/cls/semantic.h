@@ -29,9 +29,13 @@ namespace andromeda
     
     virtual bool preprocess(const subject<PARAGRAPH>& subj, std::string& text);
     virtual bool preprocess(const subject<TABLE>& subj, std::string& text);
+
+    //virtual bool classify(const std::string& orig, std::string& label, double& conf);
     
     virtual bool apply(subject<PARAGRAPH>& subj);
     virtual bool apply(subject<TABLE>& subj);
+
+    //virtual bool apply(subject<DOCUMENT>& subj);
     
   private:
 
@@ -50,6 +54,8 @@ namespace andromeda
     std::filesystem::path model_path;    
     
     std::vector<pcre2_expr> author_list, authors;
+    //std::vector<pcre2_expr> table_refs, figure_refs;
+    std::vector<pcre2_expr> caption_refs;
   };
 
   const std::set<model_name> nlp_model<CLS, SEMANTIC>::dependencies = {LINK,NUMVAL};
@@ -59,27 +65,23 @@ namespace andromeda
     
     resources_dir(andromeda::RESOURCES_DIR / "models/fasttext/semantic"),
     model_path("semantic-latest.bin")
-  {}
+    //model_path("semantic-v02.ftz")
+  {
+    initialise();    
+  }
   
   nlp_model<CLS, SEMANTIC>::nlp_model(std::filesystem::path resources_dir):
     fasttext_supervised_model(),    
 
     resources_dir(resources_dir / "models/fasttext/semantic"),
     model_path("semantic-latest.bin")
+    //model_path("semantic-v02.ftz")
   {
     initialise();
   }
 
   nlp_model<CLS, SEMANTIC>::~nlp_model()
   {}
-
-  /*
-    std::string get_author_expr(std::string name)
-    {
-    std::string expr = R"((?P<)" + name + R"(>(([A-Z][a-z]+\s)(([A-Z][a-z]+|[A-Z]\s\.|\-|\')\s)*([A-Z][a-z]+))))";
-    return expr;
-    }
-  */
 
   void nlp_model<CLS, SEMANTIC>::initialise()
   {
@@ -131,6 +133,34 @@ namespace andromeda
 		      R"((?P<author>((\s[A-Z\-]\s\.)+\s([A-Z][a-z]+)))\s(\,|and|\&)+)");
       authors.push_back(expr);
     }
+
+    {
+      pcre2_expr expr(this->get_key(), "__table__",
+		      R"(^(?P<table>(Table|TABLE|Tab|TAB))(\s*\.)?(\s*)(?P<index>(__(i|f)val__|[A-Z]))?)");
+      //table_refs.push_back(expr);
+      caption_refs.push_back(expr);
+    }
+
+    {
+      pcre2_expr expr(this->get_key(), "__table__",
+		      R"(^(?P<table>(Table|TABLE|Tab|TAB)))");
+      //table_refs.push_back(expr);
+      caption_refs.push_back(expr);
+    }
+
+    {
+      pcre2_expr expr(this->get_key(), "__figure__",
+		      R"(^(?P<figure>(Figure|FIGURE|Fig|FIG))(\s*\.)?(\s*)(?P<index>(__(i|f)val__|[A-Z])))");
+      //figure_refs.push_back(expr);
+      caption_refs.push_back(expr);
+    }
+
+    {
+      pcre2_expr expr(this->get_key(), "__figure__",
+		      R"(^(?P<figure>(Figure|FIGURE|Fig|FIG))(\s*\.)?)");
+      //figure_refs.push_back(expr);
+      caption_refs.push_back(expr);
+    }    
   }
 
   void nlp_model<CLS, SEMANTIC>::initialise_model()
@@ -160,6 +190,12 @@ namespace andromeda
 
   bool nlp_model<CLS, SEMANTIC>::preprocess(const subject<PARAGRAPH>& subj, std::string& text)
   {
+    assert(authors.size()>0);
+    assert(author_list.size()>0);
+    //assert(table_refs.size()>0);
+    //assert(figure_refs.size()>0);
+    assert(caption_refs.size()>0);
+    
     auto& wtokens = subj.word_tokens;
     
     std::stringstream ss;
@@ -186,7 +222,8 @@ namespace andromeda
       }
     
     text = ss.str();
-
+    //LOG_S(INFO) << __FUNCTION__ << " orig: " << text; 
+    
     for(auto& expr:author_list)
       {
 	std::vector<pcre2_item> items;
@@ -222,6 +259,126 @@ namespace andromeda
 	  }
       }
 
+    /*
+    if(subj.text.starts_with("Tab") or
+       subj.text.starts_with("Fig") or
+       subj.text.starts_with("TAB") or
+       subj.text.starts_with("FIG"))
+      {
+	if(text.size()<64)
+	  std::cout << text << "\n";
+	else
+	  std::cout << text.substr(0, 64) << "\n";
+      }
+    */
+
+    for(auto& expr:caption_refs)
+      {
+	std::vector<pcre2_item> items;
+	expr.find_all(text, items);
+
+	
+	for(auto& item:items)
+	  {
+	    //LOG_S(WARNING) << "\t" << item.text;
+	    text = utils::replace(text, item.text, "__caption_ref__");		    		    	    
+	  }
+
+	/*
+	if(items.size()>0)
+	  {
+	    text = "__caption_ref__";
+	  }
+	*/	
+      }
+
+    /*
+    for(auto& expr:table_refs)
+      {
+	std::vector<pcre2_item> items;
+	expr.find_all(text, items);
+
+	if(items.size()>0)
+	  {
+	    text = "__table_ref__";
+	  }
+
+	//for(auto& item:items)
+	  {
+	    //LOG_S(WARNING) << "detected: " << item.text;
+	    //text = utils::replace(text, item.text, "__table_ref__");		    		    	     
+	    //text = "__table_ref__";
+	      
+
+	    for(auto& grp:item.groups)
+	      {
+		if(grp.group_name=="table")
+		  {	    
+		    text = utils::replace(text, grp.text, "__table__");		    		    	   
+		  }
+
+		if(grp.group_name=="index")
+		  {	    
+		    text = utils::replace(text, grp.text, "__table_index__");		    		    	   
+		  }		
+	      }
+	    LOG_S(INFO) << " -> text: " << text << "\n";
+
+	  }
+      }
+    */
+	    
+    /*
+    for(auto& expr:figure_refs)
+      {
+	std::vector<pcre2_item> items;
+	expr.find_all(text, items);
+
+	if(items.size()>0)
+	  {
+	    text = "__figure_ref__";
+	  }
+	
+	//for(auto& item:items)
+	  {
+	    //LOG_S(WARNING) << "detected: " << item.text;
+	    //text = utils::replace(text, item.text, "__figure_ref__");		    		    	     
+	    
+	      
+
+	    for(auto& grp:item.groups)
+	      {
+		if(grp.group_name=="figure")
+		  {	    
+		    text = utils::replace(text, grp.text, "__figure__");		    		    	   
+		  }
+
+		if(grp.group_name=="index")
+		  {	    
+		    text = utils::replace(text, grp.text, "__figure_index__");		    		    	   
+		  }		
+	      }	    
+	    LOG_S(INFO) << " -> text: " << text << "\n";
+
+	  }
+      }        
+    */
+    
+    //LOG_S(INFO) << __FUNCTION__ << " -> " << text;
+
+    /*
+    if(subj.text.starts_with("Tab") or
+       subj.text.starts_with("Fig") or
+       subj.text.starts_with("TAB") or
+       subj.text.starts_with("FIG"))
+      {
+	if(text.size()<64)
+	  std::cout << text << "\n";
+	else
+	  std::cout << text.substr(0, 64) << "\n";
+      }
+    */
+    
     text = utils::to_lower(text);
     
     return true;
@@ -243,17 +400,74 @@ namespace andromeda
 
     return true;
   }
+
+  /*
+  bool nlp_model<CLS, SEMANTIC>::classify(const std::string& orig, std::string& label, double& conf)
+  {
+    std::string text = preprocess(orig);
+    
+    if(text.starts_with("__table_ref__") or
+       text.starts_with("__figure_ref__") )
+      {
+	label = "caption";
+	conf = 1.0;
+
+	LOG_S(WARNING) << "hard update for caption ....";
+      }    
+
+
+    std::string text = orig;
+    
+    for(auto& expr:table_refs)
+      {
+	std::vector<pcre2_item> items;
+	expr.find_all(text, items);
+
+	if(items.size()>0)
+	  {
+	    label = "caption";
+	    conf = 1.0;
+
+	    return true;
+	  }
+      }
+    
+    for(auto& expr:figure_refs)
+      {
+	std::vector<pcre2_item> items;
+	expr.find_all(text, items);
+
+	if(items.size()>0)
+	  {
+	    label = "caption";
+	    conf = 1.0;
+
+	    return true;
+	  }
+      }
+    
+    return fasttext_supervised_model::classify(orig, label, conf);
+  }
+  */
   
   bool nlp_model<CLS, SEMANTIC>::apply(subject<PARAGRAPH>& subj)
-  {
-    return classify(subj);
+  {       
+    return fasttext_supervised_model::classify(subj);
   }
 
   bool nlp_model<CLS, SEMANTIC>::apply(subject<TABLE>& subj)
   {
-    return classify(subj);
+    return fasttext_supervised_model::classify(subj);
   }
 
+  /*
+  bool nlp_model<CLS, SEMANTIC>::apply(subject<DOCUMENT>& subj)
+  {
+    LOG_S(WARNING) << __FUNCTION__ << " on document";
+    return false;
+  }
+  */
+  
 }
 
 #endif

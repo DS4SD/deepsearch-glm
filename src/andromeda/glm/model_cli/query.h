@@ -64,12 +64,12 @@ namespace andromeda
       config["mode"] = to_string(QUERY);
 
       {
-	nlohmann::json item = model_op<SAVE, model_type>::to_config();
+	nlohmann::json item = model_op<SAVE>::to_config();
 	config.merge_patch(item);
       }
       
       {
-	nlohmann::json item = model_op<LOAD, model_type>::to_config();
+	nlohmann::json item = model_op<LOAD>::to_config();
 	config.merge_patch(item);
       }
       

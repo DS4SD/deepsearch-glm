@@ -8,65 +8,73 @@ namespace andromeda
   namespace glm
   {
 
-    template<typename model_type>
-    class model_op<MERGE, model_type>
+    template<>
+    class model_op<MERGE>
     {
+      typedef andromeda::glm::model model_type;
+      
     public:
 
-      model_op(std::shared_ptr<model_type> model);
+      model_op();
       
-      void merge(std::shared_ptr<model_type> other);
+      void merge(std::shared_ptr<model_type> current,
+		 std::shared_ptr<model_type> other);
 
     private:
       
-      void merge_nodes(std::shared_ptr<model_type> other);
+      void merge_nodes(std::shared_ptr<model_type> current,
+		       std::shared_ptr<model_type> other);
 
-      void merge_edges(std::shared_ptr<model_type> other);
+      void merge_edges(std::shared_ptr<model_type> current,
+		       std::shared_ptr<model_type> other);
       
     private:
 
-      std::shared_ptr<model_type> model;
+      bool check_size;
     };
 
-    template<typename model_type>
-    model_op<MERGE, model_type>::model_op(std::shared_ptr<model_type> model):
-      model(model)
+    model_op<MERGE>::model_op():
+      check_size(false)
     {}
 
-    template<typename model_type>
-    void model_op<MERGE, model_type>::merge(std::shared_ptr<model_type> other)
+    void model_op<MERGE>::merge(std::shared_ptr<model_type> current,
+				std::shared_ptr<model_type> other)
     {
-      merge_nodes(other);
+      merge_nodes(current, other);
 
-      merge_edges(other);
+      merge_edges(current, other);
     }
 
-    template<typename model_type>
-    void model_op<MERGE, model_type>::merge_nodes(std::shared_ptr<model_type> other)
+    void model_op<MERGE>::merge_nodes(std::shared_ptr<model_type> current,
+				      std::shared_ptr<model_type> other)
     {
-      auto& nodes = model->get_nodes();
+      auto& curr_nodes = current->get_nodes();
       auto& other_nodes = other->get_nodes();
       
       for(auto itr=other_nodes.begin(); itr!=other_nodes.end(); itr++)
 	{
-	  nodes.insert(*itr);
+	  auto& flvr_coll = itr->second;
+	  for(auto& node:flvr_coll)
+	    {
+	      curr_nodes.insert(node, check_size);
+	    }
 	}
-
-      //nodes.sort();
     }
 
-    template<typename model_type>
-    void model_op<MERGE, model_type>::merge_edges(std::shared_ptr<model_type> other)
+    void model_op<MERGE>::merge_edges(std::shared_ptr<model_type> current,
+				      std::shared_ptr<model_type> other)
     {
-      auto& edges = model->get_edges();
+      auto& curr_edges = current->get_edges();
       auto& other_edges = other->get_edges();
       
       for(auto itr=other_edges.begin(); itr!=other_edges.end(); itr++)
 	{
-	  edges.insert(*itr);
+	  auto& flvr_coll = itr->second;
+	  for(auto& edge:flvr_coll)
+	    {
+	      curr_edges.insert(edge, check_size);
+	    }	  
 	}
-
-      //edges.collapse();
     }
     
   }

@@ -40,11 +40,11 @@ namespace andromeda
 
     base_producer(nlohmann::json& config,
 		  std::vector<model_ptr_type>& models);
-
+    
     base_producer(nlohmann::json& config,
 		  std::vector<model_ptr_type>& models,
 		  bool verbose);
-
+    
     virtual ~base_producer() {}
 
     virtual subject_name get_subject_name()=0;
@@ -85,6 +85,9 @@ namespace andromeda
     bool find_filepaths();
 
     bool get_output_file(std::filesystem::path& outfile);
+
+    bool get_output_file(std::filesystem::path& opath,
+			 std::filesystem::path& ifilename);
     
   protected:
 
@@ -294,11 +297,14 @@ namespace andromeda
     else
       {
 	LOG_S(INFO) << "found " << (this->paths).size() << " files to ingest!";
+
 	//for(auto itr=paths.begin(); itr!=paths.end(); itr++)
 	//{
 	//LOG_S(INFO) << "\t path: " << *itr;
 	//}
       }
+
+    std::sort(paths.begin(), paths.end());
     
     return true;
   }
@@ -307,6 +313,12 @@ namespace andromeda
   {
     if(not write_output)
       {
+	return false;
+      }
+
+    if(path_itr==path_end)
+      {
+	LOG_S(WARNING) << __FILE__ << ":" << __LINE__;
 	return false;
       }
     
@@ -332,6 +344,22 @@ namespace andromeda
       }
 
     //LOG_S(INFO) << "opening for writing: " << out.c_str();
+    
+    return true;
+  }
+
+  bool base_producer::get_output_file(std::filesystem::path& out,
+				      std::filesystem::path& ifilename)
+  {
+    if(opath!=null_opath and path_itr==path_end)
+      {
+	std::filesystem::path odir(opath.c_str());
+	
+	std::string ofile = utils::replace(ifilename.c_str(), iformat, oformat);
+	std::filesystem::path ofilename(ofile.c_str());
+	
+	out = odir / ofilename;	
+      }
     
     return true;
   }

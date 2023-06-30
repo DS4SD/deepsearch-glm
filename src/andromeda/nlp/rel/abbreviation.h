@@ -29,7 +29,7 @@ namespace andromeda
 
     bool initialise();
 
-    void find_abbreviation_entities(subject<PARAGRAPH>& subj);
+    void find_abbreviation_instances(subject<PARAGRAPH>& subj);
 
     void find_abbreviation_relations(subject<PARAGRAPH>& subj);
     
@@ -66,20 +66,20 @@ namespace andromeda
 	return false;
       }
     
-    find_abbreviation_entities(subj);
+    find_abbreviation_instances(subj);
 
     find_abbreviation_relations(subj);
     
     return update_applied_models(subj);
   }
 
-  void nlp_model<REL, ABBREVIATION>::find_abbreviation_entities(subject<PARAGRAPH>& subj)
+  void nlp_model<REL, ABBREVIATION>::find_abbreviation_instances(subject<PARAGRAPH>& subj)
   {  
     std::string& text = subj.text;
 
     //std::size_t max_id = subj.get_max_ent_hash();
     
-    for(auto& ent_j:subj.entities)
+    for(auto& ent_j:subj.instances)
       {
 	auto& crng = ent_j.char_range;
 
@@ -93,7 +93,7 @@ namespace andromeda
 	   (not filter_01.match(ent_j.orig)) and  // no all lower-case words
 	   (not filter_02.match(ent_j.orig))) // no numbers
 	  {
-	    subj.entities.emplace_back(//utils::to_hash(ent_j.name),
+	    subj.instances.emplace_back(subj.get_hash(),
 				       ABBREVIATION, ent_j.model_subtype,
 				       ent_j.name, ent_j.orig,
 				       crng, ctok_rng, wtok_rng);
@@ -105,9 +105,9 @@ namespace andromeda
   {
     std::map<std::size_t, std::size_t> i1_to_name, i1_to_term, i0_to_abbr;
     
-    for(std::size_t l=0; l<subj.entities.size(); l++)
+    for(std::size_t l=0; l<subj.instances.size(); l++)
       {
-	auto& ent_j = subj.entities.at(l);
+	auto& ent_j = subj.instances.at(l);
 	
 	if(ent_j.model_type==ABBREVIATION)
 	  {
@@ -129,30 +129,18 @@ namespace andromeda
 
 	if(i1_to_name.count(i0-2)==1)
 	  {
-	    //LOG_S(WARNING) << subj.entities.at(itr->second).orig << " --> "
-	    //<< subj.entities.at(i1_to_name.at(i0-2)).orig;
-	    
-	    auto& ent_i = subj.entities.at(itr->second);
-	    auto& ent_j = subj.entities.at(i1_to_name.at(i0-2));
-	   	    
-	    //subj.relations.emplace_back("to-definition", 1.0, ent_i.hash, ent_j.hash);
-	    //subj.relations.emplace_back("to-abbreviation", 1.0, ent_j.hash, ent_i.hash);
+	    auto& ent_i = subj.instances.at(itr->second);
+	    auto& ent_j = subj.instances.at(i1_to_name.at(i0-2));
 
-	    subj.relations.emplace_back("to-definition", 1.0, ent_i, ent_j);
+	    subj.relations.emplace_back("from-abbreviation", 1.0, ent_i, ent_j);
 	    subj.relations.emplace_back("to-abbreviation", 1.0, ent_j, ent_i);
 	  }
 	else if(i1_to_term.count(i0-2)==1)
 	  {
-	    //LOG_S(WARNING) << subj.entities.at(itr->second).orig << " --> "
-	    //<< subj.entities.at(i1_to_term.at(i0-2)).orig;
-	    
-	    auto& ent_i = subj.entities.at(itr->second);
-	    auto& ent_j = subj.entities.at(i1_to_term.at(i0-2));
-	    
-	    //subj.relations.emplace_back("to-definition", 1.0, ent_i.hash, ent_j.hash);
-	    //subj.relations.emplace_back("to-abbreviation", 1.0, ent_j.hash, ent_i.hash);
+	    auto& ent_i = subj.instances.at(itr->second);
+	    auto& ent_j = subj.instances.at(i1_to_term.at(i0-2));
 
-	    subj.relations.emplace_back("to-definition", 1.0, ent_i, ent_j);
+	    subj.relations.emplace_back("from-abbreviation", 1.0, ent_i, ent_j);
 	    subj.relations.emplace_back("to-abbreviation", 1.0, ent_j, ent_i);	    
 	  }
 	else

@@ -5,27 +5,15 @@
 
 namespace andromeda
 {
-  class base_relation
+  class base_relation: public base_types
   {
-    const static inline std::vector<std::string> SHRT_HEADERS
-    = { "type", "conf",
-	"hash_i", "hash_j",
-	"ihash_i", "ihash_j",
-	"name_i", "name_j"};
+    const static inline std::vector<std::string> SHRT_HEADERS = { "flvr", "name", "conf",
+								  "hash_i", "hash_j",
+								  //"ihash_i", "ihash_j",
+								  "name_i", "name_j"};
+
+    inline static std::mutex mtx;
     
-    //const static inline std::vector<std::string> LONG_HEADERS
-    //= { "type", "conf",
-    //"doc_hash_i", "subj_i", "subj_i_ind", "hash_i", "flvr_i", "range_i", "coord_i", "name_i",
-    //	"doc_hash_j", "subj_j", "subj_j_ind", "hash_j", "flvr_j", "range_j", "coord_j", "name_j"};
-
-    typedef typename word_token::fval_type fval_type;
-    typedef typename word_token::flvr_type flvr_type;
-    typedef typename word_token::hash_type hash_type;
-
-    typedef typename word_token::index_type index_type;
-    typedef typename word_token::range_type range_type;
-    typedef typename word_token::coord_type coord_type;
-
     inline static std::unordered_map<std::string, base_relation::flvr_type> to_flvr_map = {};
     inline static std::unordered_map<base_relation::flvr_type, std::string> to_name_map = {};
     
@@ -33,28 +21,67 @@ namespace andromeda
 
     static std::vector<std::string> headers() { return SHRT_HEADERS; }
 
+    static bool update(const base_relation::flvr_type& flvr, const std::string& rel_name);
+    
     static flvr_type   to_flvr(const std::string& rel_name);
     static std::string to_name(const flvr_type& rel_flvr);
 
-    base_relation(std::string name, fval_type conf,
-		  const base_entity& ent_i,
-		  const base_entity& ent_j);
+    base_relation();
+    
+    base_relation(std::string name, val_type conf,
+		  const base_instance& inst_i,
+		  const base_instance& inst_j);
 
     nlohmann::json to_json_row();
-
+    bool from_json_row(const nlohmann::json& row);
+    
     std::vector<std::string> to_row(std::size_t col_width);
+
+    std::string get_name() { return to_name(flvr); }
+
+    hash_type get_hash_i() { return hash_i; }
+    hash_type get_hash_j() { return hash_j; }
+
+    //hash_type get_ihash_i() { return ihash_i; }
+    //hash_type get_ihash_j() { return ihash_j; }
     
   private:
 
     flvr_type flvr;
-    fval_type conf;
+    val_type  conf;
 
-    const hash_type hash_i, ihash_i;
-    const hash_type hash_j, ihash_j;
+    hash_type hash_i, hash_j;
+    //hash_type hash_i, ihash_i;
+    //hash_type hash_j, ihash_j;
 
-    const std::string name_i, name_j;
+    std::string name_i, name_j;
   };
 
+  bool base_relation::update(const base_relation::flvr_type& flvr,
+			     const std::string& rel_name)
+  {
+    auto itr = to_flvr_map.find(rel_name);
+
+    if(itr!=to_flvr_map.end() and itr->first==rel_name and itr->second==flvr)
+      {
+	return true;
+      }
+    else if(itr!=to_flvr_map.end() and itr->first==rel_name and itr->second!=flvr)
+      {
+	LOG_S(ERROR) << "inconsistent relation flvr";
+	return false;
+      }
+    else
+      {
+	std::scoped_lock lock(mtx);
+
+	to_flvr_map.insert({rel_name, flvr});
+	to_name_map.insert({flvr, rel_name});
+
+	return true;
+      }
+  }
+  
   typename base_relation::flvr_type base_relation::to_flvr(const std::string& rel_name)
   {
     flvr_type flvr=-1;
@@ -67,11 +94,10 @@ namespace andromeda
       }
     else
       {
-	std::mutex mtx;
 	std::scoped_lock lock(mtx);
 
-	flvr = to_flvr_map.size();
-	
+	flvr = utils::to_flvr_hash(rel_name);
+
 	to_flvr_map.insert({rel_name, flvr});
 	to_name_map.insert({flvr, rel_name});
       }
@@ -92,27 +118,30 @@ namespace andromeda
     return name;
   }
 
-  base_relation::base_relation(std::string name, fval_type conf,
-			       const base_entity& ent_i,
-			       const base_entity& ent_j):
-    flvr(to_flvr(name)),
+  base_relation::base_relation()
+  {}
+  
+  base_relation::base_relation(std::string name, val_type conf,
+			       const base_instance& inst_i,
+			       const base_instance& inst_j):
+    flvr(to_flvr(name)),    
     conf(conf),
 
-    hash_i(ent_i.hash),
-    ihash_i(ent_i.ihash),
+    hash_i(inst_i.ehash),
+    //ihash_i(inst_i.ihash),
 
-    hash_j(ent_j.hash),
-    ihash_j(ent_j.ihash),
+    hash_j(inst_j.ehash),
+    //ihash_j(inst_j.ihash),
 
-    name_i(ent_i.name),
-    name_j(ent_j.name)
+    name_i(inst_i.name),
+    name_j(inst_j.name)
   {}
   
   nlohmann::json base_relation::to_json_row()
   {
-    nlohmann::json row = nlohmann::json::array({to_name(flvr), conf,
+    nlohmann::json row = nlohmann::json::array({flvr, to_name(flvr), conf,
 						hash_i, hash_j,
-						ihash_i, ihash_j,
+						//ihash_i, ihash_j,
 						name_i, name_j});
 	  
     assert(row.size()==SHRT_HEADERS.size());
@@ -120,12 +149,39 @@ namespace andromeda
     return row;
   }
 
+  bool base_relation::from_json_row(const nlohmann::json& row)
+  {
+    if((not row.is_array()) or row.size()!=9)
+      {
+	LOG_S(ERROR) << "inconsistent relation-row: " << row.dump();
+	return false;
+      }
+
+    flvr = row.at(0).get<flvr_type>();
+    std::string name = row.at(1).get<std::string>();
+
+    update(flvr, name);
+    
+    conf = row.at(2).get<val_type>();
+
+    hash_i = row.at(3).get<hash_type>();
+    //ihash_i = row.at(4).get<hash_type>();
+
+    hash_j = row.at(5).get<hash_type>();
+    //ihash_j = row.at(6).get<hash_type>();
+
+    name_i = row.at(7).get<std::string>();
+    name_j = row.at(8).get<std::string>();
+
+    return true;
+  }
+  
   std::vector<std::string> base_relation::to_row(std::size_t col_width)
   {
     std::vector<std::string> row =
-      { to_name(flvr), std::to_string(conf),
+      { std::to_string(flvr), to_name(flvr), std::to_string(conf),
 	std::to_string(hash_i), std::to_string(hash_j),
-	std::to_string(ihash_i), std::to_string(ihash_j),
+	//std::to_string(ihash_i), std::to_string(ihash_j),
 	name_i, name_j};
   
     assert(row.size()==SHRT_HEADERS.size());

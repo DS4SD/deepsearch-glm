@@ -11,7 +11,6 @@
 #include <andromeda/glm/model_cli/create/logger.h>
 #include <andromeda/glm/model_cli/create/model_merger.h>
 #include <andromeda/glm/model_cli/create/model_creator.h>
-#include <andromeda/glm/model_cli/create/model_augmenter.h>
 
 namespace andromeda
 {
@@ -20,6 +19,7 @@ namespace andromeda
     template<typename model_type>
     class model_cli<CREATE, model_type>
     {
+      typedef typename model_type::hash_type hash_type;
       typedef typename model_type::index_type index_type;
 
       typedef typename model_type::node_type node_type;
@@ -60,21 +60,21 @@ namespace andromeda
       
     private:
 
-      std::shared_ptr<model_type> model;
+      std::shared_ptr<model_type> model_ptr;
 
       create_config configuration;
     };
 
     template<typename model_type>
-    model_cli<CREATE, model_type>::model_cli(std::shared_ptr<model_type> model):
-      model(model),
+    model_cli<CREATE, model_type>::model_cli(std::shared_ptr<model_type> model_ptr):
+      model_ptr(model_ptr),
       configuration()
     {}
     
     template<typename model_type>
-    model_cli<CREATE, model_type>::model_cli(std::shared_ptr<model_type> model,
+    model_cli<CREATE, model_type>::model_cli(std::shared_ptr<model_type> model_ptr,
 					     nlohmann::json config):
-      model(model),
+      model_ptr(model_ptr),
       configuration(config)
     {}
 
@@ -89,7 +89,7 @@ namespace andromeda
       config["mode"] = to_string(CREATE);
 
       {
-	config["parameters"] = (model->get_parameters()).to_json();
+	config["parameters"] = (model_ptr->get_parameters()).to_json();
       }
       
       {
@@ -98,12 +98,12 @@ namespace andromeda
       }
       
       {
-	nlohmann::json item = model_op<SAVE, model_type>::to_config();
+	nlohmann::json item = model_op<SAVE>::to_config();
 	config.merge_patch(item);
       }
       
       {
-	nlohmann::json item = model_op<LOAD, model_type>::to_config();
+	nlohmann::json item = model_op<LOAD>::to_config();
 	config.merge_patch(item);
       }    
       
@@ -113,8 +113,6 @@ namespace andromeda
     template<typename model_type>
     void model_cli<CREATE, model_type>::create(std::shared_ptr<base_producer>& producer)
     {
-      //LOG_S(INFO) << "start creating glm!";
-      
       initialise();
 
       switch(producer->get_subject_name())
@@ -157,8 +155,8 @@ namespace andromeda
 		  << std::scientific << std::setprecision(2)
 		  << configuration.max_total_edges;
 
-      model->initialise(configuration.max_total_nodes,
-			configuration.max_total_edges);
+      model_ptr->initialise(configuration.max_total_nodes,
+			    configuration.max_total_edges);
     }
 
     template<typename model_type>
@@ -166,7 +164,7 @@ namespace andromeda
     {
       LOG_S(INFO) << "finalise glm";
 
-      model_augmenter<model_type> augmenter(model);
+      model_cli<AUGMENT, model_type> augmenter(model_ptr);
       augmenter.augment();
     }
 
@@ -195,15 +193,15 @@ namespace andromeda
       std::size_t line_count=0;
       std::atomic<std::size_t> merge_count=0;
       
-      nlohmann::json config = (model->get_parameters()).to_json();
+      nlohmann::json config = (model_ptr->get_parameters()).to_json();
       std::vector<std::future<std::size_t> > results(configuration.num_threads);
 
       std::shared_ptr<create_log> log = std::make_shared<create_log>(configuration.model_dir);      
       
       std::size_t total_text_read=0;
 
-      auto& nodes = model->get_nodes();
-      auto& edges = model->get_edges();
+      auto& nodes = model_ptr->get_nodes();
+      auto& edges = model_ptr->get_edges();
       
       edges.show_bucket_distribution();
       
@@ -214,7 +212,7 @@ namespace andromeda
 	  update_task(0, read_mtx, update_mtx,
 		      line_count, merge_count,
 		      config, reader, log,
-		      models.at(0), model);
+		      models.at(0), model_ptr);
 	}
       else
 	{
@@ -227,7 +225,7 @@ namespace andromeda
 					  std::ref(read_mtx), std::ref(update_mtx),
 					  std::ref(line_count), std::ref(merge_count), 
 					  std::ref(config), std::ref(reader),
-					  log, models.at(id), model);
+					  log, models.at(id), model_ptr);
 	      
 	      if(not results.at(id).valid())
 		{
@@ -301,11 +299,23 @@ namespace andromeda
 
       if(configuration.write_nlp_output)
 	{
-	  std::filesystem::path file = "nlp-"+std::to_string(thread_id) + ".jsonl";	  
-	  std::filesystem::path path = configuration.nlp_output_dir / file;
-
-	  LOG_S(WARNING) << "writing NLP to: " << path;
-	  configuration.write_nlp_output = nlp.set_ofs(path);
+	  if(nlp.get_subject_name()==PARAGRAPH)
+	    {
+	      std::filesystem::path file = "nlp-"+std::to_string(thread_id) + ".jsonl";	  
+	      std::filesystem::path path = configuration.nlp_output_dir / file;
+	      
+	      LOG_S(WARNING) << "writing NLP to: " << path;
+	      configuration.write_nlp_output = nlp.set_ofs(path);
+	    }
+	  else if(nlp.get_subject_name()==DOCUMENT)
+	    {
+	      std::filesystem::path odir = configuration.nlp_output_dir;
+	      
+	      LOG_S(WARNING) << "writing NLP to: " << odir;
+	      configuration.write_nlp_output = nlp.set_ofs(odir);
+	    }
+	  else
+	    {}
 	}
       
       while(true)
@@ -327,8 +337,9 @@ namespace andromeda
 		{
 		  nlp.write(subj);
 		}
-	      
-	      creator.update(subj);
+
+	      std::set<hash_type> doc_ents={};
+	      creator.update(subj, doc_ents);
 	    }
 	  else	    
 	    {

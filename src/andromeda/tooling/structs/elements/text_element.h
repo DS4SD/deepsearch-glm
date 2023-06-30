@@ -5,16 +5,10 @@
 
 namespace andromeda
 {
-  class text_element
+  class text_element: public base_types
   {
   public:
 
-    typedef typename word_token::hash_type hash_type;
-
-    typedef typename word_token::index_type index_type;
-    typedef typename word_token::range_type range_type;
-    
-    //typedef std::tuple<std::size_t, std::size_t, std::string> candidate_type;
     typedef std::tuple<index_type, index_type, std::string> candidate_type;
 
   public:
@@ -25,12 +19,13 @@ namespace andromeda
   public:
 
     text_element();
-    //text_element(std::string line);
 
     bool is_valid();
     
     void clear();
 
+    hash_type get_text_hash() const { return text_hash; }
+    
     bool set_text(const std::string& ctext);
 
     bool set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
@@ -70,15 +65,15 @@ namespace andromeda
 
   public:
 
-    bool valid;
+    bool text_valid;
 
+    uint64_t text_hash; // hash of normalised text
+    
     std::size_t len; // number-of-chars
     std::size_t dst; // number-of-utf8-tokens
 
     std::string orig; // original text
     std::string text; // normalised text (removing confusables)
-
-    std::string hash; // hash of normalised text
 
     std::vector<char_token> char_tokens;
     std::vector<word_token> word_tokens;
@@ -95,8 +90,9 @@ namespace andromeda
   }
 
   text_element::text_element():
-    valid(true),
-
+    text_valid(true),
+    text_hash(-1),
+    
     len(0),
     dst(0),
 
@@ -109,8 +105,9 @@ namespace andromeda
 
   void text_element::clear()
   {
-    valid = true;
-
+    text_valid = true;
+    text_hash = -1;
+    
     len=0;
     dst=0;
 
@@ -123,7 +120,7 @@ namespace andromeda
 
   bool text_element::is_valid()
   {
-    return valid;
+    return text_valid;
   }
 
   bool text_element::set(const std::string& ctext,
@@ -143,7 +140,8 @@ namespace andromeda
     clear();
 
     orig = utils::strip(ctext);
-
+    text = orig;
+    
     if(orig.size()==0)
       {
         return false;
@@ -151,9 +149,10 @@ namespace andromeda
 
     len = orig.size();
 
-    valid = utf8::is_valid(orig.c_str(), orig.c_str()+len);
-
-    return valid;
+    text_valid = utf8::is_valid(orig.c_str(), orig.c_str()+len);
+    text_hash = utils::to_hash(orig);
+    
+    return text_valid;
   }
 
   bool text_element::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
@@ -163,11 +162,11 @@ namespace andromeda
 
     len = text.size();
 
-    valid = utf8::is_valid(text.c_str(), text.c_str()+len);
+    text_valid = utf8::is_valid(text.c_str(), text.c_str()+len);
 
-    if(not valid)
+    if(not text_valid)
       {
-        return valid;
+        return text_valid;
       }
 
     dst = utf8::distance(text.c_str(), text.c_str()+len);

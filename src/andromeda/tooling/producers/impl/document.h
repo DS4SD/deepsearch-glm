@@ -14,8 +14,11 @@ namespace andromeda
   {
   public:
 
+    const static inline std::string order_text_lbl = "order-text";
+    
     const static inline std::string keep_text_lbl = "keep-text";
     const static inline std::string keep_table_lbl = "keep-tables";
+    const static inline std::string keep_figure_lbl = "keep-figures";
     
     typedef doc_type subject_type;
     
@@ -24,8 +27,6 @@ namespace andromeda
     producer();
     producer(std::vector<model_ptr_type> models);
     producer(nlohmann::json config, std::vector<model_ptr_type> models);
-
-    producer(const producer<DOCUMENT>& other);
 
     ~producer();
 
@@ -36,7 +37,7 @@ namespace andromeda
     virtual bool initialise(nlohmann::json& config);
     virtual bool reset_pointer();
 
-    virtual bool set_ofs(std::filesystem::path path);
+    virtual bool set_ofs(std::filesystem::path odir);
     
     /* next */
     
@@ -45,7 +46,6 @@ namespace andromeda
     virtual bool next(table_type& subj, std::size_t& cnt) { return false; };
     virtual bool next(paragraph_type& subj, std::size_t& cnt) { return false; };
 
-    //virtual bool next(webdoc_type& subj, std::size_t& cnt) { return false; };
     virtual bool next(doc_type& subj, std::size_t& cnt);
 
     /* read */
@@ -61,7 +61,6 @@ namespace andromeda
     virtual bool write(table_type& subj) { return false; };
     virtual bool write(paragraph_type& subj) { return false; };
 
-    //virtual bool write(webdoc_type& subj) { return false; };
     virtual bool write(doc_type& subj);    
 
     /* apply */
@@ -69,48 +68,55 @@ namespace andromeda
     virtual bool apply(table_type& subj) { return false; };
     virtual bool apply(paragraph_type& subj) { return false; };
 
-    //virtual bool apply(webdoc_type& subj) { return false; };
     virtual bool apply(doc_type& subj);
 
   private:
 
     std::size_t curr_docs;
+
+    bool order_text;
     
-    bool keep_text, keep_tables;
+    bool keep_text, keep_tables, keep_figures;
   };
 
   producer<DOCUMENT>::producer():
     base_producer(),
 
     curr_docs(0),
+
+    order_text(true),
     
     keep_text(true),
-    keep_tables(true)
+    keep_tables(true),
+    keep_figures(true)
   {}
 
   producer<DOCUMENT>::producer(std::vector<model_ptr_type> models):
     base_producer(models),
 
     curr_docs(0),
+
+    order_text(true),
     
     keep_text(true),
-    keep_tables(true)
+    keep_tables(true),
+    keep_figures(true)
   {}
   
   producer<DOCUMENT>::producer(nlohmann::json config,
-			     std::vector<model_ptr_type> models):
+			       std::vector<model_ptr_type> models):
     base_producer(models),
 
     curr_docs(0),
+
+    order_text(true),
     
     keep_text(true),
-    keep_tables(true)
+    keep_tables(true),
+    keep_figures(true)
   {
     initialise(config);
   }
-
-  producer<DOCUMENT>::producer(const producer<DOCUMENT>& other)
-  {}
 
   producer<DOCUMENT>::~producer()
   {}
@@ -133,9 +139,12 @@ namespace andromeda
 
       config[write_output_lbl] = true;
       config[opath_lbl] = "<optional:output-directory-of-json-files>";
+
+      config[order_text_lbl] = order_text;
       
       config[keep_text_lbl] = keep_text;
       config[keep_table_lbl] = keep_tables;
+      config[keep_figure_lbl] = keep_figures;
       
       configs.push_back(config);
     }
@@ -146,10 +155,14 @@ namespace andromeda
   bool producer<DOCUMENT>::initialise(nlohmann::json& config)
   {
     base_producer::initialise(config);
+
     base_producer::find_filepaths();
+
+    order_text = this->configuration.value(order_text_lbl, order_text);
     
     keep_text = this->configuration.value(keep_text_lbl, keep_text);
     keep_tables = this->configuration.value(keep_table_lbl, keep_tables);
+    keep_figures = this->configuration.value(keep_figure_lbl, keep_figures);
 
     return reset_pointer();
   }
@@ -167,6 +180,8 @@ namespace andromeda
   bool producer<DOCUMENT>::set_ofs(std::filesystem::path path)
   {
     base_producer::opath = path;
+    base_producer::write_output = true;
+    
     return true;
   }
   
@@ -182,11 +197,24 @@ namespace andromeda
 
   bool producer<DOCUMENT>::read(doc_type& subject, std::size_t& count)
   {
+    if(curr_docs>=maxnum_docs)
+      {
+	static bool show=true;
+	if(show)
+	  {
+	    show=false;
+	    LOG_S(WARNING) << "count is exceeding max-count: " << curr_docs
+			   << " versus " << maxnum_docs;
+	  }
+	
+        return false;
+      }
+    
     bool valid=false, success=false;
 
     while((not valid) and (path_itr!=path_end))
       {
-	//LOG_S(INFO) << "reading: " << path_itr->c_str();
+	LOG_S(INFO) << "reading: " << path_itr->c_str();
 
 	std::ifstream ifs(path_itr->c_str());
 	if(ifs)
@@ -194,7 +222,7 @@ namespace andromeda
 	    nlohmann::json data;
 	    ifs >> data;
 
-	    valid = subject.set_text(*path_itr, data);
+	    valid = subject.set_data(*path_itr, data, order_text);
 	  }
 
 	success = ((valid) and (path_itr!=path_end));
@@ -219,29 +247,42 @@ namespace andromeda
       {
         model->apply(subject);
       }
-
+    
+    subject.finalise();
+    
     return true;
   }
 
   bool producer<DOCUMENT>::write(doc_type& subj)
   {
-    std::filesystem::path ofile;
-    if(not get_output_file(ofile))
+    std::filesystem::path filepath = subj.filepath;
+    std::filesystem::path filename = filepath.filename();
+    
+    std::filesystem::path opath;
+    if(not get_output_file(opath, filename))
       {
+	LOG_S(ERROR) << "can not write: " << opath.c_str();
 	return false;
       }
-
+    
+    LOG_S(WARNING) << "writing: " << opath.c_str();
+    
     std::ofstream ofs;
-    ofs.open(ofile.c_str(), std::ofstream::out);
+    ofs.open(opath.c_str(), std::ofstream::out);
     
     if(ofs.good())
       {
 	nlohmann::json data = subj.to_json();
 
-	if(opath.ends_with("json"))
+	std::string ext=opath.extension();
+	if(ext==".json")
 	  {
 	    ofs << std::setw(4) << data;
 	  }
+	else if(ext==".jsonl")
+	  {
+	    ofs << data << "\n";
+	  }	
 	else
 	  {
 	    ofs << data << "\n";

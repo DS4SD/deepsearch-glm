@@ -44,7 +44,7 @@ namespace andromeda
       hash_type get_hash_i() const { return hash_i; };
       hash_type get_hash_j() const { return hash_j; };
       
-      std::string get_name() const { return node_names::to_name.at(flvr); };
+      std::string get_name() const { return edge_names::to_name(flvr); };
 
       cnt_type get_count() const { return count; }
       void     set_count(cnt_type cnt) { count = cnt; }
@@ -59,6 +59,8 @@ namespace andromeda
       nlohmann::json to_row();
 
       void update(const base_edge& other);
+
+      void set_lowerbound(flvr_type flavor, hash_type hash_i);
 
       friend bool operator<(const base_edge& lhs, const base_edge& rhs);
       
@@ -174,7 +176,7 @@ namespace andromeda
       {
         row.push_back(hash);
 	row.push_back(flvr);
-        row.push_back(edge_names::to_string(flvr));
+        row.push_back(edge_names::to_name(flvr));
 
         row.push_back(hash_i);
         row.push_back(hash_j);
@@ -205,6 +207,14 @@ namespace andromeda
         }
     }
 
+    void base_edge::set_lowerbound(flvr_type flavor, hash_type hash_i)
+    {
+      this->flvr = flavor;
+      this->hash_i = hash_i;
+      this->hash_j = edge_names::UNKNOWN_HASH;
+      this->count = std::numeric_limits<cnt_type>::max();
+    }
+    
     bool operator<(const base_edge& lhs, const base_edge& rhs)
     {
       if(lhs.flvr==rhs.flvr)

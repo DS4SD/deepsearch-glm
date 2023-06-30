@@ -33,27 +33,30 @@ namespace andromeda
       const static inline std::string sent_cnt_lbl = "sentence";
       const static inline std::string text_cnt_lbl = "text";
       const static inline std::string tabl_cnt_lbl = "table";
-      const static inline std::string docs_cnt_lbl = "document";
+      const static inline std::string fdoc_cnt_lbl = "document";
       
       const static inline std::vector<std::string> headers = {hash_lbl, flvr_lbl, name_lbl,
-							      word_cnt_lbl, sent_cnt_lbl, text_cnt_lbl, tabl_cnt_lbl, docs_cnt_lbl,
+							      word_cnt_lbl, sent_cnt_lbl,
+							      text_cnt_lbl, tabl_cnt_lbl, fdoc_cnt_lbl,
       							      text_lbl, nodes_text_lbl, tokens_text_lbl};
       
     public:
 
       base_node();
-
+      
+      base_node(flvr_type flvr, hash_type hash);
       base_node(flvr_type flavor, const std::string& text);
       base_node(flvr_type flavor, const std::vector<std::string>& text);
       base_node(flvr_type flavor, const std::vector<hash_type>& path);
 
-      bool is_valid() const { return (text_ptr!=NULL or nodes_ptr!=NULL or edges_ptr!=NULL); }
+      bool is_valid() const { return (hash!=node_names::UNKNOWN_HASH or text_ptr!=NULL or
+				      nodes_ptr!=NULL or edges_ptr!=NULL); }
       
       hash_type get_hash() const { return hash; };
       flvr_type get_flvr() const { return flvr; };
 
-      std::string get_name() const { return node_names::to_name.at(flvr); };
-
+      std::string get_name() const { return node_names::to_name(flvr); };
+      
       cnt_type count() const { return word_cnt; }
       ind_type length() const { return (nodes_ptr==NULL? 1: nodes_ptr->size()); }
 
@@ -61,13 +64,14 @@ namespace andromeda
       cnt_type get_sent_cnt() const { return sent_cnt; }
       cnt_type get_text_cnt() const { return text_cnt; }
       cnt_type get_tabl_cnt() const { return tabl_cnt; }
-      cnt_type get_docs_cnt() const { return docs_cnt; }
+      cnt_type get_fdoc_cnt() const { return fdoc_cnt; }
+      cnt_type get_subj_cnt() const { return (text_cnt+tabl_cnt+fdoc_cnt); }
 
       void incr_word_cnt()                  { word_cnt += 1; }
       void incr_sent_cnt(bool present=true) { sent_cnt += (present? 1:0); }
       void incr_text_cnt(bool present=true) { text_cnt += (present? 1:0); }
       void incr_tabl_cnt(bool present=true) { tabl_cnt += (present? 1:0); }
-      void incr_docs_cnt(bool present=true) { docs_cnt += (present? 1:0); }
+      void incr_fdoc_cnt(bool present=true) { fdoc_cnt += (present? 1:0); }
 
       std::vector<hash_type> get_nodes() { return (nodes_ptr==NULL? std::vector<hash_type>({}): *nodes_ptr.get()); }
       std::vector<hash_type> get_edges() { return (edges_ptr==NULL? std::vector<hash_type>({}): *edges_ptr.get()); }
@@ -78,10 +82,10 @@ namespace andromeda
       std::string get_text(nodes_type& nodes, bool connected) const;
 
       template<typename nodes_type>
-      void get_token_path(nodes_type& nodes_coll, std::vector<hash_type>& path) const;
+      std::size_t get_token_path(nodes_type& nodes, std::vector<hash_type>& path) const;
 
       template<typename nodes_type>
-      std::string get_token_text(nodes_type& nodes_coll, std::vector<hash_type>& path) const;
+      std::string get_token_text(nodes_type& nodes, std::vector<hash_type>& path) const;
       
       void clear();
       
@@ -110,17 +114,17 @@ namespace andromeda
 
     private:
 
-      // hash of the base_node
-      hash_type hash;
-
       // flavor of the node (see `node_names`)
       flvr_type flvr;
+      
+      // hash of the base_node
+      hash_type hash;
 
       cnt_type word_cnt; // number of appearances in total
       cnt_type sent_cnt; // number of appearances in different sentences
       cnt_type text_cnt; // number of appearances in different texts
       cnt_type tabl_cnt; // number of appearances in different tables
-      cnt_type docs_cnt; // number of appearances in different docs
+      cnt_type fdoc_cnt; // number of appearances in different docs
 
       std::shared_ptr<std::string> text_ptr;
 
@@ -129,14 +133,14 @@ namespace andromeda
     };
 
     base_node::base_node():
-      hash(node_names::UNKNOWN_HASH),
       flvr(node_names::UNKNOWN_FLVR),
+      hash(node_names::UNKNOWN_HASH),
 
       word_cnt(0),
       sent_cnt(0),
       text_cnt(0),
       tabl_cnt(0),
-      docs_cnt(0),
+      fdoc_cnt(0),
 
       text_ptr(NULL),
 
@@ -144,15 +148,32 @@ namespace andromeda
       edges_ptr(NULL)
     {}
 
+    base_node::base_node(flvr_type flvr, hash_type hash):
+      flvr(flvr),
+      hash(hash),
+
+      word_cnt(0),
+      sent_cnt(0),
+
+      text_cnt(flvr==node_names::TEXT? 1:0),
+      tabl_cnt(flvr==node_names::TABL? 1:0),
+      fdoc_cnt(flvr==node_names::FDOC? 1:0),
+
+      text_ptr(NULL),
+
+      nodes_ptr(NULL),
+      edges_ptr(NULL)
+    {}    
+
     base_node::base_node(flvr_type flavor, const std::string& text_):
-      hash(node_names::UNKNOWN_HASH),
       flvr(flavor),
+      hash(node_names::UNKNOWN_HASH),
 
       word_cnt(0),
       sent_cnt(0),
       text_cnt(0),
       tabl_cnt(0),
-      docs_cnt(0),
+      fdoc_cnt(0),
 
       text_ptr(std::make_shared<std::string>(text_)),
 
@@ -163,14 +184,14 @@ namespace andromeda
     }
 
     base_node::base_node(flvr_type flavor, const std::vector<std::string>& path):
-      hash(node_names::UNKNOWN_HASH),
       flvr(flavor),
+      hash(node_names::UNKNOWN_HASH),
 
       word_cnt(0),
       sent_cnt(0),
       text_cnt(0),
       tabl_cnt(0),
-      docs_cnt(0),
+      fdoc_cnt(0),
 
       text_ptr(NULL),
 
@@ -187,14 +208,14 @@ namespace andromeda
     }
 
     base_node::base_node(flvr_type flavor, const std::vector<hash_type>& path):
-      hash(node_names::UNKNOWN_HASH),
       flvr(flavor),
+      hash(node_names::UNKNOWN_HASH),
 
       word_cnt(0),
       sent_cnt(0),
       text_cnt(0),
       tabl_cnt(0),
-      docs_cnt(0),
+      fdoc_cnt(0),
 
       text_ptr(NULL),
 
@@ -213,7 +234,7 @@ namespace andromeda
       sent_cnt = 0;
       text_cnt = 0;
       tabl_cnt = 0;
-      docs_cnt = 0;
+      fdoc_cnt = 0;
       
       if( text_ptr!=NULL) { text_ptr.reset(); }
       if(nodes_ptr!=NULL) { nodes_ptr.reset(); }
@@ -222,16 +243,17 @@ namespace andromeda
     
     void base_node::initialise()
     {
-      if(text_ptr!=NULL)
+      if(hash!=node_names::UNKNOWN_HASH)
+	{}
+      else if(text_ptr!=NULL)
         {
           switch(flvr)
             {
             case node_names::TOKEN:
             case node_names::SYNTX:	      
             case node_names::LABEL:
-            case node_names::SUBLABEL:
               {
-                std::string item = "__"+node_names::to_name.at(flvr)+"_"+*text_ptr.get()+"__";
+                std::string item = "__"+node_names::to_name(flvr)+"_"+*text_ptr.get()+"__";
                 hash = utils::to_hash(item);
               }
               break;
@@ -278,7 +300,8 @@ namespace andromeda
 
     void base_node::update(const base_node& other)
     {
-      if(hash!=other.get_hash() or flvr!=other.get_flvr() )
+      if(hash!=other.get_hash() or
+	 flvr!=other.get_flvr() )
         {
           LOG_S(ERROR) << "mis-matching nodes ...";
 
@@ -295,7 +318,7 @@ namespace andromeda
       sent_cnt += other.get_sent_cnt();
       text_cnt += other.get_text_cnt();
       tabl_cnt += other.get_tabl_cnt();
-      docs_cnt += other.get_docs_cnt();
+      fdoc_cnt += other.get_fdoc_cnt();
     }
 
     std::string base_node::get_text() const
@@ -311,8 +334,10 @@ namespace andromeda
     }
 
     template<typename nodes_type>
-    void base_node::get_token_path(nodes_type& nodes_coll, std::vector<hash_type>& path) const
+    std::size_t base_node::get_token_path(nodes_type& nodes, std::vector<hash_type>& path) const
     {
+      path.clear();
+      
       switch(flvr)
 	{
 	case node_names::TOKEN:
@@ -329,16 +354,22 @@ namespace andromeda
 	  {
 	    if(nodes_ptr==NULL)
 	      {
-		LOG_S(WARNING) << "nodes is NULL for " << node_names::to_name.at(flvr);
-		return;
+		LOG_S(WARNING) << "nodes is NULL for " << node_names::to_name(flvr);
+		return 0;
 	      }
 	    
 	    for(hash_type hash:*nodes_ptr.get())
 	      {
 		base_node node;
-		if(nodes_coll.get(hash, node))
+		if(nodes.get(hash, node))
 		  {
-		    node.get_token_path(nodes_coll, path);
+		    std::vector<hash_type> new_path={};
+		    node.get_token_path(nodes, new_path);
+
+		    for(auto hash:new_path)
+		      {
+			path.push_back(hash);
+		      }
 		  }
 	      }
 	  }
@@ -354,68 +385,31 @@ namespace andromeda
 	default:
 	  {}
 	}
+
+      return path.size();
     }
 
     template<typename nodes_type>
-    std::string base_node::get_token_text(nodes_type& nodes_coll, std::vector<hash_type>& path) const
+    std::string base_node::get_token_text(nodes_type& nodes, std::vector<hash_type>& path) const
     {
+      get_token_path(nodes, path);      
+      
       std::stringstream ss;
-
-      for(auto thash:path)
+      for(std::size_t l=0; l<path.size(); l++)
 	{
+	  std::string conn = (l+1==path.size()? "":" ");
+	  
 	  base_node node;
-	  if(nodes_coll.get(thash, node))
+	  if(nodes.get(path.at(l), node))
 	    {
 	      std::string token = node.get_text();
-	      ss << token;
+	      ss << token << conn;
 	    }
 	}
 
       return ss.str();
     }
 
-    /*
-    template<typename nodes_type>
-    std::string base_node::get_text(nodes_type& nodes_coll) const
-    {
-      if(text!=NULL)
-        {
-          std::string res = *text.get();
-          return res;
-        }
-      else if(nodes!=NULL)
-        {
-          std::vector<hash_type> path = *nodes.get();
-
-          std::stringstream ss;
-          for(hash_type phash:path)
-            {
-	      base_node other;			
-              if(nodes_coll.get(phash, other))
-                {
-                  ss << other.get_text(nodes_coll) << " ";
-                }
-              else
-                {
-                  ss << "__unknown__" << " ";
-                }
-            }
-
-          std::string res = ss.str();
-          res.pop_back(); // remove trailing space;
-
-          return res;
-        }
-      else
-        {
-          LOG_S(ERROR) << __FILE__ << ":" << __LINE__ << " "
-                       << "both text and nodes are NULL: can not resolve text!";
-
-          return "__NULL__";
-        }
-    }
-    */
-    
     template<typename nodes_type>
     std::string base_node::get_text(nodes_type& nodes_coll, bool connected) const
     {
@@ -487,9 +481,13 @@ namespace andromeda
 	  
           return res;
         }
+      else if(flvr==node_names::TEXT or node_names::TABL or node_names::FDOC)
+	{
+	  return "";
+	}
       else
         {
-	  assert(false);
+	  //assert(false);
           LOG_S(ERROR) << __FILE__ << ":" << __LINE__ << " "
                        << "both text and nodes are NULL: can not resolve text!";
 
@@ -503,7 +501,7 @@ namespace andromeda
       {
         data[hash_lbl] = hash;
         data[flvr_lbl] = flvr;
-        data[name_lbl] = node_names::to_name.at(flvr);
+        data[name_lbl] = node_names::to_name(flvr);
 
         data[text_lbl] = nlohmann::json::value_t::null;
         if(text_ptr!=NULL)
@@ -528,7 +526,7 @@ namespace andromeda
         data[cnt_lbl][sent_cnt_lbl] = sent_cnt;
         data[cnt_lbl][text_cnt_lbl] = text_cnt;
         data[cnt_lbl][tabl_cnt_lbl] = tabl_cnt;
-        data[cnt_lbl][docs_cnt_lbl] = docs_cnt;
+        data[cnt_lbl][fdoc_cnt_lbl] = fdoc_cnt;
       }
 
       return data;
@@ -584,7 +582,7 @@ namespace andromeda
       sent_cnt = data[cnt_lbl][sent_cnt_lbl].get<cnt_type>();
       text_cnt = data[cnt_lbl][text_cnt_lbl].get<cnt_type>();
       tabl_cnt = data[cnt_lbl][tabl_cnt_lbl].get<cnt_type>();
-      docs_cnt = data[cnt_lbl][docs_cnt_lbl].get<cnt_type>();
+      fdoc_cnt = data[cnt_lbl][fdoc_cnt_lbl].get<cnt_type>();
 
       return true;
     }
@@ -595,13 +593,13 @@ namespace andromeda
       {
 	row.push_back(hash);
 	row.push_back(flvr);
-        row.push_back(node_names::to_name.at(flvr));
+        row.push_back(node_names::to_name(flvr));
 
 	row.push_back(word_cnt);
 	row.push_back(sent_cnt);
 	row.push_back(text_cnt);
 	row.push_back(tabl_cnt);
-	row.push_back(docs_cnt);
+	row.push_back(fdoc_cnt);
 
 	if(text_ptr==NULL)
 	  {
@@ -626,13 +624,13 @@ namespace andromeda
       {
 	row.push_back(hash);
 	row.push_back(flvr);
-        row.push_back(node_names::to_name.at(flvr));
+        row.push_back(node_names::to_name(flvr));
 
 	row.push_back(word_cnt);
 	row.push_back(sent_cnt);
 	row.push_back(text_cnt);
 	row.push_back(tabl_cnt);
-	row.push_back(docs_cnt);
+	row.push_back(fdoc_cnt);
 
 	if(text_ptr==NULL)
 	  {
@@ -683,7 +681,7 @@ namespace andromeda
       os.write((char*)&node.sent_cnt, sizeof(node.sent_cnt));
       os.write((char*)&node.text_cnt, sizeof(node.text_cnt));
       os.write((char*)&node.tabl_cnt, sizeof(node.tabl_cnt));
-      os.write((char*)&node.docs_cnt, sizeof(node.docs_cnt));
+      os.write((char*)&node.fdoc_cnt, sizeof(node.fdoc_cnt));
 
       auto& text_ptr = node.text_ptr;
       auto& nodes_ptr = node.nodes_ptr;
@@ -732,7 +730,7 @@ namespace andromeda
       is.read((char*)&node.sent_cnt, sizeof(node.sent_cnt));
       is.read((char*)&node.text_cnt, sizeof(node.text_cnt));
       is.read((char*)&node.tabl_cnt, sizeof(node.tabl_cnt));
-      is.read((char*)&node.docs_cnt, sizeof(node.docs_cnt));
+      is.read((char*)&node.fdoc_cnt, sizeof(node.fdoc_cnt));
 
       int16_t chars_len, nodes_len, edges_len;
 

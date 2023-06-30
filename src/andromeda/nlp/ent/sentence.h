@@ -65,7 +65,7 @@ namespace andromeda
     
     std::string text = subj.text;
     
-    for(auto& ent:subj.entities)
+    for(auto& ent:subj.instances)
       {
 	if(dependencies.count(ent.model_type)==1)
 	  {
@@ -108,7 +108,7 @@ namespace andromeda
 
 	    std::string sent = orig.substr(char_range[0], char_range[1]-char_range[0]); 
 	    
-	    subj.entities.emplace_back(//utils::to_hash(sent),
+	    subj.instances.emplace_back(subj.get_hash(),
 				       SENTENCE, "",
 				       sent, sent,
 				       char_range, ctok_range, wtok_range);

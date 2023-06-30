@@ -7,7 +7,7 @@ namespace andromeda
 {
   namespace utils
   {
-
+    
     std::string to_string(std::vector<std::string>& header,
                           std::vector<std::vector<std::string> >& data,
                           std::size_t max_cols=-1)

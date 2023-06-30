@@ -1,5 +1,6 @@
 //-*-C++-*-
 
+/*
 #ifndef ANDROMEDA_EXPORTERS_H_
 #define ANDROMEDA_EXPORTERS_H_
 
@@ -18,3 +19,4 @@ namespace andromeda
 #include <andromeda/tooling/exporters/webdoc.h>
 
 #endif
+*/

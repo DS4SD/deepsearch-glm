@@ -24,7 +24,7 @@ namespace andromeda
     virtual model_name get_name() { return EXPRESSION; }
 
     virtual bool apply(subject<PARAGRAPH>& subj);
-    virtual bool apply(subject<TABLE>& subj) { return false; }
+    virtual bool apply(subject<TABLE>& subj);
 
   private:
 
@@ -37,10 +37,12 @@ namespace andromeda
     bool apply_common_regex(subject<PARAGRAPH>& subj);
     bool apply_apostrophe_regex(subject<PARAGRAPH>& subj);
     bool apply_abbr_regex(subject<PARAGRAPH>& subj);
-      
+
     bool apply_regex(subject<PARAGRAPH>& subj);
 
     bool apply_concatenation_regex(subject<PARAGRAPH>& subj);
+    bool apply_concatenation_regex(subject<TABLE>& subj);
+    
     bool apply_latex_regex(subject<PARAGRAPH>& subj);
 
     bool find_concatenated_wtokens(subject<PARAGRAPH>& subj);
@@ -257,12 +259,19 @@ namespace andromeda
         common_names.push_back("etc");
       }
 
-      // example `...``
+      // example `...`
       {
         pcre2_expr expr(this->get_key(), "common", R"((?<expr>((\.\s*){2,}\.)))");
         common_exprs.push_back(expr);
         common_names.push_back("etc");
       }
+
+      // example `Grant No. 1`
+      {
+        pcre2_expr expr(this->get_key(), "common", R"((?<expr>((N|n)o\.)))");
+        common_exprs.push_back(expr);
+        common_names.push_back("number");
+      }      
     }
 
     {
@@ -291,6 +300,18 @@ namespace andromeda
     return true;
   }
 
+  bool nlp_model<ENT, EXPRESSION>::apply(subject<TABLE>& subj)
+  {
+    if(not satisfies_dependencies(subj))
+      {
+        return false;
+      }
+
+    apply_concatenation_regex(subj);
+    
+    return true;
+  }
+
   bool nlp_model<ENT, EXPRESSION>::apply(subject<PARAGRAPH>& subj)
   {
     //LOG_S(INFO) << "starting expression ...";
@@ -312,7 +333,7 @@ namespace andromeda
 
     post_process(subj);
 
-    subj.contract_wtokens_from_entities(EXPRESSION);
+    subj.contract_wtokens_from_instances(EXPRESSION);
 
     //subj.show(false, false, false, true, false, true, false);
 
@@ -327,9 +348,9 @@ namespace andromeda
 
     apply_abbr_regex(subj);
 
-    subj.contract_wtokens_from_entities(EXPRESSION);
+    subj.contract_wtokens_from_instances(EXPRESSION);
 
-    for(auto& ent:subj.entities)
+    for(auto& ent:subj.instances)
       {
         if(ent.model_type==EXPRESSION and ent.model_subtype=="common" and ent.wtoken_len()==1)
           {
@@ -385,8 +406,7 @@ namespace andromeda
                       }
                     //LOG_S(INFO) << __FUNCTION__ << " " << l << ": " << orig;
 
-                    subj.entities.emplace_back(//++max_id, //subj.entities.size(),
-                                               //utils::to_hash(name),
+                    subj.instances.emplace_back(subj.get_hash(),
                                                EXPRESSION, expr.get_subtype(),
                                                name, orig,
                                                char_range, ctok_range, wtok_range);
@@ -429,8 +449,7 @@ namespace andromeda
                     orig = subj.from_ctok_range(ctok_range);
                     name = utils::replace(orig, "'", "");
 
-                    subj.entities.emplace_back(//++max_id, //subj.entities.size(),
-                                               //utils::to_hash(name),
+                    subj.instances.emplace_back(subj.get_hash(),
                                                EXPRESSION, expr.get_subtype(),
                                                name, orig,
                                                char_range, ctok_range, wtok_range);
@@ -471,7 +490,7 @@ namespace andromeda
                     orig = subj.from_ctok_range(ctok_range);
                     name = utils::replace(orig, ".", "");
 
-                    subj.entities.emplace_back(//utils::to_hash(name),
+                    subj.instances.emplace_back(subj.get_hash(),
                                                EXPRESSION, expr.get_subtype(),
                                                name, orig,
                                                char_range, ctok_range, wtok_range);
@@ -507,10 +526,7 @@ namespace andromeda
 
   bool nlp_model<ENT, EXPRESSION>::apply_concatenation_regex(subject<PARAGRAPH>& subj)
   {
-    //std::string orig = subj.text;
     std::string text = subj.text;
-
-    //std::size_t max_id = subj.get_max_ent_hash();
 
     // find all concat expressions
     for(auto& expr:concat_exprs)
@@ -538,16 +554,16 @@ namespace andromeda
 
                     // FIXME: it would be nice to have something more sophisticated ...
                     bool keep=true;
-                    if(name.ends_with(" and") or name.ends_with(" or"))
+                    if(name.ends_with(" and") or
+                       name.ends_with(" or"))
                       {
                         keep = false;
                       }
 
                     if(keep)
                       {
-                        subj.entities.emplace_back(//++max_id,
-                                                   //utils::to_hash(name),
-                                                   EXPRESSION, expr.get_subtype(),
+                        subj.instances.emplace_back(subj.get_hash(),
+						   EXPRESSION, expr.get_subtype(),
                                                    name, orig,
                                                    char_range, ctok_range, wtok_range);
                       }
@@ -561,12 +577,80 @@ namespace andromeda
     return true;
   }
 
+  bool nlp_model<ENT, EXPRESSION>::apply_concatenation_regex(subject<TABLE>& subj)
+  {
+    for(std::size_t i=0; i<subj.num_rows(); i++)
+      {
+        for(std::size_t j=0; j<subj.num_cols(); j++)
+          {
+            if(subj(i,j).text.size()==0)
+              {
+                continue;
+              }
+
+            std::string text = subj(i,j).text;
+
+            // find all concat expressions
+            for(auto& expr:concat_exprs)
+              {
+                std::vector<pcre2_item> items;
+                expr.find_all(text, items);
+
+                for(auto& item:items)
+                  {
+                    //LOG_S(INFO) << item.to_json().dump();
+
+                    for(auto& grp:item.groups)
+                      {
+                        if(grp.group_name=="expr")
+                          {
+                            range_type char_range = grp.rng;
+
+                            range_type ctok_range = subj(i,j).get_char_token_range(grp.rng);
+                            range_type wtok_range = subj(i,j).get_word_token_range(grp.rng);
+
+                            std::string orig="", name="";
+
+                            orig = subj(i,j).from_ctok_range(ctok_range);
+                            name = normalise(orig);
+
+                            // FIXME: it would be nice to have something more sophisticated ...
+                            bool keep=true;
+                            if(name.ends_with(" and") or
+                               name.ends_with(" or"))
+                              {
+                                keep = false;
+                              }
+
+                            if(keep)
+                              {
+                                subj.instances.emplace_back(subj.get_hash(),
+							   EXPRESSION, expr.get_subtype(),
+                                                           name, orig,
+                                                           subj(i,j).get_coor(),
+                                                           subj(i,j).get_span(),
+                                                           char_range,
+							   ctok_range,
+							   wtok_range);
+                              }
+
+                            utils::mask(text, char_range);
+                          }
+                      }
+                  }
+              }
+          }
+      }
+
+    return true;
+  }
+
   bool nlp_model<ENT, EXPRESSION>::apply_latex_regex(subject<PARAGRAPH>& subj)
   {
     //std::string orig = subj.text;
     std::string text = subj.text;
 
-    for(auto& ent:subj.entities)
+    for(auto& ent:subj.instances)
       {
         if(ent.model_type==CITE)
           {
@@ -604,8 +688,7 @@ namespace andromeda
                         orig = subj.from_ctok_range(ctok_range);
                         name = normalise(orig);
 
-                        subj.entities.emplace_back(//++max_id,
-                                                   //utils::to_hash(name),
+                        subj.instances.emplace_back(subj.get_hash(),
                                                    EXPRESSION, expr.get_subtype(),
                                                    name, orig,
                                                    char_range, ctok_range, wtok_range);
@@ -623,7 +706,7 @@ namespace andromeda
   bool nlp_model<ENT, EXPRESSION>::find_concatenated_wtokens(subject<PARAGRAPH>& subj)
   {
     std::set<std::size_t> forbidden_inds={};
-    for(auto& ent:subj.entities)
+    for(auto& ent:subj.instances)
       {
         if(ent.model_type==CITE)
           {
@@ -679,7 +762,7 @@ namespace andromeda
 
     while(wtoken_inds.size()>=2)
       {
-	index_type wind = wtoken_inds.front();
+        index_type wind = wtoken_inds.front();
         std::string word = wtokens.at(wind).get_word();
 
         if(special_begins.count(word)==1)
@@ -741,8 +824,7 @@ namespace andromeda
           {
             //std::size_t max_id = subj.get_max_ent_hash();
 
-            subj.entities.emplace_back(//++max_id, //subj.entities.size(),
-                                       //utils::to_hash(name),
+            subj.instances.emplace_back(subj.get_hash(),
                                        EXPRESSION, "wtoken-concatenation",
                                        name, orig,
                                        char_range, ctok_range, wtok_range);
@@ -752,11 +834,11 @@ namespace andromeda
 
   bool nlp_model<ENT, EXPRESSION>::post_process(subject<PARAGRAPH>& subj)
   {
-    auto& ents = subj.entities;
+    auto& insts = subj.instances;
 
-    auto itr=ents.begin();
+    auto itr=insts.begin();
 
-    while(itr!=ents.end())
+    while(itr!=insts.end())
       {
         auto& ent = *itr;
 
@@ -808,12 +890,12 @@ namespace andromeda
             if(orig.starts_with("(") and orig.ends_with(")"))
               {
                 //LOG_S(INFO) << " -> removing: " << ent.orig << "; " << ent.name;
-                itr = ents.erase(itr);
+                itr = insts.erase(itr);
               }
             else if(text.size()==0 or words.size()>=3)
               {
                 //LOG_S(INFO) << " -> removing: " << ent.orig;
-                itr = ents.erase(itr);
+                itr = insts.erase(itr);
               }
             else if(((cnt_$%2)!=0 or
                      diff_cnt_rb!=0 or
@@ -821,7 +903,7 @@ namespace andromeda
                      diff_cnt_sb!=0))
               {
                 //LOG_S(INFO) << " -> removing: " << ent.orig << "; " << ent.name;
-                itr = ents.erase(itr);
+                itr = insts.erase(itr);
               }
             else // keep it ...
               {
@@ -842,11 +924,11 @@ namespace andromeda
       {
         erasing=false;
 
-        //LOG_S(INFO) << "#-entities: " << ents.size();
+        //LOG_S(INFO) << "#-instances: " << insts.size();
 
-        for(auto itr_i=ents.begin(); itr_i!=ents.end(); itr_i++)
+        for(auto itr_i=insts.begin(); itr_i!=insts.end(); itr_i++)
           {
-            for(auto itr_j=ents.begin(); itr_j!=ents.end(); itr_j++)
+            for(auto itr_j=insts.begin(); itr_j!=insts.end(); itr_j++)
               {
                 auto cr_i = itr_i->char_range;
                 auto cr_j = itr_j->char_range;
@@ -859,7 +941,7 @@ namespace andromeda
                   {
                     //LOG_S(INFO) << "removing: " << itr_i->orig << "; " << itr_i->name;
 
-                    itr_i = ents.erase(itr_i);
+                    itr_i = insts.erase(itr_i);
                     erasing=true;
                   }
                 if(itr_i!=itr_j and
@@ -870,7 +952,7 @@ namespace andromeda
                   {
                     //LOG_S(INFO) << "removing: " << itr_i->orig << "; " << itr_i->name;
 
-                    itr_i = ents.erase(itr_i);
+                    itr_i = insts.erase(itr_i);
                     erasing=true;
                   }
                 else if(itr_i->model_type==EXPRESSION and
@@ -879,7 +961,7 @@ namespace andromeda
                   {
                     //LOG_S(INFO) << "removing: " << itr_i->orig << "; " << itr_i->name;
 
-                    itr_i = ents.erase(itr_i);
+                    itr_i = insts.erase(itr_i);
                     erasing=true;
                   }
                 else

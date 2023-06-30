@@ -31,6 +31,8 @@ namespace andromeda
 
       glm_nodes();
       ~glm_nodes();
+
+      bool is_consistent();
       
       double load_factor() { return hash_to_key.load_factor(); }
       double max_load_factor() { return hash_to_key.max_load_factor(); }
@@ -68,6 +70,7 @@ namespace andromeda
       node_type& insert(node_type& other, bool check_size);
       
       void sort();
+      void sort(flvr_type flavor);
       
     private:
 
@@ -86,6 +89,37 @@ namespace andromeda
     glm_nodes::~glm_nodes()
     {}
 
+    bool glm_nodes::is_consistent()
+    {
+      LOG_S(INFO);
+
+      std::size_t tot=0;
+      std::set<hash_type> hashes={};
+
+      for(auto itr=begin(); itr!=end(); itr++)
+	{
+	  tot += (itr->second).size();
+	  
+	  for(auto& node:itr->second)
+	    {
+	      if(not has(node.get_hash()))
+		{
+		  LOG_S(WARNING) << "node-hash not known: " << node.to_json().dump(2);
+		}
+	      
+	      if(hashes.count(node.get_hash()))
+		{
+		  LOG_S(WARNING) << "node-hash duplicated: " << node.to_json().dump(2);
+		}
+	      
+	      hashes.insert(node.get_hash());
+	    }
+	}
+      LOG_S(INFO) << __FUNCTION__ << " --> total nodes: " << tot << " [" << size() << "]";
+
+      return (tot==size());
+    }
+    
     void glm_nodes::show_bucket_distribution()
     {
       std::map<std::size_t, std::size_t> cnt={};
@@ -116,18 +150,6 @@ namespace andromeda
 	}
     }
 
-    /*
-    std::size_t glm_nodes::size()
-    {
-      return hash_to_key.size();
-    }
-
-    std::size_t glm_nodes::size(flvr_type flvr)
-    {
-      return flvr_colls.at(flvr).size();
-    }
-    */
-    
     void glm_nodes::clear()
     {
       hash_to_key.clear();
@@ -137,18 +159,24 @@ namespace andromeda
     void glm_nodes::initialise()
     {
       clear();
-
-      for(auto item:node_names::to_name)
-	{
-	  flvr_colls[item.first].reserve(1e6);
-	}
       
-      for(std::string name:node_names::NAMES)	
+      for(auto itr=node_names::begin(); itr!=node_names::end(); itr++)
+	{
+	  flvr_colls[itr->first].reserve(1e6);
+	}
+
+      for(std::string name:node_names::TOKEN_NAMES)	
 	{
 	  auto& node = this->insert(node_names::TOKEN, name);
 	  node_names::to_hash[name] = node.get_hash();
 	}
-
+      
+      for(std::string name:node_names::LABEL_NAMES)	
+	{
+	  auto& node = this->insert(node_names::LABEL, name);
+	  node_names::to_hash[name] = node.get_hash();
+	}
+      
       reserve(1e7);
     }
 
@@ -274,11 +302,37 @@ namespace andromeda
 	  return other;
         }
     }
+
+    void glm_nodes::sort(flvr_type flvr)
+    {
+      if(flvr_colls.count(flvr)==0)
+	{
+	  return;
+	}
+      
+      auto& coll = flvr_colls.at(flvr);
+      std::sort(coll.begin(), coll.end());
+
+      for(std::size_t ind=0; ind<coll.size(); ind++)
+	{
+	  node_type& node = coll.at(ind);
+	  
+	  flvr_type flvr = node.get_flvr(); 
+	  hash_type hash = node.get_hash();
+	  
+	  hash_to_key.at(hash) = key_type({flvr, ind});
+	}	  
+    }
     
     void glm_nodes::sort()
     {
       LOG_S(INFO) << __FUNCTION__;
+      for(auto itr=flvr_colls.begin(); itr!=flvr_colls.end(); itr++)
+	{
+	  sort(itr->first);
+	}
       
+      /*
       {
 	LOG_S(INFO) << " --> sorting nodes ... ";
 	for(auto itr=flvr_colls.begin(); itr!=flvr_colls.end(); itr++)
@@ -304,7 +358,8 @@ namespace andromeda
 		hash_to_key.at(hash) = key_type({flvr, ind});
 	      }
 	  }
-      }      
+      }    
+      */  
     }
     
   }

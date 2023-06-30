@@ -303,7 +303,8 @@ namespace andromeda
   
   bool fasttext_supervised_model::preprocess(const subject<TABLE>& subj, std::string& text)
   {
-    return false;
+    text = subj.get_text();
+    return (text.size()>0);
   }
   
   bool fasttext_supervised_model::prepare_data()
@@ -446,6 +447,22 @@ namespace andromeda
 	this->classify(sample.second, pred_label, conf);
 
 	conf_matrix.update(true_label, pred_label);
+
+	if(true_label!=pred_label)
+	 {
+	   if(sample.second.size()<64)
+	     {
+	       LOG_S(INFO) << "true: " << std::setw(24) << true_label << "; "
+			   << "pred: " << std::setw(24) << pred_label
+			   << " => text: " << sample.second;
+	     }
+	   else
+	     {
+	       LOG_S(INFO) << "true: " << std::setw(24) << true_label << "; "
+			   << "pred: " << std::setw(24) << pred_label
+			   << " => text: " << sample.second.substr(0,64);
+	     }
+	 }
       }
 
     conf_matrix.compute();
@@ -537,6 +554,9 @@ namespace andromeda
 
 	subj.properties.emplace_back(key, label, conf);
 	subj.applied_models.insert(key);
+
+	//LOG_S(INFO) << "text: " << text;
+	//LOG_S(INFO) << key << " (" << label << "): " << conf;
       }
     
     return update_applied_models(subj);    

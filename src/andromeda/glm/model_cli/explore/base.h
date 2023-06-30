@@ -92,7 +92,7 @@ namespace andromeda
 	  if(model_nodes.get(qry_node.hash, node)) 
 	    {
 	      std::vector<std::string> row={std::to_string(node.hash),
-					    node_names::to_name.at(node.flavor),
+					    node_names::to_name(node.flavor),
 					    
 					    std::to_string(qry_node.weight),
 					    std::to_string(qry_node.prob),

@@ -24,8 +24,8 @@ namespace andromeda
       const static inline flvr_type TOKEN = 0;
       const static inline flvr_type SYNTX = 1;
 
-      const static inline flvr_type    LABEL = 2;
-      const static inline flvr_type SUBLABEL = 3;
+      const static inline flvr_type LABEL = 2;
+      //const static inline flvr_type SUBLABEL = 3;
 
       const static inline flvr_type CONT = 8;  // contraction
       const static inline flvr_type CONN = 9;  // connector (eg `of a`, `with these`, etc)
@@ -33,13 +33,15 @@ namespace andromeda
       const static inline flvr_type VERB = 11;  // verb
       
       const static inline flvr_type SENT = 16; // sentence
+
       const static inline flvr_type TEXT = 32; // text (multiple sentences)
       const static inline flvr_type TABL = 48; // table
 
       const static inline flvr_type SECT = 64; // section (multiple texts)
+      const static inline flvr_type CHAP = 65; // chapter (multiple sections)
 
-      const static inline flvr_type FDOC = 96; // book (multiple sections)
-      const static inline flvr_type BOOK = 128; // book (multiple sections)
+      const static inline flvr_type FDOC = 96; // full documents (multiple sections)
+      const static inline flvr_type BOOK = 97; // book (multiple sections)
       
       const static inline std::string UNKNOWN = "__unknown__";
       const static inline std::string MASK = "__mask__";
@@ -55,13 +57,16 @@ namespace andromeda
       const static inline std::string BEG_TEXT = "__beg_text__";
       const static inline std::string END_TEXT = "__end_text__";
 
-      const static inline std::vector<std::string> NAMES =
+      const static inline std::vector<std::string> TOKEN_NAMES =
         {
          UNKNOWN, UNDEFINED_POS,
 
 	 MASK,
-	 NUMVAL,
-
+	 NUMVAL
+	};
+      
+      const static inline std::vector<std::string> LABEL_NAMES =
+	{
 	 BEG_TERM, END_TERM,
          BEG_SENT, END_SENT,
          BEG_TEXT, END_TEXT
@@ -69,13 +74,13 @@ namespace andromeda
 
       static inline std::map<std::string, hash_type> to_hash = {};
 
-      static inline std::map<flvr_type, std::string> to_name =
+    private:
+      
+      static inline std::map<flvr_type, std::string> to_name_map =
         {
 	 { TOKEN, "token"},
 	 { SYNTX, "syntax"},
-
 	 { LABEL, "label"},
-	 { SUBLABEL, "sublabel"},
 	 
          { CONT, "cont"},
 	 { CONN, "conn"},
@@ -88,14 +93,32 @@ namespace andromeda
 	 { TABL, "table"},
 
 	 { SECT, "section"},
+	 { CHAP, "chapter"},
 
-	 { FDOC, "documemt"}, 
+	 { FDOC, "document"}, 
 	 { BOOK, "book"	} 
         };
 
+    public:
+
+      static typename std::map<flvr_type, std::string>::iterator begin()
+      {
+	return to_name_map.begin();
+      }
+
+      static typename std::map<flvr_type, std::string>::iterator end()
+      {
+	return to_name_map.end();
+      }      
+
+      static std::string to_name(flvr_type flvr)
+      {
+	return to_name_map.at(flvr);
+      }
+      
       static flvr_type to_flavor(std::string name)
       {
-	for(auto itr=to_name.begin(); itr!=to_name.end(); itr++)
+	for(auto itr=begin(); itr!=end(); itr++)
 	  {
 	    if(itr->second==name)
 	      {
@@ -112,7 +135,7 @@ namespace andromeda
 	std::vector<flvr_type> result={};
 	for(auto name:names)
 	  {
-	    for(auto itr=to_name.begin(); itr!=to_name.end(); itr++)
+	    for(auto itr=begin(); itr!=end(); itr++)
 	      {
 		if(itr->second==name)
 		  {
@@ -129,7 +152,7 @@ namespace andromeda
 	std::set<flvr_type> result={};
 	for(auto name:names)
 	  {
-	    for(auto itr=to_name.begin(); itr!=to_name.end(); itr++)
+	    for(auto itr=begin(); itr!=end(); itr++)
 	      {
 		if(itr->second==name)
 		  {
@@ -143,12 +166,15 @@ namespace andromeda
 	
       static inline std::map<std::string, word_token> to_token =
         {
-         { UNKNOWN, word_token(DEFAULT_WORD, DEFAULT_POS)},
+         { UNKNOWN      , word_token(DEFAULT_WORD, DEFAULT_POS)},
 	 { UNDEFINED_POS, word_token(DEFAULT_WORD, UNDEFINED_POS)},
 
-	 { MASK, word_token(DEFAULT_WORD, DEFAULT_WORD)},
-	 { NUMVAL, word_token(NUMVAL, DEFAULT_WORD)},
-	 
+	 { MASK  , word_token(DEFAULT_WORD, DEFAULT_WORD)},
+	 { NUMVAL, word_token(NUMVAL, DEFAULT_WORD)}
+	};
+
+      static inline std::map<std::string, word_token> to_label =
+	{
 	 { BEG_TERM, word_token(BEG_TERM, DEFAULT_WORD)},
 	 { END_TERM, word_token(END_TERM, DEFAULT_WORD)},
 

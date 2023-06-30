@@ -5,17 +5,10 @@
 
 namespace andromeda
 {
-  class base_property
+  class base_property: public base_types
   {
   public:
 
-    typedef typename word_token::fval_type fval_type;
-    //typedef typename word_token::flvr_type flvr_type;
-    //typedef typename word_token::hash_type hash_type;
-
-    //typedef typename word_token::index_type index_type;
-    //typedef typename word_token::range_type range_type;
-    
     const static inline std::string UNDEF = "__undef__";
     const static inline std::vector<std::string> HEADERS = { "type", "label", "confidence"};
     
@@ -25,7 +18,7 @@ namespace andromeda
 
     base_property(std::string type,
 		  std::string name,
-		  float conf);
+		  val_type    conf);
 
     std::string get_type() { return this->type; }
     std::string get_name() { return this->name; }
@@ -42,11 +35,13 @@ namespace andromeda
     nlohmann::json to_json_row();
     bool from_json_row(const nlohmann::json& row);
 
+    friend bool operator<(const base_property& lhs, const base_property& rhs);
+    
   private:
 
     std::string type;
     std::string name;
-    fval_type   conf;
+    val_type    conf;
   };
   
   base_property::base_property():
@@ -57,7 +52,7 @@ namespace andromeda
     
   base_property::base_property(std::string type,
 			       std::string name,
-			       float       conf):
+			       val_type    conf):
     type(type),
     name(name),
     conf(conf)
@@ -104,6 +99,18 @@ namespace andromeda
     
     return false;
   }    
+
+  bool operator<(const base_property& lhs, const base_property& rhs)
+  {
+    if(lhs.type==rhs.type)
+      {
+	return lhs.conf>rhs.conf;
+      }
+    else
+      {
+	return (lhs.type<rhs.type);
+      }
+  }
   
 }
 

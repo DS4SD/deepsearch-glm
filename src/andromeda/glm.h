@@ -65,6 +65,11 @@ namespace andromeda
       }
 
       {
+        glm::model_cli<glm::AUGMENT, glm_model_type> augmenter(model);
+        configs.push_back(augmenter.to_config());
+      }
+      
+      {
         glm::model_cli<glm::DISTILL, glm_model_type> distiller(model);
         configs.push_back(distiller.to_config());
       }
@@ -100,11 +105,47 @@ namespace andromeda
 
       if(glm::io_base::has_save(config))
         {
-          glm::model_op<glm::SAVE, glm_model_type> io(model);
+          glm::model_op<glm::SAVE> io;
+	  
           io.from_config(config);
+	  io.save(model);
         }
     }
 
+    template<typename glm_model_type>
+    void augment_glm_model(nlohmann::json& config, std::shared_ptr<glm_model_type> model)
+    {
+      if(glm::io_base::has_load(config))
+        {
+          glm::model_op<glm::LOAD> io;
+
+          io.from_config(config);
+	  io.set_incremental(true);
+
+	  if(not io.load(model))
+	    {
+	      return;
+	    }	  
+        }
+      else
+        {
+          return;
+        }
+
+      {
+	glm::model_cli<glm::AUGMENT, glm_model_type> augmenter(model);
+	augmenter.augment();	
+      }
+
+      if(glm::io_base::has_save(config))
+        {
+          glm::model_op<glm::SAVE> io;
+
+          io.from_config(config);
+	  io.save(model);
+        }      
+    }
+    
     template<typename glm_model_type>
     void distill_glm_model(nlohmann::json& config,
 			   std::shared_ptr<glm_model_type>& old_model,
@@ -112,8 +153,15 @@ namespace andromeda
     {
       if(glm::io_base::has_load(config))
         {
-          glm::model_op<glm::LOAD, glm_model_type> io(old_model);
+          glm::model_op<glm::LOAD> io;
+
           io.from_config(config);
+	  io.set_incremental(false);
+
+	  if(not io.load(old_model))
+	    {
+	      return;
+	    }	  
         }
 
       if(old_model!=NULL)
@@ -126,8 +174,10 @@ namespace andromeda
       
       if(new_model!=NULL and glm::io_base::has_save(config))
         {
-          glm::model_op<glm::SAVE, glm_model_type> io(new_model);
+          glm::model_op<glm::SAVE> io;
+
           io.from_config(config);
+	  io.save(new_model);
         }
     }
 
@@ -139,8 +189,15 @@ namespace andromeda
       
       if(glm::io_base::has_load(config))
         {
-          glm::model_op<glm::LOAD, glm_model_type> io(model);
+          glm::model_op<glm::LOAD> io;
+
           io.from_config(config);
+	  io.set_incremental(false);
+
+	  if(not io.load(model))
+	    {
+	      return;
+	    }
         }
       else
         {
@@ -156,8 +213,15 @@ namespace andromeda
     {
       if(glm::io_base::has_load(config))
         {
-          glm::model_op<glm::LOAD, glm_model_type> io(model);
+          glm::model_op<glm::LOAD> io;
+
 	  io.from_config(config);
+	  io.set_incremental(false);
+
+	  if(not io.load(model))
+	    {
+	      return;
+	    }
         }
 
       glm::model_cli<glm::EXPLORE, glm_model_type> explorer(model);

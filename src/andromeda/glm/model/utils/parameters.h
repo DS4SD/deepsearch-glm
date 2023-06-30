@@ -54,7 +54,7 @@ namespace andromeda
       
       short padding;
 
-      bool keep_concs, keep_conns,keep_verbs, keep_terms;      
+      bool keep_concs, keep_conns, keep_verbs, keep_terms;      
       bool keep_sents, keep_texts, keep_tabls, keep_fdocs;
       
       std::vector<std::shared_ptr<andromeda::base_nlp_model> > models;
@@ -70,7 +70,9 @@ namespace andromeda
       keep_terms(true),
 
       keep_sents(false),
+
       keep_texts(false),
+      keep_tabls(false),
       keep_fdocs(false),
       
       models({})
