@@ -106,8 +106,8 @@ namespace andromeda
 	    auto op_0a = flow.add_select(words);
 	    op_0a->get_nodeset()->set_name("search");
 
-	    auto op_1a = flow.add_traverse(edge_names::to_path, op_0a->get_flid());
-	    op_1a->get_nodeset()->set_name("to-path");
+	    auto op_1a = flow.add_traverse(edge_names::from_token, op_0a->get_flid());
+	    op_1a->get_nodeset()->set_name("from-token");
 	    
 	    auto op_0b = flow.add_select(words.back());
 	    op_0b->get_nodeset()->set_name("search-root");
@@ -115,18 +115,33 @@ namespace andromeda
 	    auto op_0c = flow.add_select(path);
 	    op_0c->get_nodeset()->set_name("search-path");
 
-	    auto op_0d = flow.add_traverse(edge_names::to_path, op_0c->get_flid());
-	    op_0d->get_nodeset()->set_name("to-path (from path)");
+	    auto op_0d = flow.add_traverse(edge_names::from_token, op_0c->get_flid());
+	    op_0d->get_nodeset()->set_name("from-token");
 	    
-	    //auto op_1b = flow.add_filter(path_names::TRIPLET, {op_0d->get_id()});
-	    //op_1b->get_nodeset()->set_name("to-path (filter for triplets)");
-
-	    auto op_2 = flow.add_traverse(edge_names::from_root_to_path, op_0b->get_flid());
-	    op_2->get_nodeset()->set_name("from-root-to-path");
+	    //auto op_2 = flow.add_traverse(edge_names::from_root_to_path, op_0b->get_flid());
+	    //op_2->get_nodeset()->set_name("from-root-to-path");
 
 	    auto op_3 = flow.add_traverse(edge_names::tax_up, op_0c->get_flid());
 	    op_3->get_nodeset()->set_name("tax-up");
 
+	    auto op_4a = flow.add_filter({node_names::TOKEN}, {op_3->get_flid()});
+	    op_4a->get_nodeset()->set_name("tax-up tokens");
+
+	    auto op_4b = flow.add_filter({node_names::TERM}, {op_3->get_flid()});
+	    op_4b->get_nodeset()->set_name("tax-up terms");
+
+
+	    auto op_5a = flow.add_traverse(edge_names::to_root, op_0d->get_flid());
+	    op_5a->get_nodeset()->set_name("to-root");
+
+	    auto op_5b = flow.add_traverse(edge_names::from_root, op_5a->get_flid());
+	    op_5b->get_nodeset()->set_name("from-root");
+
+	    auto op_5c = flow.add_filter({node_names::TERM}, {op_0d->get_flid()});
+	    op_5c->get_nodeset()->set_name("terms containing `from-token`");
+
+	    
+	    
 	    /*
 	    auto op_4a = flow.add_traverse(edge_names::to_verb, op_2->get_id());
 	    op_4a->get_nodeset()->set_name("to-verb");
@@ -165,19 +180,20 @@ namespace andromeda
 	    //auto result_1b = op_1b->get_nodeset();
 	    //result_1b->show(32);
 
-	    auto result_2 = op_2->get_nodeset();
-	    result_2->show(32);
+	    //auto result_2 = op_2->get_nodeset();
+	    //result_2->show(32);
 
 	    auto result_3 = op_3->get_nodeset();
 	    result_3->show(32);
 
-	    /*
+	    
 	    auto result_4a = op_4a->get_nodeset();
 	    result_4a->show(32);
 
 	    auto result_4b = op_4b->get_nodeset();
 	    result_4b->show(32);
 
+	    /*
 	    auto result_4c = op_4c->get_nodeset();
 	    result_4c->show(32);
 
@@ -187,6 +203,15 @@ namespace andromeda
 	    auto result_5 = op_5->get_nodeset();
 	    result_5->show(32);	    	    
 	    */
+
+	    auto result_5a = op_5a->get_nodeset();
+	    result_5a->show(32);
+
+	    auto result_5b = op_5b->get_nodeset();
+	    result_5b->show(32);
+
+	    auto result_5c = op_5c->get_nodeset();
+	    result_5c->show(32);	    	    
 	  }	  
 	}
     }

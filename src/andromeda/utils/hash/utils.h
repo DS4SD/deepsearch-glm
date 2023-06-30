@@ -37,9 +37,9 @@ namespace andromeda
       return hash;
     }
 
-    static uint64_t to_hash(const std::vector<uint64_t>& path)
+    static uint64_t to_hash(const std::vector<uint64_t>& hashes)
     {
-      switch(path.size())
+      switch(hashes.size())
         {
         case 0:
 	  {
@@ -49,15 +49,15 @@ namespace andromeda
 	  
         case 1:
 	  {
-	    return path.at(0);
+	    return hashes.at(0);
 	  }
 
         default:
           {
-            uint64_t hash = path.size();
+            uint64_t hash = hashes.size();
             hash = utils::murmerhash3(hash);
 
-            for(uint64_t chash:path)
+            for(uint64_t chash:hashes)
               {
                 hash = utils::combine_hash(hash, chash);
               }
@@ -65,6 +65,17 @@ namespace andromeda
             return hash;
           }
         }
+    }
+
+    static uint16_t to_flvr_hash(const std::string& text)
+    {
+      const static std::string seed = "QWERTYUIOP!@#$%^&*()_+qwertyuiop";
+      std::string name = seed + text;
+      
+      uint64_t uhash64 = std::hash<std::string_view>{}(name.c_str());
+      uint16_t uhash16 = uhash64;
+	
+      return uhash16;
     }
     
   }

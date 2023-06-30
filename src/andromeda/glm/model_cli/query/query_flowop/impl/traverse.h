@@ -66,7 +66,7 @@ namespace andromeda
 
       nlohmann::json& params = config.at(parameters_lbl);
       {
-	params["edge"] = edge_names::to_string(edge_flavor);	
+	params["edge"] = edge_names::to_name(edge_flavor);	
 	params["sources"] = query_baseop::dependencies;
       }
       
@@ -84,13 +84,12 @@ namespace andromeda
       try
 	{
 	  std::string edge_name = params["edge"].get<std::string>();
-	  edge_flavor = edge_names::to_flavor(edge_name);
-	  
-	  //source_id = params["source"].get<flow_id_type>();
+	  edge_flavor = edge_names::to_flvr(edge_name);
 	}
       catch(std::exception& exc)
 	{
-	  LOG_S(WARNING) << "traverse parameters: " << config.dump(2) << "\n -> error: " << exc.what();
+	  LOG_S(WARNING) << "traverse parameters: " << config.dump(2) << "\n"
+			 << " -> error: " << exc.what();
 	  return false;
 	}
 

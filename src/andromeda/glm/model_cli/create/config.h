@@ -28,7 +28,7 @@ namespace andromeda
 
       const static inline std::string max_nodes_lbl = "max-nodes";
       const static inline std::string max_edges_lbl = "max-edges";
-      const static inline std::string max_paths_lbl = "max-paths";
+      //const static inline std::string max_paths_lbl = "max-paths";
       
       const static inline std::string local_reading_range_lbl = "local-reading-range";
       const static inline std::string local_reading_break_lbl = "local-reading-break";
@@ -60,11 +60,9 @@ namespace andromeda
 
       std::size_t max_total_nodes;
       std::size_t max_total_edges;
-      std::size_t max_total_paths;
 
       std::size_t max_local_nodes;
       std::size_t max_local_edges;
-      std::size_t max_local_paths;
     };
 
     create_config::create_config():
@@ -85,11 +83,9 @@ namespace andromeda
 
       max_total_nodes(1e7),
       max_total_edges(1e8),
-      max_total_paths(1e7),
 
       max_local_nodes(1e6),
-      max_local_edges(1e7),
-      max_local_paths(1e6)
+      max_local_edges(1e7)
     {}
     
     create_config::create_config(nlohmann::json config):
@@ -110,11 +106,9 @@ namespace andromeda
 
       max_total_nodes(1e7),
       max_total_edges(1e8),
-      max_total_paths(1e7),
 
       max_local_nodes(1e6),
-      max_local_edges(1e7),
-      max_local_paths(1e6)
+      max_local_edges(1e7)
     {
       from_json(config);
     }

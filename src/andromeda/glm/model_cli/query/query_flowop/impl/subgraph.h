@@ -85,7 +85,7 @@ namespace andromeda
 	    params[edges_lbl] = std::vector<std::string>({});
 	    for(flvr_type flvr:edge_flvrs)
 	      {
-		params[edges_lbl].push_back(edge_names::to_string(flvr));
+		params[edges_lbl].push_back(edge_names::to_name(flvr));
 	      }
 	  }
       }
@@ -110,7 +110,7 @@ namespace andromeda
 	  edge_flvrs.clear();
 	  for(auto edge_name:edge_names)
 	    {
-	      edge_flvrs.insert(edge_names::to_flavor(edge_name));
+	      edge_flvrs.insert(edge_names::to_flvr(edge_name));
 	    }
         }
       catch(std::exception& exc)

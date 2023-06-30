@@ -215,9 +215,11 @@ namespace andromeda
 	    {
 	      // we are looking for TOKEN, SYNTX or LABEL
 	      std::vector<hash_type> token_hashes={};	      
-	      for(auto keyval:node_names::to_name)
+
+	      //for(auto keyval:node_names::to_name)
+	      for(auto itr=node_names::begin(); itr!=node_names::end(); itr++)
 		{
-		  base_node bnode(keyval.first, node.at(0));
+		  base_node bnode(itr->first, node.at(0));
 		  if(model_nodes.has(bnode.get_hash()))
 		    {
 		      hashes.emplace_back(bnode.get_hash(), 1.0);
@@ -228,10 +230,11 @@ namespace andromeda
 	      // we are looking for TERM, VERB, CONC or CONT with a length==1
 	      for(auto thash:token_hashes)
 		{
-		  for(auto keyval:node_names::to_name)
+		  //for(auto keyval:node_names::to_name)
+		  for(auto itr=node_names::begin(); itr!=node_names::end(); itr++)
 		    {
 		      std::vector<hash_type> path={thash};
-		      base_node bnode(keyval.first, path);
+		      base_node bnode(itr->first, path);
 
 		      if(model_nodes.has(bnode.get_hash()))
 			{ 
@@ -249,9 +252,10 @@ namespace andromeda
 		  phashes.push_back(bnode.get_hash());
 		}
 	      
-	      for(auto keyval:node_names::to_name)
+	      //for(auto keyval:node_names::to_name)
+	      for(auto itr=node_names::begin(); itr!=node_names::end(); itr++)
 		{		      
-		  base_node bnode(keyval.first, phashes);
+		  base_node bnode(itr->first, phashes);
 		  if(model_nodes.has(bnode.get_hash()))
 		    { 
 		      hashes.emplace_back(bnode.get_hash(), 1.0);	  

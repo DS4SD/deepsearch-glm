@@ -5,7 +5,7 @@
 
 namespace andromeda
 {
-  struct char_token
+  struct char_token: public base_types
   {
   public:
 
@@ -13,11 +13,13 @@ namespace andromeda
 							    "len", "char index",
 							    "unicode (dec)", "orig", "norm"};
 
+    /*
     typedef uint64_t hash_type;
     typedef uint32_t char_ind_type;
 
     typedef uint64_t                index_type;
     typedef std::array<uint64_t, 2> range_type;
+    */
     
     const static inline index_type DEFAULT_INDEX=-1;
 

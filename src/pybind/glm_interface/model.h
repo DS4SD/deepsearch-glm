@@ -15,8 +15,8 @@ namespace andromeda_py
 
     typedef typename glm_flow_type::flow_id_type flow_id_type;
 
-    typedef andromeda::glm::model_op<andromeda::glm::LOAD, glm_model_type> io_load_type;
-    typedef andromeda::glm::model_op<andromeda::glm::SAVE, glm_model_type> io_save_type;
+    typedef andromeda::glm::model_op<andromeda::glm::LOAD> io_load_type;
+    typedef andromeda::glm::model_op<andromeda::glm::SAVE> io_save_type;
 
   public:
 
@@ -77,30 +77,34 @@ namespace andromeda_py
   
   void glm_model::load_dir(const std::string root_dir)
   {
-    io_load_type io(model);
-
     std::filesystem::path path(root_dir.c_str());
-    io.load(path);
+
+    io_load_type io;
+    io.load(path, model);
   }
 
   void glm_model::save_dir(const std::string root_dir)
   {
-    io_save_type io(model);
-
     std::filesystem::path path(root_dir.c_str());
-    io.save(path);
+
+    io_save_type io;
+    io.save(path, model);
   }
 
   void glm_model::load(nlohmann::json config)
   {
-    io_load_type io(model);
+    io_load_type io;
+
     io.from_config(config);
+    io.load(model);
   }
 
   void glm_model::save(nlohmann::json config)
   {
-    io_save_type io(model);
+    io_save_type io;
+    
     io.from_config(config);
+    io.save(model);
   }
 
   nlohmann::json glm_model::get_topology()
@@ -220,7 +224,7 @@ namespace andromeda_py
 
       for(std::string edge:edges)
         {
-          auto op_x = flow.add_traverse(andromeda::glm::edge_names::to_flavor(edge),
+          auto op_x = flow.add_traverse(andromeda::glm::edge_names::to_flvr(edge),
                                         op_0->get_flid());
           op_x->get_nodeset()->set_name(edge);
         }
@@ -248,8 +252,8 @@ namespace andromeda_py
     std::vector<std::string> subg_edges = { "tax-up"};
     subg_edges = params.value("subgraph-edges", subg_edges);
 
-    auto trav_flvrs = andromeda::glm::edge_names::to_flavor(trav_edges);
-    auto subg_flvrs = andromeda::glm::edge_names::to_flavor(subg_edges);
+    auto trav_flvrs = andromeda::glm::edge_names::to_flvr(trav_edges);
+    auto subg_flvrs = andromeda::glm::edge_names::to_flvr(subg_edges);
 
     andromeda::glm::query_flow<glm_model_type> flow(model);
     {
@@ -259,7 +263,7 @@ namespace andromeda_py
       for(flvr_type flvr:trav_flvrs)
         {
           auto op_x = flow.add_traverse(flvr, op_0->get_flid());
-          op_x->get_nodeset()->set_name(andromeda::glm::edge_names::to_string(flvr));
+          op_x->get_nodeset()->set_name(andromeda::glm::edge_names::to_name(flvr));
 
           sources.insert(op_0->get_flid());
         }
@@ -374,7 +378,7 @@ namespace andromeda_py
           op_i->get_nodeset()->set_name("search "+words.at(i));
 
           auto op_x = flow.add_traverse(flvr, op_i->get_flid());
-          op_x->get_nodeset()->set_name(andromeda::glm::edge_names::to_string(flvr));
+          op_x->get_nodeset()->set_name(andromeda::glm::edge_names::to_name(flvr));
         }
 
       flow.execute();

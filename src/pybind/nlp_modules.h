@@ -17,6 +17,6 @@ PYBIND11_MODULE(andromeda_nlp, m) {
     .def("train", &andromeda_py::nlp_model::train)
     
     .def("apply_on_text", &andromeda_py::nlp_model::apply_on_text)
-    .def("apply_on_pdfdoc", &andromeda_py::nlp_model::apply_on_pdfdoc);
+    .def("apply_on_doc", &andromeda_py::nlp_model::apply_on_doc);
 }
 

@@ -218,7 +218,14 @@ namespace andromeda
   {
     if(cnt++>=maxnum_docs)
       {
-        LOG_S(WARNING) << "count is exceeding max-count: " << cnt << " versus " << maxnum_docs;
+	static bool show=true;
+	if(show)
+	  {
+	    show=false;
+	    LOG_S(WARNING) << "count is exceeding max-count: " << cnt
+			   << " versus " << maxnum_docs;
+	  }
+	
         return false;
       }
 
@@ -339,6 +346,8 @@ namespace andromeda
         model->apply(subject);
       }
 
+    subject.finalise();
+    
     return true;
   }
 

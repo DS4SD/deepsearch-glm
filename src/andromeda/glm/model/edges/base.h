@@ -35,51 +35,42 @@ namespace andromeda
       const static inline flvr_type tax_dn = 32; // `BEG_TERM` -> `old` -> `wise` -> `man`
       const static inline flvr_type tax_up = 33; // `END_TERM` -> `man` -> `wise` -> old
 
-      const static inline flvr_type to_lower = 60; // `Superconductors` -> `superconductor`
-      const static inline flvr_type to_upper = 61; // `superconductor` -> `Superconductors`
+      const static inline flvr_type to_lower = 64; // `Superconductors` -> `superconductor`
+      const static inline flvr_type to_upper = 65; // `superconductor` -> `Superconductors`
 
-      const static inline flvr_type to_singular = 62; // `Superconductors` -> `superconductor`
-      const static inline flvr_type to_plural = 63; // `superconductor` -> `Superconductors`
-      
-      //const static inline flvr_type to_concept = 64; // `Superconductors` -> `superconductor`
-      //const static inline flvr_type to_instance = 65; // `superconductor` -> `Superconductors`
+      const static inline flvr_type to_singular = 66; // `Superconductors` -> `superconductor`
+      const static inline flvr_type to_plural = 67; // `superconductor` -> `Superconductors`
 
-      //const static inline flvr_type to_node = 96; //
-      const static inline flvr_type to_word = 97; //
+      const static inline flvr_type to_token = 96; //
+      const static inline flvr_type from_token = 97; //
+            
       const static inline flvr_type to_pos = 98; //
+      const static inline flvr_type from_pos = 99; //
 
-      const static inline flvr_type to_path = 99; //
-      const static inline flvr_type from_path = 100; //
+      const static inline flvr_type to_label = 100; // `Superconductors` -> `superconductor`
+      const static inline flvr_type from_label = 101; // `superconductor` -> `Superconductors`
 
-      const static inline flvr_type from_root_to_path = 101; //
-      const static inline flvr_type from_path_to_root = 102; //
-      const static inline flvr_type from_desc_to_path = 103; //
-      const static inline flvr_type from_path_to_desc = 104; //
+      const static inline flvr_type to_root = 102; // `Superconductors` -> `superconductor`
+      const static inline flvr_type from_root = 103; // `superconductor` -> `Superconductors`
 
-      const static inline flvr_type to_beg = 128; //
-      const static inline flvr_type to_end = 129; //
-
-      const static inline flvr_type from_beg = 130; //
-      const static inline flvr_type from_end = 131; //
-
-      const static inline flvr_type to_verb = 164; //
-      const static inline flvr_type to_term = 166; //
-      const static inline flvr_type to_conn = 168; //      
-      const static inline flvr_type to_sent = 170; //
-      const static inline flvr_type to_text = 172; //
-
-      const static inline flvr_type from_verb = 165; //
-      const static inline flvr_type from_term = 167; //
-      const static inline flvr_type from_conn = 169; //
-      const static inline flvr_type from_sent = 171; //
-      const static inline flvr_type from_text = 173; //
+      // hierarchy
+      const static inline flvr_type to_sent = 128; 
+      const static inline flvr_type from_sent = 129;
+      const static inline flvr_type to_text = 130; 
+      const static inline flvr_type from_text = 131;
+      const static inline flvr_type to_table = 132; 
+      const static inline flvr_type from_table = 133;
+      const static inline flvr_type to_doc = 134; 
+      const static inline flvr_type from_doc = 135; 
       
-      static flvr_type jump(flvr_type d=0) { return d; }
+      const static inline flvr_type custom = 256;
+      
+    private:
 
-      const static inline std::map<flvr_type, std::string> flvr_to_name_map = 
+      static inline std::mutex mtx;
+      
+      static inline std::map<flvr_type, std::string> flvr_to_name_map = 
         {
-	 //{UNKNOWN_FLVR, "UNKNOWN_FLVR"},
-	 
 	 { M6, "prev-6"},
          { M5, "prev-5"},
          { M4, "prev-4"},
@@ -97,62 +88,85 @@ namespace andromeda
          { tax_dn, "tax-dn"},
          { tax_up, "tax-up"},
 
+
 	 { to_lower, "to-lower"},
 	 { to_upper, "to-upper"},
+
 	 { to_singular, "to-singular"},
 	 { to_plural, "to-plural"},
+
 	 
-         //{ to_concept, "to-concept"},
-         //{ to_instance, "to-instance"},
+         { to_token, "to-token"},
+         { from_token, "from-token"},
 
-         //{ to_node, "to-node"},
-         { to_word, "to-word"},
-         { to_pos , "to-pos"},
+         { to_pos, "to-pos"},
+         { from_pos, "from-pos"},
 
-	 { to_beg, "to-begin"},
-	 { to_end, "to-end"},
+	 { to_label, "to-label"},
+         { from_label, "from-label"},
 
-	 { from_beg, "from-begin"},
-	 { from_end, "from-end"},
+	 { to_root, "to-root"},
+         { from_root, "from-root"},
 
-	 { to_path, "to-path"},
-	 { from_path, "from-path"},
-
-	 { from_root_to_path, "from-root-to-path" },
-	 { from_path_to_root, "from-path-to-root" },
-	 { from_desc_to_path, "from-desc-to-root" },
-	 { from_path_to_desc, "from-path-to-desc" },
-
-	 //{ related, "related" },
-	 { to_conn, "to-conn"},
-	 { to_verb, "to-verb"},
-	 { to_term, "to-term"},
 	 { to_sent, "to-sent"},
+         { from_sent, "from-sent"},
 	 { to_text, "to-text"},
-
-	 { from_conn, "from-conn"},
-	 { from_verb, "from-verb"},
-	 { from_term, "from-term"},
-	 { from_sent, "from-sent"},
-	 { from_text, "from-text"}
+         { from_text, "from-text"},
+	 { to_table, "to-table"},
+         { from_table, "from-table"},
+	 { to_doc, "to-doc"},
+         { from_doc, "from-doc"}
         };
 
-      static std::string to_string(flvr_type flvr)
-      {
-	auto itr = flvr_to_name_map.find(flvr);
+    public:
 
-	if(itr!=flvr_to_name_map.end())
+      static flvr_type update_flvr(const std::string& name)
+      {
+	auto itr = flvr_to_name_map.begin();
+
+	while(itr!=flvr_to_name_map.end() and itr->second!=name)
 	  {
-	    return itr->second;
+	    itr++;
+	  }
+	
+	if(itr==end())
+	  {
+	    std::scoped_lock<std::mutex> lock(mtx);
+	    
+	    flvr_type flvr = flvr_to_name_map.rbegin()->first;
+
+	    flvr = std::max(++flvr, custom);
+	    flvr_to_name_map.insert({flvr, name});
+
+	    return flvr;
 	  }
 
-	LOG_S(ERROR) << "requesting undefined edge-flavor `" << flvr << "`";
-	return "UNKNOWN_FLVR";
+	return itr->first;
+      }
+
+      static typename std::map<flvr_type, std::string>::iterator begin()
+      {
+	return flvr_to_name_map.begin();
+      }
+
+      static typename std::map<flvr_type, std::string>::iterator end()
+      {
+	return flvr_to_name_map.end();
       }
       
-      static flvr_type to_flavor(std::string name)
+      static flvr_type jump(flvr_type d=0)
       {
-	for(auto itr=flvr_to_name_map.begin(); itr!=flvr_to_name_map.end(); itr++)
+	return d;
+      }
+
+      static std::string to_name(flvr_type flvr)
+      {
+	return flvr_to_name_map.at(flvr);
+      }
+
+      static flvr_type to_flvr(std::string name)
+      {
+	for(auto itr=begin(); itr!=end(); itr++)
 	  {
 	    if(itr->second==name)
 	      {
@@ -164,12 +178,12 @@ namespace andromeda
 	return UNKNOWN_FLVR;
       }
 
-      static std::set<flvr_type> to_flavor(std::vector<std::string> names)
+      static std::set<flvr_type> to_flvr(std::vector<std::string> names)
       {
 	std::set<flvr_type> flvrs={};
 	for(std::string name:names)
 	  {
-	    auto flvr = to_flavor(name);
+	    auto flvr = to_flvr(name);
 	    if(flvr!=UNKNOWN_FLVR)
 	      {
 		flvrs.insert(flvr);

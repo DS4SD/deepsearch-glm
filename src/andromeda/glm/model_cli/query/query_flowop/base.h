@@ -33,8 +33,6 @@ namespace andromeda
       typedef typename nodes_type::node_type glm_node_type;
       typedef typename edges_type::edge_type glm_edge_type;
       
-      //typedef glm_path glm_path_type;
-
       typedef query_node qry_node_type;
 
       typedef flowop_name flow_op_type;

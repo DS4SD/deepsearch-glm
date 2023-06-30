@@ -26,7 +26,8 @@ namespace andromeda
 						      "~", "=", "<", ">", "$", "%",
 						      "\"", "'",
 						      "/", "+", "-", "_", "^",
-						      "‹", "›", "«", "»"};
+						      "‹", "›", "«", "»",
+						      "#"};
 
   const std::set<std::string> constants::special_words={"''"};
 

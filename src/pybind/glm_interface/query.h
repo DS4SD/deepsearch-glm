@@ -62,8 +62,20 @@ namespace andromeda_py
 
   nlohmann::json glm_query::to_config()
   {
-    LOG_S(INFO);
-    return flow.to_config();    
+    try
+      {
+	return flow.to_config();
+      }
+    catch(std::exception& exc)
+      {	
+	LOG_S(ERROR) << "could not create query config: "
+		     << exc.what();
+
+	nlohmann::json message = nlohmann::json::object();
+	message["error"] = exc.what();
+
+	return message;
+      }
   }
 
   bool glm_query::from_config(nlohmann::json config)

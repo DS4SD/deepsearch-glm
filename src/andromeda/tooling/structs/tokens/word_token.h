@@ -6,7 +6,7 @@
 namespace andromeda
 {
 
-  class word_token
+  class word_token: public base_types
   {
   public:
 
@@ -24,15 +24,16 @@ namespace andromeda
 							    "pos", "tag", "known",
 							    "word", "original"};
 
+    /*
     typedef float    fval_type;
-    //typedef std::float16_t fval_type;
     typedef uint16_t flvr_type;    
     typedef uint64_t hash_type;
     
     typedef            uint64_t     index_type;
     typedef std::array<uint64_t, 2> range_type;
     typedef std::array<uint64_t, 2> coord_type;
-
+    */
+    
     const static inline std::string DEFAULT="__default__";
     
     const static inline std::string DEFAULT_WORD=DEFAULT;

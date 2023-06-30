@@ -30,7 +30,7 @@ namespace andromeda
 
     bool apply_regex(subject<PARAGRAPH>& subj);
     
-    bool post_process(nlohmann::json& ents);
+    bool post_process(nlohmann::json& insts);
     
   private:
 
@@ -90,6 +90,14 @@ namespace andromeda
 		      R"((?P<name>(([A-Z][a-z]+)(\-|\s+\-|\-\s+|\s+\-\s+)+)+([A-Z][a-z]+)))");
       exprs.push_back(expr);
     }
+
+    // `U.S.`, `B.P.B.`
+    {
+      pcre2_expr expr(this->get_key(), "abbreviation-name",
+		      R"((?P<name>(([A-Z]\.){2,})))");
+      exprs.push_back(expr);
+    }    
+
     
     return true;
   }
@@ -159,13 +167,11 @@ namespace andromeda
 				keep = false;
 			      }
 			  }
-			
-			//LOG_S(WARNING) << name << " -> " << label << ", " << conf << " -> " << keep;
 		      }
 
 		    if(keep)
 		      {
-			subj.entities.emplace_back(//utils::to_hash(name),
+			subj.instances.emplace_back(subj.get_hash(),
 						   NAME, expr.get_subtype(),
 						   name, orig, 
 						   char_range, ctok_range, wtok_range);

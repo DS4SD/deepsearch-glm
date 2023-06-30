@@ -28,7 +28,7 @@ namespace andromeda
 	return "UNKNOWN_MODELOP";
       }
 
-    template<model_op_name name, typename model_type>
+    template<model_op_name name>
     class model_op
     {};
     

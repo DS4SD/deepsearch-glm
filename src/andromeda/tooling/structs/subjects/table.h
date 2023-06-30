@@ -7,8 +7,9 @@ namespace andromeda
 {
   
   template<>
-  class subject<TABLE>
+  class subject<TABLE>: public base_subject
   {
+    
   public:
 
     typedef table_element table_element_type;
@@ -16,95 +17,377 @@ namespace andromeda
   public:
 
     subject();
+    subject(uint64_t dhash, std::shared_ptr<prov_element> prov);
+	        
     ~subject();
 
+    std::string get_path() const { return (provs.size()>0? (provs.at(0)->path):"#"); }
+    
     void clear();
 
+    bool is_valid() { return (base_subject::valid); }
+    
+    nlohmann::json to_json();
+    bool from_json(const nlohmann::json& data);
+    
+    bool set_data(const nlohmann::json& data);
+
+    bool set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
+		    std::shared_ptr<utils::text_normaliser> text_normaliser);
+    
     bool set(nlohmann::json& data,
 	     std::shared_ptr<utils::char_normaliser> char_normaliser,
 	     std::shared_ptr<utils::text_normaliser> text_normaliser);	     
 
-    void show();
+    void sort();
 
+    typename std::vector<base_instance>::iterator insts_beg(std::array<uint64_t, 2> coor);
+    typename std::vector<base_instance>::iterator insts_end(std::array<uint64_t, 2> coor);
+    
+    void show(bool prps, bool insts, bool rels);
+
+    uint64_t get_hash() const { return hash; } 
+    std::string get_text() const;
+    
+    uint64_t num_rows() const { return nrows; }
+    uint64_t num_cols() const { return ncols; }
+
+    table_element_type& operator()(std::array<uint64_t,2> coor) { return data.at(coor.at(0)).at(coor.at(1)); }
+    table_element_type& operator()(uint64_t i, uint64_t j) { return data.at(i).at(j); }
+
+  private:
+
+    void set_hash();
+    
   public:
 
-    uint64_t dhash;
-    uint64_t index;
+    std::vector<std::shared_ptr<prov_element> > provs;
     
-    std::size_t nrows, ncols;
+    std::vector<std::shared_ptr<subject<PARAGRAPH> > > captions;
+    std::vector<std::shared_ptr<subject<PARAGRAPH> > > footnotes;
+    std::vector<std::shared_ptr<subject<PARAGRAPH> > > mentions;
+    
+    uint64_t nrows, ncols;
     std::vector<std::vector<table_element_type> > data;
-    
-    std::set<std::string> applied_models;
-    
-    std::vector<base_property> properties;
-    std::vector<base_entity> entities;
-    std::vector<base_relation> relations;
   };
 
   subject<TABLE>::subject():
-    dhash(-1),
-    index(-1),
-    
-    nrows(0), ncols(0),
-    data(),
+    base_subject(TABLE),
 
-    applied_models(),
+    provs({}),
     
-    properties({}),
-    entities({}),
-    relations({})
+    captions({}),
+    footnotes({}),
+    mentions({}),
+    
+    nrows(0),
+    ncols(0),
+
+    data({})
   {}
+  
+  subject<TABLE>::subject(uint64_t dhash, std::shared_ptr<prov_element> prov):
+    base_subject(dhash, TABLE),
 
+    provs({prov}),
+    
+    captions({}),
+    footnotes({}),    
+    mentions({}),
+    
+    nrows(0),
+    ncols(0),
+
+    data({})
+  {}
+  
   subject<TABLE>::~subject()
   {}
 
+  void subject<TABLE>::clear()
+  {
+    base_subject::clear();
+
+    provs.clear();
+    
+    captions.clear();
+    footnotes.clear();
+    mentions.clear();
+    
+    nrows=0;
+    ncols=0;
+
+    data.clear();
+  }
+  
+  nlohmann::json subject<TABLE>::to_json()
+  {
+    nlohmann::json result = base_subject::to_json();
+
+    {
+      nlohmann::json& _ = result[base_subject::captions_lbl];
+      _ = nlohmann::json::array({});
+      
+      for(auto& caption:captions)
+	{
+	  _.push_back(caption->to_json());
+	}
+    }
+
+    {
+      nlohmann::json& _ = result[base_subject::footnotes_lbl];
+      _ = nlohmann::json::array({});
+      
+      for(auto& footnote:footnotes)
+	{
+	  _.push_back(footnote->to_json());
+	}
+    }
+
+    {
+      nlohmann::json& _ = result[base_subject::mentions_lbl];
+      _ = nlohmann::json::array({});
+      
+      for(auto& mention:mentions)
+	{
+	  _.push_back(mention->to_json());
+	}
+    }        
+          
+    return result;
+  }
+
+  bool subject<TABLE>::from_json(const nlohmann::json& data)
+  {
+    {
+      set_data(data);
+    }
+    
+    {
+      captions.clear();
+      for(const nlohmann::json& item:data.at(base_subject::captions_lbl))
+	{
+	  std::shared_ptr<subject<PARAGRAPH> > ptr
+	    = std::make_shared<subject<PARAGRAPH> >();
+
+	  ptr->from_json(item);
+	  captions.push_back(ptr);
+	}
+    }
+
+    {
+      footnotes.clear();
+      for(const nlohmann::json& item:data.at(base_subject::footnotes_lbl))
+	{
+	  std::shared_ptr<subject<PARAGRAPH> > ptr
+	    = std::make_shared<subject<PARAGRAPH> >();
+
+	  ptr->from_json(item);
+	  footnotes.push_back(ptr);
+	}
+    }
+    
+    {
+      mentions.clear();
+      for(const nlohmann::json& item:data.at(base_subject::mentions_lbl))
+	{
+	  std::shared_ptr<subject<PARAGRAPH> > ptr
+	    = std::make_shared<subject<PARAGRAPH> >();
+
+	  ptr->from_json(item);
+	  mentions.push_back(ptr);
+	}
+    }        
+    
+    return true;
+  }
+  
+  bool subject<TABLE>::set_data(const nlohmann::json& item)
+  {
+    base_subject::clear_models();
+    data.clear();
+    
+    if(item.count("data"))
+      {
+	nlohmann::json grid = item["data"];
+	
+	std::set<int> ncols={};
+	for(ind_type i=0; i<grid.size(); i++)
+	  {
+	    data.push_back({});
+	    for(ind_type j=0; j<grid.at(i).size(); j++)
+	      {
+		std::string text = "";
+		if(grid.at(i).at(j).count("text"))
+		  {		    
+		    text = grid.at(i).at(j).at("text");
+		  }
+
+		data.back().emplace_back(i,j,text);
+	      }	   	    
+	  }
+      }
+    
+    if(data.size()>0)
+      {
+	nrows = data.size();
+	ncols = data.at(0).size();
+
+	set_hash();
+	
+	return true;
+      }
+	
+    return false;	
+  }
+  
+  void subject<TABLE>::set_hash()
+  {
+    std::vector<uint64_t> hashes={dhash};
+    for(std::size_t i=0; i<data.size(); i++)
+      {
+	for(std::size_t j=0; j<data.at(i).size(); j++)
+	  {
+	    hashes.push_back(data.at(i).at(j).text_hash);
+	  }
+      }
+
+    hash = utils::to_hash(hashes);
+  }
+  
+  bool subject<TABLE>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
+				  std::shared_ptr<utils::text_normaliser> text_normaliser)
+  {
+    valid = true;
+    
+    for(auto& row:data)
+      {
+	for(auto& cell:row)
+	  {
+	    valid = (valid and cell.set_tokens(char_normaliser, text_normaliser));
+	  }
+      }
+
+    return valid;
+  }  
+  
   bool subject<TABLE>::set(nlohmann::json& grid,
 			   std::shared_ptr<utils::char_normaliser> char_normaliser,
 			   std::shared_ptr<utils::text_normaliser> text_normaliser)
   {       
-    std::set<int> ncols={};
-    for(std::size_t i=0; i<grid.size(); i++)
-      {
-	data.push_back({});
-	for(std::size_t j=0; j<grid[i].size(); j++)
-	  {
-	    std::string text = grid[i][j]["text"];
-	    data.back().emplace_back(i,j, text);
-	  }
+    bool task_0 = set_data(grid);
+    bool task_1 = set_tokens(char_normaliser, text_normaliser);
 
-	ncols.insert(data.back().size());
-      }
-    
-    if(data.size()>0/* and ncols.size()==1*/)
-      {
-	//show();
-
-	//std::string tmp;
-	//std::cin >> tmp;
-	
-	return true;
-      }
-
-    return false;
+    return (task_0 and task_1);
   }
 
-  void subject<TABLE>::show()
+  void subject<TABLE>::sort()
+  {
+    std::sort(instances.begin(), instances.end());
+  }
+
+  typename std::vector<base_instance>::iterator subject<TABLE>::insts_beg(std::array<uint64_t, 2> coor)
+  {
+    range_type min_range = {0, 0};
+    
+    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake", coor, {1,1},
+		       min_range, min_range, min_range);
+
+    return std::lower_bound(instances.begin(), instances.end(), fake);    
+  }
+  
+  typename std::vector<base_instance>::iterator subject<TABLE>::insts_end(std::array<uint64_t, 2> coor)
+  {
+    range_type max_range =
+      { std::numeric_limits<uint64_t>::max(),
+	std::numeric_limits<uint64_t>::max()};
+    
+    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake", coor, {1,1},
+		       max_range, max_range, max_range);
+
+    return std::upper_bound(instances.begin(), instances.end(), fake);    
+  }
+  
+  void subject<TABLE>::show(bool prps, bool insts, bool rels)
   {
     std::vector<std::vector<std::string> > grid={};
-    for(std::size_t i=0; i<data.size(); i++)
+    for(uint64_t i=0; i<data.size(); i++)
       {
 	grid.push_back({});
-	for(std::size_t j=0; j<data[i].size(); j++)
+	for(uint64_t j=0; j<data.at(i).size(); j++)
 	  {
-	    grid[i].push_back(data[i][j].text);
+	    grid.at(i).push_back(data.at(i).at(j).text);
 	  }
       }
 
     std::stringstream ss;
-    utils::show_table(grid, ss, 48);
 
-    //LOG_S(INFO) << "NLP-output: \n" << ss.str();
-    LOG_S(INFO) << "\n" << ss.str();
+    if(provs.size()>0)
+      {
+	ss << "prov: "
+	   << provs.at(0)->page << ", "
+	   << " ["
+	   << provs.at(0)->bbox[0] << ", "
+	   << provs.at(0)->bbox[1] << ", "
+	   << provs.at(0)->bbox[2] << ", "
+	   << provs.at(0)->bbox[3]
+	   << "]";
+      }
+    
+    {
+      ss << "\ntable: ";
+      utils::show_table(grid, ss, 48);
+    }
+    
+    //if(mdls)
+    {
+      ss << "\nmodels: ";
+      for(auto model:applied_models)
+	{
+	  ss << model << ", ";
+	}
+      ss << "[done]\n";
+    }
+    
+    if(prps)
+      {
+        ss << tabulate(properties);
+      }
+
+    if(insts)
+      {
+        ss << tabulate(instances);
+      }
+
+    if(rels)
+      {
+        ss << tabulate(instances, relations);
+      }
+
+    LOG_S(INFO) << "NLP-output: \n" << ss.str();
+  }
+
+  std::string subject<TABLE>::get_text() const
+  {
+    std::stringstream ss;
+    
+    for(uint64_t i=0; i<data.size(); i++)
+      {
+	for(uint64_t j=0; j<data.at(i).size(); j++)
+	  {
+	    if(j+1==data.at(i).size())
+	      {
+		ss << data.at(i).at(j).text << "\n";
+	      }
+	    else
+	      {
+		ss << data.at(i).at(j).text << ", ";
+	      }
+	  }
+      }
+    
+    std::string text = ss.str();
+    return text;      
   }
   
 }

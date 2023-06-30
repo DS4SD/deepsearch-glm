@@ -40,10 +40,8 @@ namespace andromeda
     
   private:
 
-    const static std::set<model_name> dependencies;
+    const static inline std::set<model_name> dependencies = {};
   };
-
-  const std::set<model_name> nlp_model<CLS, LANGUAGE>::dependencies = {};
 
   nlp_model<CLS, LANGUAGE>::nlp_model():
     fasttext_supervised_model()
@@ -92,8 +90,15 @@ namespace andromeda
       {
 	return false;
       }
+
+    bool classified = (subj.applied_models.count(get_key())>0);
     
-    return fasttext_supervised_model::classify(subj);
+    if(not classified)
+      {
+	classified = fasttext_supervised_model::classify(subj);	
+      }
+    
+    return classified;    
   }
 
   bool nlp_model<CLS, LANGUAGE>::apply(subject<TABLE>& subj)
@@ -103,9 +108,16 @@ namespace andromeda
 	return false;
       }
     
-    return fasttext_supervised_model::classify(subj);
+    bool classified = (subj.applied_models.count(get_key())>0);
+    
+    if(not classified)
+      {
+	classified = fasttext_supervised_model::classify(subj);	
+      }
+    
+    return classified;        
   }
-
+  
   bool nlp_model<CLS, LANGUAGE>::apply(subject<DOCUMENT>& subj)
   {
     if(not satisfies_dependencies(subj))
@@ -113,28 +125,28 @@ namespace andromeda
 	return false;
       }  
 
-    for(subject<PARAGRAPH>& para:subj.paragraphs)
+    for(auto& para:subj.paragraphs)
       {
-	this->apply(para);
+	this->apply(*para);
       }
 
-    for(subject<TABLE>& table:subj.tables)
+    for(auto& table:subj.tables)
       {
-	this->apply(table);
+	this->apply(*table);
       }
 
     std::map<std::string, std::size_t> lang_mapping;
 
     std::size_t total=0;
-    for(subject<PARAGRAPH>& para:subj.paragraphs)
+    for(auto& para:subj.paragraphs)
       {
-	this->apply(para);
+	this->apply(*para);
 
 	base_property prop("null", "null", 0.0);
-	if(get(para, prop))
+	if(get(*para, prop))
 	  {
 	    std::string key = prop.get_name();
-	    std::size_t dst = para.dst;
+	    std::size_t dst = para->dst;
 
 	    if(lang_mapping.count(key)==1)
 	      {
