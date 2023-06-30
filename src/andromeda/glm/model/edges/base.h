@@ -133,9 +133,17 @@ namespace andromeda
 	  {
 	    std::scoped_lock<std::mutex> lock(mtx);
 
-	    flvr_type flvr = flvr_to_name_map.rbegin()!=flvr_to_name_map.rend()? flvr_to_name_map.rbegin()->first: custom;
-	    
-	    flvr = std::max(++flvr, custom);
+	    flvr_type flvr = flvr_to_name_map.size()>0? flvr_to_name_map.rbegin()->first:0;
+
+	    if(flvr<=custom)
+	      {
+		flvr = custom;		
+	      }
+	    else
+	      {
+		flvr += 1;
+	      }
+
 	    flvr_to_name_map.insert({flvr, name});
 
 	    return flvr;
