@@ -27,5 +27,6 @@ ExternalProject_Add(extlib_fasttext
     LOG_BUILD ON)
 
 add_library(fasttext STATIC IMPORTED)
-set_target_properties(fasttext PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libfasttext.a)
+#set_target_properties(fasttext PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libfasttext.a)
+set_target_properties(fasttext PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libfasttext_pic.a)
 add_dependencies(fasttext extlib_fasttext)
