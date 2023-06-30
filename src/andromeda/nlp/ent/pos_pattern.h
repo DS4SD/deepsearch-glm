@@ -243,7 +243,7 @@ namespace andromeda
 	
 	std::string type=chunk.type;
 	std::string subtype=chunk.subtype;
-	std::size_t ci,cj;
+	std::size_t ci=0,cj=0;
 
 	auto& elem = subj(coor);
 	

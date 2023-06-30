@@ -132,9 +132,9 @@ namespace andromeda
 	if(itr==end())
 	  {
 	    std::scoped_lock<std::mutex> lock(mtx);
-	    
-	    flvr_type flvr = flvr_to_name_map.rbegin()->first;
 
+	    flvr_type flvr = flvr_to_name_map.rbegin()!=flvr_to_name_map.rend()? flvr_to_name_map.rbegin()->first: custom;
+	    
 	    flvr = std::max(++flvr, custom);
 	    flvr_to_name_map.insert({flvr, name});
 
