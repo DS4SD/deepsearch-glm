@@ -4,7 +4,8 @@ rm -rf ./externals
 rm -rf ./build
 
 echo "compiling ... "
-mkdir build; cd build; /usr/local/bin/cmake .. -DPYTHON_EXECUTABLE=/usr/local/bin/python3; make -j; cd ..
+mkdir build; cd build; /usr/local/bin/cmake .. -DPYTHON_EXECUTABLE=/usr/local/bin/python3; make -j 1; cd ..
+#mkdir build; cd build; /usr/local/bin/cmake .. -DPYTHON_EXECUTABLE=/usr/local/bin/python3; make -j; cd ..
 
 echo "linking ... "
 
