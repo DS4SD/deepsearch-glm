@@ -346,7 +346,7 @@ namespace andromeda_py
     std::vector<std::string> words = {};
     words = params.value("words", words);
 
-    std::size_t mask_ind=-1;
+    std::size_t mask_ind=words.size();
     for(std::size_t l=0; l<words.size(); l++)
       {
         if(words.at(l)=="???")
@@ -355,7 +355,7 @@ namespace andromeda_py
           }
       }
 
-    if(mask_ind==-1)
+    if(mask_ind==words.size())
       {
         result["status"]="error";
         result["message"]= "no word found with content `???` (:= mask)";
@@ -367,7 +367,7 @@ namespace andromeda_py
     {
       for(std::size_t i=0; i<words.size(); i++)
         {
-	  flvr_type flvr = 0; //mask_ind-i;	  
+	  flvr_type flvr = 0;	  
           if(i==mask_ind)
             {
               continue;
