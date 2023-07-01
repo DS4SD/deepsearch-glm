@@ -5,7 +5,13 @@
 
 namespace andromeda
 {
-  static inline std::filesystem::path RESOURCES_DIR = std::filesystem::current_path() / "../resources";
+#ifdef ROOT_PATH
+  static inline std::filesystem::path ROOT_DIR = ROOT_PATH;  
+  static inline std::filesystem::path RESOURCES_DIR = ROOT_DIR / "resources";
+#else
+  static inline std::filesystem::path RESOURCES_DIR = std::filesystem::current_path() / "../resources";  
+#endif
+  
 }
 
 #endif
@@ -14,7 +20,6 @@ namespace andromeda
 #include <andromeda/utils/time/utils.h>
 
 #include <andromeda/utils/table/utils.h>
-
 #include <andromeda/utils/string/utils.h>
 
 #include <andromeda/utils/regex/pcre2_item.h>
