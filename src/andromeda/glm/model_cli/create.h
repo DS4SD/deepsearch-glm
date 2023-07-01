@@ -181,7 +181,7 @@ namespace andromeda
 
       std::vector<std::shared_ptr<model_type> > models;
       {
-	for(int id=0; id<configuration.num_threads; id++)
+	for(std::size_t id=0; id<configuration.num_threads; id++)
 	  {
 	    auto model_ptr = std::make_shared<model_type>();
 	    models.push_back(model_ptr);

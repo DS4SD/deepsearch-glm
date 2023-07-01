@@ -112,7 +112,7 @@ namespace andromeda
 
     bool query_flowop<TRAVERSE>::execute(results_type& results)
     {
-      auto& edges = baseop_type::model->get_edges();
+      auto& edges = baseop_type::model_ptr->get_edges();
 
       auto& target = results.at(baseop_type::flid);
 

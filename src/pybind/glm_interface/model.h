@@ -346,8 +346,8 @@ namespace andromeda_py
     std::vector<std::string> words = {};
     words = params.value("words", words);
 
-    flvr_type mask_ind=-1;
-    for(flvr_type l=0; l<words.size(); l++)
+    std::size_t mask_ind=words.size();
+    for(std::size_t l=0; l<words.size(); l++)
       {
         if(words.at(l)=="???")
           {
@@ -355,7 +355,7 @@ namespace andromeda_py
           }
       }
 
-    if(mask_ind==-1)
+    if(mask_ind==words.size())
       {
         result["status"]="error";
         result["message"]= "no word found with content `???` (:= mask)";
@@ -365,18 +365,24 @@ namespace andromeda_py
 
     andromeda::glm::query_flow<glm_model_type> flow(model);
     {
-      for(flvr_type i=0; i<words.size(); i++)
+      for(std::size_t i=0; i<words.size(); i++)
         {
+	  flvr_type flvr = 0;	  
           if(i==mask_ind)
             {
               continue;
             }
+	  else
+	    {
+	      std::size_t delta = mask_ind>i? mask_ind-i:i-mask_ind;
 
-          flvr_type flvr = mask_ind-i;
-
+	      flvr = static_cast<flvr_type>(delta);
+	      flvr *= (mask_ind>i? 1:-1);
+	    }
+	  
           auto op_i = flow.add_select(words.at(i));
           op_i->get_nodeset()->set_name("search "+words.at(i));
-
+	  
           auto op_x = flow.add_traverse(flvr, op_i->get_flid());
           op_x->get_nodeset()->set_name(andromeda::glm::edge_names::to_name(flvr));
         }

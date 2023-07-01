@@ -30,6 +30,8 @@ namespace andromeda
 	  case QUERY: return "query";
 	  case EXPLORE: return "explore";
 	  }
+
+	return "undefined";
       }
 
     model_cli_name to_model_cli_name(std::string text)
@@ -62,6 +64,8 @@ namespace andromeda
 	{
 	  return UNDEF;
 	}
+
+      return UNDEF;
     }
 
     template<model_cli_name name, typename model_type>

@@ -142,7 +142,7 @@ namespace andromeda
             int token_ind = std::stoi(ind.text);
             token_inds.push_back(token_ind);
           }
-        catch(std::exception e)
+        catch(std::exception& e)
           {}
       }
 
@@ -190,7 +190,7 @@ namespace andromeda
 	
 	std::string type=chunk.type;
 	std::string subtype=chunk.subtype;
-	std::size_t ci,cj;
+	std::size_t ci=0, cj=0;
 
 	std::vector<std::pair<std::string, std::string> > words;
 	for(std::size_t l=0; l<token_inds.size(); l++)
@@ -243,7 +243,7 @@ namespace andromeda
 	
 	std::string type=chunk.type;
 	std::string subtype=chunk.subtype;
-	std::size_t ci,cj;
+	std::size_t ci=0,cj=0;
 
 	auto& elem = subj(coor);
 	

@@ -12,19 +12,19 @@
 
 namespace andromeda_crf
 {
-  static crf_model* pointer_to_working_object = NULL; // this is not a good solution...
+  //static crf_model* pointer_to_working_object = NULL; // this is not a good solution...
 
   crf_model::crf_model()
   {
     _early_stopping_n = 0;
     _line_counter = 0;
-    
+
     nbest_search_path.resize(crf_model::MAX_LEN, 0);
-    
+
     //p_edge_feature_id2  = (int*)malloc(sizeof(int) * MAX_LABEL_TYPES * MAX_LABEL_TYPES * MAX_LABEL_TYPES);
     //p_edge_feature_id  = (int*)malloc(sizeof(int) * MAX_LABEL_TYPES * MAX_LABEL_TYPES);
     //p_backward_pointer = (int*)malloc(sizeof(int) * MAX_LEN * MAX_LABEL_TYPES);
-    
+
     p_edge_feature_id .resize(std::pow(MAX_LABEL_TYPES, 2), 0);
     p_edge_feature_id2.resize(std::pow(MAX_LABEL_TYPES, 3), 0);
     p_backward_pointer.resize(MAX_LEN*MAX_LABEL_TYPES, 0);
@@ -37,10 +37,10 @@ namespace andromeda_crf
 
     p_edge_weight.resize(std::pow(MAX_LABEL_TYPES, 2));
     p_edge_weight2.resize(std::pow(MAX_LABEL_TYPES, 3));
-    p_state_weight.resize(MAX_LEN * MAX_LABEL_TYPES);  
+    p_state_weight.resize(MAX_LEN * MAX_LABEL_TYPES);
     p_forward_cache.resize(MAX_LEN * MAX_LABEL_TYPES);
     p_backward_cache.resize(MAX_LEN * MAX_LABEL_TYPES);
-    
+
     if(USE_EDGE_TRIGRAMS)
       {
         //p_edge_feature_id3  = (int*)malloc(sizeof(int) * MAX_LABEL_TYPES * MAX_LABEL_TYPES * MAX_LABEL_TYPES * MAX_LABEL_TYPES);
@@ -48,7 +48,7 @@ namespace andromeda_crf
 
         //p_edge_weight3     = (double*)malloc(sizeof(double) * MAX_LABEL_TYPES * MAX_LABEL_TYPES * MAX_LABEL_TYPES * MAX_LABEL_TYPES);
 
-	p_edge_weight3.resize(std::pow(MAX_LABEL_TYPES, 4));
+        p_edge_weight3.resize(std::pow(MAX_LABEL_TYPES, 4));
       }
   }
 
@@ -62,7 +62,7 @@ namespace andromeda_crf
     //free(p_edge_feature_id2);
     //free(p_edge_feature_id);
     //free(p_backward_pointer);
-    
+
     //free(p_state_weight);
     //free(p_edge_weight2);
     //free(p_edge_weight);
@@ -78,9 +78,9 @@ namespace andromeda_crf
     assert(z >= 0 && z < MAX_LABEL_TYPES);
 
     return p_edge_feature_id3.at(w * MAX_LABEL_TYPES * MAX_LABEL_TYPES * MAX_LABEL_TYPES +
-				 x * MAX_LABEL_TYPES * MAX_LABEL_TYPES +
-				 y * MAX_LABEL_TYPES +
-				 z);
+                                 x * MAX_LABEL_TYPES * MAX_LABEL_TYPES +
+                                 y * MAX_LABEL_TYPES +
+                                 z);
   }
 
   int& crf_model::edge_feature_id2(const int x, const int y, const int z) //const
@@ -90,8 +90,8 @@ namespace andromeda_crf
     assert(z >= 0 && z < MAX_LABEL_TYPES);
 
     return p_edge_feature_id2.at(x * MAX_LABEL_TYPES * MAX_LABEL_TYPES +
-				 y * MAX_LABEL_TYPES +
-				 z);
+                                 y * MAX_LABEL_TYPES +
+                                 z);
   }
 
   int& crf_model::edge_feature_id(const int l, const int r) //const
@@ -100,28 +100,28 @@ namespace andromeda_crf
     assert(r >= 0 && r < MAX_LABEL_TYPES);
 
     return p_edge_feature_id.at(l*MAX_LABEL_TYPES +
-				r);
+                                r);
   }
 
   double& crf_model::state_weight(const int x, const int l) //const
   {
     return p_state_weight.at(x * MAX_LABEL_TYPES +
-			     l);
+                             l);
   }
 
   double& crf_model::edge_weight2(const int x, const int y, const int z) //const
   {
     return p_edge_weight2.at(x * MAX_LABEL_TYPES * MAX_LABEL_TYPES +
-			     y * MAX_LABEL_TYPES +
-			     z);
+                             y * MAX_LABEL_TYPES +
+                             z);
   }
 
   double& crf_model::edge_weight3(const int w, const int x, const int y, const int z) //const
   {
     return p_edge_weight3.at(w * MAX_LABEL_TYPES * MAX_LABEL_TYPES * MAX_LABEL_TYPES +
-			     x * MAX_LABEL_TYPES * MAX_LABEL_TYPES +
-			     y * MAX_LABEL_TYPES +
-			     z);
+                             x * MAX_LABEL_TYPES * MAX_LABEL_TYPES +
+                             y * MAX_LABEL_TYPES +
+                             z);
   }
 
   double& crf_model::edge_weight(const int l, const int r) //const
@@ -145,50 +145,53 @@ namespace andromeda_crf
   }
 
   double crf_model::FunctionGradient(const std::vector<double>& x,
-				     std::vector<double>& grad)
+                                     std::vector<double>& grad)
   {
     assert(_fb.Size() == x.size());
     for(std::size_t i=0; i<x.size(); i++)
       {
-	_vl[i] = x[i];
-	
-	if(_vl[i] < -50)
-	  {
-	    _vl[i] = -50;
-	  }
-	
-	if(_vl[i] >  50)
-	  {
-	    _vl[i] =  50;
-	  }
+        _vl[i] = x[i];
+
+        if(_vl[i] < -50)
+          {
+            _vl[i] = -50;
+          }
+
+        if(_vl[i] >  50)
+          {
+            _vl[i] =  50;
+          }
       }
 
     double score = update_model_expectation();
 
     if(_sigma==0)
       {
-	for(std::size_t i = 0; i < x.size(); i++)
-	  {	    
-	    grad[i] = -(_vee[i] - _vme[i]);
-	  }	
+        for(std::size_t i = 0; i < x.size(); i++)
+          {
+            grad[i] = -(_vee[i] - _vme[i]);
+          }
       }
     else
       {
-	const double c = 1.0 / (_sigma * _sigma);
+        const double c = 1.0 / (_sigma * _sigma);
 
-	for(std::size_t i = 0; i < x.size(); i++)
-	  {
-	    grad[i] = -(_vee[i] - _vme[i] - c * _vl[i]);
-	  }
+        for(std::size_t i = 0; i < x.size(); i++)
+          {
+            grad[i] = -(_vee[i] - _vme[i] - c * _vl[i]);
+          }
       }
-    
+
     return -score;
   }
 
-  double crf_model::FunctionGradientWrapper(const std::vector<double> & x, std::vector<double> & grad)
-  {
+  /*
+    double crf_model::FunctionGradientWrapper(const std::vector<double> & x,
+    std::vector<double> & grad)
+    {
     return pointer_to_working_object->FunctionGradient(x, grad);
-  }
+    }
+  */
 
   /*
     int
@@ -303,26 +306,26 @@ namespace andromeda_crf
   void crf_model::initialize_state_weights(const utils::crf_sample_sequence & seq)
   {
     std::vector<double> powv(_num_classes);
-    
+
     for(std::size_t i=0; i<seq.vs.size(); i++)
       {
-	//    std::vector<double> powv(_num_classes, 0.0);
-	powv.assign(_num_classes, 0.0);
-	const utils::crf_sample & s = seq.vs[i];
+        //    std::vector<double> powv(_num_classes, 0.0);
+        powv.assign(_num_classes, 0.0);
+        const utils::crf_sample & s = seq.vs[i];
 
-	for(auto j = s.positive_features.begin(); j != s.positive_features.end(); j++)
-	  {
-	    for(auto k = _feature2mef[*j].begin(); k != _feature2mef[*j].end(); k++)
-	      {
-		const double w = _vl[*k];
-		powv[_fb.Feature(*k).label()] += w;
-	      }
-	  }
-	
-	for(int j=0; j<_num_classes; j++)
-	  {
-	    state_weight(i, j) = exp(powv[j]);
-	  }
+        for(auto j = s.positive_features.begin(); j != s.positive_features.end(); j++)
+          {
+            for(auto k = _feature2mef[*j].begin(); k != _feature2mef[*j].end(); k++)
+              {
+                const double w = _vl[*k];
+                powv[_fb.Feature(*k).label()] += w;
+              }
+          }
+
+        for(int j=0; j<_num_classes; j++)
+          {
+            state_weight(i, j) = exp(powv[j]);
+          }
       }
   }
 
@@ -378,15 +381,15 @@ namespace andromeda_crf
 
     if (!(fp > 0 && fp < DBL_MAX && bp > 0 && bp < DBL_MAX))
       {
-	//std::cerr << std::endl << "error: line:" << _line_counter << " floating overflow. a different value of Gaussian prior might work." << std::endl;
-	////std::cerr << std::endl << "error: floating overflow.  " << std::endl;
+        //std::cerr << std::endl << "error: line:" << _line_counter << " floating overflow. a different value of Gaussian prior might work." << std::endl;
+        ////std::cerr << std::endl << "error: floating overflow.  " << std::endl;
 
-	LOG_S(ERROR) << "line:" << _line_counter << " floating overflow. "
-		     << " --> a different value of Gaussian prior might work!";
-	
-	return 1.f; // may cause assert failure because forward_cache/backward_cache are also overflow
+        LOG_S(ERROR) << "line:" << _line_counter << " floating overflow. "
+                     << " --> a different value of Gaussian prior might work!";
+
+        return 1.f; // may cause assert failure because forward_cache/backward_cache are also overflow
       }
-    
+
     //  assert(abs(fp - bp) < 0.1);
     assert(fp > 0 && fp < DBL_MAX);
     assert(bp > 0 && bp < DBL_MAX);
@@ -395,7 +398,7 @@ namespace andromeda_crf
   }
 
   double crf_model::viterbi(const utils::crf_sample_sequence & seq,
-			    std::vector<int> & best_seq)
+                            std::vector<int> & best_seq)
   {
     initialize_state_weights(seq);
     //  num_tags = _num_classes;
@@ -478,8 +481,10 @@ namespace andromeda_crf
     //  num_tags = _num_classes;
 
     initialize_state_weights(seq);
-    const double fp = forward_prob(seq.vs.size());
-    assert(abs(fp - 1) < 0.01);
+    forward_prob(seq.vs.size());
+
+    //const double fp = forward_prob(seq.vs.size());
+    //assert(abs(fp - 1) < 0.01);
 
     const int len = seq.vs.size();
 
@@ -666,17 +671,17 @@ namespace andromeda_crf
   std::vector<double> crf_model::calc_state_weight(const int i) //const
   {
     std::vector<double> wsum(_num_classes);
-    
+
     for(int j = 0; j < _num_classes; j++)
       {
-	wsum[j] = forward_cache(i, j) / state_weight(i, j) * backward_cache(i, j);
+        wsum[j] = forward_cache(i, j) / state_weight(i, j) * backward_cache(i, j);
       }
 
     return wsum;
   }
 
   void crf_model::add_sample_empirical_expectation(const utils::crf_sample_sequence & seq,
-						   std::vector<double> & vee)
+                                                   std::vector<double> & vee)
   {
     for(std::size_t i = 0; i < seq.vs.size(); i++) {
       for(auto j = seq.vs[i].positive_features.begin(); j != seq.vs[i].positive_features.end(); j++){
@@ -704,42 +709,44 @@ namespace andromeda_crf
                                                  std::vector<double>& vme,
                                                  int & ncorrect)
   {
-    const double fp = forward_backward(seq);
-    assert(abs(fp - 1.0) < 0.01);
+    forward_backward(seq);
+    //const double fp = forward_backward(seq);
+    //assert(abs(fp - 1.0) < 0.01);
+
     //    double p = calc_likelihood(seq, fp);
     //    logl += log(p);
     const double logl = calc_loglikelihood(seq);
 
     for(std::size_t i = 0; i < seq.vs.size(); i++)
       {
-	const utils::crf_sample & s = seq.vs[i];
+        const utils::crf_sample & s = seq.vs[i];
 
-      // model expectation (state)
-      std::vector<double> wsum = calc_state_weight(i);
-      for(auto j = s.positive_features.begin(); j != s.positive_features.end(); j++){
-        for(auto k = _feature2mef[*j].begin(); k != _feature2mef[*j].end(); k++) {
-          //vme[*k] += wsum[_fb.Feature(*k).label()] / fp;
-          vme[*k] += wsum[_fb.Feature(*k).label()];
+        // model expectation (state)
+        std::vector<double> wsum = calc_state_weight(i);
+        for(auto j = s.positive_features.begin(); j != s.positive_features.end(); j++){
+          for(auto k = _feature2mef[*j].begin(); k != _feature2mef[*j].end(); k++) {
+            //vme[*k] += wsum[_fb.Feature(*k).label()] / fp;
+            vme[*k] += wsum[_fb.Feature(*k).label()];
+          }
+        }
+
+        if(s.label == max_element(wsum.begin(), wsum.end()) - wsum.begin())
+          ncorrect++;
+
+        // model expectation (edge)
+        if (i == seq.vs.size() - 1) continue;
+
+        for (int j = 0; j < _num_classes; j++) {
+          const double lhs = forward_cache(i, j);
+          for (int k = 0; k < _num_classes; k++) {
+            const double rhs = backward_cache(i+1, k);
+            assert(lhs != DBL_MAX && rhs != DBL_MAX);
+            //const double w = lhs * edge_weight[j][k] * rhs / fp;
+            const double w = lhs * edge_weight(j, k) * rhs;
+            vme[edge_feature_id(j, k)] += w;
+          }
         }
       }
-      
-      if(s.label == max_element(wsum.begin(), wsum.end()) - wsum.begin())
-	ncorrect++;
-
-      // model expectation (edge)
-      if (i == seq.vs.size() - 1) continue;
-
-      for (int j = 0; j < _num_classes; j++) {
-        const double lhs = forward_cache(i, j);
-        for (int k = 0; k < _num_classes; k++) {
-          const double rhs = backward_cache(i+1, k);
-          assert(lhs != DBL_MAX && rhs != DBL_MAX);
-          //const double w = lhs * edge_weight[j][k] * rhs / fp;
-          const double w = lhs * edge_weight(j, k) * rhs;
-          vme[edge_feature_id(j, k)] += w;
-        }
-      }
-    }
 
     if (USE_BOS_EOS) {
       // model expectation (BOS -> *)
@@ -803,9 +810,15 @@ namespace andromeda_crf
 
   inline bool contain_space(const std::string & s)
   {
-    for (int i = 0; i < s.size(); i++) {
-      if (isspace(s[i])) return true;
-    }
+    //for (int i = 0; i < s.size(); i++) {
+    for(std::size_t i=0; i<s.size(); i++)
+      {
+        if(isspace(s[i]))
+          {
+            return true;
+          }
+      }
+
     return false;
   }
 
@@ -880,7 +893,7 @@ namespace andromeda_crf
 
       if (contain_space(i->label)) {
         LOG_S(ERROR) << "error: the name of a label must not contain any space.";
-	exit(1);
+        exit(1);
       }
 
       utils::crf_sample s;
@@ -895,7 +908,7 @@ namespace andromeda_crf
       for (std::vector<std::string>::const_iterator j = i->features.begin(); j != i->features.end(); j++) {
         if (contain_space(*j)) {
           LOG_S(ERROR) << "error: the name of a feature must not contain any space.";
-	  exit(1);
+          exit(1);
         }
         s.positive_features.push_back(_featurename_bag.Put(*j));
       }
@@ -1009,7 +1022,7 @@ namespace andromeda_crf
       add_sample_empirical_expectation(*n, _vee);
     }
 
-    for(int i = 0; i < _vee.size(); i++)
+    for(std::size_t i=0; i<_vee.size(); i++)
       {
         _vee[i] /= _vs.size();
       }
@@ -1069,9 +1082,9 @@ namespace andromeda_crf
   {
     if(verbose)
       {
-	LOG_S(INFO) << "loading from " << filename;
+        LOG_S(INFO) << "loading from " << filename;
       }
-    
+
     FILE * fp = fopen(filename.c_str(), "r");
 
     if (!fp)
@@ -1164,9 +1177,9 @@ namespace andromeda_crf
 
     if(verbose)
       {
-	LOG_S(INFO) << " -> loading CRF-model done!";
+        LOG_S(INFO) << " -> loading CRF-model done!";
       }
-    
+
     return true;
   }
 
@@ -1174,7 +1187,7 @@ namespace andromeda_crf
   {
     _feature2mef.clear();
 
-    for (int i = 0; i < _featurename_bag.Size(); i++) {
+    for(std::size_t i = 0; i < _featurename_bag.Size(); i++) {
       std::vector<int> vi;
       for (int k = 0; k < _num_classes; k++) {
         int id = _fb.Id(utils::crf_feature(k, i));
@@ -1183,8 +1196,8 @@ namespace andromeda_crf
       _feature2mef.push_back(vi);
     }
 
-    for (int i = 0; i < _label_bag.Size(); i++) {
-      for (int j = 0; j < _label_bag.Size(); j++) {
+    for(int i = 0; i < _label_bag.Size(); i++) {
+      for(int j = 0; j < _label_bag.Size(); j++) {
         const std::string & label1 = _label_bag.Str(j);
         const int l1 = _featurename_bag.Put("->\t" + label1);
         const int id = _fb.Put(utils::crf_feature(i, l1));
@@ -1299,29 +1312,37 @@ namespace andromeda_crf
 
     tagp.clear();
     forward_backward(seq);
-    for (size_t i = 0; i < seq.vs.size(); i++) {
-      std::vector<double> wsum = calc_state_weight(i);
-      std::map<std::string, double> tp;
-      if (OUTPUT_MARGINAL_PROB) {
-        double sum = 0;
-        for (std::vector<double>::const_iterator j = wsum.begin(); j != wsum.end(); j++) sum += *j;
-        s0.vs[i].label = "";
-        assert(abs(sum -1) < 0.01);
-        double maxp = -1;
-        std::string maxtag;
-        for (size_t j = 0; j < wsum.size(); j++) {
-          double p = wsum[j]/sum;
-          if (p <= 0.001) continue;
-          tp[_label_bag.Str(j).c_str()] = p;
-          if (p > maxp) { maxp = p; maxtag = _label_bag.Str(j).c_str();}
+
+    for(std::size_t i = 0; i < seq.vs.size(); i++)
+      {
+        std::vector<double> wsum = calc_state_weight(i);
+        std::map<std::string, double> tp;
+
+        if (OUTPUT_MARGINAL_PROB)
+          {
+            double sum = 0;
+
+            for (std::vector<double>::const_iterator j = wsum.begin(); j != wsum.end(); j++) sum += *j;
+
+            s0.vs[i].label = "";
+            assert(abs(sum -1) < 0.01);
+            double maxp = -1;
+            std::string maxtag;
+
+            for (std::size_t j = 0; j < wsum.size(); j++)
+              {
+                double p = wsum[j]/sum;
+                if (p <= 0.001) continue;
+                tp[_label_bag.Str(j).c_str()] = p;
+                if (p > maxp) { maxp = p; maxtag = _label_bag.Str(j).c_str();}
+              }
+            tagp.push_back(tp);
+            s0.vs[i].label = maxtag;
+          } else {
+          const int l = max_element(wsum.begin(), wsum.end()) - wsum.begin();
+          s0.vs[i].label = _label_bag.Str(l);
         }
-        tagp.push_back(tp);
-        s0.vs[i].label = maxtag;
-      } else {
-        const int l = max_element(wsum.begin(), wsum.end()) - wsum.begin();
-        s0.vs[i].label = _label_bag.Str(l);
       }
-    }
 
   }
 
@@ -1441,14 +1462,24 @@ namespace andromeda_crf
             }
           }
         }
+
         // edge
-        for (int i = 0; i < seq.vs.size() - 1; i++) {
-          const int eid0 = edge_feature_id(seq.vs[i].label, seq.vs[i+1].label);
-          const int eid1 = edge_feature_id(vs[i], vs[i+1]);
-          if (eid0 == eid1) continue;
-          X[eid0] += 1.0;
-          X[eid1] -= 1.0;
-        }
+        if(seq.vs.size()>0)
+          {
+            for(std::size_t i=0; i<seq.vs.size()-1; i++)
+              {
+                const int eid0 = edge_feature_id(seq.vs[i].label, seq.vs[i+1].label);
+                const int eid1 = edge_feature_id(vs[i], vs[i+1]);
+
+                if(eid0 == eid1)
+                  {
+                    continue;
+                  }
+
+                X[eid0] += 1.0;
+                X[eid1] -= 1.0;
+              }
+          }
 
         double wX = 0, X2 = 0;
         for (std::map<int, double>::const_iterator i = X.begin(); i != X.end(); i++) {
@@ -1564,10 +1595,13 @@ namespace andromeda_crf
   {
     const double L1_PSEUDO_GRADIENT = 0;
     //  const double L1_PSEUDO_GRADIENT = 0.00001;
-    const int d = _fb.Size();
+    const std::size_t d = _fb.Size();
 
     std::vector<int> ri(_vs.size());
-    for (int i = 0; i < ri.size(); i++) ri[i] = i;
+    for(std::size_t i=0; i<ri.size(); i++)
+      {
+        ri[i] = i;
+      }
 
     const int batch_size = 20;
 
@@ -1589,53 +1623,63 @@ namespace andromeda_crf
       //random_shuffle(ri.begin(), ri.end());
       shuffle(ri.begin(), ri.end(), gen);
 
-
       int n = 0, ncorrect = 0, ntotal = 0;
       double logl = 0;
-      for (int i = 0;; i++) {
-        const utils::crf_sample_sequence & seq = _vs[ri[i]];
-        ntotal += seq.vs.size();
-        logl += add_sample_model_expectation(seq, vme, ncorrect);
-        add_sample_empirical_expectation(seq, _vee);
 
-        n++;
-        if (n == batch_size || i == ri.size() - 1) {
-          // update the weights of the features
-          for (size_t j = 0; j < d; j++) {
-            _vee[j] /= n;
-            vme[j] /= n;
-          }
+      for(int i = 0;; i++)
+        {
+          const utils::crf_sample_sequence & seq = _vs[ri[i]];
+          ntotal += seq.vs.size();
+          logl += add_sample_model_expectation(seq, vme, ncorrect);
+          add_sample_empirical_expectation(seq, _vee);
 
-          std::vector<double> grad(d);
-          for (size_t j = 0; j < d; j++) {
-            grad[j] = vme[j] - _vee[j];
-          }
+          int ri_len = ri.size();
 
-          const double eta = eta0 * tau / (tau + k);
-          if (L1_PSEUDO_GRADIENT == 0) {
-            for (size_t j = 0; j < d; j++) {
-              _vl[j] -= eta * grad[j];
+          n++;
+          if(n==batch_size || i+1==ri_len)
+            {
+              // update the weights of the features
+              for(std::size_t j = 0; j < d; j++) {
+                _vee[j] /= n;
+                vme[j] /= n;
+              }
+
+              std::vector<double> grad(d);
+              for(std::size_t j = 0; j < d; j++) {
+                grad[j] = vme[j] - _vee[j];
+              }
+
+              const double eta = eta0 * tau / (tau + k);
+              if (L1_PSEUDO_GRADIENT == 0) {
+                for(std::size_t j = 0; j < d; j++) {
+                  _vl[j] -= eta * grad[j];
+                }
+              } else {
+                grad = pseudo_gradient(_vl, grad, L1_PSEUDO_GRADIENT);
+                for(std::size_t j = 0; j < d; j++) {
+                  const double prev = _vl[j];
+                  _vl[j] -= eta * grad[j];
+                  if (prev * _vl[j] < 0) _vl[j] = 0;
+                }
+              }
+
+              //  l1ball_projection(_vl, 500000);
+
+              // reset
+              k++;
+              n = 0;
+              vme.assign(d, 0);
+
+              _vee.assign(_vee.size(), 0);
+
+              initialize_edge_weights();
+
+              if(i+1==ri_len)
+                {
+                  break;
+                }
             }
-          } else {
-            grad = pseudo_gradient(_vl, grad, L1_PSEUDO_GRADIENT);
-            for (size_t j = 0; j < d; j++) {
-              const double prev = _vl[j];
-              _vl[j] -= eta * grad[j];
-              if (prev * _vl[j] < 0) _vl[j] = 0;
-            }
-          }
-
-          //  l1ball_projection(_vl, 500000);
-
-          // reset
-          k++;
-          n = 0;
-          vme.assign(d, 0);
-          _vee.assign(_vee.size(), 0);
-          initialize_edge_weights();
-          if (i == ri.size() - 1) break;
         }
-      }
       logl /= _vs.size();
 
       LOG_S(ERROR) << "iter = " << iter << " logl = " << logl
@@ -1648,20 +1692,27 @@ namespace andromeda_crf
   void crf_model::lookahead_initialize_state_weights(const utils::crf_sample_sequence & seq)
   {
     std::vector<double> powv(_num_classes);
-    for (size_t i = 0; i < seq.vs.size(); i++) {
-      powv.assign(_num_classes, 0.0);
-      const utils::crf_sample & s = seq.vs[i];
-      for (std::vector<int>::const_iterator j = s.positive_features.begin(); j != s.positive_features.end(); j++){
-        for (std::vector<int>::const_iterator k = _feature2mef[*j].begin(); k != _feature2mef[*j].end(); k++) {
-          const double w = _vl[*k];
-          powv[_fb.Feature(*k).label()] += w;
-        }
-      }
 
-      for (int j = 0; j < _num_classes; j++) {
-        state_weight(i, j) = powv[j];
+    for(std::size_t i=0; i<seq.vs.size(); i++)
+      {
+        powv.assign(_num_classes, 0.0);
+        const utils::crf_sample & s = seq.vs[i];
+
+        for(std::vector<int>::const_iterator j = s.positive_features.begin(); j != s.positive_features.end(); j++)
+          {
+            for (std::vector<int>::const_iterator k = _feature2mef[*j].begin(); k != _feature2mef[*j].end(); k++)
+              {
+                const double w = _vl[*k];
+                powv[_fb.Feature(*k).label()] += w;
+              }
+          }
+
+        for(int j=0; j<_num_classes; j++)
+          {
+            state_weight(i, j) = powv[j];
+          }
+
       }
-    }
   }
 
   double crf_model::lookahead_search(const utils::crf_sample_sequence & seq,
@@ -2034,27 +2085,27 @@ namespace andromeda_crf
   {
     if(s0.vs.size() >= MAX_LEN)
       {
-	LOG_S(ERROR) << "sequence is too long: " << MAX_LEN << " > " << s0.vs.size();
-	return;
+        LOG_S(ERROR) << "sequence is too long: " << MAX_LEN << " > " << s0.vs.size();
+        return;
       }
 
     utils::crf_sample_sequence seq;
 
     for(auto i=s0.vs.begin(); i!=s0.vs.end(); i++)
       {
-	utils::crf_sample s;
+        utils::crf_sample s;
 
-	for(auto j = i->features.begin(); j != i->features.end(); j++)
-	  {
-	    const int id = _featurename_bag.Id(*j);
+        for(auto j = i->features.begin(); j != i->features.end(); j++)
+          {
+            const int id = _featurename_bag.Id(*j);
 
-	    if(id >= 0)
-	      {
-		s.positive_features.push_back(id);
-	      }
-	  }
+            if(id >= 0)
+              {
+                s.positive_features.push_back(id);
+              }
+          }
 
-	seq.vs.push_back(s);
+        seq.vs.push_back(s);
       }
 
     std::vector<int> vs(seq.vs.size());
@@ -2062,7 +2113,7 @@ namespace andromeda_crf
 
     for(std::size_t i=0; i<seq.vs.size(); i++)
       {
-	s0.vs[i].label = _label_bag.Str(vs[i]);
+        s0.vs[i].label = _label_bag.Str(vs[i]);
       }
   }
 

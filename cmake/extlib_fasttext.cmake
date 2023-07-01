@@ -15,7 +15,8 @@ ExternalProject_Add(extlib_fasttext
     #GIT_TAG ${FASTTEXT_TAG}
 
     UPDATE_COMMAND ""
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} -DBUILD_SHARED_LIBS=OFF
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH}
+    #CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} -DBUILD_SHARED_LIBS=OFF
 
     #BUILD_ALWAYS ON
 
@@ -26,5 +27,6 @@ ExternalProject_Add(extlib_fasttext
     LOG_BUILD ON)
 
 add_library(fasttext STATIC IMPORTED)
-set_target_properties(fasttext PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libfasttext.a)
+#set_target_properties(fasttext PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libfasttext.a)
+set_target_properties(fasttext PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libfasttext_pic.a)
 add_dependencies(fasttext extlib_fasttext)

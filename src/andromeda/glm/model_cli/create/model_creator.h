@@ -141,7 +141,7 @@ namespace andromeda
       
     private:
 
-      std::shared_ptr<model_type> model;
+      std::shared_ptr<model_type> model_ptr;
 
       std::size_t beg_term_hash, end_term_hash,
         beg_sent_hash, end_sent_hash,
@@ -149,8 +149,8 @@ namespace andromeda
         undef_pos_hash;
     };
 
-    model_creator::model_creator(std::shared_ptr<model_type> model):
-      model(model),
+    model_creator::model_creator(std::shared_ptr<model_type> model_ptr):
+      model_ptr(model_ptr),
 
       beg_term_hash(node_names::DEFAULT_HASH),
       end_term_hash(node_names::DEFAULT_HASH),
@@ -163,8 +163,8 @@ namespace andromeda
 
       undef_pos_hash(node_names::DEFAULT_HASH)
     {
-      auto& nodes = model->get_nodes();
-      auto& edges = model->get_edges();
+      auto& nodes = model_ptr->get_nodes();
+      auto& edges = model_ptr->get_edges();
 
       nodes.initialise();
       edges.initialise();
@@ -184,10 +184,10 @@ namespace andromeda
     void model_creator::update(subject<PARAGRAPH>& subj,
 			       std::set<hash_type>& docs_cnt) // hashes of nodes already in doc
     {
-      auto& nodes = model->get_nodes();
-      auto& edges = model->get_edges();
+      auto& nodes = model_ptr->get_nodes();
+      auto& edges = model_ptr->get_edges();
 
-      auto& parameters = model->get_parameters();
+      auto& parameters = model_ptr->get_parameters();
 
       base_node text_node(node_names::TEXT, subj.get_hash());      
       if(parameters.keep_texts)
@@ -302,10 +302,10 @@ namespace andromeda
     void model_creator::update(subject<TABLE>& subj,
 			       std::set<hash_type>& docs_cnt) // hashes of nodes already in doc`
     {      
-      auto& nodes = model->get_nodes();
-      auto& edges = model->get_edges();
+      auto& nodes = model_ptr->get_nodes();
+      auto& edges = model_ptr->get_edges();
 
-      auto& parameters = model->get_parameters();
+      auto& parameters = model_ptr->get_parameters();
 
       base_node table_node(node_names::TABL, subj.get_hash());      
       if(parameters.keep_tabls)
@@ -395,10 +395,10 @@ namespace andromeda
     
     void model_creator::update(subject<DOCUMENT>& subj, std::set<hash_type>& doc_insts)
     {
-      auto& nodes = model->get_nodes();
-      //auto& edges = model->get_edges();
+      auto& nodes = model_ptr->get_nodes();
+      //auto& edges = model_ptr->get_edges();
 
-      auto& parameters = model->get_parameters();
+      auto& parameters = model_ptr->get_parameters();
       
       doc_insts.clear();
 
@@ -641,18 +641,23 @@ namespace andromeda
           edges.insert(edge_names::prev, end_text_hash, hashes.back(), false);
         }
 
-      for(int i=0; i<hashes.size(); i++)
-        {
+      int ind = 0;
+      int len = hashes.size();
+
+      for(std::size_t i=0; i<hashes.size(); i++)
+        {	  
           for(int d=1; d<=padding; d++)
             {
-              if(i+d<hashes.size())
+	      ind = i+d;
+              if(ind<len)
                 {
-                  edges.insert(d, hashes.at(i), hashes.at(i+d), false);
+                  edges.insert(d, hashes.at(i), hashes.at(ind), false);
                 }
 
-              if(0<=i-d)
+	      ind = i-d;
+              if(0<=ind)
                 {
-                  edges.insert(-d, hashes.at(i), hashes.at(i-d), false);
+                  edges.insert(-d, hashes.at(i), hashes.at(ind), false);
                 }
             }
         }
@@ -1084,19 +1089,24 @@ namespace andromeda
               }
           }
       }
-
-      for(int i=0; i<hashes.size(); i++)
+ 
+      int ind = 0;
+      int len = hashes.size();
+      
+      for(std::size_t i=0; i<hashes.size(); i++)
         {
           for(int d=1; d<=padding; d++)
             {
-              if(i+d<hashes.size())
+	      ind = i+d;	      
+              if(ind<len)
                 {
-                  edges.insert(d, hashes.at(i), hashes.at(i+d), false);
+                  edges.insert(d, hashes.at(i), hashes.at(ind), false);
                 }
 
-              if(0<=i-d)
+	      ind = i-d;
+              if(0<=ind)
                 {
-                  edges.insert(-d, hashes.at(i), hashes.at(i-d), false);
+                  edges.insert(-d, hashes.at(i), hashes.at(ind), false);
                 }
             }
         }

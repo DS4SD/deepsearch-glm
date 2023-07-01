@@ -63,8 +63,6 @@ if(NOT EXISTS ${EXTERNALS_PREFIX_PATH})
   execute_process(COMMAND mkdir ${EXTERNALS_PREFIX_PATH}/resources)
 endif()
 
-#find_package(OpenSSL REQUIRED)
-
 include(cmake/subdirlist.cmake)
 
 include(cmake/extlib_json.cmake)
@@ -76,7 +74,6 @@ include(cmake/extlib_fasttext.cmake)
 #include(cmake/extlib_utf8.svn.cmake)
 include(cmake/extlib_utf8.git.cmake)
 include(cmake/extlib_pybind11.cmake)
-#include(cmake/extlib_andromeda_pos.cmake)
 
 include(cmake/os_opts.cmake)
 

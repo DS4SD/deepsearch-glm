@@ -77,7 +77,7 @@ namespace andromeda
 	  const nlohmann::json& params = config.at(parameters_lbl);
 	  source_id = params["source"].get<flow_id_type>();
 	}
-      catch(std::exception exc)
+      catch(std::exception& exc)
 	{
 	  LOG_S(WARNING) << exc.what();
 	  return false;

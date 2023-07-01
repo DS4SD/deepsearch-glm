@@ -144,7 +144,7 @@ namespace andromeda
                 {
 		  exprs.emplace_back("filter", "", regex_item);
                 }
-              catch(std::exception exc)
+              catch(std::exception& exc)
                 {
                   LOG_S(WARNING) << exc.what();
                 }
@@ -192,7 +192,7 @@ namespace andromeda
     {
       auto& target = results.at(query_baseop::flid);
 
-      auto& nodes = query_baseop::model->get_nodes();
+      auto& nodes = query_baseop::model_ptr->get_nodes();
 
       base_node node;
       for(auto sid:query_baseop::dependencies)
@@ -220,7 +220,7 @@ namespace andromeda
     {
       auto& target = results.at(query_baseop::flid);
 
-      auto& nodes = query_baseop::model->get_nodes();
+      auto& nodes = query_baseop::model_ptr->get_nodes();
 
       base_node node;
       for(auto sid:query_baseop::dependencies)
@@ -260,7 +260,7 @@ namespace andromeda
       auto& filter = results.at(filter_flid);
       auto& target = results.at(query_baseop::flid);
 
-      auto& nodes = query_baseop::model->get_nodes();
+      auto& nodes = query_baseop::model_ptr->get_nodes();
 
       std::vector<hash_type> nhashes={}, thashes={};
       

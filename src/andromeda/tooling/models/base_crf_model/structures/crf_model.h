@@ -33,12 +33,12 @@ namespace andromeda_crf
     const static inline bool OUTPUT_MARGINAL_PROB = true;
     const static inline bool USE_EDGE_TRIGRAMS = false;
 
-    const static inline int PERCEPTRON_NITER = 20;    
+    const static inline int PERCEPTRON_NITER = 20;
     const static inline int LOOKAHEAD_DEPTH = 2;
 
     const static inline double PERCEPTRON_MARGIN = 40;
     const static inline int HV_OFFSET = 3;
-    
+
   public:
 
     crf_model();
@@ -46,7 +46,7 @@ namespace andromeda_crf
 
     void incr_line_counter() { _line_counter++; }
 
-    int num_classes() const { return _num_classes; }
+    std::size_t num_classes() const { return _num_classes; }
 
     std::string get_class_label(int i) const { return _label_bag.Str(i); }
 
@@ -174,14 +174,16 @@ namespace andromeda_crf
                       std::vector<utils::crf_path> & vp);
 
     double nbest(const utils::crf_sample_sequence & seq,
-		 std::vector<utils::crf_path> & sequences,
+                 std::vector<utils::crf_path> & sequences,
                  const int max_num, const double min_prob);
 
     double FunctionGradient(const std::vector<double> & x,
-			    std::vector<double> & grad);
+                            std::vector<double> & grad);
 
-    static double FunctionGradientWrapper(const std::vector<double> & x,
-                                          std::vector<double> & grad);
+    /*
+      static double FunctionGradientWrapper(const std::vector<double> & x,
+      std::vector<double> & grad);
+    */
 
     double forward_prob(const int len);
     double backward_prob(const int len);
@@ -245,7 +247,7 @@ namespace andromeda_crf
 
     //int nbest_search_path[crf_model::MAX_LEN];
     //std::vector<int> nbest_search_path;
-    
+
     /*
       static int edge_feature_id[crf_model::MAX_LABEL_TYPES][crf_model::MAX_LABEL_TYPES];
       static double state_weight[MAX_LEN][crf_model::MAX_LABEL_TYPES];
@@ -256,10 +258,10 @@ namespace andromeda_crf
     */
 
     /*
-    int* p_edge_feature_id;
-    int* p_edge_feature_id2;
-    int* p_edge_feature_id3;
-    int* p_backward_pointer;
+      int* p_edge_feature_id;
+      int* p_edge_feature_id2;
+      int* p_edge_feature_id3;
+      int* p_backward_pointer;
     */
 
     std::vector<int> nbest_search_path,
@@ -269,12 +271,12 @@ namespace andromeda_crf
       p_backward_pointer;
 
     /*
-    double* p_state_weight;
-    double* p_edge_weight;
-    double* p_edge_weight2;
-    double* p_edge_weight3;
-    double* p_forward_cache;
-    double* p_backward_cache;
+      double* p_state_weight;
+      double* p_edge_weight;
+      double* p_edge_weight2;
+      double* p_edge_weight3;
+      double* p_forward_cache;
+      double* p_backward_cache;
     */
 
     std::vector<double> p_state_weight,

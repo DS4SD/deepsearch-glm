@@ -241,10 +241,10 @@ namespace andromeda
 	 	  
 	  std::stringstream ss;
 
-	  std::size_t prev=-1;
+	  std::size_t prev=-1, mONE=-1;
 	  for(auto ind:inds)
 	    {
-	      if(prev!=-1 and ind-prev>1)
+	      if(prev!=mONE and ind>prev+1)
 		{
 		  ss << " ... ";
 		}	      

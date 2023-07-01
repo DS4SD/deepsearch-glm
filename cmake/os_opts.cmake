@@ -8,6 +8,8 @@ if(WIN32)
 elseif(APPLE)
    message(STATUS "compiling on mac-osx")
 
+   #set(CMAKE_MACOSX_RPATH 1)
+
    find_library(FoundationLib Foundation)
    #message("LIB: ${FoundationLib}")
 
@@ -16,7 +18,8 @@ elseif(APPLE)
 
    #set(LIB_LINK json json_schema loguru cxxopts pcre2 fasttext utf8 andromeda_pos ${OPENSSL_LIBRARIES} ldap z)
    #set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 andromeda_pos ${OPENSSL_LIBRARIES} ldap z)
-   set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 ${OPENSSL_LIBRARIES} ldap z)
+   #set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 ${OPENSSL_LIBRARIES} ldap z)
+   set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 ldap z)	
 
    list(APPEND LIB_LINK ${FoundationLib} ${SystemConfigurationLib})
    
@@ -25,7 +28,8 @@ elseif(UNIX)
 
    #set(LIB_LINK json json_schema loguru cxxopts pcre2 fasttext utf8 andromeda_pos ${OPENSSL_LIBRARIES} z)
    #set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 andromeda_pos ${OPENSSL_LIBRARIES} z)
-   set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 ${OPENSSL_LIBRARIES} z)
+   #set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 ${OPENSSL_LIBRARIES} z)
+   set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 z)
 
    list(APPEND LIB_LINK dl m pthread rt resolv)
 

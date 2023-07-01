@@ -84,7 +84,7 @@ namespace andromeda_py
       {
 	flow.from_config(config);
       }
-    catch(std::exception exc)
+    catch(std::exception& exc)
       {
 	LOG_S(ERROR) << "could not parse config: "
 		     << config.dump(2);

@@ -32,7 +32,9 @@ namespace andromeda
       case FIGURE: return "FIGURE";
 	
       case DOCUMENT: return "DOCUMENT";
-      }    
+      }
+
+    return "UNKNOWN_SUBJECT";
   }
 
   subject_name to_subject_name(std::string name)    

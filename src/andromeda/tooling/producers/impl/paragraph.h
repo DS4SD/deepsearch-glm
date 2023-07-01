@@ -286,7 +286,7 @@ namespace andromeda
             auto data = nlohmann::json::parse(line);
             text = data.value(key, "");
           }
-        catch(std::exception exc)
+        catch(std::exception& exc)
           {
             LOG_S(ERROR) << "could not json-parse line: `" << line << "`"
                          << " with error (" << exc.what() << ")";

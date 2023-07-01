@@ -113,7 +113,7 @@ namespace andromeda
 	      edge_flvrs.insert(edge_names::to_flvr(edge_name));
 	    }
         }
-      catch(std::exception exc)
+      catch(std::exception& exc)
         {
           LOG_S(WARNING) << exc.what();
           return false;
@@ -125,7 +125,7 @@ namespace andromeda
     bool query_flowop<SUBGRAPH>::execute(results_type& results)
     {
       //auto& nodes = model->get_nodes();
-      auto& edges = model->get_edges();
+      auto& edges = model_ptr->get_edges();
       
       auto& target = results.at(query_baseop::flid);
       target->clear();

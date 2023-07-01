@@ -64,15 +64,16 @@ namespace andromeda
 			   std::size_t max_width=32,
 			   std::size_t max_cols=6)
     {
-      for(int i=0; i<data.size(); i++)
+      //std::size_t max_cols=0;
+      for(std::size_t i=0; i<data.size(); i++)
         {
 	  max_cols = std::max(max_cols, data[i].size());
 	}
       
       std::vector<std::size_t> widths(max_cols, 1);
-      for(int i=0; i<data.size(); i++)
+      for(std::size_t i=0; i<data.size(); i++)
         {
-          for(int j=0; j<data.at(i).size(); j++)
+          for(std::size_t j=0; j<data.at(i).size(); j++)
             {
               auto& elem = data.at(i).at(j);
               widths.at(j) = std::max(widths.at(j), elem.size());
@@ -80,10 +81,10 @@ namespace andromeda
             }
         }
 
-      for(int i=0; i<data.size(); i++)
+      for(std::size_t i=0; i<data.size(); i++)
         {
           ss << "\n| ";
-          for(int j=0; j<data.at(i).size(); j++)
+          for(std::size_t j=0; j<data.at(i).size(); j++)
             {
               auto elem = data.at(i).at(j);
               ss << std::setw(widths.at(j)) << elem << " | ";
@@ -101,15 +102,15 @@ namespace andromeda
 			   std::size_t max_cols=6)
     {
       std::vector<std::size_t> widths(headers.size(), 1);
-      for(int j=0; j<headers.size(); j++)
+      for(std::size_t j=0; j<headers.size(); j++)
         {
           auto elem = headers.at(j);
           widths.at(j) = std::max(widths.at(j), elem.size());
         }
 
-      for(int i=0; i<data.size(); i++)
+      for(std::size_t i=0; i<data.size(); i++)
         {
-          for(int j=0; j<headers.size(); j++)
+          for(std::size_t j=0; j<headers.size(); j++)
             {
               auto elem = data.at(i).at(j);
 
@@ -119,23 +120,23 @@ namespace andromeda
         }
 
       ss << "\n| ";
-      for(int j=0; j<headers.size(); j++)
+      for(std::size_t j=0; j<headers.size(); j++)
         {
           auto header = headers.at(j);
           ss << std::setw(widths.at(j)) << header << " | ";
         }
 
       ss << "\n| ";
-      for(int j=0; j<headers.size(); j++)
+      for(std::size_t j=0; j<headers.size(); j++)
         {
           std::string tmp(widths.at(j), '-');
           ss << std::setw(widths.at(j)) << tmp << " | ";
         }
 
-      for(int i=0; i<data.size(); i++)
+      for(std::size_t i=0; i<data.size(); i++)
         {
           ss << "\n| ";
-          for(int j=0; j<headers.size(); j++)
+          for(std::size_t j=0; j<headers.size(); j++)
             {
               auto elem = data.at(i).at(j);
               ss << std::setw(widths.at(j)) << elem << " | ";
