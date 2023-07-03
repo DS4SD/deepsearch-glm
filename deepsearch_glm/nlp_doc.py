@@ -1,27 +1,26 @@
 #!/usr/bin/env python
 
 import os
-
 import json
 import glob
-
 import argparse
-
-from tabulate import tabulate
-from PIL import Image, ImageDraw
-
 import subprocess
 
 import pandas as pd
 import textwrap as tw
 import textColor as tc
 
+from tabulate import tabulate
+from PIL import Image, ImageDraw
+
+from ds_convert import convert_pdffile
+
 import andromeda_nlp
 
-import deepsearch as ds
+#import deepsearch as ds
 
-deepsearch_host = "https://deepsearch-experience.res.ibm.com"
-deepsearch_proj = "1234567890abcdefghijklmnopqrstvwyz123456"
+#deepsearch_host = "https://deepsearch-experience.res.ibm.com"
+#deepsearch_proj = "1234567890abcdefghijklmnopqrstvwyz123456"
 
 def parse_arguments():
 
@@ -30,8 +29,27 @@ def parse_arguments():
         description = 'Apply Andromeda-NLP on `Deep Search` documents',
         epilog = 'Text at the bottom of help')
 
-    parser.add_argument('-m', '--mode', required=False, default="show",
-                        help="mode [convert;show;run-doc;run-docs]")
+    parser.add_argument('--pdf', required=True,
+                        type=str,
+                        help="filename of pdf document")
+
+    parser.add_argument('--force', required=False, 
+                        type=bool, default=False,
+                        help="force pdf conversion")
+
+    parser.add_argument('--models', required=False,                        
+                        type=str, default="name;verb;term;abbreviation",
+                        help="set NLP models (e.g. `term;sentence`)")
+    
+    args = parser.parse_args()
+
+    return args.pdf, args.force, args.models
+    
+    """
+    parser.add_argument('-m', '--mode', required=False, 
+                        help="mode [convert;run-doc]",
+                        default="run-doc")
+
     parser.add_argument('-i', '--input-data', required=False,
                         help="input directory or filename",
                         default="../data/documents/reports")
@@ -50,7 +68,9 @@ def parse_arguments():
     args = parser.parse_args()
 
     return args.mode, args.input_data, args.models, args.vpage, args.username, args.password
+    """
 
+"""
 def convert(sdirectory, username, password):
 
     pdfs_files=glob.glob(os.path.join(sdirectory, "*.pdf"))
@@ -119,6 +139,7 @@ def process_zip_files(sdir):
     cellsfiles = sorted(glob.glob(os.path.join(sdir, "*.cells")))
     for i,cellsfile in enumerate(cellsfiles):
         subprocess.call(["rm", cellsfile])            
+"""
 
 def resolve_item(item, doc):
 
@@ -390,48 +411,13 @@ def run_nlp_on_doc(filename, vpage):
     fw = open(filename_j, "w")        
     fw.write(json.dumps(doc_j, indent=2))
     fw.close()        
-
-def run_nlp_on_docs(sdir):
-
-    filenames = glob.glob(os.path.join(sdir, "*.json"))
-    print("filenames: ", json.dumps(filenames, indent=2))
-
-    model = andromeda_nlp.nlp_model()
-
-    config = model.get_apply_configs()[0]
-    config["models"] = "name;term;language;reference"
-    
-    model.initialise(config)
-
-    page_num=1
-    
-    for filename in filenames:
-
-        if(filename.endswith(".nlp.json")):
-            continue
-
-        print(f"reading {filename}")
-        run_nlp_on_doc(filename, vpage=-1)
     
 if __name__ == '__main__':
 
-    mode, sdir, models, vpage, uname, pword = parse_arguments()
+    pdffile, force, models = parse_arguments()
 
-    found_new_pdfs=False
-    if uname!="<email>" and pword!="<API_KEY>":
-        found_new_pdfs = convert(sdir, uname, pword)
-    
-    if found_new_pdfs:
-        process_zip_files(sdir)
+    success, jsonfile = convert_pdffile(pdffile, force=force)
 
-    if mode=="convert" and found_new_pdfs:
-        print(tc.blue(f"converted files located in {sdir}"))
-    #elif mode=="show":
-    #    show_nlp_on_docs(sdir)
-    elif mode=="run-doc":
-        run_nlp_on_doc(sdir, vpage)                
-    #elif mode=="run-docs":
-    #    run_nlp_on_docs(sdir)
-    else:
-        print(tc.red(f"unknown {mode}"))
+    if success:    
+        run_nlp_on_doc(jsonfile, 3)                
         

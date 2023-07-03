@@ -198,7 +198,7 @@ namespace andromeda
   bool prov_element::overlaps_y(const prov_element& rhs, val_type iou) const
   {
     assert(page==rhs.page);
-    assert(0.0<iou and iou<=1.0);
+    assert(0.0<=iou and iou<=1.0);
 
     if(this->overlaps_y(rhs))
       {
@@ -209,7 +209,7 @@ namespace andromeda
 	auto i1 = std::min(bbox[y1], rhs.bbox[y1]);
 
 	auto iou_ = (i1-i0)/(u1-u0);
-	assert(0.0<iou_ and iou_<=1.0);
+	assert(0.0<=iou_ and iou_<=1.0);
 
 	return (iou_)>iou;
       }

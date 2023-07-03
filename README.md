@@ -52,5 +52,24 @@ mv glm_config_<task>.example.json glm_config_<task>.json
 ./glm.exe -m explore -c glm_config_create.json
 ```
 
+## Python Interface
 
+To use the python interface, first make sure all dependencies are installed. We use [poetry](https://python-poetry.org/docs/) for that,
 
+```sh
+poetry install
+```
+To run the examples, simply do execute the scripts as `poetry run python <script> <input>`. Examples are,
+
+1. Doing NLP on a single document
+```sh
+poetry run python3 ./deepsearch_glm/nlp_doc.py -m run-doc -i ../../Articles-v2/2302.05420.json --vpage 10
+```
+2. Creating a GLM from a single document
+```sh
+poetry run python ./deepsearch_glm/glm_doc.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
+```
+3. Using a GLM for Q&A:
+```sh
+poetry run python ./deepsearch_glm/glm_docqa.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
+```
