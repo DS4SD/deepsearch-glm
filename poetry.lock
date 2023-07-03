@@ -743,6 +743,20 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
+name = "pybind11"
+version = "2.10.4"
+description = "Seamless operability between C++11 and Python"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "pybind11-2.10.4-py3-none-any.whl", hash = "sha256:ec9be0c45061c829648d7e8c98a7d041768b768c934acd15196e0f1943d9a818"},
+    {file = "pybind11-2.10.4.tar.gz", hash = "sha256:0bb621d3c45a049aa5923debb87c5c0e2668227905c55ebe8af722608d8ed927"},
+]
+
+[package.extras]
+global = ["pybind11-global (==2.10.4)"]
+
+[[package]]
 name = "pydantic"
 version = "1.10.10"
 description = "Data validation and settings management using python type hints"
@@ -1126,4 +1140,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "a4df321fdfec8a833d4c0bfe4269fbf29582eb840e6ae692289e6786857247c4"
+content-hash = "b8849a560f82ccd75edaab25ef847bdfe1d9d6f57800eeb559227c7152f85d58"

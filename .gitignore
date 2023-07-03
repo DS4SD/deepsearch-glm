@@ -1,3 +1,5 @@
+### Custom ###
+
 *.env
 *DS_Store
 *~
@@ -31,6 +33,8 @@ python/ds_config.json
 resources/*/*/*.txt
 resources/*/*/*/*.txt
 
+### CXX ###
+
 # Prerequisites
 *.d
 
@@ -63,3 +67,10 @@ resources/*/*/*/*.txt
 *.exe
 *.out
 *.app
+
+### Python ###
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
