@@ -59,6 +59,7 @@ To use the python interface, first make sure all dependencies are installed. We 
 ```sh
 poetry install
 ```
+
 To run the examples, simply do execute the scripts as `poetry run python <script> <input>`. Examples are,
 
 1. Doing NLP on a single document

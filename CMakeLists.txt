@@ -145,3 +145,29 @@ target_compile_definitions(andromeda_glm PRIVATE VERSION_INFO=${EXAMPLE_VERSION_
 
 target_link_libraries(andromeda_nlp PRIVATE nlp)
 target_link_libraries(andromeda_glm PRIVATE glm)
+
+# *****************
+# ***  Install  ***
+# *****************
+
+# add the install targets
+install(TARGETS nlp.exe DESTINATION bin)
+install(TARGETS glm.exe DESTINATION bin)
+
+install(TARGETS andromeda_nlp DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
+install(TARGETS andromeda_glm DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
+
+# install(FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h" DESTINATION include)
+
+# *****************
+# ***  Testing  ***
+# *****************
+
+#function(do_test target arg result)
+#  add_test(NAME Comp${arg} COMMAND ${target} ${arg})
+#  set_tests_properties(Comp${arg} PROPERTIES PASS_REGULAR_EXPRESSION ${result})
+# endfunction()
+
+# do a bunch of result based tests
+# do_test(Tutorial 4 "4 is 2")
+

@@ -6,9 +6,10 @@
 *.so
 *.a
 *.exe
+dist/*
 build/*
 externals/*
-tmp
+tmp/*
 data/documents/*.csv
 data/documents/*.json
 data/models/*.json

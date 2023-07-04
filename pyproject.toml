@@ -6,6 +6,9 @@ authors = ["Peter Staar <taa@zurich.ibm.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "deepsearch_glm"}]
+include = [
+    {path = "deepsearch_glm/*.so", format = "wheel"}
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -22,7 +25,9 @@ uvicorn = "^0.22.0"
 python-dotenv = "^1.0.0"
 pybind11 = "^2.10.4"
 
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+#[tool.poetry.build]
+#script = "build.py"
