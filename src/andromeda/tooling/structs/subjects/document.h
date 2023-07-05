@@ -29,11 +29,13 @@ namespace andromeda
     const static inline std::string maintext_name_lbl = "name";
     const static inline std::string maintext_type_lbl = "type";
 
-    const static inline std::set<std::string> texts_types = {"title", "subtitle-level-1",
-							     "paragraph", "formula"};
+    const static inline std::set<std::string> texts_types = {"title",
+							     "subtitle-level-1", "paragraph",
+							     "formula", "equation"};
     
-    const static inline std::set<std::string> maintext_types = {"title", "subtitle-level-1",
-								"paragraph", "formula",
+    const static inline std::set<std::string> maintext_types = {"title",
+								"subtitle-level-1", "paragraph",
+								"formula", "equation", 
 								"table", "figure"};
     
   public:

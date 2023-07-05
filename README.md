@@ -1,10 +1,22 @@
 # Graph Language Models
 
+[![PyPI version](https://img.shields.io/pypi/v/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
+[![License MIT](https://img.shields.io/github/license/ds4sd/deepsearch-glm)](https://opensource.org/licenses/MIT)
+
 ## Install
 
+### CXX compilation
+
+To compile from scratch, simply run the following command in the `deepsearch-glm` root folder, 
+
 ```sh
-sh build.mac.sh
+cmake -B ./build; cd build; make install -j
 ```
+
+### Python installation
+
+
 
 ## Natural Language Processing (NLP)
 

@@ -10,6 +10,17 @@ import deepsearch as ds
 
 from dotenv import load_dotenv
 
+def get_scratch_dir():
+
+    load_dotenv()
+
+    tmpdir = os.path.abspath(os.getenv("DEEPSEARCH_TMPDIR"))
+
+    if not os.path.exists(tmpdir):
+        os.mkdir(tmpdir)
+
+    return tmpdir
+    
 def load_vars():
 
     load_dotenv()
@@ -20,17 +31,15 @@ def load_vars():
     username = os.getenv("DEEPSEARCH_USERNAME")
     apikey = os.getenv("DEEPSEARCH_APIKEY")
 
-    verify_ssl = True #os.getenv("DEEPSEARCH_VERIFYSSL")
-    tmpdir = os.path.abspath(os.getenv("DEEPSEARCH_TMPDIR"))
-
-    if not os.path.exists(tmpdir):
-        os.mkdirs(tmpdir)
+    verify_ssl = os.getenv("DEEPSEARCH_VERIFYSSL")
         
-    return host, proj, username, apikey, verify_ssl, tmpdir
+    return host, proj, username, apikey, verify_ssl
 
 def get_ds_api():
 
-    host, proj, username, apikey, verify_ssl, tdir = load_vars()
+    tdir = get_scratch_dir()
+    
+    host, proj, username, apikey, verify_ssl = load_vars()
     
     config_ = {
         "host": host,
@@ -54,16 +63,6 @@ def get_ds_api():
 
 def process_zip_files(tdir):
 
-    """
-    jsonfiles = sorted(glob.glob(os.path.join(tdir, "*.json")))
-    for i,jsonfile in enumerate(jsonfiles):
-        subprocess.call(["rm", jsonfile])
-
-    cellsfiles = sorted(glob.glob(os.path.join(tdir, "*.cells")))
-    for i,cellsfile in enumerate(cellsfiles):
-        subprocess.call(["rm", cellsfile])            
-    """
-    
     zipfiles = sorted(glob.glob(os.path.join(tdir, "*.zip")))
     print(f"zips: ", len(zipfiles))
 

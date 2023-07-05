@@ -12,6 +12,7 @@ externals/*
 tmp/*
 data/documents/*.csv
 data/documents/*.json
+data/documents/*/*.nlp.json
 data/models/*.json
 data/models/*.jsonl
 data/models/*.bin
