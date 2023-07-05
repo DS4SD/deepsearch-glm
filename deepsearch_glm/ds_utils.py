@@ -59,7 +59,7 @@ def get_ds_api():
     client = ds.CpsApiClient(config)
     api = ds.CpsApi(client)
 
-    return api
+    return api, proj
 
 def process_zip_files(tdir):
 
@@ -90,13 +90,14 @@ def convert_pdffile(pdffile, force=False):
         return True, jsonfile
 
     elif os.path.exists(pdffile):
-        
-        host, proj, username, apikey, verify_ssl, tdir = load_vars()
+
+        tdir = get_scratch_dir()
+
         subprocess.call(["cp", pdffile, f"{tdir}/{base_pdffile}"])
         
-        ds_api = get_ds_api()
+        ds_api, proj_key = get_ds_api()
         
-        docs = ds.convert_documents(api=ds_api, proj_key=proj,
+        docs = ds.convert_documents(api=ds_api, proj_key=proj_key,
                                     source_path=tdir, progress_bar=True)           
         docs.download_all(result_dir=tdir)
 

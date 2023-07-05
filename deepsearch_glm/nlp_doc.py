@@ -13,14 +13,9 @@ import textColor as tc
 from tabulate import tabulate
 from PIL import Image, ImageDraw
 
-from ds_convert import convert_pdffile
+from ds_utils import get_scratch_dir, convert_pdffile
 
 import andromeda_nlp
-
-#import deepsearch as ds
-
-#deepsearch_host = "https://deepsearch-experience.res.ibm.com"
-#deepsearch_proj = "1234567890abcdefghijklmnopqrstvwyz123456"
 
 def parse_arguments():
 
@@ -45,102 +40,6 @@ def parse_arguments():
 
     return args.pdf, args.force, args.models
     
-    """
-    parser.add_argument('-m', '--mode', required=False, 
-                        help="mode [convert;run-doc]",
-                        default="run-doc")
-
-    parser.add_argument('-i', '--input-data', required=False,
-                        help="input directory or filename",
-                        default="../data/documents/reports")
-
-    parser.add_argument('-v', '--vpage', required=False, help="visualise reading order on page-number",
-                        default=None)
-
-    parser.add_argument('--models', required=False, help="set NLP models (e.g. `term;sentence`)",
-                        default="term;abbreviation")
-    
-    parser.add_argument('-u', '--username', required=False, default="<email>",
-                        help="username or email from DS host")
-    parser.add_argument('-p', '--password', required=False, default="<API_KEY>",
-                        help="API-key from DS host")
-    
-    args = parser.parse_args()
-
-    return args.mode, args.input_data, args.models, args.vpage, args.username, args.password
-    """
-
-"""
-def convert(sdirectory, username, password):
-
-    pdfs_files=glob.glob(os.path.join(sdirectory, "*.pdf"))
-    json_files=glob.glob(os.path.join(sdirectory, "*.json"))
-
-    new_pdfs=[]
-    
-    found_new_pdfs=False
-    for pdf_file in pdfs_files:
-
-        json_file = pdf_file.replace(".pdf", ".json")
-        if json_file not in json_files:
-            new_pdfs.append(pdf_file)
-            found_new_pdfs = True
-
-    print("found new pdf's: ", found_new_pdfs)
-            
-    if not found_new_pdfs:
-        return found_new_pdfs
-    
-    config_ = {
-        "host": deepsearch_host,
-        "auth": {
-            "username": username,
-            "api_key": password,
-        },
-        "verify_ssl": True
-    }
-
-    config_file = "ds_config.json"
-    with open(config_file, "w") as fw:
-        fw.write(json.dumps(config_))
-    
-    config = ds.DeepSearchConfig.parse_file(config_file)
-    
-    client = ds.CpsApiClient(config)
-    api = ds.CpsApi(client)
-
-    documents = ds.convert_documents(api=api, proj_key=deepsearch_proj,
-                                     source_path=sdirectory, progress_bar=True)           
-    documents.download_all(result_dir=sdirectory)
-
-    info = documents.generate_report(result_dir=sdirectory)
-    return found_new_pdfs
-
-def process_zip_files(sdir):
-
-    jsonfiles = sorted(glob.glob(os.path.join(sdir, "*.json")))
-    for i,jsonfile in enumerate(jsonfiles):
-        subprocess.call(["rm", jsonfile])
-
-    cellsfiles = sorted(glob.glob(os.path.join(sdir, "*.cells")))
-    for i,cellsfile in enumerate(cellsfiles):
-        subprocess.call(["rm", cellsfile])            
-    
-    zipfiles = sorted(glob.glob(os.path.join(sdir, "*.zip")))
-    print(f"zips: ", len(zipfiles))
-
-    for zipfile in zipfiles:
-        subprocess.call(["unzip", zipfile, "-d", sdir])    
-
-    for i,zipfile in enumerate(zipfiles):
-        print(i, "\t removing ", zipfile)
-        subprocess.call(["rm", zipfile])        
-
-    cellsfiles = sorted(glob.glob(os.path.join(sdir, "*.cells")))
-    for i,cellsfile in enumerate(cellsfiles):
-        subprocess.call(["rm", cellsfile])            
-"""
-
 def resolve_item(item, doc):
 
     if "$ref" in item:

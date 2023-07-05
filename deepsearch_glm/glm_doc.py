@@ -10,7 +10,7 @@ import textwrap
 
 from tabulate import tabulate
 
-from ds_convert import get_scratch_dir, convert_pdffile
+from ds_utils import get_scratch_dir, convert_pdffile
 
 import andromeda_nlp
 import andromeda_glm
