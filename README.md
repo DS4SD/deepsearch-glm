@@ -4,6 +4,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
 [![License MIT](https://img.shields.io/github/license/ds4sd/deepsearch-glm)](https://opensource.org/licenses/MIT)
+[![Downloads](https://static.pepy.tech/badge/deepsearch-glm)](https://pepy.tech/project/deepsearch-glm)
 
 ## Install
 
@@ -33,19 +34,19 @@ poetry install
 
 To run the examples, simply do execute the scripts as `poetry run python <script> <input>`. Examples are,
 
-1. Doing NLP on a single document
+1. **NLP on a single document**
 ```sh
 poetry run python3 ./deepsearch_glm/nlp_doc.py -m run-doc -i ../../Articles-v2/2302.05420.json --vpage 10
 ```
-2. Creating a GLM from a single document
+2. **GLM from a single document**
 ```sh
 poetry run python ./deepsearch_glm/glm_doc.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
 ```
-3. Creating a GLM from documents
+3. **GLM from documents**
 ```sh
 poetry run python ./deepsearch_glm/glm_from_query.py --index esg-report --query "net zero" --force True
 ```
-4. Using a GLM for Q&A on a document
+4. **GLM for Q&A on a document**
 ```sh
 poetry run python ./deepsearch_glm/glm_docqa.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
 ```
