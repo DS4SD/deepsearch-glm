@@ -7,7 +7,8 @@
 
 namespace andromeda_py
 {
-  class glm_model: public andromeda::glm::base_types,
+  class glm_model: public base_log,
+		   public andromeda::glm::base_types,
                    public andromeda::glm::model_types
   {
     typedef andromeda::glm::model                      glm_model_type;
@@ -64,6 +65,7 @@ namespace andromeda_py
   };
 
   glm_model::glm_model():
+    base_log(),
     model(std::make_shared<glm_model_type>())
   {}
   

@@ -2,6 +2,7 @@
 
 #include <filesystem>
 
+#include "libraries.h"
 #include "andromeda.h"
 
 bool read_config(std::string filename, nlohmann::json& config)

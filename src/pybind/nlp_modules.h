@@ -3,6 +3,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind/utils/pybind11_json.h>
 
+#include <pybind/base_log.h>
 #include <pybind/nlp_interface.h>
 
 PYBIND11_MODULE(andromeda_nlp, m) {

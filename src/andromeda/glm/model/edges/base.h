@@ -181,9 +181,10 @@ namespace andromeda
 		return itr->first;
 	      }
 	  }
-	
-	LOG_S(ERROR) << "requesting undefined edge-flavor `" << name << "`";
-	return UNKNOWN_FLVR;
+
+	LOG_S(WARNING) << "updatuing edge-flavor `" << name << "`";
+	return update_flvr(name);
+	//return UNKNOWN_FLVR;
       }
 
       static std::set<flvr_type> to_flvr(std::vector<std::string> names)

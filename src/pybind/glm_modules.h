@@ -3,8 +3,10 @@
 #include <pybind11/pybind11.h>
 #include <pybind/utils/pybind11_json.h>
 
-#include <pybind/glm_interface/query.h>
-#include <pybind/glm_interface/model.h>
+#include <pybind/glm_interface.h>
+
+//#include <pybind/glm_interface/query.h>
+//#include <pybind/glm_interface/model.h>
 
 PYBIND11_MODULE(andromeda_glm, m) {
   pybind11::class_<andromeda_py::glm_model>(m, "glm_model")

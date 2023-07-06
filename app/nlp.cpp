@@ -2,6 +2,7 @@
 
 #include <filesystem>
 
+#include "libraries.h"
 #include "andromeda.h"
 
 typedef std::shared_ptr<andromeda::base_nlp_model> base_nlp_model_ptr_type;

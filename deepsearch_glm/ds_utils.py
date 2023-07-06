@@ -192,7 +192,11 @@ def ds_index_query(index, query, force=False):
     # Prepare the data query
     query = DataQuery(
         search_query, # The search query to be executed
-        source=["description", "main-text", "texts", "tables", "figures"], # Which fields of documents we want to fetch
+        source=["file-info", "description",
+                "main-text",
+                "texts", "tables", "figures",                
+                "page-headers", "page-footers",
+                "footnotes"], # Which fields of documents we want to fetch
         limit=page_size, # The size of each request page
         coordinates=data_collection # The data collection to be queries
     )
@@ -205,9 +209,11 @@ def ds_index_query(index, query, force=False):
     expected_pages = (expected_total + page_size - 1) // page_size # this is simply a ceiling formula
     
     # Iterate through all results by fetching `page_size` results at the same time
+    bar_format = '{desc:<5.5}{percentage:3.0f}%|{bar:70}{r_bar}'
+    
     all_results = []
     cursor = api.queries.run_paginated_query(query)
-    for result_page in tqdm(cursor, total=expected_pages, bar_format='{desc:<5.5}{percentage:3.0f}%|{bar:70}{r_bar}'):
+    for result_page in tqdm(cursor, total=expected_pages, bar_format=bar_format):
         for row in result_page.outputs["data_outputs"]:
             _id = row["_id"]
             with open(f"{dumpdir}/{_id}.json", "w") as fw:

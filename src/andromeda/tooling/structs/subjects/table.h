@@ -209,7 +209,7 @@ namespace andromeda
     
     if(item.count("data"))
       {
-	nlohmann::json grid = item["data"];
+	nlohmann::json grid = item.at("data");
 	
 	std::set<int> ncols={};
 	for(ind_type i=0; i<grid.size(); i++)
@@ -234,11 +234,19 @@ namespace andromeda
 	ncols = data.at(0).size();
 
 	set_hash();
-	
-	return true;
+	base_subject::valid = true;
       }
-	
-    return false;	
+    else
+      {
+	data.clear();
+
+	nrows=0;
+	ncols=0;
+
+	base_subject::valid = false;
+      }
+    
+    return base_subject::valid;	
   }
   
   void subject<TABLE>::set_hash()
