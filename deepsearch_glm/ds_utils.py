@@ -2,13 +2,22 @@
 import os
 
 import json
+import copy
 import glob
+import hashlib
+
+
+from tqdm import tqdm
 
 import subprocess
 
+from dotenv import load_dotenv
+
 import deepsearch as ds
 
-from dotenv import load_dotenv
+from deepsearch.cps.client.components.elastic import ElasticDataCollectionSource
+from deepsearch.cps.queries import DataQuery
+from deepsearch.cps.client.components.queries import RunQueryError
 
 def get_scratch_dir():
 
@@ -157,3 +166,51 @@ def convert_pdfdir(sdirectory):
     info = documents.generate_report(result_dir=sdirectory)
     return found_new_pdfs
 
+def ds_index_query(index, query, force=False):
+
+    api, proj_key = get_ds_api()
+    
+    # Fetch list of all data collections
+    #collections = api.elastic.list()
+    #collections.sort(key=lambda c: c.name.lower())
+    
+    tdir = get_scratch_dir()
+    dirname = hashlib.md5(f"{index}:{query}".encode()).hexdigest()
+
+    dumpdir = os.path.join(tdir, dirname)
+
+    if not os.path.exists(dumpdir):
+        os.mkdir(dumpdir)
+    elif not force:
+        return dumpdir
+    
+    # Input query
+    search_query = f"\"{query}\"" #"\"global warming potential\" AND \"etching\""
+    data_collection = ElasticDataCollectionSource(elastic_id="default", index_key=index)
+    page_size = 50
+
+    # Prepare the data query
+    query = DataQuery(
+        search_query, # The search query to be executed
+        source=["description", "main-text", "texts", "tables", "figures"], # Which fields of documents we want to fetch
+        limit=page_size, # The size of each request page
+        coordinates=data_collection # The data collection to be queries
+    )
+
+    # [Optional] Compute the number of total results matched. This can be used to monitor the pagination progress.
+    count_query = copy.deepcopy(query)
+    count_query.paginated_task.parameters["limit"] = 0
+    count_results = api.queries.run(count_query)
+    expected_total = count_results.outputs["data_count"]
+    expected_pages = (expected_total + page_size - 1) // page_size # this is simply a ceiling formula
+    
+    # Iterate through all results by fetching `page_size` results at the same time
+    all_results = []
+    cursor = api.queries.run_paginated_query(query)
+    for result_page in tqdm(cursor, total=expected_pages, bar_format='{desc:<5.5}{percentage:3.0f}%|{bar:70}{r_bar}'):
+        for row in result_page.outputs["data_outputs"]:
+            _id = row["_id"]
+            with open(f"{dumpdir}/{_id}.json", "w") as fw:
+                fw.write(json.dumps(row["_source"], indent=2))
+    
+    return dumpdir
