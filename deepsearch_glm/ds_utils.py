@@ -19,6 +19,8 @@ from deepsearch.cps.client.components.elastic import ElasticDataCollectionSource
 from deepsearch.cps.queries import DataQuery
 from deepsearch.cps.client.components.queries import RunQueryError
 
+from deepsearch.artifacts.artifact_manager import ArtifactManager
+
 def get_scratch_dir():
 
     load_dotenv()
@@ -220,3 +222,16 @@ def ds_index_query(index, query, force=False):
                 fw.write(json.dumps(row["_source"], indent=2))
     
     return dumpdir
+
+# inspiration from https://github.com/DS4SD/deepsearch-toolkit/tree/main/deepsearch/artifacts#usage
+def load_models():
+
+    artf_mgr = ArtifactManager(index="/foo/index")
+    
+    artifacts_in_index = artf_mgr.get_artifacts_in_index()
+    print(artifacts_in_index)
+    # output -> ['artifact_c', 'artifact_a', 'artifact_b', 'artifact_d']
+    
+    print(artf_mgr.get_artifacts_in_cache())
+    # output -> []    
+    
