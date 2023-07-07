@@ -188,8 +188,11 @@ namespace andromeda
     
     std::set<std::string> is_ignored = {"page-header", "page-footer"};
 
-    std::set<std::string> is_text = {"title", "subtitle-level-1", "paragraph",
-                                     "footnote", "caption", "formula"};
+    std::set<std::string> is_text = {
+      "title", "subtitle-level-1", "paragraph",
+      "footnote", "caption",
+      "formula", "equation"
+    };
 
     std::set<std::string> is_table = {"table"};
     std::set<std::string> is_figure = {"figure"};

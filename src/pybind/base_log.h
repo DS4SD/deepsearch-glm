@@ -15,7 +15,18 @@ namespace andromeda_py
   
   base_log::base_log()
   {
-    LOG_SCOPE_FUNCTION(WARNING);
+    /*
+    std::string symbol="-v";
+    std::string verbosity="WARNING";
+
+    char* c0 = &symbol.at(0);//static_cast<char*>(symbol.c_str());
+    char* c1 = &verbosity.at(0);//static_cast<char*>(verbosity.c_str());
+    
+    int argc=2;
+    char* argv[] = {c0, c1};
+    
+    loguru::init(argc, argv);
+    */
   }
 
 }

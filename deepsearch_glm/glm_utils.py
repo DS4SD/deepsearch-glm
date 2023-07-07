@@ -1,56 +1,24 @@
-#!/usr/bin/env python
 
-import os
+from ds_utils import get_scratch_dir
 
-import json
-import glob
-
-import argparse
-import textwrap
-
-from tabulate import tabulate
-
-from ds_utils import get_scratch_dir, ds_index_query
-
-import andromeda_nlp
+#import andromeda_nlp
 import andromeda_glm
 
-def parse_arguments():
+def explore_glm_config(glmdir:str):
 
-    parser = argparse.ArgumentParser(
-        prog = 'glm_docqa',
-        description = 'Do Q&A on pdf document',
-        epilog = 'Text at the bottom of help')
+    config = {
+        "IO": {
+            "load": {
+                "root": glmdir
+            }
+        },
+        "mode": "explore"
+    }
 
-    parser.add_argument('--index', required=True,
-                        type=str,
-                        help="Deep Search index")
+    return config
 
-    parser.add_argument('--query', required=True,
-                        type=bool, default=False,
-                        help="Query for document")
 
-    parser.add_argument('--models', required=False,
-                        type=str, default="name;verb;term;abbreviation",
-                        help="set NLP models (e.g. `term;sentence`)")
-    
-    parser.add_argument('--force', required=False,
-                        type=bool, default=False,
-                        help="force pdf conversion")
-
-    args = parser.parse_args()
-
-    return args.index, args.query, args.models, args.force
-
-#################################################
-#
-#
-# configs = glm.get_configurations()
-# print(json.dumps(configs, indent=2))
-#
-#################################################
-
-def create_glm_config(jsondir):
+def create_glm_config(jsondir:str, models:str="conn;verb;term;abbreviation"):
     
     scratch_dir = get_scratch_dir()
     
@@ -61,9 +29,9 @@ def create_glm_config(jsondir):
             },
             "save": {
                 "root": f"{jsondir}-glm-model",
-                "write-CSV": True,
-                "write-JSON": True,
-                "write-path-text": True
+                "write-CSV": False,
+                "write-JSON": False,
+                "write-path-text": False
             }
         },
         "create": {
@@ -125,19 +93,11 @@ def create_glm_config(jsondir):
 
     return config
 
-def create_glm(jsondir):
+def create_glm(jsondir:str, models:str="conn;verb;term;abbreviation"):
 
     config = create_glm_config(jsondir)
     
     glm = andromeda_glm.glm_model()
     glm.create(config)
 
-    return glm
-    
-if __name__ == '__main__':
-
-    index, query, models, force = parse_arguments()
-
-    dumpdir = ds_index_query(index, query, force)
-
-    glm = create_glm(dumpdir)
+    return glm    

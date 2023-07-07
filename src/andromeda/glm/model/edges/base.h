@@ -128,12 +128,13 @@ namespace andromeda
 	  {
 	    itr++;
 	  }
-	
+
+	flvr_type flvr=custom;
 	if(itr==end())
 	  {
 	    std::scoped_lock<std::mutex> lock(mtx);
 
-	    flvr_type flvr = flvr_to_name_map.size()>0? flvr_to_name_map.rbegin()->first:0;
+	    flvr = flvr_to_name_map.size()>0? flvr_to_name_map.rbegin()->first:0;
 
 	    if(flvr<=custom)
 	      {
@@ -145,11 +146,13 @@ namespace andromeda
 	      }
 
 	    flvr_to_name_map.insert({flvr, name});
-
-	    return flvr;
 	  }
-
-	return itr->first;
+	else
+	  {
+	    flvr = itr->first;
+	  }
+	
+	return flvr;
       }
 
       static typename std::map<flvr_type, std::string>::iterator begin()
@@ -181,9 +184,11 @@ namespace andromeda
 		return itr->first;
 	      }
 	  }
+	
+	flvr_type flvr = update_flvr(name);
+	LOG_S(WARNING) << "updating edge-flavor `" << name << "`: " << flvr;
 
-	LOG_S(WARNING) << "updatuing edge-flavor `" << name << "`";
-	return update_flvr(name);
+	return flvr;
 	//return UNKNOWN_FLVR;
       }
 
