@@ -42,10 +42,10 @@ def load(setup_kwargs=None):
     
     cmds = [
         # language classifier
-        [f"curl {lang_source} -o {lang_target} -s", ROOT_DIR],
+        [f"curl {lang_source} -o {lang_target} -s", ROOT_DIR, f"{lang_target}"],
         
         # POS CRF
-        [f"curl {pos_source} -o {pos_target} -s", ROOT_DIR],
+        [f"curl {pos_source} -o {pos_target} -s", ROOT_DIR], #, f"{pos_target}"],
         [f"tar -xf {pos_target}", pos_dir],
         [f"cp ./lapos-0.1.2/model_wsj00-18/model.la ./en/model_wsj00-18/model.la", pos_dir],
         [f"cp ./lapos-0.1.2/model_wsj02-21/model.la ./en/model_wsj02-21/model.la", pos_dir],
@@ -54,6 +54,10 @@ def load(setup_kwargs=None):
     ]
 
     for cmd in cmds:
+
+        if len(cmd)==3 and os.path.exists(cmd[2]):
+            continue
+        
         if not run(cmd[0], cwd=cmd[1]):
             break        
         
