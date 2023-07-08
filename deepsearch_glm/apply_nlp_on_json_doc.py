@@ -4,6 +4,8 @@ import os
 import json
 import argparse
 
+import pandas as pd
+
 from tabulate import tabulate
 
 import andromeda_nlp
@@ -49,9 +51,19 @@ if __name__ == '__main__':
     
     doc_j = model.apply_on_doc(doc_i)
 
+    print("document description: ")
+    print(json.dumps(doc_j["description"], indent=2))
+    
     print("document properties: ")
     print(tabulate(doc_j["properties"]["data"],
                    headers=doc_j["properties"]["headers"]))
+
+
+    """
+    df = pd.DataFrame(doc_j["properties"]["data"], columns=doc_j["properties"]["headers"])
+    records = json.loads(df.to_json(orient="records"))
+    print(records)
+    """
     
     outfile = jsonfile.replace(".json", ".nlp.json")
     with open(outfile, "w") as fw:

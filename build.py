@@ -2,6 +2,10 @@
 import os
 import subprocess
 
+ROOT_DIR=os.path.abspath("./")
+BUILD_DIR=os.path.join(ROOT_DIR, "build")
+RESOURCES_DIR=os.path.join(ROOT_DIR, "resources")
+
 def run(cmd, cwd="./"):
 
     print(f"\nlaunch: {cmd}")
@@ -19,8 +23,8 @@ def run(cmd, cwd="./"):
 def build(setup_kwargs=None):
 
     cmds = [
-        ["cmake -B ./build", os.path.abspath("./")],
-        ["make install -j", os.path.abspath("./build")]
+        [f"cmake -B {BUILD_DIR}", ROOT_DIR],
+        ["make install -j", BUILD_DIR]
     ]
 
     for cmd in cmds:
@@ -30,28 +34,23 @@ def build(setup_kwargs=None):
 def load(setup_kwargs=None):
 
     lang_source = "https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.bin"
-    lang_target = os.path.abspath("./resources/models/fasttext/language/lid.176.bin")
+    lang_target = os.path.join(ROOT_DIR, "resources/models/fasttext/language/lid.176.bin")
 
-    pos_dir = os.path.abspath("./resources/models/crf/part-of-speech/")
+    pos_dir = os.path.join(ROOT_DIR, "resources/models/crf/part-of-speech/")
     pos_source = "https://www.logos.ic.i.u-tokyo.ac.jp/~tsuruoka/lapos/lapos-0.1.2.tar.gz"
     pos_target = f"{pos_dir}/lapos-0.1.2.tar.gz"
     
     cmds = [
         # language classifier
-        #[f"curl {lang_source} -o {lang_target}", os.path.abspath("./")],
-        [f"curl {lang_source} -o {lang_target} -s", os.path.abspath("./")],
+        [f"curl {lang_source} -o {lang_target} -s", ROOT_DIR],
         
         # POS CRF
-        [f"curl {pos_source} -o {pos_target} -s", os.path.abspath("./")],
+        [f"curl {pos_source} -o {pos_target} -s", ROOT_DIR],
         [f"tar -xf {pos_target}", pos_dir],
         [f"cp ./lapos-0.1.2/model_wsj00-18/model.la ./en/model_wsj00-18/model.la", pos_dir],
         [f"cp ./lapos-0.1.2/model_wsj02-21/model.la ./en/model_wsj02-21/model.la", pos_dir],
-        #[f"tree {pos_dir}", pos_dir],
-        #[f"ls -l lapos-0.1.2", pos_dir],
         [f"rm -rf lapos-0.1.2", pos_dir],
-        #[f"ls -l lapos-0.1.2.tar.gz", pos_dir],
         [f"rm lapos-0.1.2.tar.gz", pos_dir],
-
     ]
 
     for cmd in cmds:
