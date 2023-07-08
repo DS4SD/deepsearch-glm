@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-import fasttext
+#import fasttext
 import textColor as tc
 
 import deepsearch as ds
@@ -38,9 +38,9 @@ def parse_arguments():
 
     parser.add_argument('-m', '--mode', required=False, default="all",
                         help="parse: [convert,extract,annotate,classify,pure-classify,crf,pure-crf,all]")
-    parser.add_argument('-d', '--source-directory', required=False, default="../data/documents/articles",
+    parser.add_argument('-d', '--source-directory', required=False, default="./data/documents/articles",
                         help="directory with pdfs")
-    parser.add_argument('-t', '--target-directory', required=False, default="../data/models/",
+    parser.add_argument('-t', '--target-directory', required=False, default="./data/models/",
                         help="directory for target files")
     parser.add_argument('-u', '--username', required=False, help="username or email from DS host")
     parser.add_argument('-p', '--password', required=False, help="API-key from DS host")

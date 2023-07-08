@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "deepsearch-glm"
+version = "0.1.0"
+description = "Graph Language Models"
+authors = ["Peter Staar <taa@zurich.ibm.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "deepsearch_glm"}]
+include = [
+    {path = "deepsearch_glm/*.so", format = "wheel"}
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+deepsearch-toolkit = "^0.19.1"
+textColor = "^3.0.1"
+tabulate = "^0.8.9"
+numpy = "^1.25.0"
+pandas = "^2.0.3"
+matplotlib = "^3.7.1"
+networkx = "^3.1"
+netwulf = "^0.1.5"
+fastapi = "^0.99.0"
+uvicorn = "^0.22.0"
+python-dotenv = "^1.0.0"
+pybind11 = "^2.10.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.build]
+script = "build.py"

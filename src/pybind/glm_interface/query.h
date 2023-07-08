@@ -7,7 +7,8 @@
 
 namespace andromeda_py
 {
-  class glm_query: public andromeda::glm::base_types,
+  class glm_query: public base_log,
+		   public andromeda::glm::base_types,
                    public andromeda::glm::model_types
   {
     typedef andromeda::glm::model                      glm_model_type;
@@ -53,6 +54,8 @@ namespace andromeda_py
   };
 
   glm_query::glm_query():
+    base_log(),
+
     model(NULL),
     flow(model)
   {}

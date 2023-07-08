@@ -1,12 +1,18 @@
+### Custom ###
+
+*.env
 *DS_Store
 *~
 *.so
 *.a
 *.exe
+dist/*
 build/*
 externals/*
+tmp/*
 data/documents/*.csv
 data/documents/*.json
+data/documents/*/*.nlp.json
 data/models/*.json
 data/models/*.jsonl
 data/models/*.bin
@@ -28,6 +34,8 @@ python/figs
 python/ds_config.json
 resources/*/*/*.txt
 resources/*/*/*/*.txt
+
+### CXX ###
 
 # Prerequisites
 *.d
@@ -61,3 +69,10 @@ resources/*/*/*/*.txt
 *.exe
 *.out
 *.app
+
+### Python ###
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class

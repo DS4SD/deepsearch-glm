@@ -302,6 +302,21 @@ namespace andromeda
       {
         auto& prov_i = provs.at(itr->first);
 
+	if(prov_i->type=="table" and prov_to_table.count(prov_i)==0)
+	  {
+	    LOG_S(WARNING) << "no table associated with prov: "
+			   << prov_i->to_json().dump();
+	    continue;
+	  }
+	else if(prov_i->type=="figure" and prov_to_figure.count(prov_i)==0)
+	  {
+	    LOG_S(WARNING) << "no figure associated with prov: "
+			   << prov_i->to_json().dump();
+	    continue;
+	  }
+	else
+	  {}
+	
         if(prov_i->type=="table")
           {
             //auto& table = doc.tables.at(prov_i->dref.second);

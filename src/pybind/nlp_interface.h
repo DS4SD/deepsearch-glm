@@ -3,11 +3,9 @@
 #ifndef PYBIND_ANDROMEDA_NLP_INTERFACE_H
 #define PYBIND_ANDROMEDA_NLP_INTERFACE_H
 
-#include "andromeda.h"
-
 namespace andromeda_py
 {  
-  class nlp_model
+  class nlp_model: public base_log
   {
   public:
     
@@ -46,6 +44,7 @@ namespace andromeda_py
   };
 
   nlp_model::nlp_model():
+    base_log::base_log(),
     config(nlohmann::json::value_t::null),
     
     order_text(false),

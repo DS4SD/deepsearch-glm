@@ -43,9 +43,9 @@ message(STATUS " python path: " ${})
 # ***  cxx-flags       ***
 # ************************
 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Ofast")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Ofast -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
 
 message(STATUS "cxx-compiler: " ${CMAKE_CXX_COMPILER})
 message(STATUS "cxx-flags   : " ${CMAKE_CXX_FLAGS})
@@ -145,3 +145,29 @@ target_compile_definitions(andromeda_glm PRIVATE VERSION_INFO=${EXAMPLE_VERSION_
 
 target_link_libraries(andromeda_nlp PRIVATE nlp)
 target_link_libraries(andromeda_glm PRIVATE glm)
+
+# *****************
+# ***  Install  ***
+# *****************
+
+# add the install targets
+install(TARGETS nlp.exe DESTINATION bin)
+install(TARGETS glm.exe DESTINATION bin)
+
+install(TARGETS andromeda_nlp DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
+install(TARGETS andromeda_glm DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
+
+# install(FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h" DESTINATION include)
+
+# *****************
+# ***  Testing  ***
+# *****************
+
+#function(do_test target arg result)
+#  add_test(NAME Comp${arg} COMMAND ${target} ${arg})
+#  set_tests_properties(Comp${arg} PROPERTIES PASS_REGULAR_EXPRESSION ${result})
+# endfunction()
+
+# do a bunch of result based tests
+# do_test(Tutorial 4 "4 is 2")
+

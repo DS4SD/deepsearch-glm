@@ -354,7 +354,7 @@ namespace andromeda
 	  {
 	    if(nodes_ptr==NULL)
 	      {
-		LOG_S(WARNING) << "nodes is NULL for " << node_names::to_name(flvr);
+		//LOG_S(WARNING) << "nodes is NULL for " << node_names::to_name(flvr);
 		return 0;
 	      }
 	    

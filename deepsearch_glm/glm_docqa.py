@@ -10,15 +10,48 @@ import textwrap
 
 from tabulate import tabulate
 
+from ds_convert import convert_pdffile
+
 import andromeda_nlp
 import andromeda_glm
 
+def parse_arguments():
+
+    parser = argparse.ArgumentParser(
+        prog = 'glm_docqa',
+        description = 'Do Q&A on pdf document',
+        epilog = 'Text at the bottom of help')
+
+    parser.add_argument('--pdf', required=True,
+                        type=str,
+                        help="filename of pdf document")
+
+    parser.add_argument('--force', required=False, 
+                        type=bool, default=False,
+                        help="force pdf conversion")
+    
+    parser.add_argument('--models', required=False,                        
+                        type=str, default="name;verb;term;abbreviation",
+                        help="set NLP models (e.g. `term;sentence`)")
+    
+    args = parser.parse_args()
+
+    return args.pdf, args.force, args.models
+    
 def load_nlp(models:str="name;conn;verb;term;language;reference;abbreviation"):
 
     nlp_model = andromeda_nlp.nlp_model()
-    nlp_model.initialise("name;conn;verb;term;language;reference;abbreviation")
+
+    config = nlp_model.get_apply_configs()[0]
+    config["models"] = models
+    
+    nlp_model.initialise(config)    
 
     return nlp_model
+
+def apply_nlp(doc_i):
+
+    doc_j = model.apply_on_doc(doc_i)
 
 def load_glm(path:str):
 
@@ -129,8 +162,23 @@ def do_qa(nlp_model, glm_model):
         #break
         
 if __name__ == '__main__':
-    
-    nlp_model = load_nlp()    
-    glm_model = load_glm("../build/glm-model-reports")
 
-    do_qa(nlp_model, glm_model)
+    pdffile, force, models = parse_arguments()
+
+    success, jsonfile = convert_pdffile(pdffile, force=force)
+
+    if not success:
+        return -1
+    
+    print(f"json-file: {jsonfile}")
+    nlp_model = load_nlp(models)    
+
+    with open(jsonfile, "r") as fr:        
+        doc_i = json.load(fr)
+        doc_j = nlp_model.apply_on_doc(doc_i)
+
+    #for item in doc_j["main-text"]:
+    #    print(item)
+    
+    #glm_model = load_glm("../build/glm-model-reports")
+    #do_qa(nlp_model, glm_model)

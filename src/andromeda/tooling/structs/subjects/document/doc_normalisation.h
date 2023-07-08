@@ -188,8 +188,11 @@ namespace andromeda
     
     std::set<std::string> is_ignored = {"page-header", "page-footer"};
 
-    std::set<std::string> is_text = {"title", "subtitle-level-1", "paragraph",
-                                     "footnote", "caption", "formula"};
+    std::set<std::string> is_text = {
+      "title", "subtitle-level-1", "paragraph",
+      "footnote", "caption",
+      "formula", "equation"
+    };
 
     std::set<std::string> is_table = {"table"};
     std::set<std::string> is_figure = {"figure"};
@@ -222,6 +225,14 @@ namespace andromeda
             auto subj = std::make_shared<subject<TABLE> >(doc.doc_hash, prov);
             bool valid = subj->set_data(item);
 
+	    tables.push_back(subj);
+
+	    if(not valid)
+	      {
+                LOG_S(WARNING) << "found table without structure";
+	      }
+	    
+	    /*
             if(valid)
               {
                 tables.push_back(subj);
@@ -230,6 +241,7 @@ namespace andromeda
               {
                 LOG_S(WARNING) << "found table without structure";// << item.dump();
               }
+	    */
           }
         else if(is_figure.count(prov->type))
           {
