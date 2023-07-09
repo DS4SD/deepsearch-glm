@@ -22,7 +22,7 @@ from deepsearch.cps.client.components.queries import RunQueryError
 from deepsearch.artifacts.artifact_manager import ArtifactManager
 
 def get_scratch_dir():
-
+    
     load_dotenv()
 
     tmpdir = os.path.abspath(os.getenv("DEEPSEARCH_TMPDIR"))
@@ -43,7 +43,13 @@ def load_vars():
     apikey = os.getenv("DEEPSEARCH_APIKEY")
 
     verify_ssl = os.getenv("DEEPSEARCH_VERIFYSSL")
-        
+
+    # avoid common mistakes ...
+    if host=="https://deepsearch-experience.res.ibm.com/":
+        verify_ssl=True
+    elif host=="https://cps.foc-deepsearch.zurich.ibm.com/":
+        verify_ssl=False
+    
     return host, proj, username, apikey, verify_ssl
 
 def get_ds_api():
@@ -65,9 +71,9 @@ def get_ds_api():
     with open(config_file, "w") as fw:
         fw.write(json.dumps(config_))
     
-    config = ds.DeepSearchConfig.parse_file(config_file)
-    
+    config = ds.DeepSearchConfig.parse_file(config_file)    
     client = ds.CpsApiClient(config)
+    
     api = ds.CpsApi(client)
 
     return api, proj
@@ -75,106 +81,85 @@ def get_ds_api():
 def process_zip_files(tdir):
 
     zipfiles = sorted(glob.glob(os.path.join(tdir, "*.zip")))
-    print(f"zips: ", len(zipfiles))
+    #print(f"zips: ", len(zipfiles))
 
     for zipfile in zipfiles:
-        subprocess.call(["unzip", zipfile, "-d", tdir])    
+        cmd = ["unzip", zipfile, "-d", tdir, "-o", "-q"]
+        print(" ".join(cmd))
 
+        subprocess.call(cmd)
+
+
+    # clean up
     for i,zipfile in enumerate(zipfiles):
         print(i, "\t removing ", zipfile)
         subprocess.call(["rm", zipfile])        
 
+    """
     cellsfiles = sorted(glob.glob(os.path.join(tdir, "*.cells")))
     for i,cellsfile in enumerate(cellsfiles):
         subprocess.call(["rm", cellsfile])            
-
-def convert_pdffile(pdffile, force=False):
-
-    pdffile = os.path.abspath(pdffile)
-    jsonfile = pdffile.replace(".pdf", ".json")
+    """
     
-    dir_pdffile = os.path.dirname(pdffile)
-    base_pdffile = os.path.basename(pdffile)
-    base_jsonfile = os.path.basename(pdffile).replace(".pdf", ".json")
+def convert_pdffiles(pdf_files, force=False):
 
-    if os.path.exists(jsonfile) and (not force):
-        return True, jsonfile
-
-    elif os.path.exists(pdffile):
-
-        tdir = get_scratch_dir()
-
-        subprocess.call(["cp", pdffile, f"{tdir}/{base_pdffile}"])
-        
-        ds_api, proj_key = get_ds_api()
-        
-        docs = ds.convert_documents(api=ds_api, proj_key=proj_key,
-                                    source_path=tdir, progress_bar=True)           
-        docs.download_all(result_dir=tdir)
-
-        process_zip_files(tdir)        
-        subprocess.call(["cp", f"{tdir}/{base_jsonfile}", jsonfile])
-        
-        return True, jsonfile    
-    else:
-        return False, ""
-
-    return 
+    json_files=[]
     
-def convert_pdfdir(sdirectory):
-
-    host, proj, username, apikey = load_vars()
-    
-    pdfs_files=glob.glob(os.path.join(sdirectory, "*.pdf"))
-    json_files=glob.glob(os.path.join(sdirectory, "*.json"))
-
     new_pdfs=[]
-    
-    found_new_pdfs=False
-    for pdf_file in pdfs_files:
+    for pdf_file in pdf_files:
 
-        json_file = pdf_file.replace(".pdf", ".json")
-        if json_file not in json_files:
+        if force:
             new_pdfs.append(pdf_file)
-            found_new_pdfs = True
+        else:        
+            json_file = pdf_file.replace(".pdf", ".json")
+            if os.path.exists(json_file):
+                json_files.append(json_file)
+            else:
+                new_pdfs.append(pdf_file)
 
-    print("found new pdf's: ", found_new_pdfs)
-            
-    if not found_new_pdfs:
-        return found_new_pdfs
+    if len(new_pdfs)==0:
+        return json_files
+    else:
+        print("found new pdf's: ", json.dumps(new_pdfs, indent=2))
+        
+    scratch_dir = get_scratch_dir()    
     
-    config_ = {
-        "host": deepsearch_host,
-        "auth": {
-            "username": username,
-            "api_key": password,
-        },
-        "verify_ssl": True
-    }
-
-    config_file = "ds_config.json"
-    with open(config_file, "w") as fw:
-        fw.write(json.dumps(config_))
+    old_pdfs = glob.glob(os.path.join(scratch_dir, "*.pdf"))
+    for old_pdf in old_pdfs:
+        subprocess.call(["rm", f"{old_pdf}"])
     
-    config = ds.DeepSearchConfig.parse_file(config_file)
+    for new_pdf in new_pdfs:
+        subprocess.call(["cp", f"{new_pdf}", scratch_dir])
+
+    ds_api, ds_proj = get_ds_api()
     
-    client = ds.CpsApiClient(config)
-    api = ds.CpsApi(client)
+    documents = ds.convert_documents(api=ds_api, proj_key=ds_proj,
+                                     source_path=scratch_dir,
+                                     progress_bar=True)           
 
-    documents = ds.convert_documents(api=api, proj_key=deepsearch_proj,
-                                     source_path=sdirectory, progress_bar=True)           
-    documents.download_all(result_dir=sdirectory)
+    documents.download_all(result_dir=scratch_dir)
+    process_zip_files(scratch_dir)
 
-    info = documents.generate_report(result_dir=sdirectory)
-    return found_new_pdfs
+    info = documents.generate_report(result_dir=scratch_dir)
+    
+    for new_pdf in new_pdfs:
+        basename = os.path.basename(new_pdf).replace(".pdf", ".json")
+        
+        sfile = os.path.join(scratch_dir, basename)
+        tfile = new_pdf.replace(".pdf", ".json")
+
+        cmd = ["cp", sfile, tfile]
+        print(" ".join(cmd))
+
+        subprocess.call(cmd)
+        json_files.append(tfile)
+
+    json_files = sorted(list(set(json_files)))
+    return json_files
 
 def ds_index_query(index, query, force=False):
 
     api, proj_key = get_ds_api()
-    
-    # Fetch list of all data collections
-    #collections = api.elastic.list()
-    #collections.sort(key=lambda c: c.name.lower())
     
     tdir = get_scratch_dir()
     dirname = hashlib.md5(f"{index}:{query}".encode()).hexdigest()
@@ -223,6 +208,7 @@ def ds_index_query(index, query, force=False):
     
     return dumpdir
 
+"""
 # inspiration from https://github.com/DS4SD/deepsearch-toolkit/tree/main/deepsearch/artifacts#usage
 def load_models():
 
@@ -234,4 +220,4 @@ def load_models():
     
     print(artf_mgr.get_artifacts_in_cache())
     # output -> []    
-    
+"""    

@@ -4,33 +4,28 @@
 [![PyPI version](https://img.shields.io/pypi/v/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
 [![License MIT](https://img.shields.io/github/license/ds4sd/deepsearch-glm)](https://opensource.org/licenses/MIT)
-[![Downloads](https://static.pepy.tech/badge/deepsearch-glm)](https://pepy.tech/project/deepsearch-glm)
+[//]: #[![Downloads](https://static.pepy.tech/badge/deepsearch-glm)](https://pepy.tech/project/deepsearch-glm)
 
 ## Install
+
+### Python installation
+
+To use the python interface, first make sure all dependencies are installed. We use [poetry](https://python-poetry.org/docs/)
+for that. To install all the dependent python packages and get the python bindings, simply execute,
+
+```sh
+poetry install
+```
 
 ### CXX compilation
 
 To compile from scratch, simply run the following command in the `deepsearch-glm` root folder, 
 
 ```sh
-cmake -B ./build; cd build; make install -j
-```
-
-### Python installation
-
-To install all the dependent python packages and get the python bindings, simply execute,
-
-```sh
-poetry install
+cmake -B ./build; cmake --build ./build -j
 ```
 
 ## Python Interface
-
-To use the python interface, first make sure all dependencies are installed. We use [poetry](https://python-poetry.org/docs/) for that,
-
-```sh
-poetry install
-```
 
 To run the examples, simply do execute the scripts as `poetry run python <script> <input>`. Examples are,
 
@@ -96,6 +91,6 @@ After you have generated the configuration files (see above), you can
 ```
 2. explore interactively the GLM
 ```sh
-./glm.exe -m explore -c glm_config_create.json
+./glm.exe -m explore -c glm_config_explore.json
 ```
 

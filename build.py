@@ -24,7 +24,8 @@ def build(setup_kwargs=None):
 
     cmds = [
         [f"cmake -B {BUILD_DIR}", ROOT_DIR],
-        ["make install -j", BUILD_DIR]
+        #["make install -j", BUILD_DIR]
+        [f"cmake --build {BUILD_DIR} -j", ROOT_DIR]
     ]
 
     for cmd in cmds:
@@ -42,7 +43,7 @@ def load(setup_kwargs=None):
     
     cmds = [
         # language classifier
-        [f"curl {lang_source} -o {lang_target} -s", ROOT_DIR, f"{lang_target}"],
+        [f"curl {lang_source} -o {lang_target} -s", ROOT_DIR], #, f"{lang_target}"],
         
         # POS CRF
         [f"curl {pos_source} -o {pos_target} -s", ROOT_DIR], #, f"{pos_target}"],
