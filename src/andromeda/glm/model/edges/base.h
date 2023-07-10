@@ -126,17 +126,18 @@ namespace andromeda
 
 	while(itr!=flvr_to_name_map.end() and itr->second!=name)
 	  {
+	    //LOG_S(INFO) << " -> name: " << name << " (" << itr->first << ", " << itr->second << ")";
 	    itr++;
 	  }
 
 	flvr_type flvr=custom;
-	if(itr==end())
+	if(itr==flvr_to_name_map.end())
 	  {
 	    std::scoped_lock<std::mutex> lock(mtx);
 
 	    flvr = flvr_to_name_map.size()>0? flvr_to_name_map.rbegin()->first:0;
 
-	    if(flvr<=custom)
+	    if(flvr<custom)
 	      {
 		flvr = custom;		
 	      }
@@ -145,7 +146,9 @@ namespace andromeda
 		flvr += 1;
 	      }
 
-	    flvr_to_name_map.insert({flvr, name});
+	    //LOG_S(WARNING) << "updating edge-flavor `" << name << "`: " << flvr;
+
+	    flvr_to_name_map[flvr] = name;
 	  }
 	else
 	  {
@@ -169,7 +172,7 @@ namespace andromeda
       {
 	return d;
       }
-
+      
       static std::string to_name(flvr_type flvr)
       {
 	return flvr_to_name_map.at(flvr);
@@ -186,10 +189,7 @@ namespace andromeda
 	  }
 	
 	flvr_type flvr = update_flvr(name);
-	LOG_S(WARNING) << "updating edge-flavor `" << name << "`: " << flvr;
-
 	return flvr;
-	//return UNKNOWN_FLVR;
       }
 
       static std::set<flvr_type> to_flvr(std::vector<std::string> names)

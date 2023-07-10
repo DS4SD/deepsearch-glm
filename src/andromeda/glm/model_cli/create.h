@@ -343,7 +343,7 @@ namespace andromeda
 	    }
 	  else	    
 	    {
-	      LOG_S(WARNING) << "was not able to read -> breaking loop ...";
+	      //LOG_S(WARNING) << "was not able to read -> breaking loop ...";
 	      break;
 	    }
 

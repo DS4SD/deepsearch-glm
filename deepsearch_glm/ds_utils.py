@@ -5,12 +5,10 @@ import json
 import copy
 import glob
 import hashlib
-
-
-from tqdm import tqdm
-
 import subprocess
 
+from tqdm import tqdm
+from numerize.numerize import numerize
 from dotenv import load_dotenv
 
 import deepsearch as ds
@@ -19,7 +17,7 @@ from deepsearch.cps.client.components.elastic import ElasticDataCollectionSource
 from deepsearch.cps.queries import DataQuery
 from deepsearch.cps.client.components.queries import RunQueryError
 
-from deepsearch.artifacts.artifact_manager import ArtifactManager
+#from deepsearch.artifacts.artifact_manager import ArtifactManager
 
 def get_scratch_dir():
     
@@ -157,6 +155,28 @@ def convert_pdffiles(pdf_files, force=False):
     json_files = sorted(list(set(json_files)))
     return json_files
 
+def ds_list_indices():
+
+    api, proj_key = get_ds_api()
+    
+    # Fetch list of all data collections
+    collections = api.elastic.list()
+    collections.sort(key=lambda c: c.name.lower())    
+
+    # Visualize summary table
+    results = [
+        {
+            "Name": c.name,
+            "Type": c.metadata.type,
+            "Num entries": numerize(c.documents),
+            "Date": c.metadata.created.strftime("%Y-%m-%d"),
+            "Id": f"{c.source.elastic_id}",
+            "Index": f"{c.source.index_key}",
+        }
+        for c in collections
+    ]
+    return results
+    
 def ds_index_query(index, query, force=False):
 
     api, proj_key = get_ds_api()
@@ -172,7 +192,9 @@ def ds_index_query(index, query, force=False):
         return dumpdir
     
     # Input query
-    search_query = f"\"{query}\"" #"\"global warming potential\" AND \"etching\""
+    search_query = f"{query}" #"\"global warming potential\" AND \"etching\""
+    print(f"query: {query}")
+    
     data_collection = ElasticDataCollectionSource(elastic_id="default", index_key=index)
     page_size = 50
 
@@ -193,6 +215,8 @@ def ds_index_query(index, query, force=False):
     count_query.paginated_task.parameters["limit"] = 0
     count_results = api.queries.run(count_query)
     expected_total = count_results.outputs["data_count"]
+    print(f"#-found documents: {expected_total}")
+    
     expected_pages = (expected_total + page_size - 1) // page_size # this is simply a ceiling formula
     
     # Iterate through all results by fetching `page_size` results at the same time
@@ -208,16 +232,3 @@ def ds_index_query(index, query, force=False):
     
     return dumpdir
 
-"""
-# inspiration from https://github.com/DS4SD/deepsearch-toolkit/tree/main/deepsearch/artifacts#usage
-def load_models():
-
-    artf_mgr = ArtifactManager(index="/foo/index")
-    
-    artifacts_in_index = artf_mgr.get_artifacts_in_index()
-    print(artifacts_in_index)
-    # output -> ['artifact_c', 'artifact_a', 'artifact_b', 'artifact_d']
-    
-    print(artf_mgr.get_artifacts_in_cache())
-    # output -> []    
-"""    

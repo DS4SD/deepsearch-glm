@@ -25,7 +25,7 @@ def build(setup_kwargs=None):
     cmds = [
         [f"cmake -B {BUILD_DIR}", ROOT_DIR],
         #["make install -j", BUILD_DIR]
-        [f"cmake --build {BUILD_DIR} -j", ROOT_DIR]
+        [f"cmake --build {BUILD_DIR} --target install -j", ROOT_DIR]
     ]
 
     for cmd in cmds:
@@ -65,4 +65,4 @@ def load(setup_kwargs=None):
 if "__main__"==__name__:
     build()
 
-    load()
+    #load()

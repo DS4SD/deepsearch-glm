@@ -27,23 +27,28 @@ cmake -B ./build; cmake --build ./build -j
 
 ## Python Interface
 
+### Deep Search utilities
+
+1. **Query and download document(s)**
+```sh
+poetry run python ./deepsearch_glm/ds_query.py --index patent-uspto --query "\"global warming potential\" AND \"etching\""
+```
+2. **Converting PDF document(s) into JSON**
+```sh
+poetry run python ./deepsearch_glm/ds_convert.py --pdf './data/documents/articles/2305.*.pdf'"
+```
+
+### NLP and GLM examples
+
 To run the examples, simply do execute the scripts as `poetry run python <script> <input>`. Examples are,
 
-1. **NLP on a single document**
+1. **apply NLP on document(s)**
 ```sh
-poetry run python3 ./deepsearch_glm/nlp_doc.py -m run-doc -i ../../Articles-v2/2302.05420.json --vpage 10
+poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
 ```
-2. **GLM from a single document**
+2. **create GLM from document(s)**
 ```sh
-poetry run python ./deepsearch_glm/glm_doc.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
-```
-3. **GLM from documents**
-```sh
-poetry run python ./deepsearch_glm/glm_from_query.py --index esg-report --query "net zero" --force True
-```
-4. **GLM for Q&A on a document**
-```sh
-poetry run python ./deepsearch_glm/glm_docqa.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
+poetry run python ./deepsearch_glm/create_glm_from_docs.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
 ```
 
 ## CXX interface

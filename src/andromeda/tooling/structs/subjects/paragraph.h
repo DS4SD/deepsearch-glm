@@ -12,6 +12,7 @@ namespace andromeda
   public:
 
     subject();
+    subject(uint64_t dhash);
     subject(uint64_t dhash, std::shared_ptr<prov_element> prov);
     
     ~subject();
@@ -78,6 +79,12 @@ namespace andromeda
     provs({})
   {}
 
+  subject<PARAGRAPH>::subject(uint64_t dhash):
+    base_subject(dhash, PARAGRAPH),
+    labels({}),
+    provs({})
+  {}
+  
   subject<PARAGRAPH>::subject(uint64_t dhash, std::shared_ptr<prov_element> prov):
     base_subject(dhash, PARAGRAPH),
     labels({}),

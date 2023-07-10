@@ -74,7 +74,8 @@ namespace andromeda
     void set_orig(nlohmann::json& data);
 
     bool is_preprocessed();
-
+    bool originates_from_pdf();
+    
     void set_provs();
     void set_paragraphs();
     void set_other();
@@ -338,24 +339,29 @@ namespace andromeda
 
     if(is_preprocessed())
       {
-        //LOG_S(WARNING) << "set document ...";
-
         set_provs();
-
+	
         set_paragraphs();
         set_other();
-
+	
         set_tables();
         set_figures();
       }
-    else
+    else if(originates_from_pdf())
       {
-        //LOG_S(WARNING) << "pre-processing document ...";
+	//LOG_S(INFO) << "originates-from-pdf ... ";
 
         doc_normalisation<subject<DOCUMENT> > normaliser(*this);
-        normaliser.execute();
+        normaliser.execute_on_pdf();
       }
-
+    else
+      {
+	//LOG_S(INFO) << "does not originates-from-pdf ... ";
+	
+	doc_normalisation<subject<DOCUMENT> > normaliser(*this);
+	normaliser.execute_on_doc();
+      }
+    
     return true;
   }
 
@@ -401,6 +407,26 @@ namespace andromeda
     return false;
   }
 
+  bool subject<DOCUMENT>::originates_from_pdf()
+  {
+    bool all_have_prov_or_ref = true;
+    if(orig.count(maintext_lbl))
+      {	
+	for(const auto& item:orig.at(maintext_lbl))
+	  {
+	    if((not item.count(prov_lbl)) and
+	       (not item.count("$ref")))
+	      {
+		//LOG_S(INFO) << "item: " << item.dump(2);
+		all_have_prov_or_ref = false;
+	      }
+	  }
+      }
+    //LOG_S(INFO) << "all_have_prov_or_ref: " << all_have_prov_or_ref;
+    
+    return all_have_prov_or_ref;
+  }
+  
   void subject<DOCUMENT>::set_provs()
   {
     provs.clear();

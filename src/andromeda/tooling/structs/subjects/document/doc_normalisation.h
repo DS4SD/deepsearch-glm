@@ -9,12 +9,24 @@ namespace andromeda
   template<typename doc_type>
   class doc_normalisation: public base_types
   {
+    const static inline std::set<std::string> is_ignored = {"page-header", "page-footer"};
 
+    const static inline std::set<std::string> is_text = {
+      "title", "subtitle-level-1", "paragraph",
+      "footnote", "caption",
+      "formula", "equation"
+    };
+
+    const static inline std::set<std::string> is_table = {"table"};
+    const static inline std::set<std::string> is_figure = {"figure"};
+    
   public:
 
     doc_normalisation(doc_type& doc);
 
-    void execute();
+    void execute_on_doc();
+    
+    void execute_on_pdf();
 
   private:
 
@@ -41,7 +53,116 @@ namespace andromeda
   {}
 
   template<typename doc_type>
-  void doc_normalisation<doc_type>::execute()
+  void doc_normalisation<doc_type>::execute_on_doc()
+  {
+    auto& orig = doc.orig;
+
+    if(orig.count(doc_type::maintext_lbl)==0)
+      {
+        LOG_S(WARNING) << "no `main-text` identified";
+        return;
+      }
+
+    auto& paragraphs = doc.paragraphs;
+    auto& other = doc.other;
+
+    auto& tables = doc.tables;
+    auto& figures = doc.figures;
+    
+    {
+      paragraphs.clear();
+      other.clear();
+      
+      tables.clear();
+      figures.clear();
+    }
+
+    std::string maintext_name_lbl = doc_type::maintext_name_lbl;
+    std::string maintext_type_lbl = doc_type::maintext_type_lbl;
+    
+    //auto& main_text = orig.at(doc_type::maintext_lbl);
+    for(std::size_t ind=0; ind<orig.at(doc_type::maintext_lbl).size(); ind++)
+      {
+	const nlohmann::json& item = orig.at(doc_type::maintext_lbl).at(ind);
+
+        //ind_type pdforder = ind;
+        //ind_type maintext = ind;
+
+        std::string name = item.at(maintext_name_lbl).get<std::string>();
+        std::string type = item.at(maintext_type_lbl).get<std::string>();
+
+	std::string ref = "#";
+	if(item.count("$ref"))
+	  {
+	    ref = item["$ref"].get<std::string>();
+	  }
+	else if(item.count("__ref"))
+	  {
+	    ref = item["__ref"].get<std::string>();
+	  }
+	else
+	  {
+	    std::stringstream ss;
+	    ss << "#/" << doc_type::maintext_lbl << "/" << ind;
+
+	    ref = ss.str();
+	  }
+
+        if(is_text.count(type))
+          {
+            auto subj = std::make_shared<subject<PARAGRAPH> >(doc.doc_hash);
+            bool valid = subj->set_data(item);
+
+            if(valid)
+              {
+                paragraphs.push_back(subj);
+              }
+            else
+              {
+                LOG_S(WARNING) << "found invalid paragraph: " << item.dump();
+              }
+          }
+        else if(is_table.count(type))
+          {
+            auto subj = std::make_shared<subject<TABLE> >(doc.doc_hash);
+            bool valid = subj->set_data(item);
+
+	    tables.push_back(subj);
+
+	    if(not valid)
+	      {
+                LOG_S(WARNING) << "found table without structure";
+	      }
+          }
+        else if(is_figure.count(type))
+          {
+            auto subj = std::make_shared<subject<FIGURE> >(doc.doc_hash);
+            bool valid = subj->set_data(item);
+
+	    figures.push_back(subj);
+	    
+            if(not valid)
+	      {
+                LOG_S(WARNING) << "found figure without structure";
+              }
+          }
+	else
+	  {
+            auto subj = std::make_shared<subject<PARAGRAPH> >(doc.doc_hash);
+            bool valid = subj->set_data(item);
+
+	    other.push_back(subj);
+	    
+            if(not valid)
+              {
+                LOG_S(WARNING) << "found invalid other-text: " << item.dump();
+              }
+	  }	
+      }
+  }
+  
+  template<typename doc_type>
+  void doc_normalisation<doc_type>::execute_on_pdf()
   {
     set_pdforder();
 
@@ -185,7 +306,8 @@ namespace andromeda
       tables.clear();
       figures.clear();
     }
-    
+
+    /*
     std::set<std::string> is_ignored = {"page-header", "page-footer"};
 
     std::set<std::string> is_text = {
@@ -196,7 +318,8 @@ namespace andromeda
 
     std::set<std::string> is_table = {"table"};
     std::set<std::string> is_figure = {"figure"};
-
+    */
+    
     for(auto& prov:provs)
       {
         std::vector<std::string> parts = utils::split(prov->path, "/");
@@ -231,30 +354,17 @@ namespace andromeda
 	      {
                 LOG_S(WARNING) << "found table without structure";
 	      }
-	    
-	    /*
-            if(valid)
-              {
-                tables.push_back(subj);
-              }
-            else
-              {
-                LOG_S(WARNING) << "found table without structure";// << item.dump();
-              }
-	    */
           }
         else if(is_figure.count(prov->type))
           {
             auto subj = std::make_shared<subject<FIGURE> >(doc.doc_hash, prov);
             bool valid = subj->set_data(item);
 
-            if(valid)
-              {
-                figures.push_back(subj);
-              }
-            else
-              {
-                LOG_S(WARNING) << "found figure without structure";// << item.dump();
+	    figures.push_back(subj);
+	    
+            if(not valid)
+	      {
+                LOG_S(WARNING) << "found figure without structure";
               }
           }
         else

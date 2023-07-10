@@ -542,6 +542,16 @@ numpy = ">=0.14"
 simplejson = ">=3.0"
 
 [[package]]
+name = "numerize"
+version = "0.12"
+description = "Convert large numbers into readable numbers for humans."
+optional = false
+python-versions = "*"
+files = [
+    {file = "numerize-0.12.tar.gz", hash = "sha256:5548fe72adceb2c7964998179697d80117bb117f57cd02f872cf5db40d615c04"},
+]
+
+[[package]]
 name = "numpy"
 version = "1.25.0"
 description = "Fundamental package for array computing in Python"
@@ -1164,4 +1174,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "9a9c35e192518f1118a7e9c165177654d0d37d2fe91b6222fefb70cfe3f603d2"
+content-hash = "3ec4bf68617ced23a056ba7a5429f63233c18ed5fe7d9e6c3efc8fe38cb80988"

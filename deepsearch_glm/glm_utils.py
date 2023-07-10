@@ -4,32 +4,48 @@ from ds_utils import get_scratch_dir
 #import andromeda_nlp
 import andromeda_glm
 
-def explore_glm_config(glmdir:str):
+def load_glm_config(idir:str):
 
     config = {
         "IO": {
             "load": {
-                "root": glmdir
-            }
+                "root": idir
+            },
         },
-        "mode": "explore"
     }
 
     return config
 
+def load_glm(idir:str):
 
-def create_glm_config(jsondir:str, models:str="conn;verb;term;abbreviation"):
+    config = load_glm_config(idir)
     
-    scratch_dir = get_scratch_dir()
-    
+    glm = andromeda_glm.glm_model()
+    glm.load(config)
+
+    return glm
+
+def create_glm_dir():
+
+    tdir = get_scratch_dir()
+
+    now = datetime.datetime.now()
+    glmdir = now.strftime("GLM-model-%Y-%m-%d_%H-%M-%S")
+
+    odir = os.path.join(tdir, glmdir)
+    return odir
+
+def create_glm_config_from_docs(odir:str, json_files:list[str],
+                                nlp_models:str="conn;verb;term;abbreviation"):
+
     config = {
         "IO": {
             "load": {
-                "root": f"{jsondir}-glm-model"
+                "root": odir
             },
             "save": {
-                "root": f"{jsondir}-glm-model",
-                "write-CSV": False,
+                "root": odir,
+                "write-CSV": True,
                 "write-JSON": False,
                 "write-path-text": False
             }
@@ -69,14 +85,14 @@ def create_glm_config(jsondir:str, models:str="conn;verb;term;abbreviation"):
 
                 "keep-docs": True,
             },
+
             "nlp-models": "conn;verb;term;abbreviation"
         },
         "producers": [
             {
                 "input-format": "json",
-                "input-paths": [
-                    jsondir
-                ],
+                "input-paths": json_files,
+                
                 "keep-figures": True,
                 "keep-tables": True,
                 "keep-text": True,
@@ -93,11 +109,15 @@ def create_glm_config(jsondir:str, models:str="conn;verb;term;abbreviation"):
 
     return config
 
-def create_glm(jsondir:str, models:str="conn;verb;term;abbreviation"):
-
-    config = create_glm_config(jsondir)
+def create_glm_from_docs(odir:str, json_files:list[str],
+                         nlp_models:str="conn;verb;term;abbreviation"):
+    
+    config = create_glm_config_from_docs(odir, json_files, nlp_models)
     
     glm = andromeda_glm.glm_model()
     glm.create(config)
 
-    return glm    
+    return odir, glm
+
+
+    

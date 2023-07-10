@@ -17,6 +17,7 @@ namespace andromeda
   public:
 
     subject();
+    subject(uint64_t dhash);
     subject(uint64_t dhash, std::shared_ptr<prov_element> prov);
 	        
     ~subject();
@@ -78,6 +79,21 @@ namespace andromeda
     
     captions({}),
     footnotes({}),
+    mentions({}),
+    
+    nrows(0),
+    ncols(0),
+
+    data({})
+  {}
+
+  subject<TABLE>::subject(uint64_t dhash):
+    base_subject(dhash, TABLE),
+
+    provs({}),
+    
+    captions({}),
+    footnotes({}),    
     mentions({}),
     
     nrows(0),

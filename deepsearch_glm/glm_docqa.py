@@ -90,7 +90,8 @@ def show_query_result(res, max_nodes=16):
 
     wrapper = textwrap.TextWrapper(width=50)
     
-    print("overview: \n", tabulate(res["overview"]["data"], headers=res["overview"]["headers"]), "\n")
+    print("overview: \n", tabulate(res["overview"]["data"],
+                                   headers=res["overview"]["headers"]), "\n")
 
     for i,item in enumerate(res["result"]):
         
