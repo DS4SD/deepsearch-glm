@@ -55,11 +55,8 @@ def extract_text(doc):
     wrapper = wrapper = textwrap.TextWrapper(width=70)
     
     for item in doc["texts"]:
-        """
+
         print("type: ", item.keys())
-        print("text: ", "\n".join(wrapper.wrap(text=item["text"])))
-        print("")
-        """
 
         for line in wrapper.wrap(text=item["text"]):
             print(f"\t{line}")
