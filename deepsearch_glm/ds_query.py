@@ -9,7 +9,7 @@ import argparse
 
 import pandas as pd
 
-from ds_utils import ds_list_indices, ds_index_query
+from ds_utils import create_docs_dir, ds_list_indices, ds_index_query
 
 def parse_arguments():
 
@@ -36,13 +36,17 @@ examples of execution:
                         type=str, 
                         help="Query for document")
 
+    parser.add_argument('--output-dir', required=False,
+                        type=bool, default=create_docs_dir(),
+                        help="output root directory for GLM")        
+
     args = parser.parse_args()
 
-    return args.index, args.query
+    return args.index, args.query, args.output_dir
 
 if __name__ == '__main__':
 
-    index, query = parse_arguments()
+    index, query, odir = parse_arguments()
 
     indices = ds_list_indices()
 
@@ -57,5 +61,5 @@ if __name__ == '__main__':
         exit(-1)
 
     else:
-        odir = ds_index_query(index, query, force=True)        
+        odir = ds_index_query(index, query, odir, force=True)        
         print(f"files downloaded: {odir}")

@@ -68,16 +68,20 @@ def expand_terms(terms, glm_model):
         
         qry = andromeda_glm.glm_query()
         qry.select({"nodes":[[term]]})
-        #qry.filter_by({"mode": "node-flavor", "node-flavors":["token"]})
-        qry.filter_by({"mode": "node-flavor", "node-flavors":["term"]})
+        qry.filter_by({"mode": "node-flavor", "node-flavors":["token"]})
+        #qry.filter_by({"mode": "node-flavor", "node-flavors":["term"]})
 
         #flid = qry.get_last_flid()
-        #qry.traverse({"edge":"to-root"})
-        qry.traverse({"edge":"from-root"})
-        qry.filter_by({"mode": "node-flavor", "node-flavors":["term"]})
+        qry.traverse({"name": "roots", "edge":"to-root"})
+        qry.traverse({"name": "tax-up", "edge":"tax-up"})
+        #qry.traverse({"edge":"from-root"})
+        #qry.traverse({"edge":"from-token"})
+        #qry.filter_by({"mode": "node-flavor", "node-flavors":["term"]})
 
         #qry.filter_by({"mode": "contains", "contains-flid":flid})        
         #qry.traverse({"edge":"to-sent"})
+
+        qry.filter_by({"mode": "node-regex", "node-regex":[f".*{term}.*"]})
         
         config = qry.to_config()    
         #print("query: ", json.dumps(config, indent=2))    

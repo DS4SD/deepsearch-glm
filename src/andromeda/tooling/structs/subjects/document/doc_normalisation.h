@@ -55,6 +55,8 @@ namespace andromeda
   template<typename doc_type>
   void doc_normalisation<doc_type>::execute_on_doc()
   {
+    LOG_S(WARNING);
+    
     auto& orig = doc.orig;
 
     if(orig.count(doc_type::maintext_lbl)==0)
@@ -84,9 +86,6 @@ namespace andromeda
     for(std::size_t ind=0; ind<orig.at(doc_type::maintext_lbl).size(); ind++)
       {
 	const nlohmann::json& item = orig.at(doc_type::maintext_lbl).at(ind);
-
-        //ind_type pdforder = ind;
-        //ind_type maintext = ind;
 
         std::string name = item.at(maintext_name_lbl).get<std::string>();
         std::string type = item.at(maintext_type_lbl).get<std::string>();
@@ -164,6 +163,8 @@ namespace andromeda
   template<typename doc_type>
   void doc_normalisation<doc_type>::execute_on_pdf()
   {
+    LOG_S(WARNING);
+    
     set_pdforder();
 
     init_provs();
@@ -352,7 +353,11 @@ namespace andromeda
 
 	    if(not valid)
 	      {
-                LOG_S(WARNING) << "found table without structure";
+                LOG_S(WARNING) << "invalid table: "<< prov->path;
+	      }
+	    else
+	      {
+		//LOG_S(WARNING) << "valid table: " << prov->path;
 	      }
           }
         else if(is_figure.count(prov->type))

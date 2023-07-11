@@ -349,14 +349,14 @@ namespace andromeda
       }
     else if(originates_from_pdf())
       {
-	//LOG_S(INFO) << "originates-from-pdf ... ";
+	LOG_S(INFO) << "originates-from-pdf ... ";
 
         doc_normalisation<subject<DOCUMENT> > normaliser(*this);
         normaliser.execute_on_pdf();
       }
     else
       {
-	//LOG_S(INFO) << "does not originates-from-pdf ... ";
+	LOG_S(INFO) << "does not originates-from-pdf ... ";
 	
 	doc_normalisation<subject<DOCUMENT> > normaliser(*this);
 	normaliser.execute_on_doc();
@@ -414,8 +414,10 @@ namespace andromeda
       {	
 	for(const auto& item:orig.at(maintext_lbl))
 	  {
-	    if((not item.count(prov_lbl)) and
-	       (not item.count("$ref")))
+	    bool has_prov = item.count(prov_lbl);
+	    bool has_ref = (item.count("$ref") or item.count("__ref"));
+	    
+	    if((not has_prov) and (not has_ref))
 	      {
 		//LOG_S(INFO) << "item: " << item.dump(2);
 		all_have_prov_or_ref = false;

@@ -55,6 +55,10 @@ examples of execution:
                         type=bool, default=False,
                         help="force pdf conversion")
 
+    parser.add_argument('--output-dir', required=False,
+                        type=str, default=create_glm_dir(),
+                        help="output root directory for GLM")    
+
     args = parser.parse_args()
 
     pdf = args.pdf
@@ -73,11 +77,11 @@ examples of execution:
     else:
         json_files=[]
         
-    return pdf_files, json_files, args.models, args.force_convert
+    return pdf_files, json_files, args.models, args.force_convert, args.output_dir
     
 if __name__ == '__main__':
 
-    pdf_files, json_files, model_names, force_convert = parse_arguments()
+    pdf_files, json_files, model_names, force_convert, odir = parse_arguments()
 
     if len(pdf_files)>0:
         new_json_files = convert_pdffiles(pdf_files, force=force_convert)
@@ -87,7 +91,7 @@ if __name__ == '__main__':
 
     json_files = sorted(list(set(json_files)))        
 
-    odir = create_glm_dir()
+    #odir = create_glm_dir()
     
     glm = create_glm_from_docs(odir, json_files, model_names)
     print(f" --> GLM saved to: {odir}")

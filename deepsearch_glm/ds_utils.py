@@ -190,16 +190,29 @@ def ds_list_indices():
         for c in collections
     ]
     return results
-    
-def ds_index_query(index, query, force=False):
+
+def create_docs_dir():
+
+    tdir = get_scratch_dir()
+
+    now = datetime.datetime.now()
+    odir = now.strftime("document-collection-%Y-%m-%d_%H-%M-%S")
+
+    odir = os.path.join(tdir, odir)
+    return odir    
+
+def ds_index_query(index, query, odir=None, force=False):
 
     api, proj_key = get_ds_api()
     
     tdir = get_scratch_dir()
-    dirname = hashlib.md5(f"{index}:{query}".encode()).hexdigest()
 
-    dumpdir = os.path.join(tdir, dirname)
-
+    if odir==None:
+        dumpdir = hashlib.md5(f"{index}:{query}".encode()).hexdigest()
+        dumpdir = os.path.join(tdir, dirname)
+    else:
+        dumpdir = odir
+        
     if not os.path.exists(dumpdir):
         os.mkdir(dumpdir)
     elif not force:
