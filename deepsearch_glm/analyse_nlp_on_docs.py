@@ -73,26 +73,44 @@ def extract_sentences(doc):
     for row in doc["instances"]:
         print(len(row), "\t", row)
     """
-    
+
     df = pd.DataFrame(doc["instances"]["data"],
                       columns=doc["instances"]["headers"])
-    print(df)
+    #print(df)
 
+    entity_types = df["type"].value_counts()
+    print(entity_types)
+    
+    sents = df[df["type"]=="sentence"]
+    print(sents)
+    
     return
 
 def extract_tables(doc):
 
+    wrapper = wrapper = textwrap.TextWrapper(width=70)
+    
     for i,item in enumerate(doc["tables"]):
+
+        print(f"#/tables/{i}: ", len(item["captions"]))
         if len(item["captions"])>0:
-            print(item["captions"][0]["text"])
+            for line in wrapper.wrap(text=item["captions"][0]["text"]):
+                print(f"\t{line}")
     
     return
 
 def extract_figures(doc):
 
-    for item in doc["figures"]:
+    wrapper = wrapper = textwrap.TextWrapper(width=70)
+    
+    for i,item in enumerate(doc["figures"]):
+
+        print(f"#/figures/{i}", len(item["captions"]))
         if len(item["captions"])>0:
-            print(item["captions"][0]["text"])
+            for line in wrapper.wrap(text=item["captions"][0]["text"]):
+                print(f"\t{line}")
+
+                #print(item["captions"][0]["text"])
     
     return
 
@@ -105,6 +123,7 @@ if __name__ == '__main__':
     
     for json_file in json_files:
 
+        print(f" --> reading {json_file}")
         with open(json_file, "r") as fr:
             doc = json.load(fr)
 
@@ -115,5 +134,3 @@ if __name__ == '__main__':
         extract_tables(doc)
         
         extract_figures(doc)
-            
-        input("continue ...")
