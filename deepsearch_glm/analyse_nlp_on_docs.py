@@ -9,7 +9,7 @@ import textwrap
 
 import pandas as pd
 
-#from tabulate import tabulate
+from tabulate import tabulate
 #from ds_utils import convert_pdffiles
 
 #import andromeda_nlp
@@ -56,8 +56,14 @@ def extract_text(doc):
     
     for item in doc["texts"]:
 
-        print("type: ", item.keys())
+        rows=[]
+        for prov in item["prov"]:
+            rows.append([prov["page"], prov["type"], int(prov["bbox"][0]), int(prov["bbox"][1]), int(prov["bbox"][2]), int(prov["bbox"][3])] )
 
+        headers=["page", "type", "x0", "y0", "x1", "y1"]
+        print("provenance: \n", tabulate(rows, headers=headers))
+
+        print("text:")
         for line in wrapper.wrap(text=item["text"]):
             print(f"\t{line}")
 
