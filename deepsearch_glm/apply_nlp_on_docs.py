@@ -16,7 +16,7 @@ def parse_arguments():
 
     parser = argparse.ArgumentParser(
         prog = 'apply_nlp_on_doc',
-        description = 'Apply ANLP on `Deep Search` documents',
+        description = 'Apply NLP on `Deep Search` documents',
         epilog =
 """
 examples of execution: 
