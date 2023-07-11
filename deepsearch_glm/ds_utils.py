@@ -82,11 +82,10 @@ def process_zip_files(tdir):
     #print(f"zips: ", len(zipfiles))
 
     for zipfile in zipfiles:
-        cmd = ["unzip", zipfile, "-d", tdir, "-o", "-q"]
+        cmd = ["unzip", zipfile, "-d", tdir]
         print(" ".join(cmd))
 
         subprocess.call(cmd)
-
 
     # clean up
     for i,zipfile in enumerate(zipfiles):
@@ -101,6 +100,21 @@ def process_zip_files(tdir):
     
 def convert_pdffiles(pdf_files, force=False):
 
+    for i,pdf_file in enumerate(pdf_files):
+
+        old_file = pdf_file
+        """
+        if os.path.exists(f"{old_file}"):
+            print("exists ...")
+        """
+        
+        subprocess.call(["ls", f"{old_file}"])
+
+        if " " in pdf_file:
+            new_file = pdf_file.replace(" ", "_")
+            subprocess.call(["mv", f"{old_file}", f"{new_file}"])
+            pdf_files[i] = new_file
+    
     json_files=[]
     
     new_pdfs=[]
@@ -146,7 +160,7 @@ def convert_pdffiles(pdf_files, force=False):
         sfile = os.path.join(scratch_dir, basename)
         tfile = new_pdf.replace(".pdf", ".json")
 
-        cmd = ["cp", sfile, tfile]
+        cmd = ["cp", f"{sfile}", f"{tfile}"]
         print(" ".join(cmd))
 
         subprocess.call(cmd)

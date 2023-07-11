@@ -22,9 +22,9 @@ examples of execution:
 
 1. search for documents:
 
-    poetry run python ./deepsearch_glm/ds_query.py --index esg-reports --query "\"net zero\""
-    poetry run python ./deepsearch_glm/ds_query.py --index patent-uspto --query "\"global warming potential\" AND \"etching\""
-    poetry run python ./deepsearch_glm/ds_query.py --index arxiv --query "\"quantum computing\""
+    poetry run python ./deepsearch_glm/ds_query.py --index esg-reports --query "\\\"net zero\\\""
+    poetry run python ./deepsearch_glm/ds_query.py --index patent-uspto --query "\\\"global warming potential\\\" AND \\\"etching\\\""
+    poetry run python ./deepsearch_glm/ds_query.py --index arxiv --query "\\\"quantum computing\\\""
 """,
         formatter_class=argparse.RawTextHelpFormatter)
 

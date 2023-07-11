@@ -89,8 +89,7 @@ if __name__ == '__main__':
 
     odir = create_glm_dir()
     
-    glm = create_glm(odir, json_files, model_names)
-
+    glm = create_glm_from_docs(odir, json_files, model_names)
     print(f" --> GLM saved to: {odir}")
 
     
