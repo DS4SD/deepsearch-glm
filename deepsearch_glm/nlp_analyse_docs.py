@@ -24,7 +24,9 @@ def parse_arguments():
 examples of execution:
 
 1.a run on single document (pdf or json) with default model (=`langauge`):
+
     poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --json ./data/documents/articles/2305.02334.nlp.json
+
 """,
         formatter_class=argparse.RawTextHelpFormatter)
 
@@ -56,14 +58,21 @@ def extract_text(doc):
     
     for item in doc["texts"]:
 
+        """
         rows=[]
         for prov in item["prov"]:
             rows.append([prov["page"], prov["type"], int(prov["bbox"][0]), int(prov["bbox"][1]), int(prov["bbox"][2]), int(prov["bbox"][3])] )
 
         headers=["page", "type", "x0", "y0", "x1", "y1"]
         print("provenance: \n", tabulate(rows, headers=headers))
+        """
 
-        print("text:")
+        labels=[]
+        for row in item["properties"]["data"]:
+            labels.append(row[item["properties"]["headers"].index("label")])
+        
+        type_ = item["prov"][0]["type"]
+        print(f"text: {type_}, labels: ", ",".join(labels))
         for line in wrapper.wrap(text=item["text"]):
             print(f"\t{line}")
 
@@ -112,12 +121,38 @@ def extract_figures(doc):
         if len(item["captions"])>0:
             for line in wrapper.wrap(text=item["captions"][0]["text"]):
                 print(f"\t{line}")
-
-                #print(item["captions"][0]["text"])
     
     return
 
 def extract_references(doc):
+
+    page_items = doc["page-items"]
+    texts = doc["texts"]
+
+    df = pd.DataFrame(doc["instances"]["data"],
+                      columns=doc["instances"]["headers"])
+
+    print(doc["instances"]["headers"])
+    
+    wrapper = wrapper = textwrap.TextWrapper(width=70)
+    
+    for i,item in enumerate(doc["texts"]):
+
+        path = f"#/texts/{i}"
+        
+        labels=[]
+        for row in item["properties"]["data"]:
+            labels.append(row[item["properties"]["headers"].index("label")])
+
+        if "reference" in labels:
+
+            print(f"text: ") #{type_}, labels: ", ",".join(labels))
+            for line in wrapper.wrap(text=item["text"]):
+                print(f"\t{line}")            
+                
+            refs = df[df["subj_path"]==path][["subj_path", "type", "subtype", "original"]]
+            print(refs)            
+                
     return
 
 if __name__ == '__main__':
@@ -130,6 +165,7 @@ if __name__ == '__main__':
         with open(json_file, "r") as fr:
             doc = json.load(fr)
 
+        """
         extract_text(doc)
 
         extract_sentences(doc)
@@ -137,3 +173,6 @@ if __name__ == '__main__':
         extract_tables(doc)
         
         extract_figures(doc)
+        """
+        
+        extract_references(doc)

@@ -7,8 +7,7 @@ import argparse
 
 import pandas as pd
 
-#from tabulate import tabulate
-from ds_utils import convert_pdffiles
+from utils.ds_utils import convert_pdffiles
 
 import andromeda_nlp
 
@@ -22,18 +21,23 @@ def parse_arguments():
 examples of execution: 
 
 1.a run on single document (pdf or json) with default model (=`langauge`):
+
      poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --pdf './data/documents/articles/2305.02334.pdf'
      poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --json './data/documents/articles/2305.02334.json'
 
 1.b run on single document pdf document and enforce conversion (ignore cache):
+
      poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --pdf './data/documents/articles/2305.02334.pdf' --force-convert True
 
 2. run on multiple documents:
+
      poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --pdf './data/documents/articles/*.pdf'
      poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --json './data/documents/articles/*.json'
 
 3. run on multiple documents with non-default models:
+
      poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
+
 """,
         formatter_class=argparse.RawTextHelpFormatter)
 

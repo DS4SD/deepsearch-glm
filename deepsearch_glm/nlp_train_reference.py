@@ -20,39 +20,77 @@ import matplotlib.pyplot as plt
 #import fasttext
 import textColor as tc
 
-import deepsearch as ds
+#import deepsearch as ds
+
+from utils.ds_utils import convert_pdffiles
+from nlp_utils import create_nlp_dir
 
 import andromeda_nlp
 
 from tabulate import tabulate
 
-deepsearch_host = "https://deepsearch-experience.res.ibm.com"
-deepsearch_proj = "1234567890abcdefghijklmnopqrstvwyz123456"
-
 def parse_arguments():
 
     parser = argparse.ArgumentParser(
-        prog = 'CRF-reference data processor',
+        prog = "nlp_train_reference",
         description = 'Prepare CRF data for CRF-reference parser',
-        epilog = 'python ./nlp/crf_reference.py -m all -d <directory-of-pdfs> -t <target-dir> -u <username of DS> -p <API-key of DS>')
+        epilog =
+"""
+examples of execution: 
 
+1. end-to-end example on pdf documents:
+
+    poetry run python ./deepsearch_glm/nlp_train_reference.py -m all --pdf './data/documents/articles/*.pdf'
+
+""",
+        formatter_class=argparse.RawTextHelpFormatter)
+        
     parser.add_argument('-m', '--mode', required=False, default="all",
                         help="parse: [convert,extract,annotate,classify,pure-classify,crf,pure-crf,all]")
-    parser.add_argument('-d', '--source-directory', required=False, default="./data/documents/articles",
+
+    parser.add_argument('--pdf', required=True,
+                        type=str, default=None,
+                        help="filename(s) of pdf document")
+
+    parser.add_argument('--json', required=False,
+                        type=str, default=None,
+                        help="filename(s) of json document")
+    
+    parser.add_argument('--output-dir', required=False,
+                        type=str, default=create_nlp_dir(),
+                        help="output root directory for trained models")
+    
+    """
+    parser.add_argument('', '--source-directory', required=False, default="./data/documents/articles",
                         help="directory with pdfs")
     parser.add_argument('-t', '--target-directory', required=False, default="./data/models/",
                         help="directory for target files")
-    parser.add_argument('-u', '--username', required=False, help="username or email from DS host")
-    parser.add_argument('-p', '--password', required=False, help="API-key from DS host")
-
+    """
+    
     args = parser.parse_args()
 
-    if not os.path.exists(args.target_directory):
-        os.mkdir(args.target_directory)
-    
-    return args.mode, args.source_directory, args.target_directory, \
-        args.username, args.password
+    pdf = args.pdf
+    json = args.json
 
+    if pdf==None and json==None:
+        exit(-1)
+        
+    if pdf!=None:
+        pdf_files=sorted(glob.glob(pdf))
+    else:
+        pdf_files=[]
+        
+    if json!=None:
+        json_files=sorted(glob.glob(json))
+    else:
+        json_files=[]
+    
+    if not os.path.exists(args.output_dir):
+        os.mkdir(args.output_dir)
+    
+    return args.mode, pdf_files, json_files, args.output_dir
+
+"""
 def convert(sdirectory, username, password):
 
     pdfs_files=glob.glob(os.path.join(sdirectory, "*.pdf"))
@@ -121,7 +159,7 @@ def process_zip_files(sdir):
     cellsfiles = sorted(glob.glob(os.path.join(sdir, "*.cells")))
     for i,cellsfile in enumerate(cellsfiles):
         subprocess.call(["rm", cellsfile])            
-        
+"""
         
 def shorten_text(text):
     
@@ -129,7 +167,9 @@ def shorten_text(text):
     
     return ntext.strip()
         
-def extract_references(directory, sfile, rfile):
+def extract_references(filenames, sfile, rfile):
+
+    print(f"extract references for filenames: ", len(filenames))
     
     config = {
         "mode" : "apply",
@@ -141,9 +181,6 @@ def extract_references(directory, sfile, rfile):
     model.initialise(config)
     
     MINLEN = 5
-    
-    filenames = sorted(glob.glob(os.path.join(directory, "*.json")))
-    print(f"filenames: ", len(filenames))
 
     fws = open(sfile, "w")
     fwr = open(rfile, "w")
@@ -599,23 +636,40 @@ def train_fst(train_file, model_file, metrics_file):
             
 if __name__ == '__main__':
 
+    """
     mode, sdir, tdir, username, password = parse_arguments()
 
+
+
+    """
+
+    mode, pdf_files, json_files, tdir = parse_arguments()
+    
+    if len(pdf_files)>0:
+        new_json_files = convert_pdffiles(pdf_files, force=False)
+
+        for _ in new_json_files:
+            json_files.append(_)
+
+    json_files = sorted(list(set(json_files)))        
+    
     sfile = os.path.join(tdir, "nlp-train-semantic-classification.annot.jsonl")
     rfile = os.path.join(tdir, "nlp-train-references-crf.jsonl")
     afile = os.path.join(tdir, "nlp-train-references-crf.annot.jsonl")
-
+    
     crf_model_file = os.path.join(tdir, "crf_reference")
     fst_model_file = os.path.join(tdir, "fst_sematic")
-    
+
+    """
     if mode=="convert" or mode=="all":
         found_new_pdfs = convert(sdir, username, password)    
 
         if found_new_pdfs:
             process_zip_files(sdir)
-
+    """
+    
     if mode=="extract" or mode=="all":
-        extract_references(sdir, sfile, rfile)
+        extract_references(json_files, sfile, rfile)
 
     if mode=="annotate" or mode=="all":
         annotate(rfile, afile)

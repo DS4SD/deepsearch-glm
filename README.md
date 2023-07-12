@@ -31,11 +31,11 @@ cmake -B ./build; cmake --build ./build -j
 
 1. **Query and download document(s)**
 ```sh
-poetry run python ./deepsearch_glm/ds_query.py --index patent-uspto --query "\"global warming potential\" AND \"etching\""
+poetry run python ./deepsearch_glm/utils/ds_query.py --index patent-uspto --query "\"global warming potential\" AND \"etching\""
 ```
 2. **Converting PDF document(s) into JSON**
 ```sh
-poetry run python ./deepsearch_glm/ds_convert.py --pdf './data/documents/articles/2305.*.pdf'"
+poetry run python ./deepsearch_glm/utils/ds_convert.py --pdf './data/documents/articles/2305.*.pdf'"
 ```
 
 ### NLP and GLM examples
@@ -44,11 +44,15 @@ To run the examples, simply do execute the scripts as `poetry run python <script
 
 1. **apply NLP on document(s)**
 ```sh
-poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
+poetry run python ./deepsearch_glm/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
 ```
-2. **create GLM from document(s)**
+2. **analyse NLP on document(s)**
 ```sh
-poetry run python ./deepsearch_glm/create_glm_from_docs.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
+poetry run python ./deepsearch_glm/nlp_apply_on_docs.py --json './data/documents/articles/2305.*.nlp.json' 
+```
+3. **create GLM from document(s)**
+```sh
+poetry run python ./deepsearch_glm/glm_create_from_docs.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
 ```
 
 ## CXX interface

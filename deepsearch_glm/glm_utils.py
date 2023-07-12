@@ -10,10 +10,20 @@ import datetime
 
 from tabulate import tabulate
 
-from ds_utils import get_scratch_dir
+from utils.ds_utils import get_scratch_dir
 
 #import andromeda_nlp
 import andromeda_glm
+
+def create_glm_dir():
+
+    tdir = get_scratch_dir()
+
+    now = datetime.datetime.now()
+    glmdir = now.strftime("GLM-model-%Y-%m-%d_%H-%M-%S")
+
+    odir = os.path.join(tdir, glmdir)
+    return odir
 
 def load_glm_config(idir:str):
 
@@ -35,16 +45,6 @@ def load_glm(idir:str):
     glm.load(config)
 
     return glm
-
-def create_glm_dir():
-
-    tdir = get_scratch_dir()
-
-    now = datetime.datetime.now()
-    glmdir = now.strftime("GLM-model-%Y-%m-%d_%H-%M-%S")
-
-    odir = os.path.join(tdir, glmdir)
-    return odir
 
 def create_glm_config_from_docs(odir:str, json_files:list[str],
                                 nlp_models:str="conn;verb;term;abbreviation"):
