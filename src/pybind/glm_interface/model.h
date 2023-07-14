@@ -74,7 +74,13 @@ namespace andromeda_py
 
   void glm_model::set_resource_dir(const std::string resources_dir)
   {
-    andromeda::RESOURCES_DIR = resources_dir;
+    //andromeda::RESOURCES_DIR = resources_dir;
+    std::filesystem::path path(resources_dir.c_str());
+    
+    if(not andromeda::glm_variables::set_resources_dir(resources_dir))
+      {
+	LOG_S(FATAL) << "resource-dir `" << resources_dir << "` is invalid!";
+      }
   }
   
   void glm_model::load_dir(const std::string root_dir)

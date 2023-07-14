@@ -4,54 +4,64 @@
 [![PyPI version](https://img.shields.io/pypi/v/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
 [![License MIT](https://img.shields.io/github/license/ds4sd/deepsearch-glm)](https://opensource.org/licenses/MIT)
-[![Downloads](https://static.pepy.tech/badge/deepsearch-glm)](https://pepy.tech/project/deepsearch-glm)
 
 ## Install
 
-### CXX compilation
-
-To compile from scratch, simply run the following command in the `deepsearch-glm` root folder, 
-
-```sh
-cmake -B ./build; cd build; make install -j
-```
-
 ### Python installation
 
-To install all the dependent python packages and get the python bindings, simply execute,
+To use the python interface, first make sure all dependencies are installed. We use [poetry](https://python-poetry.org/docs/)
+for that. To install all the dependent python packages and get the python bindings, simply execute,
 
 ```sh
 poetry install
 ```
 
-## Python Interface
+### CXX compilation
 
-To use the python interface, first make sure all dependencies are installed. We use [poetry](https://python-poetry.org/docs/) for that,
+To compile from scratch, simply run the following command in the `deepsearch-glm` root folder to
+create the `build` directory,
 
 ```sh
-poetry install
+cmake -B ./build; 
 ```
+
+Next, compile the code from scratch,
+
+```sh
+cmake --build ./build -j
+```
+
+## Run using the Python Interface
+
+### NLP and GLM examples
 
 To run the examples, simply do execute the scripts as `poetry run python <script> <input>`. Examples are,
 
-1. **NLP on a single document**
+1. **apply NLP on document(s)**
 ```sh
-poetry run python3 ./deepsearch_glm/nlp_doc.py -m run-doc -i ../../Articles-v2/2302.05420.json --vpage 10
+poetry run python ./deepsearch_glm/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
 ```
-2. **GLM from a single document**
+2. **analyse NLP on document(s)**
 ```sh
-poetry run python ./deepsearch_glm/glm_doc.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
+poetry run python ./deepsearch_glm/nlp_apply_on_docs.py --json './data/documents/articles/2305.*.nlp.json' 
 ```
-3. **GLM from documents**
+3. **create GLM from document(s)**
 ```sh
-poetry run python ./deepsearch_glm/glm_from_query.py --index esg-report --query "net zero" --force True
-```
-4. **GLM for Q&A on a document**
-```sh
-poetry run python ./deepsearch_glm/glm_docqa.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
+poetry run python ./deepsearch_glm/glm_create_from_docs.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
 ```
 
-## CXX interface
+### Deep Search utilities
+
+1. **Query and download document(s)**
+```sh
+poetry run python ./deepsearch_glm/utils/ds_query.py --index patent-uspto --query "\"global warming potential\" AND \"etching\""
+```
+2. **Converting PDF document(s) into JSON**
+```sh
+poetry run python ./deepsearch_glm/utils/ds_convert.py --pdf './data/documents/articles/2305.*.pdf'"
+```
+
+## Run using CXX executables
 
 If you like to be bare-bones, you can also use the executables for NLP and GLM's directly. In general, we
 follow a simple scheme of the form
@@ -96,6 +106,6 @@ After you have generated the configuration files (see above), you can
 ```
 2. explore interactively the GLM
 ```sh
-./glm.exe -m explore -c glm_config_create.json
+./glm.exe -m explore -c glm_config_explore.json
 ```
 

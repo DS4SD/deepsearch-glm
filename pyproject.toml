@@ -24,6 +24,7 @@ fastapi = "^0.99.0"
 uvicorn = "^0.22.0"
 python-dotenv = "^1.0.0"
 pybind11 = "^2.10.4"
+numerize = "^0.12"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,0 +1,27 @@
+{
+    "object-store": "https://ds4sd-public-artifacts.s3.eu-de.cloud-object-storage.appdomain.cloud",
+    
+    "nlp":
+    {
+	"bucket": "ds4sd-public-artifacts",
+	"prefix": "deepsearch_glm/v1/nlp",
+
+	"trained-models":
+	{
+	    "part-of-speech": ["crf_pos_model_en.bin", "models/crf/part-of-speech/crf_pos_model_en.bin"],
+	    "reference": ["crf_reference.bin", "models/crf/reference/crf_reference.bin"],
+	    
+	    "language": ["fst_language.bin", "models/fasttext/language/fst_language.bin"],
+	    "name": ["fst_person_name.bin", "models/fasttext/person-name/fst_person_name.bin"],
+	    "semantic": ["fst_semantic.bin", "models/fasttext/semantic/fst_semantic.bin"]
+	}
+    },
+
+    "glm":
+    {
+	"bucket": "ds4sd-public-artifacts",
+	"prefix": "deepsearch_glm/v1/glm",
+
+	"trained-models": {}	
+    }    
+}

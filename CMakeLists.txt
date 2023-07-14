@@ -157,8 +157,6 @@ install(TARGETS glm.exe DESTINATION bin)
 install(TARGETS andromeda_nlp DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
 install(TARGETS andromeda_glm DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
 
-# install(FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h" DESTINATION include)
-
 # *****************
 # ***  Testing  ***
 # *****************

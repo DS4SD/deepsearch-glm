@@ -117,9 +117,9 @@ namespace andromeda
   }
   
   bool producer<PROMPT>::next(std::string& text,
-			    std::size_t& cnt)
+			      std::size_t& cnt)
   {
-    std::cout << "text: ";
+    std::cout << "text: " << std::flush;
 
     std::string line;
     std::getline(std::cin, line);

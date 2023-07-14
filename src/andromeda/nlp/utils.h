@@ -82,23 +82,25 @@ namespace andromeda
       case LAPOS:
 	{
 	  typedef nlp_model<POS, LAPOS> model_type;
-	  model = std::make_shared<model_type>(RESOURCES_DIR, verbose);	  	  
+	  //model = std::make_shared<model_type>(RESOURCES_DIR, verbose);
+	  model = std::make_shared<model_type>();	  	  
 	}
 	break;
 	
 	// CLS
       case LANGUAGE:
 	{
-	  //typedef language_classifier model_type;
 	  typedef nlp_model<CLS, LANGUAGE> model_type;
-	  model = std::make_shared<model_type>(RESOURCES_DIR);	  
+	  //model = std::make_shared<model_type>(RESOURCES_DIR);
+	  model = std::make_shared<model_type>();	  
 	}
 	break;
 
       case SEMANTIC:
 	{
 	  typedef nlp_model<CLS, SEMANTIC> model_type;
-	  model = std::make_shared<model_type>(RESOURCES_DIR);
+	  //model = std::make_shared<model_type>(RESOURCES_DIR);
+	  model = std::make_shared<model_type>();
 	}
 	break;	
 	
@@ -106,7 +108,8 @@ namespace andromeda
       case NAME:
 	{
 	  typedef nlp_model<ENT, NAME> model_type;
-	  model = std::make_shared<model_type>(RESOURCES_DIR);	  	  
+	  //model = std::make_shared<model_type>(RESOURCES_DIR);
+	  model = std::make_shared<model_type>();	  	  
 	}
 	break;
 
@@ -162,7 +165,8 @@ namespace andromeda
       case REFERENCE:
 	{
 	  typedef nlp_model<ENT, REFERENCE> model_type;
-	  model = std::make_shared<model_type>(RESOURCES_DIR);	  	  	  
+	  //model = std::make_shared<model_type>(RESOURCES_DIR);
+	  model = std::make_shared<model_type>();	  	  	  
 	}
 	break;	
 

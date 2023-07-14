@@ -10,9 +10,12 @@ dist/*
 build/*
 externals/*
 tmp/*
+_legacy*
 data/documents/*.csv
 data/documents/*.json
 data/documents/*/*.nlp.json
+data/wikipedia/pdfs/*.json
+data/wikipedia/pdfs/*.nlp.json
 data/models/*.json
 data/models/*.jsonl
 data/models/*.bin

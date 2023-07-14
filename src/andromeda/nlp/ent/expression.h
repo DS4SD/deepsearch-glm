@@ -106,6 +106,13 @@ namespace andromeda
                         R"(^([a-z]+)(\.)([A-Z])([a-z]+)(\,)([a-z]+)$)");
         faulty_wtoken_patterns.push_back(expr);
       }
+
+      // `model.[1][2]` or `model.[1,2]` `model.[1-2]`
+      {
+        pcre2_expr expr("faulty_wtoken_pattern", "faulty_wtoken_pattern",
+                        R"(^([a-z]+)(\.)(\[\d+((\,|\-)\d+)*\])+$)");
+        faulty_wtoken_patterns.push_back(expr);
+      }
     }
 
     // concatenations
