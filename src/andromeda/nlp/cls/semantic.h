@@ -50,8 +50,8 @@ namespace andromeda
 
     const static std::set<model_name> dependencies;
 
-    std::filesystem::path resources_dir;
-    std::filesystem::path model_path;    
+    //std::filesystem::path resources_dir;
+    std::filesystem::path model_file;    
     
     std::vector<pcre2_expr> author_list, authors;
     //std::vector<pcre2_expr> table_refs, figure_refs;
@@ -62,22 +62,9 @@ namespace andromeda
 
   nlp_model<CLS, SEMANTIC>::nlp_model():
     fasttext_supervised_model(),
-    
-    resources_dir(andromeda::RESOURCES_DIR / "models/fasttext/semantic"),
-    model_path("semantic-latest.bin")
-    //model_path("semantic-v02.ftz")
+    model_file(glm_variables::get_fasttext_dir() / "semantic/fst_semantic.bin")
   {
     initialise();    
-  }
-  
-  nlp_model<CLS, SEMANTIC>::nlp_model(std::filesystem::path resources_dir):
-    fasttext_supervised_model(),    
-
-    resources_dir(resources_dir / "models/fasttext/semantic"),
-    model_path("semantic-latest.bin")
-    //model_path("semantic-v02.ftz")
-  {
-    initialise();
   }
 
   nlp_model<CLS, SEMANTIC>::~nlp_model()
@@ -165,9 +152,9 @@ namespace andromeda
 
   void nlp_model<CLS, SEMANTIC>::initialise_model()
   {
-    std::filesystem::path path = resources_dir / model_path;
+    //std::filesystem::path path = resources_dir / model_file;
 
-    if(not fasttext_supervised_model::load(path))
+    if(not fasttext_supervised_model::load(model_file))
       {
 	LOG_S(FATAL) << "could not load semantic model ...";
       }

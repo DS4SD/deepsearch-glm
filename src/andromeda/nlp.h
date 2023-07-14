@@ -123,7 +123,8 @@ namespace andromeda
   }
 
   template<typename producer_type>
-  void nlp_predict_on_producer(std::shared_ptr<producer_type> producer, nlohmann::json& config, bool verbose)
+  void nlp_predict_on_producer(std::shared_ptr<producer_type> producer,
+			       nlohmann::json& config, bool verbose)
   {
     typedef typename producer_type::subject_type subject_type;
 
@@ -138,6 +139,7 @@ namespace andromeda
     producer->reset_pointer();
     while(producer->keep_reading(count))
       {
+	subject.clear();
 	if(not producer->read(subject, count))
 	  {
 	    continue;

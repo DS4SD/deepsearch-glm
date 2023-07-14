@@ -23,7 +23,7 @@ def get_scratch_dir():
     
     load_dotenv()
 
-    tmpdir = os.path.abspath(os.getenv("DEEPSEARCH_TMPDIR"))
+    tmpdir = os.path.abspath(os.getenv("DEEPSEARCH_GLM_SCRATCH_DIR"))
 
     if not os.path.exists(tmpdir):
         os.mkdir(tmpdir)

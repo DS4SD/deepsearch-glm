@@ -5,7 +5,7 @@
 
 namespace andromeda
 {
-  class base_nlp_model
+  class base_nlp_model: public glm_variables
   {
   public:
     

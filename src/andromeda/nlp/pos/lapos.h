@@ -20,8 +20,6 @@ namespace andromeda
   public:
 
     nlp_model();
-    nlp_model(std::filesystem::path resources_dir, bool verbose);
-    ~nlp_model();
 
     virtual std::set<model_name> get_dependencies() { return dependencies; }
 
@@ -33,7 +31,7 @@ namespace andromeda
 
   private:
 
-    bool initialise(std::filesystem::path resources_dir, bool verbose);
+    bool initialise(bool verbose);
 
     template<typename subject_type>
     bool check_dependency(const std::set<model_name>& deps,
@@ -72,19 +70,19 @@ namespace andromeda
     std::set<std::string> numbers;
   };
 
-  nlp_model<POS, LAPOS>::nlp_model(std::filesystem::path resources_dir, bool verbose)
+  nlp_model<POS, LAPOS>::nlp_model():
+    model_file(get_resources_dir() / "models/crf/part-of-speech/crf_pos_model_en.bin")
   {
-    initialise(resources_dir, verbose);
+    initialise(false);
   }
 
-  nlp_model<POS, LAPOS>::~nlp_model()
-  {}
-
+  /*
   bool nlp_model<POS, LAPOS>::initialise(std::filesystem::path resources_dir, bool verbose)
   {
     {
-      model_file = resources_dir / "models/crf/part-of-speech/en/model_wsj02-21/model.la";
+      //model_file = resources_dir / "models/crf/part-of-speech/en/model_wsj02-21/model.la";
       //auto pos_model = std::make_shared<lapos::predicter>(model_file);
+
       auto pos_model = std::make_shared<pos_model_type>(model_file, "default", verbose);
 
       std::string lang = "en";
@@ -102,7 +100,29 @@ namespace andromeda
 
     return true;
   }
+  */
 
+  bool nlp_model<POS, LAPOS>::initialise(bool verbose)
+  {
+    {
+      auto pos_model = std::make_shared<pos_model_type>(model_file, "default", verbose);
+
+      std::string lang = "en";
+      pos_models[lang] = pos_model;
+    }
+
+    // FIXME: put this in resources ...
+    {
+      numbers = {"zero",
+                 "one", "two", "three", "four", "five",
+                 "six", "seven", "eight", "nine", "ten",
+                 "eleven", "twelve", "thirteen",
+                 "twenty", "thirty"};
+    }
+
+    return true;
+  }
+  
   template<typename subject_type>
   bool nlp_model<POS, LAPOS>::check_dependency(const std::set<model_name>& deps,
 					       subject_type& subj, std::string& lang)

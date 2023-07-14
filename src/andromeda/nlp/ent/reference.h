@@ -16,7 +16,7 @@ namespace andromeda
   public:
 
     nlp_model();
-    nlp_model(std::filesystem::path resources_dir);
+    //nlp_model(std::filesystem::path resources_dir);
 
     ~nlp_model();
 
@@ -31,7 +31,8 @@ namespace andromeda
     
   private:
 
-    void initialise(std::filesystem::path resources_dir);
+    //void initialise(std::filesystem::path resources_dir);
+    bool initialise();
 
     void run_model(subject<PARAGRAPH>& subj);
     
@@ -40,21 +41,41 @@ namespace andromeda
   private:
 
     const static std::set<model_name> dependencies;
+
+    std::filesystem::path model_file;
   };
 
   const std::set<model_name> nlp_model<ENT, REFERENCE>::dependencies = { SEMANTIC, LINK, NUMVAL};
 
-  nlp_model<ENT, REFERENCE>::nlp_model()
-  {}
-  
-  nlp_model<ENT, REFERENCE>::nlp_model(std::filesystem::path resources_dir)
+  nlp_model<ENT, REFERENCE>::nlp_model():
+    model_file(get_crf_dir() / "reference/crf_reference.bin")
   {
-    initialise(resources_dir);
+    initialise();
   }
 
+  /*
+  nlp_model<ENT, REFERENCE>::nlp_model(std::filesystem::path resources_dir)
+  {
+    //initialise(resources_dir);
+    initialise();
+  }
+  */
+  
   nlp_model<ENT, REFERENCE>::~nlp_model()
   {}
 
+  bool nlp_model<ENT, REFERENCE>::initialise()
+  {
+    if(not base_crf_model::load(model_file, false))
+      {
+	LOG_S(ERROR) << "could not load REFERENCE model from " << model_file;
+	return false;
+      }
+
+    return true;
+  }
+  
+  /*
   void nlp_model<ENT, REFERENCE>::initialise(std::filesystem::path resources_dir)
   {
     if(not base_crf_model::load(resources_dir / "models/crf/reference/reference-latest.bin", false))
@@ -62,7 +83,8 @@ namespace andromeda
 	LOG_S(FATAL) << "could not load REFERENCE model from " << resources_dir;
       }
   }
-
+  */
+  
   bool nlp_model<ENT, REFERENCE>::apply(subject<DOCUMENT>& doc)
   {
     for(auto& paragraph:doc.paragraphs)

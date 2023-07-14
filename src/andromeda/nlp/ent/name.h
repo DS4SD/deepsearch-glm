@@ -7,13 +7,13 @@ namespace andromeda
 {
 
   template<>
-  class nlp_model<ENT, NAME>:
-    public fasttext_supervised_model
+  class nlp_model<ENT, NAME>: public fasttext_supervised_model
   {
 
   public:
 
-    nlp_model(std::filesystem::path resources_dir);
+    //nlp_model(std::filesystem::path resources_dir);
+    nlp_model();
     ~nlp_model();
 
     virtual std::set<model_name> get_dependencies() { return dependencies; }
@@ -26,8 +26,11 @@ namespace andromeda
     
   private:
     
-    bool initialise(std::filesystem::path resources_dir);
-
+    bool initialise();//std::filesystem::path resources_dir);
+    
+    bool initialise_model();
+    bool initialise_regex();
+    
     bool apply_regex(subject<PARAGRAPH>& subj);
     
     bool post_process(nlohmann::json& insts);
@@ -37,25 +40,40 @@ namespace andromeda
     const static std::set<model_name> dependencies;
     
     std::vector<pcre2_expr> exprs;
+
+    std::filesystem::path model_file;
   };
 
   const std::set<model_name> nlp_model<ENT, NAME>::dependencies = {};
   
-  nlp_model<ENT, NAME>::nlp_model(std::filesystem::path resources_dir)
+  nlp_model<ENT, NAME>::nlp_model():
+    fasttext_supervised_model(),
+    model_file(get_fasttext_dir() / "person-name/fst_person_name.bin")
   {
-    initialise(resources_dir);
+    initialise();
   }
 
   nlp_model<ENT, NAME>::~nlp_model()
   {}
 
-  bool nlp_model<ENT, NAME>::initialise(std::filesystem::path resources_dir)
+  bool nlp_model<ENT, NAME>::initialise()
   {
-    {
-      std::filesystem::path file = resources_dir / "models/fasttext/person-name/person-classification.bin";
-      fasttext_supervised_model::load(file);
-    }
+    return (initialise_regex() and initialise_model());
+  }
+    
+  bool nlp_model<ENT, NAME>::initialise_model()
+  {
+    if(not fasttext_supervised_model::load(model_file))
+      {
+	LOG_S(ERROR) << "could not load `name` classifier model ...";
+	return false;	
+      }
+    
+    return true;	
+  }
 
+  bool nlp_model<ENT, NAME>::initialise_regex()
+  {  
     // `Jan H. Wernick`
     {
       pcre2_expr expr(this->get_key(), "person-name",

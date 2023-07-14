@@ -17,7 +17,7 @@ from tabulate import tabulate
 def parse_arguments():
 
     parser = argparse.ArgumentParser(
-        prog = 'analyse_nlp_on_doc',
+        prog = 'nlp_analyse_docs',
         description = 'Analyse NLP on `Deep Search` documents ()',
         epilog =
 """
@@ -25,7 +25,7 @@ examples of execution:
 
 1.a run on single document (pdf or json) with default model (=`langauge`):
 
-    poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --json ./data/documents/articles/2305.02334.nlp.json
+    poetry run python ./deepsearch_glm/nlp_analyse_docs.py --json ./data/documents/articles/2305.02334.nlp.json
 
 """,
         formatter_class=argparse.RawTextHelpFormatter)
@@ -39,12 +39,6 @@ examples of execution:
     json_files=sorted(glob.glob(args.json))
 
     return json_files
-
-"""
-def resolve_item(doc, parts):
-
-    if parts[0]=="#"
-"""
 
 def extract_meta(doc):
     return
@@ -131,8 +125,7 @@ def extract_references(doc):
 
     df = pd.DataFrame(doc["instances"]["data"],
                       columns=doc["instances"]["headers"])
-
-    print(doc["instances"]["headers"])
+    #print(doc["instances"]["headers"])
     
     wrapper = wrapper = textwrap.TextWrapper(width=70)
     
@@ -165,7 +158,7 @@ if __name__ == '__main__':
         with open(json_file, "r") as fr:
             doc = json.load(fr)
 
-        """
+
         extract_text(doc)
 
         extract_sentences(doc)
@@ -173,6 +166,5 @@ if __name__ == '__main__':
         extract_tables(doc)
         
         extract_figures(doc)
-        """
         
         extract_references(doc)

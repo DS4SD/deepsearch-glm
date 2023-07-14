@@ -15,7 +15,7 @@ namespace andromeda
   public:
 
     nlp_model();
-    nlp_model(std::filesystem::path resources_dir);
+    //nlp_model(std::filesystem::path resources_dir);
     
     ~nlp_model();
 
@@ -36,32 +36,52 @@ namespace andromeda
     
   private:
 
-    void initialise(std::filesystem::path resources_dir);
+    //void initialise(std::filesystem::path resources_dir);
+    void initialise();
     
   private:
 
     const static inline std::set<model_name> dependencies = {};
+
+    std::filesystem::path model_file;
   };
 
   nlp_model<CLS, LANGUAGE>::nlp_model():
-    fasttext_supervised_model()
-  {}
-  
+    fasttext_supervised_model(),
+    model_file(get_fasttext_dir() / "language/fst_language.bin")
+  {
+    initialise();
+  }
+
+  /*
   nlp_model<CLS, LANGUAGE>::nlp_model(std::filesystem::path resources_dir):
     fasttext_supervised_model()
   {
     initialise(resources_dir);
   }
-
+  */
+  
   nlp_model<CLS, LANGUAGE>::~nlp_model()
   {}
 
+  /*
   void nlp_model<CLS, LANGUAGE>::initialise(std::filesystem::path resources_dir)
   {
-    std::filesystem::path ifile = resources_dir / "models/fasttext/language/lid.176.bin";
-    fasttext_supervised_model::load(ifile);
-  }
+    //std::filesystem::path ifile = resources_dir / "models/fasttext/language/lid.176.bin";
+    //std::filesystem::path ifile = glm_variables::get_resources_dir() / "models/fasttext/language/lid.176.bin";
 
+    fasttext_supervised_model::load(model_file);
+  }
+  */
+
+  void nlp_model<CLS, LANGUAGE>::initialise()
+  {
+    if(not fasttext_supervised_model::load(model_file))
+      {
+	LOG_S(FATAL) << "could not load `language` classifier model ...";
+      }
+  }
+  
   bool nlp_model<CLS, LANGUAGE>::preprocess(const subject<PARAGRAPH>& subj, std::string& text)
   {
     text = subj.text;
