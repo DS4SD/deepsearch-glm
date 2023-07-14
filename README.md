@@ -4,7 +4,6 @@
 [![PyPI version](https://img.shields.io/pypi/v/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
 [![License MIT](https://img.shields.io/github/license/ds4sd/deepsearch-glm)](https://opensource.org/licenses/MIT)
-[//]: #[![Downloads](https://static.pepy.tech/badge/deepsearch-glm)](https://pepy.tech/project/deepsearch-glm)
 
 ## Install
 
@@ -19,24 +18,20 @@ poetry install
 
 ### CXX compilation
 
-To compile from scratch, simply run the following command in the `deepsearch-glm` root folder, 
+To compile from scratch, simply run the following command in the `deepsearch-glm` root folder to
+create the `build` directory,
 
 ```sh
-cmake -B ./build; cmake --build ./build -j
+cmake -B ./build; 
 ```
 
-## Python Interface
+Next, compile the code from scratch,
 
-### Deep Search utilities
-
-1. **Query and download document(s)**
 ```sh
-poetry run python ./deepsearch_glm/utils/ds_query.py --index patent-uspto --query "\"global warming potential\" AND \"etching\""
+cmake --build ./build -j
 ```
-2. **Converting PDF document(s) into JSON**
-```sh
-poetry run python ./deepsearch_glm/utils/ds_convert.py --pdf './data/documents/articles/2305.*.pdf'"
-```
+
+## Run using the Python Interface
 
 ### NLP and GLM examples
 
@@ -55,7 +50,18 @@ poetry run python ./deepsearch_glm/nlp_apply_on_docs.py --json './data/documents
 poetry run python ./deepsearch_glm/glm_create_from_docs.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
 ```
 
-## CXX interface
+### Deep Search utilities
+
+1. **Query and download document(s)**
+```sh
+poetry run python ./deepsearch_glm/utils/ds_query.py --index patent-uspto --query "\"global warming potential\" AND \"etching\""
+```
+2. **Converting PDF document(s) into JSON**
+```sh
+poetry run python ./deepsearch_glm/utils/ds_convert.py --pdf './data/documents/articles/2305.*.pdf'"
+```
+
+## Run using CXX executables
 
 If you like to be bare-bones, you can also use the executables for NLP and GLM's directly. In general, we
 follow a simple scheme of the form
