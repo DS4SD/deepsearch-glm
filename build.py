@@ -38,35 +38,8 @@ def build(setup_kwargs=None):
         if not run(cmd[0], cwd=cmd[1]):
             break
 
-"""        
-def load(setup_kwargs=None):
-
-    with open(f"{RESOURCES_DIR}/models.json") as fr:
-        models = json.load(fr)
-        
-    COS_URL = models["object-store"]
-
-    cmds=[]
-    for name,files in models["trained-models"].items():
-        source = os.path.join(COS_URL, files[0])
-        target = os.path.join(RESOURCES_DIR, files[1])
-        
-        cmds.append(["curl", source, "-o", target, "-s"])
-        #print(" ".join(cmds[-1]))
-        
-    for cmd in cmds:
-        #print("executing: ", " ".join(cmd))
-        
-        if not os.path.exists(cmd[3]):
-            print(f"downloading {os.path.basename(cmd[3])} ... ", end="")
-            message = subprocess.run(cmd, cwd=ROOT_DIR)    
-            print("done!")
-        else:
-            print(f" -> already downloaded {os.path.basename(cmd[3])}")
-"""
-
 if "__main__"==__name__:
 
     build()
 
-    load_pretrained_nlp_models(True)
+    load_pretrained_nlp_models(force=False)
