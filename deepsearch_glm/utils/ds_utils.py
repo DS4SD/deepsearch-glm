@@ -201,8 +201,14 @@ def create_docs_dir():
     odir = os.path.join(tdir, odir)
     return odir    
 
-def ds_index_query(index, query, odir=None, force=False):
-
+def ds_index_query(index, query, odir=None, force=False, limit=-1,
+                   sources=["file-info", "description",
+                            "main-text",
+                            "texts", "tables", "figures",                
+                            "page-headers", "page-footers",
+                            "footnotes"] # Which fields of documents we want to fetch
+                   ):
+    
     api, proj_key = get_ds_api()
     
     tdir = get_scratch_dir()
@@ -225,14 +231,18 @@ def ds_index_query(index, query, odir=None, force=False):
     data_collection = ElasticDataCollectionSource(elastic_id="default", index_key=index)
     page_size = 50
 
-    # Prepare the data query
-    query = DataQuery(
-        search_query, # The search query to be executed
+    """
         source=["file-info", "description",
                 "main-text",
                 "texts", "tables", "figures",                
                 "page-headers", "page-footers",
-                "footnotes"], # Which fields of documents we want to fetch
+                "footnotes"], 
+    """
+    
+    # Prepare the data query
+    query = DataQuery(
+        search_query, # The search query to be executed
+        source=sources, # Which fields of documents we want to fetch
         limit=page_size, # The size of each request page
         coordinates=data_collection # The data collection to be queries
     )
@@ -241,13 +251,19 @@ def ds_index_query(index, query, odir=None, force=False):
     count_query = copy.deepcopy(query)
     count_query.paginated_task.parameters["limit"] = 0
     count_results = api.queries.run(count_query)
+       
     expected_total = count_results.outputs["data_count"]
     print(f"#-found documents: {expected_total}")
-    
+
+    if limit!=-1 and expected_total>limit:
+        expected_total=limit    
+
     expected_pages = (expected_total + page_size - 1) // page_size # this is simply a ceiling formula
     
     # Iterate through all results by fetching `page_size` results at the same time
     bar_format = '{desc:<5.5}{percentage:3.0f}%|{bar:70}{r_bar}'
+
+    count=0
     
     all_results = []
     cursor = api.queries.run_paginated_query(query)
@@ -256,6 +272,13 @@ def ds_index_query(index, query, odir=None, force=False):
             _id = row["_id"]
             with open(f"{dumpdir}/{_id}.json", "w") as fw:
                 fw.write(json.dumps(row["_source"], indent=2))
-    
+
+            count+=1
+            if limit!=-1 and count>=limit:
+                break
+
+        if limit!=-1 and count>=limit:
+            break            
+                
     return dumpdir
 

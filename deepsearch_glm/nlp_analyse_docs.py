@@ -48,7 +48,7 @@ def extract_text(doc):
     page_items = doc["page-items"]
     texts = doc["texts"]
     
-    wrapper = wrapper = textwrap.TextWrapper(width=70)
+    wrapper = textwrap.TextWrapper(width=70)
     
     for item in doc["texts"]:
 
