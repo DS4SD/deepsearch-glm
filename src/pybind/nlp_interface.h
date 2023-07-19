@@ -3,15 +3,22 @@
 #ifndef PYBIND_ANDROMEDA_NLP_INTERFACE_H
 #define PYBIND_ANDROMEDA_NLP_INTERFACE_H
 
+#include <Python.h>
+
 namespace andromeda_py
-{  
+{
+
+  
   class nlp_model: public base_log
   {
   public:
+
+    
     
     nlp_model();
     ~nlp_model();
 
+    std::string get_resources_path();
     bool initialise(const nlohmann::json config_);
     
     nlohmann::json get_apply_configs();
@@ -43,6 +50,7 @@ namespace andromeda_py
     std::shared_ptr<andromeda::utils::text_normaliser> text_normaliser;    
   };
 
+  
   nlp_model::nlp_model():
     base_log::base_log(),
     config(nlohmann::json::value_t::null),
@@ -57,6 +65,26 @@ namespace andromeda_py
   nlp_model::~nlp_model()
   {}
 
+  std::string nlp_model::get_resources_path()
+  {
+    // Get the module object of your package
+    PyObject* myPackageModule = PyImport_ImportModule("deepsearch_glm");
+    
+    // Get the filename object of the module
+    PyObject* filenameObj = PyModule_GetFilenameObject(myPackageModule);
+    
+    // Extract the string value of the filename
+    const char* filename = PyUnicode_AsUTF8(filenameObj);
+    
+    // Manipulate the filename to get the resources directory
+    // In this example, we assume the resources directory is in the same folder as the package's __init__.py file
+    std::string resourcesDirectory = filename;
+    size_t lastSlash = resourcesDirectory.find_last_of("/\\");
+    resourcesDirectory = resourcesDirectory.substr(0, lastSlash + 1) + "resources";
+    
+    return resourcesDirectory;
+  }
+  
   bool nlp_model::initialise(const nlohmann::json config_)
   {       
     std::string mode = config_["mode"].get<std::string>();

@@ -9,6 +9,7 @@
 PYBIND11_MODULE(andromeda_nlp, m) {
   pybind11::class_<andromeda_py::nlp_model>(m, "nlp_model")
     .def(pybind11::init())
+    .def("get_resources_path", &andromeda_py::nlp_model::get_resources_path)
     .def("initialise", &andromeda_py::nlp_model::initialise)
 
     .def("get_apply_configs", &andromeda_py::nlp_model::get_apply_configs)

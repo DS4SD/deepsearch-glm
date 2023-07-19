@@ -67,6 +67,8 @@ def load(setup_kwargs=None):
 
 if "__main__"==__name__:
 
+    load_pretrained_nlp_models(False)
+    
     build()
 
-    load_pretrained_nlp_models(True)
+
