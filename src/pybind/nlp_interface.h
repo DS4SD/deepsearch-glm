@@ -3,23 +3,18 @@
 #ifndef PYBIND_ANDROMEDA_NLP_INTERFACE_H
 #define PYBIND_ANDROMEDA_NLP_INTERFACE_H
 
-#include <Python.h>
-
 namespace andromeda_py
 {
-
-  
-  class nlp_model: public base_log
+  class nlp_model: public base_log,
+		   public base_resources
   {
   public:
-
-    
     
     nlp_model();
     ~nlp_model();
 
-    std::string get_resources_path();
     bool initialise(const nlohmann::json config_);
+    bool initialise_models(const std::string model_names);
     
     nlohmann::json get_apply_configs();
     nlohmann::json get_train_configs();
@@ -49,7 +44,6 @@ namespace andromeda_py
     std::shared_ptr<andromeda::utils::char_normaliser> char_normaliser;
     std::shared_ptr<andromeda::utils::text_normaliser> text_normaliser;    
   };
-
   
   nlp_model::nlp_model():
     base_log::base_log(),
@@ -64,7 +58,8 @@ namespace andromeda_py
   
   nlp_model::~nlp_model()
   {}
-
+  
+  /*
   std::string nlp_model::get_resources_path()
   {
     // Get the module object of your package
@@ -84,6 +79,7 @@ namespace andromeda_py
     
     return resourcesDirectory;
   }
+  */
   
   bool nlp_model::initialise(const nlohmann::json config_)
   {       
@@ -108,6 +104,14 @@ namespace andromeda_py
       }
   }
 
+  bool nlp_model::initialise_models(const std::string model_names)
+  {
+    config.clear();
+    order_text = true;
+    
+    return andromeda::to_models(model_names, this->models, false);    
+  }
+  
   nlohmann::json nlp_model::get_apply_configs()
   {
     nlohmann::json configs = nlohmann::json::array({});
