@@ -42,11 +42,11 @@ examples of execution:
     
     args = parser.parse_args()
     
-    return args.text
+    return args.text, args.model_names
 
 if __name__ == '__main__':
 
-    text, model_names = parse_arguments():
+    text, model_names = parse_arguments()
     
     mdl = andromeda_nlp.nlp_model()
     print("resource-dir: ", mdl.get_resources_path())
