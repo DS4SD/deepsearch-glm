@@ -12,17 +12,11 @@ env:
 
 jobs:
   build-cxx:
-    # The CMake configure and build commands are platform agnostic and should work
-    # equally well on Windows or Mac. You can convert this to a matrix build if you
-    # need cross-platform coverage.
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
-
     - name: Configure
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-
     - name: Compile
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j
@@ -40,6 +34,6 @@ jobs:
     - name: Install poetry
       run: curl -sSL https://install.python-poetry.org | python3 -
     - name: Install python versions
-      run: sudo apt-get update; sudo apt-get install python3.10-dev python3.11-dev -y
+      run: sudo apt-get install python3.10-dev python3.11-dev -y
     - name: Build with poetry
-      run: poetry install
+      run: poetry build
