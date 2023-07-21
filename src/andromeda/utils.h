@@ -8,57 +8,93 @@ namespace andromeda
 
   class glm_variables
   {
+  public:
+
+    const static inline std::filesystem::path package_name = "deepsearch_glm";
+    const static inline std::filesystem::path resources_relative_path = "resources";
+
   private:
     
-#ifdef ROOT_PATH
-  static inline std::filesystem::path ROOT_DIR = ROOT_PATH;  
-  static inline std::filesystem::path RESOURCES_DIR = ROOT_DIR / "deepsearch_glm/resources";
-#else
-  static inline std::filesystem::path ROOT_DIR = std::filesystem::current_path() / "..";      
-  static inline std::filesystem::path RESOURCES_DIR = std::filesystem::current_path() / "../deepsearch_glm/resources";  
-#endif
+    //#ifdef ROOT_PATH
+    static inline std::filesystem::path ROOT_DIR = ROOT_PATH;
+    static inline std::filesystem::path PACKAGE_DIR = ROOT_PATH / package_name;
+    static inline std::filesystem::path RESOURCES_DIR = PACKAGE_DIR / resources_relative_path;
+    //static inline std::filesystem::path RESOURCES_DIR = ROOT_DIR / "deepsearch_glm/resources";
+    //#else
+    //static inline std::filesystem::path ROOT_DIR = std::filesystem::current_path() / "..";      
+    //static inline std::filesystem::path RESOURCES_DIR = std::filesystem::current_path() / "../deepsearch_glm/resources" 
+    ///#endif
     
   public:
 
-    static bool set_resources_dir(std::filesystem::path path)
-    {
-      RESOURCES_DIR = path;
+    static bool set_resources_dir(std::filesystem::path path);
 
-      if(std::filesystem::exists(RESOURCES_DIR))
-	{
-	  LOG_S(WARNING) << "updated resources-dir: " << path;
-	  return true;
-	}
-      else
-	{
-	  LOG_S(FATAL) << "updated resources-dir to non-existant path: "
-		       << path;
-	  return false;
-	}
-    }
-        
-    static std::filesystem::path get_resources_dir()
-    {
-      if(not std::filesystem::exists(RESOURCES_DIR))
-	{
-	  LOG_S(FATAL) << "resource-directory does not exist: "
-		       << RESOURCES_DIR;
-	}
-      
-      return RESOURCES_DIR;
-    }
-    
-    static std::filesystem::path get_fasttext_dir()
-    {
-      return get_resources_dir() / "models/fasttext";
-    }
-    
-    static std::filesystem::path get_crf_dir()
-    {
-      return get_resources_dir() / "models/crf";
-    }
+    static std::filesystem::path get_resources_dir(bool verify=true);
+
+    static std::filesystem::path get_fasttext_dir();
+
+    static std::filesystem::path get_crf_dir();
     
   };
+    
+  bool glm_variables::set_resources_dir(std::filesystem::path path)
+  {
+    RESOURCES_DIR = path;
+    
+    if(std::filesystem::exists(RESOURCES_DIR))
+      {
+	PACKAGE_DIR = RESOURCES_DIR.parent_path();
+	ROOT_DIR = PACKAGE_DIR.parent_path();
+
+	//LOG_S(WARNING) << "updated root-dir: " << ROOT_DIR;
+	//LOG_S(WARNING) << "updated pack-dir: " << PACKAGE_DIR;
+	LOG_S(WARNING) << "updated resourrces-dir: " << RESOURCES_DIR;
+	return true;
+      }
+    else
+      {
+	LOG_S(FATAL) << "updated resources-dir to non-existant path: "
+		     << path;
+	return false;
+      }
+  }
+        
+  std::filesystem::path glm_variables::get_resources_dir(bool verify)
+  {
+    if(verify and (not std::filesystem::exists(RESOURCES_DIR)))
+      {
+	LOG_S(FATAL) << "resource-directory does not exist: "
+		     << RESOURCES_DIR;
+      }
+    
+    return RESOURCES_DIR;
+  }
+    
+  std::filesystem::path glm_variables::get_fasttext_dir()
+  {
+    auto path = get_resources_dir() / "models" / "fasttext";
+
+    if(not std::filesystem::exists(path))
+      {
+	LOG_S(FATAL) << "non-existent fasttext-path: "
+		     << path;
+      }
+
+    return path;
+  }
+    
+  std::filesystem::path glm_variables::get_crf_dir()
+  {
+    auto path = RESOURCES_DIR / "models" / "crf";
+
+    if(not std::filesystem::exists(path))
+      {
+	LOG_S(FATAL) << "non-existent crf-path: "
+		     << path;
+      }
+
+    return path;
+  }
   
 }
 

@@ -4,8 +4,9 @@
 #define PYBIND_ANDROMEDA_NLP_INTERFACE_H
 
 namespace andromeda_py
-{  
-  class nlp_model: public base_log
+{
+  class nlp_model: public base_log,
+		   public base_resources
   {
   public:
     
@@ -13,6 +14,7 @@ namespace andromeda_py
     ~nlp_model();
 
     bool initialise(const nlohmann::json config_);
+    bool initialise_models(const std::string model_names);
     
     nlohmann::json get_apply_configs();
     nlohmann::json get_train_configs();
@@ -42,7 +44,7 @@ namespace andromeda_py
     std::shared_ptr<andromeda::utils::char_normaliser> char_normaliser;
     std::shared_ptr<andromeda::utils::text_normaliser> text_normaliser;    
   };
-
+  
   nlp_model::nlp_model():
     base_log::base_log(),
     config(nlohmann::json::value_t::null),
@@ -56,7 +58,29 @@ namespace andromeda_py
   
   nlp_model::~nlp_model()
   {}
-
+  
+  /*
+  std::string nlp_model::get_resources_path()
+  {
+    // Get the module object of your package
+    PyObject* myPackageModule = PyImport_ImportModule("deepsearch_glm");
+    
+    // Get the filename object of the module
+    PyObject* filenameObj = PyModule_GetFilenameObject(myPackageModule);
+    
+    // Extract the string value of the filename
+    const char* filename = PyUnicode_AsUTF8(filenameObj);
+    
+    // Manipulate the filename to get the resources directory
+    // In this example, we assume the resources directory is in the same folder as the package's __init__.py file
+    std::string resourcesDirectory = filename;
+    size_t lastSlash = resourcesDirectory.find_last_of("/\\");
+    resourcesDirectory = resourcesDirectory.substr(0, lastSlash + 1) + "resources";
+    
+    return resourcesDirectory;
+  }
+  */
+  
   bool nlp_model::initialise(const nlohmann::json config_)
   {       
     std::string mode = config_["mode"].get<std::string>();
@@ -80,6 +104,14 @@ namespace andromeda_py
       }
   }
 
+  bool nlp_model::initialise_models(const std::string model_names)
+  {
+    config.clear();
+    order_text = true;
+    
+    return andromeda::to_models(model_names, this->models, false);    
+  }
+  
   nlohmann::json nlp_model::get_apply_configs()
   {
     nlohmann::json configs = nlohmann::json::array({});

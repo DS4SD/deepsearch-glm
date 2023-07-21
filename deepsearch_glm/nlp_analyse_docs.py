@@ -12,7 +12,7 @@ import pandas as pd
 from tabulate import tabulate
 #from ds_utils import convert_pdffiles
 
-#import andromeda_nlp
+import andromeda_nlp
 
 def parse_arguments():
 
@@ -151,7 +151,7 @@ def extract_references(doc):
 if __name__ == '__main__':
 
     json_files = parse_arguments()
-    
+
     for json_file in json_files:
 
         print(f" --> reading {json_file}")
