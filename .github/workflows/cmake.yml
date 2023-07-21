@@ -43,5 +43,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install poetry
-      # run: pip install poetry
       run: curl -sSL https://install.python-poetry.org | python3 -
+      run: poetry --version
+    - name: Build with poetry
+      run: poetry install
