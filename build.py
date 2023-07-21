@@ -60,7 +60,7 @@ def build_all_python_versions():
             print(f"rm {PYBUILD_DIR}")
             continue
         
-        cmd = f"cmake -B {PYBUILD_DIR} -DNDEBUG -DPYTHON_EXECUTABLE={pyv}"
+        cmd = f"cmake -B {PYBUILD_DIR} -DPYTHON_EXECUTABLE={pyv}"
         run(cmd, cwd=ROOT_DIR)
             
         cmd = f"cmake --build {PYBUILD_DIR} --target install -j"
@@ -70,8 +70,8 @@ if "__main__"==__name__:
 
     #load_pretrained_nlp_models(False)
 
-    #build()
-    build_all_python_versions()
+    build()
+    #build_all_python_versions()
 
 
 

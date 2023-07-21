@@ -43,7 +43,7 @@ message(STATUS " python path: " ${})
 # ***  cxx-flags       ***
 # ************************
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Ofast -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -Ofast -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
 
