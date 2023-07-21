@@ -25,8 +25,5 @@ jobs:
           cache-dependency-path: 'poetry.lock'
       - name: Install dependencies
         run: poetry install
-      # - name: Config PyPI token
-      #   # According to this issue, the ENV variable is ignored https://github.com/python-poetry/poetry/issues/2210.
-      #   run: poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
       - name: Build and publish
         run: poetry publish --build --no-interaction --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
