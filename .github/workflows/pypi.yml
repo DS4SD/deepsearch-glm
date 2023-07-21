@@ -15,16 +15,10 @@ jobs:
   build-and-publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Install poetry
-        # run: pip install poetry
-	run: curl -sSL https://install.python-poetry.org | python3 -
-      - uses: actions/setup-python@v3
-        with:
-          python-version: 3.x
-          cache: 'pip'
-          cache-dependency-path: 'poetry.lock'
-      - name: Install dependencies
-        run: poetry install
-      - name: Build and publish
-        run: poetry publish --build --no-interaction --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+    - uses: actions/checkout@v3
+    - name: Install poetry
+      run: curl -sSL https://install.python-poetry.org | python3 -
+    - name: Install dependencies
+      run: poetry install
+    - name: Build and publish
+      run: poetry publish --build --no-interaction --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
