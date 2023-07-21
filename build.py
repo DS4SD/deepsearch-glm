@@ -1,17 +1,18 @@
 
+
 import os
+import re
+
 import json
+import glob
+
 import subprocess
 
 from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
 
 ROOT_DIR=os.path.abspath("./")
 BUILD_DIR=os.path.join(ROOT_DIR, "build")
-RESOURCES_DIR=os.path.join(ROOT_DIR, "resources")
 
-if "DEEPSEARCH_GLM_RESOURCES_DIR" in os.environ:
-    RESOURCES_DIR = os.getenv("DEEPSEARCH_GLM_RESOURCES_DIR")
-    
 def run(cmd, cwd="./"):
 
     print(f"\nlaunch: {cmd}")
@@ -28,45 +29,49 @@ def run(cmd, cwd="./"):
     
 def build(setup_kwargs=None):
 
-    cmds = [
-        [f"cmake -B {BUILD_DIR}", ROOT_DIR],
-        #["make install -j", BUILD_DIR]
-        [f"cmake --build {BUILD_DIR} --target install -j", ROOT_DIR]
-    ]
-
-    for cmd in cmds:
-        if not run(cmd[0], cwd=cmd[1]):
-            break
-
-"""        
-def load(setup_kwargs=None):
-
-    with open(f"{RESOURCES_DIR}/models.json") as fr:
-        models = json.load(fr)
+    if not os.path.exists(BUILD_DIR):
+        cmd = f"cmake -B {BUILD_DIR}"
+        run(cmd, cwd=ROOT_DIR)
         
-    COS_URL = models["object-store"]
+    cmd = f"cmake --build {BUILD_DIR} --target install -j"
+    run(cmd, cwd=ROOT_DIR)    
 
-    cmds=[]
-    for name,files in models["trained-models"].items():
-        source = os.path.join(COS_URL, files[0])
-        target = os.path.join(RESOURCES_DIR, files[1])
-        
-        cmds.append(["curl", source, "-o", target, "-s"])
-        #print(" ".join(cmds[-1]))
-        
-    for cmd in cmds:
-        #print("executing: ", " ".join(cmd))
-        
-        if not os.path.exists(cmd[3]):
-            print(f"downloading {os.path.basename(cmd[3])} ... ", end="")
-            message = subprocess.run(cmd, cwd=ROOT_DIR)    
-            print("done!")
-        else:
-            print(f" -> already downloaded {os.path.basename(cmd[3])}")
-"""
+def build_all_python_versions():
 
+    candidates = glob.glob("/usr/local/bin/python3.*")
+    candidates += glob.glob("/usr/bin/python3.*")
+
+    print(f"all candidates: {candidates}")
+    
+    python_versions=[]
+    for candidate in candidates:
+        pyname = os.path.basename(candidate)
+        if re.match("^python3.\d+$", pyname):
+            python_versions.append(candidate)
+
+    python_versions = sorted(python_versions)
+    print(f"all found python-versions: {python_versions}")
+    
+    for pyv in python_versions:
+
+        pyn = os.path.basename(pyv)        
+        PYBUILD_DIR = os.path.join(ROOT_DIR, f"build-{pyn}")
+        if os.path.exists(PYBUILD_DIR):
+            print(f"rm {PYBUILD_DIR}")
+            continue
+        
+        cmd = f"cmake -B {PYBUILD_DIR} -DPYTHON_EXECUTABLE={pyv}"
+        run(cmd, cwd=ROOT_DIR)
+            
+        cmd = f"cmake --build {PYBUILD_DIR} --target install -j"
+        run(cmd, cwd=ROOT_DIR)    
+    
 if "__main__"==__name__:
 
-    build()
+    load_pretrained_nlp_models(False)
 
-    load_pretrained_nlp_models(True)
+    #build()
+    build_all_python_versions()
+
+
+
