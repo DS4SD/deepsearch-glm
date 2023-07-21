@@ -43,6 +43,6 @@ jobs:
     - name: Install poetry
       run: curl -sSL https://install.python-poetry.org | python3 -
     - name: Install python versions
-      run: apt install python3.8 python3.9 python3.10 python3.11 -y
+      run: sudo apt install python3.8 python3.9 python3.10 python3.11 -y
     - name: Build with poetry
       run: poetry install
