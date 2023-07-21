@@ -8,6 +8,7 @@ import argparse
 import textwrap
 
 import pandas as pd
+pd.options.display.width=48
 
 import textColor as tc
 
@@ -44,6 +45,16 @@ examples of execution:
     
     return args.text, args.model_names
 
+def print_on_shell(key, items):
+
+    df = pd.DataFrame(items["data"],
+                         columns=items["headers"])
+
+    if key=="instances":
+        df = df[["type", "subtype", "subj_path", "name"]]
+    
+    print(tc.yellow(f"{key}: \n\n"), df.to_string(), "\n")
+
 if __name__ == '__main__':
 
     text, model_names = parse_arguments()
@@ -55,16 +66,9 @@ if __name__ == '__main__':
 
     result = mdl.apply_on_text(text)
 
-    props = pd.DataFrame(result["properties"]["data"],
-                         columns=result["properties"]["headers"])
-    print(tc.yellow("properties: \n\n"), props, "\n")
-
-    ints = pd.DataFrame(result["instances"]["data"], 
-                        columns=result["instances"]["headers"])
-    print(tc.yellow("instances: \n\n"), ints, "\n")
-    
-    """
-    ents = pd.DataFrame(result["entities"]["data"], 
-    columns=result["entities"]["headers"])
-    print(ents)
-    """
+    for _ in ["properties", "word-tokens", "instances",
+              "entities", "relations"]:
+        if _ in result and len(result[_]["data"])>0:
+            print_on_shell(_, result[_])
+        else:
+            print(tc.yellow(f"{_}: null\n\n"))
