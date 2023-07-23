@@ -11,7 +11,7 @@ import datetime
 
 from tabulate import tabulate
 
-from glm_utils import load_glm
+from deepsearch_glm.glm_utils import load_glm
 
 import andromeda_nlp
 import andromeda_glm

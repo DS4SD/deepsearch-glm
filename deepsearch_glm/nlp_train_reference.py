@@ -21,13 +21,14 @@ import matplotlib.pyplot as plt
 import textColor as tc
 
 #import deepsearch as ds
-
-from utils.ds_utils import convert_pdffiles
-from nlp_utils import create_nlp_dir
+#from tabulate import tabulate
 
 import andromeda_nlp
 
-from tabulate import tabulate
+from deepsearch_glm.utils.ds_utils import convert_pdffiles
+from deepsearch_glm.nlp_utils import create_nlp_dir
+
+
 
 def parse_arguments():
 

@@ -52,15 +52,6 @@ def extract_text(doc):
     
     for item in doc["texts"]:
 
-        """
-        rows=[]
-        for prov in item["prov"]:
-            rows.append([prov["page"], prov["type"], int(prov["bbox"][0]), int(prov["bbox"][1]), int(prov["bbox"][2]), int(prov["bbox"][3])] )
-
-        headers=["page", "type", "x0", "y0", "x1", "y1"]
-        print("provenance: \n", tabulate(rows, headers=headers))
-        """
-
         labels=[]
         for row in item["properties"]["data"]:
             labels.append(row[item["properties"]["headers"].index("label")])
@@ -75,14 +66,8 @@ def extract_text(doc):
 
 def extract_sentences(doc):
 
-    """
-    for row in doc["instances"]:
-        print(len(row), "\t", row)
-    """
-
     df = pd.DataFrame(doc["instances"]["data"],
                       columns=doc["instances"]["headers"])
-    #print(df)
 
     entity_types = df["type"].value_counts()
     print(entity_types)
@@ -125,7 +110,6 @@ def extract_references(doc):
 
     df = pd.DataFrame(doc["instances"]["data"],
                       columns=doc["instances"]["headers"])
-    #print(doc["instances"]["headers"])
     
     wrapper = wrapper = textwrap.TextWrapper(width=70)
     

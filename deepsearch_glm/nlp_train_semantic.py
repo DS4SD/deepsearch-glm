@@ -10,22 +10,12 @@ import argparse
 
 import random
 
-#import subprocess
-
-#import numpy as np
-
-#import pandas as pd
-#import matplotlib.pyplot as plt
-
-#import fasttext
 import textColor as tc
-#import deepsearch as ds
 
-from utils.ds_utils import convert_pdffiles, ds_index_query
-from nlp_utils import create_nlp_dir
+import deepsearch_glm.andromeda_nlp
 
-import andromeda_nlp
-#from tabulate import tabulate
+from deepsearch_glm.utils.ds_utils import convert_pdffiles, ds_index_query
+from deepsearch_glm.nlp_utils import create_nlp_dir
 
 def parse_arguments():
 
