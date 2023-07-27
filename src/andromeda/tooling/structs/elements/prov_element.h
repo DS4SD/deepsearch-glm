@@ -362,6 +362,9 @@ namespace andromeda
     result["page"] = page;
     result["bbox"] = bbox;
     result["span"] = char_range;
+
+    result["text-order"] = maintext_ind;
+    result["orig-order"] = pdforder_ind;
     
     return result;
   }

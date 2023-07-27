@@ -47,9 +47,9 @@ namespace andromeda
     
     bool get_property_label(const std::string name, std::string& label);
 
-    std::string get_text() const;
-
     std::string get_text(range_type rng);
+    
+    std::string get_text() const { return this->text; }
 
     void apply_wtoken_contractions(std::vector<candidate_type>& candidates);
 

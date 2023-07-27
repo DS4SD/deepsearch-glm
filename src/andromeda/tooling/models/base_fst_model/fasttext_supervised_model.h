@@ -65,6 +65,13 @@ namespace andromeda
     double learning_rate;
     int epoch, dim, ws, ngram;
 
+    bool autotune;
+    std::string modelsize;
+    int duration; // in seconds
+
+    std::set<std::string> explicit_hpo_parameters;
+    std::set<std::string> explicit_train_parameters;
+    
     std::string model_file, metrics_file, config_file;
     
     std::string train_file, validate_file, test_file;
@@ -83,7 +90,7 @@ namespace andromeda
   fasttext_supervised_model::fasttext_supervised_model():    
     base_nlp_model(),
 
-    model_path("semantic_classifier.bin"),
+    model_path("fst_classifier_model.bin"),
     model(NULL),
     
     learning_rate(0.1),
@@ -92,6 +99,13 @@ namespace andromeda
     ws(3),
     ngram(0),
 
+    autotune(false),
+    modelsize("100M"),
+    duration(360),
+
+    explicit_hpo_parameters({}),
+    explicit_train_parameters({}),
+    
     model_file("<undefined>"),
     metrics_file("<undefined>"),
     config_file("<undefined>"),
@@ -155,15 +169,15 @@ namespace andromeda
     LOG_S(INFO) << __FUNCTION__;
     
     std::string model_name = ofile.string();
-
+    
     LOG_S(INFO) << "fasttext model save to " << model_name << ".bin";
     model->saveModel(model_name + ".bin");
-
+    
     LOG_S(INFO) << "fasttext vectors save to " << model_name << ".vec";
     model->saveVectors(model_name + ".vec");
 
-    LOG_S(INFO) << "fasttext output save to " << model_name << ".out";
-    model->saveOutput(model_name + ".out");
+    //LOG_S(INFO) << "fasttext output save to " << model_name << ".out";
+    //model->saveOutput(model_name + ".out");
 
     return true;
   }
@@ -175,6 +189,13 @@ namespace andromeda
     config["mode"] = "train";
     config["model"] = get_key();
 
+    nlohmann::json hpo;
+    {
+      hpo["autotune"] = autotune;
+      hpo["modelsize"] = modelsize;
+      hpo["duration"] = duration;
+    }
+    
     nlohmann::json args;
     {
       args["mode"] = "supervised";
@@ -197,7 +218,8 @@ namespace andromeda
       files["model-file"] = "<filename>";
       files["metrics-file"] = "<filename>";
     }
-    
+
+    config["hpo"] = hpo;
     config["args"] = args;
     config["files"] = files;
 
@@ -207,9 +229,29 @@ namespace andromeda
   bool fasttext_supervised_model::parse_config(nlohmann::json config)
   {
     LOG_S(INFO) << __FUNCTION__;
-    
+
+    auto hpo_args = config["hpo"];
     auto train_args = config["args"];
+
     auto train_files = config["files"];    
+
+    for(auto itr:hpo_args.items())
+      {
+	explicit_hpo_parameters.insert(itr.key());
+      }
+
+    for(auto itr:train_args.items())
+      {
+	explicit_train_parameters.insert(itr.key());
+      }
+    
+    // HPO
+    {
+      autotune = hpo_args.value("autotune", autotune);
+      
+      modelsize = hpo_args.value("modelsize", modelsize);
+      duration = hpo_args.value("duration", duration);
+    }
 
     // parameters
     {
@@ -219,7 +261,7 @@ namespace andromeda
       ws = train_args.value("ws", ws);
       ngram = train_args.value("n-gram", ngram);
     }
-
+    
     // files
     {
       train_file = train_files.value("train-file", "null");
@@ -390,31 +432,98 @@ namespace andromeda
   bool fasttext_supervised_model::launch_training()
   {
     LOG_S(INFO) << __FUNCTION__;
+
+    // -autotune-validation ./tmp/semantic-model/nlp-train-semantic.annot.jsonl.fasttext.validate.txt -autotune-duration 360 -autotune-modelsize 100M -dim 64 -wordNgrams 1
     
     std::vector<std::string> args_vec
       = {
 	 "", "supervised",
 	 
 	 "-input", fasttext_train_file,
-	 "-output", model_file,
+	 "-output", model_file//,
+
+	 //"-autotune-validation", fasttext_validation_file,
+	 //"-autotune-duration", std::to_string(autotune_duration),
+	 //"-autotune-modelsize", autotune_modelsize,
 	 
-	 "-lr", std::to_string(learning_rate),
-	 "-dim", std::to_string(dim),
-	 "-ws", std::to_string(ws),
-	 "-epoch", std::to_string(epoch),
-	 "-wordNgrams", std::to_string(ngram)
+	 //"-lr", std::to_string(learning_rate),
+	 //"-dim", std::to_string(dim),
+	 //"-ws", std::to_string(ws),
+	 //"-epoch", std::to_string(epoch),
+	 //"-wordNgrams", std::to_string(ngram)
       };
 
+    if(autotune)
+      {
+	args_vec.push_back("-autotune-validation");
+	args_vec.push_back(fasttext_validation_file);
+
+	if(explicit_hpo_parameters.count("duration"))
+	  {
+	    args_vec.push_back("-autotune-duration");
+	    args_vec.push_back(std::to_string(duration));
+	  }
+
+	if(explicit_hpo_parameters.count("modelsize"))
+	  {
+	    args_vec.push_back("-autotune-modelsize");
+	    args_vec.push_back(modelsize);
+	  }
+      }
+
+    if(explicit_train_parameters.count("dim"))
+      {
+	args_vec.push_back("-dim");
+	args_vec.push_back(std::to_string(dim));	
+      }
+
+    if(explicit_train_parameters.count("ws"))
+      {
+	args_vec.push_back("-ws");
+	args_vec.push_back(std::to_string(ws));	
+      }
+
+    if(explicit_train_parameters.count("n-gram"))
+      {
+	args_vec.push_back("-wordNgrams");
+	args_vec.push_back(std::to_string(ngram));	
+      }    
+    
+    if(explicit_train_parameters.count("learning-rate"))
+      {
+	args_vec.push_back("-lr");
+	args_vec.push_back(std::to_string(learning_rate));	
+      }
+
+    if(explicit_train_parameters.count("epoch"))
+      {
+	args_vec.push_back("-epoch");
+	args_vec.push_back(std::to_string(dim));	
+      }    
+    
     if(model==NULL)
       {
 	model = std::make_shared<ft_model_type>();
       }
+
+    {
+      std::stringstream ss;
+      ss << "fasttext ";
+      for(auto _ : args_vec)
+	{
+	  ss << _ << " ";
+	}
+
+      LOG_S(INFO) << "training with command:\n" << ss.str(); 
+    }
     
     ft_args_type ft_args;
     ft_args.parseArgs(args_vec);
     
     if(ft_args.hasAutotune())
       {
+	LOG_S(INFO) << "start HPO autotuning ... ";
+	
 	ft_autotune_type autotune(model);
 	autotune.train(ft_args);
       }
@@ -452,14 +561,14 @@ namespace andromeda
 	 {
 	   if(sample.second.size()<64)
 	     {
-	       LOG_S(INFO) << "true: " << std::setw(24) << true_label << "; "
-			   << "pred: " << std::setw(24) << pred_label
+	       LOG_S(INFO) << "true: " << std::setw(16) << true_label << "; "
+			   << "pred: " << std::setw(16) << pred_label
 			   << " => text: " << sample.second;
 	     }
 	   else
 	     {
-	       LOG_S(INFO) << "true: " << std::setw(24) << true_label << "; "
-			   << "pred: " << std::setw(24) << pred_label
+	       LOG_S(INFO) << "true: " << std::setw(16) << true_label << "; "
+			   << "pred: " << std::setw(16) << pred_label
 			   << " => text: " << sample.second.substr(0,64);
 	     }
 	 }

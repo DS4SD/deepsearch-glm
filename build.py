@@ -70,5 +70,5 @@ if "__main__"==__name__:
 
     #load_pretrained_nlp_models(False)
 
-    #build()
-    build_all_python_versions()
+    build()
+    #build_all_python_versions()

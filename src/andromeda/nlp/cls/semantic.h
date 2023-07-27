@@ -34,8 +34,7 @@ namespace andromeda
     
     virtual bool apply(subject<PARAGRAPH>& subj);
     virtual bool apply(subject<TABLE>& subj);
-
-    //virtual bool apply(subject<DOCUMENT>& subj);
+    virtual bool apply(subject<DOCUMENT>& subj);
     
   private:
 
@@ -102,7 +101,7 @@ namespace andromeda
       pcre2_expr expr(this->get_key(), "__author_list__", authors_str);
       author_list.push_back(expr);
     }    
-    
+
     {
       pcre2_expr expr(this->get_key(), "__author__",
 		      R"((?P<author>([A-Z][a-z]+)\s\,(\s[A-Z\-]\s\.)+)\s(\,|and|\&))");
@@ -120,32 +119,28 @@ namespace andromeda
 		      R"((?P<author>((\s[A-Z\-]\s\.)+\s([A-Z][a-z]+)))\s(\,|and|\&)+)");
       authors.push_back(expr);
     }
-
+    
     {
       pcre2_expr expr(this->get_key(), "__table__",
 		      R"(^(?P<table>(Table|TABLE|Tab|TAB))(\s*\.)?(\s*)(?P<index>(__(i|f)val__|[A-Z]))?)");
-      //table_refs.push_back(expr);
       caption_refs.push_back(expr);
     }
 
     {
       pcre2_expr expr(this->get_key(), "__table__",
 		      R"(^(?P<table>(Table|TABLE|Tab|TAB)))");
-      //table_refs.push_back(expr);
       caption_refs.push_back(expr);
     }
 
     {
       pcre2_expr expr(this->get_key(), "__figure__",
 		      R"(^(?P<figure>(Figure|FIGURE|Fig|FIG))(\s*\.)?(\s*)(?P<index>(__(i|f)val__|[A-Z])))");
-      //figure_refs.push_back(expr);
       caption_refs.push_back(expr);
     }
 
     {
       pcre2_expr expr(this->get_key(), "__figure__",
 		      R"(^(?P<figure>(Figure|FIGURE|Fig|FIG))(\s*\.)?)");
-      //figure_refs.push_back(expr);
       caption_refs.push_back(expr);
     }    
   }
@@ -177,11 +172,9 @@ namespace andromeda
 
   bool nlp_model<CLS, SEMANTIC>::preprocess(const subject<PARAGRAPH>& subj, std::string& text)
   {
-    assert(authors.size()>0);
-    assert(author_list.size()>0);
-    //assert(table_refs.size()>0);
-    //assert(figure_refs.size()>0);
-    assert(caption_refs.size()>0);
+    //assert(authors.size()>0);
+    //assert(author_list.size()>0);
+    //assert(caption_refs.size()>0);
     
     auto& wtokens = subj.word_tokens;
     
@@ -200,8 +193,6 @@ namespace andromeda
 	else
 	  {
 	    std::string text = token.get_word();
-	    //
-	    
 	    ss << text;
 	  }
 	
@@ -218,15 +209,12 @@ namespace andromeda
 
 	for(auto& item:items)
 	  {
-	    //LOG_S(WARNING) << "\t" << item.text;
 	    text = utils::replace(text, item.text, "__author_list__");		    		    	    
 	  }
-	//LOG_S(INFO) << "text: " << text << "\n";
       }
 
     if(text.find("__author_list__")==std::string::npos)
       {
-	//bool found=false;
 	for(auto& expr:authors)
 	  {
 	    std::vector<pcre2_item> items;
@@ -238,7 +226,6 @@ namespace andromeda
 		  {
 		    if(grp.group_name=="author")
 		      {
-			//LOG_S(WARNING) << "\t" << grp.text;
 			text = utils::replace(text, grp.text, "__author__");		    		    
 		      }
 		  }
@@ -246,126 +233,17 @@ namespace andromeda
 	  }
       }
 
-    /*
-    if(subj.text.starts_with("Tab") or
-       subj.text.starts_with("Fig") or
-       subj.text.starts_with("TAB") or
-       subj.text.starts_with("FIG"))
-      {
-	if(text.size()<64)
-	  std::cout << text << "\n";
-	else
-	  std::cout << text.substr(0, 64) << "\n";
-      }
-    */
-
     for(auto& expr:caption_refs)
       {
 	std::vector<pcre2_item> items;
 	expr.find_all(text, items);
 
-	
 	for(auto& item:items)
 	  {
-	    //LOG_S(WARNING) << "\t" << item.text;
 	    text = utils::replace(text, item.text, "__caption_ref__");		    		    	    
 	  }
-
-	/*
-	if(items.size()>0)
-	  {
-	    text = "__caption_ref__";
-	  }
-	*/	
       }
 
-    /*
-    for(auto& expr:table_refs)
-      {
-	std::vector<pcre2_item> items;
-	expr.find_all(text, items);
-
-	if(items.size()>0)
-	  {
-	    text = "__table_ref__";
-	  }
-
-	//for(auto& item:items)
-	  {
-	    //LOG_S(WARNING) << "detected: " << item.text;
-	    //text = utils::replace(text, item.text, "__table_ref__");		    		    	     
-	    //text = "__table_ref__";
-	      
-
-	    for(auto& grp:item.groups)
-	      {
-		if(grp.group_name=="table")
-		  {	    
-		    text = utils::replace(text, grp.text, "__table__");		    		    	   
-		  }
-
-		if(grp.group_name=="index")
-		  {	    
-		    text = utils::replace(text, grp.text, "__table_index__");		    		    	   
-		  }		
-	      }
-	    LOG_S(INFO) << " -> text: " << text << "\n";
-
-	  }
-      }
-    */
-	    
-    /*
-    for(auto& expr:figure_refs)
-      {
-	std::vector<pcre2_item> items;
-	expr.find_all(text, items);
-
-	if(items.size()>0)
-	  {
-	    text = "__figure_ref__";
-	  }
-	
-	//for(auto& item:items)
-	  {
-	    //LOG_S(WARNING) << "detected: " << item.text;
-	    //text = utils::replace(text, item.text, "__figure_ref__");		    		    	     
-	    
-	      
-
-	    for(auto& grp:item.groups)
-	      {
-		if(grp.group_name=="figure")
-		  {	    
-		    text = utils::replace(text, grp.text, "__figure__");		    		    	   
-		  }
-
-		if(grp.group_name=="index")
-		  {	    
-		    text = utils::replace(text, grp.text, "__figure_index__");		    		    	   
-		  }		
-	      }	    
-	    LOG_S(INFO) << " -> text: " << text << "\n";
-
-	  }
-      }        
-    */
-    
-    //LOG_S(INFO) << __FUNCTION__ << " -> " << text;
-
-    /*
-    if(subj.text.starts_with("Tab") or
-       subj.text.starts_with("Fig") or
-       subj.text.starts_with("TAB") or
-       subj.text.starts_with("FIG"))
-      {
-	if(text.size()<64)
-	  std::cout << text << "\n";
-	else
-	  std::cout << text.substr(0, 64) << "\n";
-      }
-    */
-    
     text = utils::to_lower(text);
     
     return true;
@@ -388,55 +266,6 @@ namespace andromeda
     return true;
   }
 
-  /*
-  bool nlp_model<CLS, SEMANTIC>::classify(const std::string& orig, std::string& label, double& conf)
-  {
-    std::string text = preprocess(orig);
-    
-    if(text.starts_with("__table_ref__") or
-       text.starts_with("__figure_ref__") )
-      {
-	label = "caption";
-	conf = 1.0;
-
-	LOG_S(WARNING) << "hard update for caption ....";
-      }    
-
-
-    std::string text = orig;
-    
-    for(auto& expr:table_refs)
-      {
-	std::vector<pcre2_item> items;
-	expr.find_all(text, items);
-
-	if(items.size()>0)
-	  {
-	    label = "caption";
-	    conf = 1.0;
-
-	    return true;
-	  }
-      }
-    
-    for(auto& expr:figure_refs)
-      {
-	std::vector<pcre2_item> items;
-	expr.find_all(text, items);
-
-	if(items.size()>0)
-	  {
-	    label = "caption";
-	    conf = 1.0;
-
-	    return true;
-	  }
-      }
-    
-    return fasttext_supervised_model::classify(orig, label, conf);
-  }
-  */
-  
   bool nlp_model<CLS, SEMANTIC>::apply(subject<PARAGRAPH>& subj)
   {       
     return fasttext_supervised_model::classify(subj);
@@ -447,13 +276,81 @@ namespace andromeda
     return fasttext_supervised_model::classify(subj);
   }
 
-  /*
   bool nlp_model<CLS, SEMANTIC>::apply(subject<DOCUMENT>& subj)
   {
-    LOG_S(WARNING) << __FUNCTION__ << " on document";
-    return false;
+    LOG_S(WARNING) << __FILE__ << ":" << __LINE__ << "\t"
+		   << __FUNCTION__ << "semantic-model on entire document";
+
+    if(not satisfies_dependencies(subj))
+      {
+        return false;
+      }
+
+    uint64_t abs_ind=-1, intro_ind=-1, ref_ind=-1;
+    for(uint64_t ind=0; ind<subj.paragraphs.size(); ind++)
+      {
+	auto& para = subj.paragraphs.at(ind);
+
+	std::string otext = para->get_text();
+	std::string ltext = utils::to_lower(otext);
+
+	if(abs_ind==-1 and ltext.find("abstract")!=std::string::npos)
+	  {
+	    abs_ind = ind;
+	  }
+	
+	if(intro_ind==-1 and ltext.find("introduction")!=std::string::npos)
+	  {
+	    intro_ind = ind;
+	  }
+
+	if(ref_ind==-1 and ltext.find("reference")!=std::string::npos)
+	  {
+	    ref_ind = ind;
+	  }
+      }
+
+    LOG_S(INFO) << "abstract index: " << abs_ind;
+    LOG_S(INFO) << "introduction index: " << intro_ind;
+    LOG_S(INFO) << "references index: " << ref_ind;
+    
+    std::string text="", label="null";
+    double conf=0.0;
+
+    //for(auto& para:subj.paragraphs)
+    for(uint64_t ind=0; ind<subj.paragraphs.size(); ind++)
+      {
+        //this->apply(*paragraph_ptr);
+
+	auto& para = subj.paragraphs.at(ind);
+	
+	if(not preprocess(*para, text))
+	  {
+	    continue; // skip
+	  }
+	
+	if(not classify(text, label, conf))
+	  {
+	    continue; // skip
+	  }
+
+	if(ind<abs_ind and label=="reference")
+	  {
+	    label = "meta-data";
+	  }
+	else if(ind<ref_ind and label=="reference")
+	  {
+	    label = "text";
+	  }
+	
+	std::string key = get_key();	
+	    
+	para->properties.emplace_back(key, label, conf);
+	para->applied_models.insert(key);
+      }
+    
+    return update_applied_models(subj);
   }
-  */
   
 }
 
