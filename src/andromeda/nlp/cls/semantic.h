@@ -278,8 +278,8 @@ namespace andromeda
 
   bool nlp_model<CLS, SEMANTIC>::apply(subject<DOCUMENT>& subj)
   {
-    LOG_S(WARNING) << __FILE__ << ":" << __LINE__ << "\t"
-		   << __FUNCTION__ << "semantic-model on entire document";
+    //LOG_S(WARNING) << __FILE__ << ":" << __LINE__ << "\t"
+    //<< __FUNCTION__ << "semantic-model on entire document";
 
     if(not satisfies_dependencies(subj))
       {
@@ -310,9 +310,9 @@ namespace andromeda
 	  }
       }
 
-    LOG_S(INFO) << "abstract index: " << abs_ind;
-    LOG_S(INFO) << "introduction index: " << intro_ind;
-    LOG_S(INFO) << "references index: " << ref_ind;
+    //LOG_S(INFO) << "abstract index: " << abs_ind;
+    //LOG_S(INFO) << "introduction index: " << intro_ind;
+    //LOG_S(INFO) << "references index: " << ref_ind;
     
     std::string text="", label="null";
     double conf=0.0;
@@ -334,11 +334,11 @@ namespace andromeda
 	    continue; // skip
 	  }
 
-	if(ind<abs_ind and label=="reference")
+	if(abs_ind!=-1 and ind<abs_ind and label=="reference")
 	  {
 	    label = "meta-data";
 	  }
-	else if(ind<ref_ind and label=="reference")
+	else if(ref_ind!=-1 and ind<ref_ind and label=="reference")
 	  {
 	    label = "text";
 	  }
