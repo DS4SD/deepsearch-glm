@@ -104,11 +104,14 @@ if __name__ == '__main__':
 
     for json_file in json_files:
 
+        print(f"reading {json_file} ... ", end="")
         with open(json_file, "r") as fr:
             doc_i = json.load(fr)
-    
+
+        print(f"applying models ... ", end="")
         doc_j = model.apply_on_doc(doc_i)
 
+        """
         props = pd.DataFrame(doc_j["properties"]["data"],
                              columns=doc_j["properties"]["headers"])
         print("properties: \n\n", props)
@@ -117,13 +120,14 @@ if __name__ == '__main__':
                             columns=doc_j["instances"]["headers"])
         print("instances: \n\n", ints)
 
-        """
         ents = pd.DataFrame(doc_j["entities"]["data"], 
                             columns=doc_j["entities"]["headers"])
         print(ents)
         """
         
         nlp_file = json_file.replace(".json", ".nlp.json")
+        print(f"writing  models {nlp_file}")
+        
         with open(nlp_file, "w") as fw:
             fw.write(json.dumps(doc_j, indent=2))
 

@@ -33,7 +33,7 @@ namespace andromeda
     auto itr=paragraphs.begin();
     while(itr!=paragraphs.end())
       {
-        std::string type = (*itr)->provs.at(0)->type;
+        std::string type = (*itr)->provs.at(0)->get_type();
 
         if(itr->use_count()>1)
           {
@@ -43,8 +43,8 @@ namespace andromeda
           {
             if(type=="caption")
               {
-                (*itr)->provs.at(0)->type = "paragraph";
-                (*itr)->provs.at(0)->name = "paragraph";
+                (*itr)->provs.at(0)->set_type("paragraph");
+                (*itr)->provs.at(0)->set_name("paragraph");
 
                 itr++;
               }
@@ -87,8 +87,8 @@ namespace andromeda
 	    auto& curr_text = curr->text;
 	    auto& next_text = next->text;
 	    
-	    if(curr_prov->type!="paragraph" or
-	       next_prov->type!="paragraph" or
+	    if(curr_prov->get_type()!="paragraph" or
+	       next_prov->get_type()!="paragraph" or
 	       curr_text.size()==0 or
 	       next_text.size()==0)
 	      {
@@ -98,8 +98,8 @@ namespace andromeda
 	    char lc = curr_text.back();
 	    char fc = next_text.front();
 	    
-	    bool jump_col = (curr_prov->page==next_prov->page and curr_prov->is_strictly_left_of(*next_prov));
-	    bool jump_page = (curr_prov->page)+1==next_prov->page;
+	    bool jump_col = (curr_prov->get_page()==next_prov->get_page() and curr_prov->is_strictly_left_of(*next_prov));
+	    bool jump_page = (curr_prov->get_page())+1==next_prov->get_page();
 	
 	    if((lc=='-' and 'a'<=fc and fc<='z') and
 	       (jump_col or jump_page))

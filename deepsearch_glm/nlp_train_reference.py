@@ -21,13 +21,14 @@ import matplotlib.pyplot as plt
 import textColor as tc
 
 #import deepsearch as ds
-
-from utils.ds_utils import convert_pdffiles
-from nlp_utils import create_nlp_dir
+#from tabulate import tabulate
 
 import andromeda_nlp
 
-from tabulate import tabulate
+from deepsearch_glm.utils.ds_utils import convert_pdffiles
+from deepsearch_glm.nlp_utils import create_nlp_dir
+
+
 
 def parse_arguments():
 
@@ -90,77 +91,6 @@ examples of execution:
     
     return args.mode, pdf_files, json_files, args.output_dir
 
-"""
-def convert(sdirectory, username, password):
-
-    pdfs_files=glob.glob(os.path.join(sdirectory, "*.pdf"))
-    json_files=glob.glob(os.path.join(sdirectory, "*.json"))
-
-    new_pdfs=[]
-    
-    found_new_pdfs=False
-    for pdf_file in pdfs_files:
-
-        json_file = pdf_file.replace(".pdf", ".json")
-        if json_file not in json_files:
-            new_pdfs.append(pdf_file)
-            found_new_pdfs = True
-
-    print("found new pdf's: ", found_new_pdfs)
-            
-    if not found_new_pdfs:
-        return found_new_pdfs
-    
-    config_ = {
-        "host": deepsearch_host,
-        "auth": {
-            "username": username,
-            "api_key": password,
-        },
-        "verify_ssl": True
-    }
-
-    config_file = "ds_config.json"
-    with open(config_file, "w") as fw:
-        fw.write(json.dumps(config_))
-    
-    config = ds.DeepSearchConfig.parse_file(config_file)
-    
-    client = ds.CpsApiClient(config)
-    api = ds.CpsApi(client)
-
-    documents = ds.convert_documents(api=api, proj_key=deepsearch_proj,
-                                     source_path=sdirectory, progress_bar=True)           
-    documents.download_all(result_dir=sdirectory)
-
-    info = documents.generate_report(result_dir=sdirectory)
-    return found_new_pdfs
-
-def process_zip_files(sdir):
-
-    jsonfiles = sorted(glob.glob(os.path.join(sdir, "*.json")))
-    for i,jsonfile in enumerate(jsonfiles):
-        subprocess.call(["rm", jsonfile])
-
-    cellsfiles = sorted(glob.glob(os.path.join(sdir, "*.cells")))
-    for i,cellsfile in enumerate(cellsfiles):
-        subprocess.call(["rm", cellsfile])            
-    
-    zipfiles = sorted(glob.glob(os.path.join(sdir, "*.zip")))
-    print("#-zips: ", len(zipfiles))
-
-    for zipfile in zipfiles:
-        subprocess.call(["unzip", zipfile, "-d", sdir])    
-
-    for i,zipfile in enumerate(zipfiles):
-        print(i, "\t removing ", zipfile)
-        subprocess.call(["rm", zipfile])        
-
-    cellsfiles = sorted(glob.glob(os.path.join(sdir, "*.cells")))
-    for i,cellsfile in enumerate(cellsfiles):
-        subprocess.call(["rm", cellsfile])            
-"""
-        
 def shorten_text(text):
     
     ntext = text.replace("\n", "")
@@ -636,13 +566,6 @@ def train_fst(train_file, model_file, metrics_file):
             
 if __name__ == '__main__':
 
-    """
-    mode, sdir, tdir, username, password = parse_arguments()
-
-
-
-    """
-
     mode, pdf_files, json_files, tdir = parse_arguments()
     
     if len(pdf_files)>0:
@@ -660,14 +583,6 @@ if __name__ == '__main__':
     crf_model_file = os.path.join(tdir, "crf_reference")
     fst_model_file = os.path.join(tdir, "fst_sematic")
 
-    """
-    if mode=="convert" or mode=="all":
-        found_new_pdfs = convert(sdir, username, password)    
-
-        if found_new_pdfs:
-            process_zip_files(sdir)
-    """
-    
     if mode=="extract" or mode=="all":
         extract_references(json_files, sfile, rfile)
 

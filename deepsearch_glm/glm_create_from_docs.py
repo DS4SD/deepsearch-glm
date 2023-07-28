@@ -11,9 +11,8 @@ import datetime
 
 from tabulate import tabulate
 
-from glm_utils import create_glm_dir, create_glm_from_docs
+from deepsearch_glm.glm_utils import create_glm_dir, create_glm_from_docs
 
-#import andromeda_nlp
 import andromeda_glm
 
 def parse_arguments():

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 import os
 
@@ -10,7 +11,7 @@ import datetime
 
 from tabulate import tabulate
 
-from utils.ds_utils import get_scratch_dir
+from deepsearch_glm.utils.ds_utils import get_scratch_dir
 
 #import andromeda_nlp
 import andromeda_glm

@@ -360,8 +360,17 @@ namespace andromeda
           }
 	else
 	  {
-	    LOG_S(ERROR) << "index " << index << " out of bounds for group-name " << name
+	    LOG_S(WARNING) << "index " << index << " out of bounds for group-name " << name << " "
 			 << "for " << type << " (" << subtype << ")";
+
+	    LOG_S(INFO) << "found groups are: ";
+	    for(auto& group:item.groups)
+	      {
+		LOG_S(INFO) << " -> group-index: " << group.group_index << "; "
+			    << "group-name: " << group.group_name << "; "
+			    << "[i,j]: " << group.rng.at(0) << ", " << group.rng.at(1) << "; "
+			    << "text: " << group.text;
+	      }
 	  }
       }
 

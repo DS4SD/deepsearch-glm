@@ -80,7 +80,7 @@ namespace andromeda
     for(ind_type i=0; i<provs.size(); i++)
       {
         auto prov_i = provs.at(i);
-        ind_type page = prov_i->page;
+        ind_type page = prov_i->get_page();
 
         page_nums.insert(page);
       }
@@ -106,31 +106,31 @@ namespace andromeda
     for(ind_type i=0; i<provs.size(); i++)
       {
         auto prov_i = provs.at(i);
-        ind_type page_num = prov_i->page;
+        ind_type page_num = prov_i->get_page();
 
         page_inds.at(page_num).insert(i);
 
         prov_to_index[provs.at(i)] = i;
 
-        if(provs.at(i)->type=="table")
+        if(provs.at(i)->get_type()=="table")
           {
             obj_inds.at(page_num).insert(i);
             table_inds.at(page_num).insert(i);
           }
-        else if(provs.at(i)->type=="figure")
+        else if(provs.at(i)->get_type()=="figure")
           {
             obj_inds.at(page_num).insert(i);
             figure_inds.at(page_num).insert(i);
           }
-        else if(provs.at(i)->type=="paragraph")
+        else if(provs.at(i)->get_type()=="paragraph")
           {
             text_inds.at(page_num).insert(i);
           }
-        else if(provs.at(i)->type=="caption")
+        else if(provs.at(i)->get_type()=="caption")
           {
             capt_inds.at(page_num).insert(i);
           }
-        else if(provs.at(i)->type=="footnote")
+        else if(provs.at(i)->get_type()=="footnote")
           {
             note_inds.at(page_num).insert(i);
           }
@@ -188,7 +188,7 @@ namespace andromeda
         auto& prov = paragraph->provs.at(0);
 
         ind_type prov_ind = prov_to_index.at(prov);
-        ind_type page_num = prov->page;
+        ind_type page_num = prov->get_page();
 
         std::string text = paragraph->text;
 
@@ -302,13 +302,13 @@ namespace andromeda
       {
         auto& prov_i = provs.at(itr->first);
 
-	if(prov_i->type=="table" and prov_to_table.count(prov_i)==0)
+	if(prov_i->get_type()=="table" and prov_to_table.count(prov_i)==0)
 	  {
 	    LOG_S(WARNING) << "no table associated with prov: "
 			   << prov_i->to_json().dump();
 	    continue;
 	  }
-	else if(prov_i->type=="figure" and prov_to_figure.count(prov_i)==0)
+	else if(prov_i->get_type()=="figure" and prov_to_figure.count(prov_i)==0)
 	  {
 	    LOG_S(WARNING) << "no figure associated with prov: "
 			   << prov_i->to_json().dump();
@@ -317,7 +317,7 @@ namespace andromeda
 	else
 	  {}
 	
-        if(prov_i->type=="table")
+        if(prov_i->get_type()=="table")
           {
             //auto& table = doc.tables.at(prov_i->dref.second);
 	    auto& table = prov_to_table.at(prov_i);
@@ -340,7 +340,7 @@ namespace andromeda
                 table->captions.push_back(caption);
               }
           }
-        else if(prov_i->type=="figure")
+        else if(prov_i->get_type()=="figure")
           {
             //auto& figure = doc.figures.at(prov_i->dref.second);
 	    auto& figure = prov_to_figure.at(prov_i);

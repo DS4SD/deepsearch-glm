@@ -5,6 +5,7 @@ import os
 import json
 import glob
 
+import datetime
 import argparse
 
 import pandas as pd
@@ -25,6 +26,8 @@ examples of execution:
     poetry run python ./deepsearch_glm/ds_query.py --index esg-reports --query "\\\"net zero\\\""
     poetry run python ./deepsearch_glm/ds_query.py --index patent-uspto --query "\\\"global warming potential\\\" AND \\\"etching\\\""
     poetry run python ./deepsearch_glm/ds_query.py --index arxiv --query "\\\"quantum computing\\\""
+
+
 """,
         formatter_class=argparse.RawTextHelpFormatter)
 
@@ -38,7 +41,7 @@ examples of execution:
 
     parser.add_argument('--output-dir', required=False,
                         type=bool, default=create_docs_dir(),
-                        help="output root directory for GLM")        
+                        help="output directory for documents")        
 
     args = parser.parse_args()
 

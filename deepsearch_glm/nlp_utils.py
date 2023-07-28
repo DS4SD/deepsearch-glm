@@ -6,49 +6,23 @@ import glob
 
 import argparse
 import textwrap
+
 import datetime
 import subprocess
 
-#from tabulate import tabulate
+import textColor as tc
+import pandas as pd
 
-from utils.ds_utils import get_scratch_dir
+from tabulate import tabulate
+
+from deepsearch_glm.utils.ds_utils import get_scratch_dir
 
 import andromeda_nlp
 
-def load_models():
+def create_nlp_dir(tdir=None):
 
-    if "DEEPSEARCH_GLM_RESOURCES_DIR" in os.environ:
-        RESOURCES_DIR = os.getenv("DEEPSEARCH_GLM_RESOURCES_DIR")
-    else:
-        # FIXME: not sure about this ...
-        ROOT_DIR=os.path.abspath("./")
-        RESOURCES_DIR=os.path.join(ROOT_DIR, "resources")
-    
-    with open(f"{RESOURCES_DIR}/models.json") as fr:
-        models = json.load(fr)
-        
-    COS_URL = models["object-store"]
-
-    cmds=[]
-    for name,files in models["trained-models"].items():
-        source = os.path.join(COS_URL, files[0])
-        target = os.path.join(RESOURCES_DIR, files[1])
-        
-        cmds.append(["curl", source, "-o", target, "-s"])
-        #print(" ".join(cmds[-1]))
-        
-    for cmd in cmds:
-        if not os.path.exists(cmd[3]):
-            print(f"downloading {os.path.basename(cmd[3])} ... ", end="")
-            message = subprocess.run(cmd, cwd=ROOT_DIR)    
-            print("done!")
-        else:
-            print(f" -> already downloaded {os.path.basename(cmd[3])}")
-    
-
-def create_nlp_dir():
-
-    tdir = get_scratch_dir()
+    if tdir==None:
+        tdir = get_scratch_dir()
 
     now = datetime.datetime.now()
     nlpdir = now.strftime("NLP-model-%Y-%m-%d_%H-%M-%S")
@@ -69,9 +43,56 @@ def init_nlp_model(model_names:str="language;term"):
 
     nlp_model = andromeda_nlp.nlp_model()
 
+    configs = nlp_model.get_apply_configs()
+    #print(json.dumps(configs, indent=2))
+    
     config = nlp_model.get_apply_configs()[0]
     config["models"] = model_names
 
     nlp_model.initialise(config)
     
     return nlp_model
+
+def print_key_on_shell(key, items):
+
+    df = pd.DataFrame(items["data"],
+                      columns=items["headers"])
+    
+    if key in ["instances", "entities"]:
+
+        wrapper = textwrap.TextWrapper(width=70)
+        
+        df = df[["type", "subtype", "subj_path", "char_i", "char_j", "original"]]
+
+        table=[]
+        for i,row in df.iterrows():
+            _=[]
+            for __ in row:
+                if isinstance(__,str): 
+                    _.append("\n".join(wrapper.wrap(__)))
+                else:
+                    _.append(__)
+
+            table.append(_)
+
+        headers = ["type", "subtype", "subj_path", "char_i", "char_j", "original"]
+        print(tc.yellow(f"{key}: \n\n"), tabulate(table, headers=headers), "\n")
+                         
+    else:
+        df = pd.DataFrame(items["data"],
+                          columns=items["headers"])
+        
+        print(tc.yellow(f"{key}: \n\n"), df.to_string(), "\n")
+
+def print_on_shell(text, result):
+
+    wrapper = textwrap.TextWrapper(width=70)    
+    print(tc.yellow(f"\ntext: \n\n"), "\n".join(wrapper.wrap(text)), "\n")
+    
+    for _ in ["properties", "word-tokens", "instances",
+              "entities", "relations"]:
+        if _ in result and len(result[_]["data"])>0:
+            print_key_on_shell(_, result[_])
+        else:
+            print(tc.yellow(f"{_}:"), " null\n\n")
+    

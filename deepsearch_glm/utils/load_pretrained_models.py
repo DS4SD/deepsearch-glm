@@ -24,7 +24,7 @@ def load_pretrained_nlp_models(force:bool=False):
         source = os.path.join(COS_PATH, files[0])
         target = os.path.join(RESOURCES_DIR, files[1])
 
-        cmd = ["curl", source, "-o", target]#, "-s"]
+        cmd = ["curl", source, "-o", target, "-s"]
         #print(" ".join(cmd))        
         cmds.append(cmd)
         

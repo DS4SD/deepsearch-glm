@@ -12,10 +12,10 @@ namespace andromeda
 
     const static inline val_type eps = 1.0;
     
-    const static inline int x0 = 0;
-    const static inline int y0 = 1;
-    const static inline int x1 = 2;
-    const static inline int y1 = 3;
+    const static inline int x0_ind = 0;
+    const static inline int y0_ind = 1;
+    const static inline int x1_ind = 2;
+    const static inline int y1_ind = 3;
 
   public:
     
@@ -27,14 +27,49 @@ namespace andromeda
 
     static std::vector<std::string> get_headers();
 
+    val_type x0() const;// { return bbox.at(x0_ind); }
+    val_type x1() const;// { return bbox.at(x1_ind); }
+
+    val_type y0() const;// { return bbox.at(y0_ind); }
+    val_type y1() const;// { return bbox.at(y1_ind); }
+
+    /* get/set methods */
+
+    ind_type get_page() { return page; }
+
+    ind_type get_maintext_ind() { return maintext_ind; }
+    ind_type get_pdforder_ind() { return pdforder_ind; }
+    
+    std::string get_path() { return path; }
+    void set_path(std::string val) { path = val; }
+    
+    std::string get_name() { return name; }
+    void set_name(std::string val) { name = val; }
+    
+    std::string get_type() { return type; }
+    void set_type(std::string val) { type = val; }
+        
+    std::array<ind_type, 2> get_char_range() { return char_range; }
+    void set_char_range(std::array<ind_type, 2> cr) { char_range = cr;}
+    
+    bool is_ignored() { return ignore; }
+    void set_ignored(bool val) { ignore = val; }
+    
+    std::array<val_type, 4> get_bbox();
+    void set_bbox(std::array<val_type, 4> val) { bbox = val; }
+
+    /* to/from json */    
+    
     std::vector<std::string> to_row();
 
     nlohmann::json to_json();
     nlohmann::json to_json_row();
-
+    
     bool from_json(const nlohmann::json& item);
     
     bool follows_maintext_order(const prov_element& rhs) const;
+
+    bool overlaps(const prov_element& rhs) const;
     
     bool overlaps_x(const prov_element& rhs) const;
     bool overlaps_y(const prov_element& rhs) const;
@@ -53,7 +88,7 @@ namespace andromeda
     
     void set(const nlohmann::json& data);
 
-  public:
+  private:
     
     ind_type pdforder_ind, maintext_ind;
     std::string name, type;
@@ -64,8 +99,8 @@ namespace andromeda
     bool ignore;
     ind_type page;
     
-    std::array<float, 2> dims; // (width, height) of page
-    std::array<float, 4> bbox; // (x0, y0, x1, y1) with x0<x1 and y0<y1
+    std::array<val_type, 2> dims; // (width, height) of page
+    std::array<val_type, 4> bbox; // (x0, y0, x1, y1) with x0<x1 and y0<y1
     
     range_type char_range;
     range_type coor_range;    
@@ -79,7 +114,6 @@ namespace andromeda
     type("undef"),
     
     path("#"),
-    //dref(UNDEF, -1),
     
     ignore(false),
     
@@ -101,7 +135,6 @@ namespace andromeda
     type(type),
     
     path("#/main-text/"+std::to_string(maintext_ind)),
-    //dref(UNDEF, -1),
     
     ignore(false),
     
@@ -126,7 +159,6 @@ namespace andromeda
     type(type),
     
     path(path),
-    //dref(UNDEF, -1),
 
     ignore(false),
     
@@ -139,34 +171,53 @@ namespace andromeda
     coor_range({0,0})
   {}
 
-  //std::string prov_element::to_path() const
-  //{
-  //return path;
-  //}
-
   /*
-  std::pair<std::string, typename prov_element::ind_type> prov_element::from_path(std::string doc_path)
+  std::string prov_element::get_path()
   {
-    std::vector<std::string> parts = utils::split(doc_path, "/");
-    //assert(parts.size()==3 and parts.at(0)=="#");
-    
-    //return std::pair<std::string, ind_type>{parts.at(1), std::stoi(parts.at(2))};
+    return path;
   }
   */
   
-  /*
-  std::string prov_element::to_dref() const
-  {
-    std::stringstream ss;
-    ss << "#" << "/" << to_string(dref.first) << "/" << path.second;
-    
-    return ss.str();
-  }
-  */
   
   bool prov_element::follows_maintext_order(const prov_element& rhs) const
   {
     return (maintext_ind+1==rhs.maintext_ind);
+  }
+
+  typename prov_element::val_type prov_element::x0() const
+  {
+    return bbox.at(x0_ind);
+  }
+  
+  typename prov_element::val_type prov_element::x1() const
+  {
+    return bbox.at(x1_ind);
+  }
+  
+  typename prov_element::val_type prov_element::y0() const
+  {
+    return bbox.at(y0_ind);
+  }
+  
+  typename prov_element::val_type prov_element::y1() const
+  {
+    return bbox.at(y1_ind);
+  }
+
+  /*
+  void prov_element::set_bbox(val_type x0_val, val_type y0_val,
+			      val_type x1_val, val_type y1_val)
+  {
+    bbox.at(x0_ind) = x0_val;
+    bbox.at(y0_ind) = y0_val;
+    bbox.at(x1_ind) = x1_val;
+    bbox.at(y1_ind) = y1_val;
+  }
+  */
+  
+  bool prov_element::overlaps(const prov_element& rhs) const
+  {
+    return (overlaps_x(rhs) and overlaps_y(rhs));
   }
   
   bool prov_element::overlaps_x(const prov_element& rhs) const 
@@ -202,11 +253,11 @@ namespace andromeda
 
     if(this->overlaps_y(rhs))
       {
-	auto u0 = std::min(bbox[y0], rhs.bbox[y0]);
-	auto u1 = std::max(bbox[y1], rhs.bbox[y1]);
+	auto u0 = std::min(bbox[y0_ind], rhs.bbox[y0_ind]);
+	auto u1 = std::max(bbox[y1_ind], rhs.bbox[y1_ind]);
 
-	auto i0 = std::max(bbox[y0], rhs.bbox[y0]);
-	auto i1 = std::min(bbox[y1], rhs.bbox[y1]);
+	auto i0 = std::max(bbox[y0_ind], rhs.bbox[y0_ind]);
+	auto i1 = std::min(bbox[y1_ind], rhs.bbox[y1_ind]);
 
 	auto iou_ = (i1-i0)/(u1-u0);
 	assert(0.0<=iou_ and iou_<=1.0);
@@ -221,28 +272,28 @@ namespace andromeda
   {
     assert(page==rhs.page);
 
-    return (bbox.at(y0)>rhs.bbox.at(y0));
+    return (bbox.at(y0_ind)>rhs.bbox.at(y0_ind));
   }
 
   bool prov_element::is_strictly_above(const prov_element& rhs) const
   {
     assert(page==rhs.page);
 
-    return (bbox.at(y0)+eps>rhs.bbox.at(y1));
+    return (bbox.at(y0_ind)+eps>rhs.bbox.at(y1_ind));
   }
   
   bool prov_element::is_left_of(const prov_element& rhs) const
   {
     assert(page==rhs.page);
     
-    return (bbox.at(x0)<rhs.bbox.at(x0));
+    return (bbox.at(x0_ind)<rhs.bbox.at(x0_ind));
   }
 
   bool prov_element::is_strictly_left_of(const prov_element& rhs) const
   {
     assert(page==rhs.page);
 
-    return (bbox.at(x1)<rhs.bbox.at(x0)+eps);
+    return (bbox.at(x1_ind)<rhs.bbox.at(x0_ind)+eps);
   }
   
   bool prov_element::is_horizontally_connected(const prov_element& elem_i,
@@ -251,10 +302,10 @@ namespace andromeda
     assert(page==elem_i.page);
     assert(page==elem_j.page);
 
-    auto min_ij = std::min(elem_i.bbox[y0], elem_j.bbox[y0]);
-    auto max_ij = std::max(elem_i.bbox[y1], elem_j.bbox[y1]);
+    auto min_ij = std::min(elem_i.bbox[y0_ind], elem_j.bbox[y0_ind]);
+    auto max_ij = std::max(elem_i.bbox[y1_ind], elem_j.bbox[y1_ind]);
 
-    if(bbox.at(y0)<max_ij and bbox.at(y1)>min_ij) // overlap_y
+    if(bbox.at(y0_ind)<max_ij and bbox.at(y1_ind)>min_ij) // overlap_y
       {
 	return false;
       }
@@ -271,7 +322,7 @@ namespace andromeda
       }
     */
     
-    if(bbox[x0] < elem_i.bbox[x1] and bbox[x1] > elem_j.bbox[x0])
+    if(bbox[x0_ind] < elem_i.bbox[x1_ind] and bbox[x1_ind] > elem_j.bbox[x0_ind])
       {	
 	return true;
       }
@@ -290,11 +341,11 @@ namespace andromeda
 	    //auto rhs_ycm = (rhs.bbox.at(prov_element::y0)+rhs.bbox.at(prov_element::y1))/2.0;
 	    
 	    //return (lhs_ycm>rhs_ycm);
-	    return (lhs.bbox.at(prov_element::y0)>rhs.bbox.at(prov_element::y0));
+	    return (lhs.bbox.at(prov_element::y0_ind)>rhs.bbox.at(prov_element::y0_ind));
 	  }
 	else
 	  {
-	    return (lhs.bbox.at(prov_element::x0)<rhs.bbox.at(prov_element::x0));
+	    return (lhs.bbox.at(prov_element::x0_ind)<rhs.bbox.at(prov_element::x0_ind));
 	  }
       }
     else
@@ -340,10 +391,20 @@ namespace andromeda
       }
     
     page = item.at("page").get<ind_type>();
-    bbox = item.at("bbox").get<std::array<float, 4> >();
+    bbox = item.at("bbox").get<std::array<val_type, 4> >();
     
     char_range = item.at("span").get<range_type>();
 
+    if(item.count("text-order")==1)
+      {
+	maintext_ind = item.at("text-order");
+      }
+    
+    if(item.count("orig-order")==1)
+      {
+	pdforder_ind = item.at("orig-order");
+      }
+    
     return true;
   }
   
@@ -362,6 +423,9 @@ namespace andromeda
     result["page"] = page;
     result["bbox"] = bbox;
     result["span"] = char_range;
+
+    result["text-order"] = maintext_ind;
+    result["orig-order"] = pdforder_ind;
     
     return result;
   }
@@ -372,10 +436,14 @@ namespace andromeda
       = { std::to_string(maintext_ind),
 	  std::to_string(pdforder_ind),
 	  path,
-	  name, type,	  
+	  name,
+	  type,	  
 	  std::to_string(page),
-	  std::to_string(bbox[0]), std::to_string(bbox[1]),
-	  std::to_string(bbox[2]), std::to_string(bbox[3]) };
+
+	  std::to_string(x0()),
+	  std::to_string(y0()),
+	  std::to_string(x1()),
+	  std::to_string(y1()) };
     
     return row;
   }
@@ -388,52 +456,20 @@ namespace andromeda
       row.push_back(maintext_ind);
       row.push_back(pdforder_ind);
       row.push_back(path);
+
       row.push_back(name);
       row.push_back(type);
-      row.push_back(x0);
-      row.push_back(y0);
-      row.push_back(x1);
-      row.push_back(y1);
+      row.push_back(page);
+
+      row.push_back(int(x0()));
+      row.push_back(int(y0()));
+      row.push_back(int(x1()));
+      row.push_back(int(y1()));
     }
     assert(row.size()==prov_element::get_headers().size());
     
     return row;
   }
-  
-
-  
-  /*
-  class provenance
-  {
-  public:
-    
-    provenance();
-
-    void set(const nlohmann::json& data);
-    
-  public:
-
-    uint64_t dhash;
-    std::vector<prov_element> elements;
-  };
-
-  provenance::provenance():
-    elements({})
-  {}
-
-  void provenance::set(const nlohmann::json& provs)
-  {
-    elements={};
-
-    for(std::size_t l=0; l<provs.size(); l++)
-      {
-	prov_element elem;
-	elem.set(provs.at(l));
-
-	elements.push_back(elem);
-      }
-  }
-  */
   
 }
 

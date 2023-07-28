@@ -19,7 +19,7 @@ namespace andromeda
 
     void finalise();
     
-    std::string get_path() const { return (provs.size()>0? (provs.at(0)->path):"#"); }
+    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
     
     void clear();
 
@@ -47,9 +47,9 @@ namespace andromeda
     
     bool get_property_label(const std::string name, std::string& label);
 
-    std::string get_text() const;
-
     std::string get_text(range_type rng);
+    
+    std::string get_text() const { return this->text; }
 
     void apply_wtoken_contractions(std::vector<candidate_type>& candidates);
 
@@ -123,8 +123,14 @@ namespace andromeda
 
 	for(auto& prov:other->provs)
 	  {
-	    prov->char_range.at(0) += offset;
-	    prov->char_range.at(1) += offset;
+	    //prov->char_range.at(0) += offset;
+	    //prov->char_range.at(1) += offset;
+	    
+	    auto char_range = prov->get_char_range();
+	    char_range.at(0) += offset;
+	    char_range.at(1) += offset;
+
+	    prov->set_char_range(char_range);
 	    
 	    this->provs.push_back(prov);	
 	  }
@@ -161,8 +167,8 @@ namespace andromeda
 
     for(auto& prov:provs)
       {
-	labels.insert(prov->name);
-	labels.insert(prov->type);
+	labels.insert(prov->get_name());
+	labels.insert(prov->get_type());
       }
     
     return valid;
@@ -368,12 +374,12 @@ namespace andromeda
     if(provs.size()>0)
       {
 	ss << "prov: "
-	   << provs.at(0)->page << ", "
+	   << provs.at(0)->get_page() << ", "
 	   << " ["
-	   << provs.at(0)->bbox[0] << ", "
-	   << provs.at(0)->bbox[1] << ", "
-	   << provs.at(0)->bbox[2] << ", "
-	   << provs.at(0)->bbox[3]
+	   << provs.at(0)->x0() << ", "
+	   << provs.at(0)->y0() << ", "
+	   << provs.at(0)->x1() << ", "
+	   << provs.at(0)->y1()
 	   << "]\n";
       }
     else
