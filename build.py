@@ -13,6 +13,9 @@ from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_mode
 ROOT_DIR=os.path.abspath("./")
 BUILD_DIR=os.path.join(ROOT_DIR, "build")
 
+def download_nlp_models():
+    load_pretrained_nlp_models(False)
+
 def run(cmd, cwd="./"):
 
     print(f"\nlaunch: {cmd}")
@@ -27,11 +30,13 @@ def run(cmd, cwd="./"):
     print(f" -> ERROR with message: '{message}'\n")        
     return False
     
-def build(setup_kwargs=None):
+def build_local(setup_kwargs=None):
 
     if not os.path.exists(BUILD_DIR):
         cmd = f"cmake -B {BUILD_DIR}"
         run(cmd, cwd=ROOT_DIR)
+    else:
+        print(f"build directory detected: {BUILD_DIR}")
         
     cmd = f"cmake --build {BUILD_DIR} --target install -j"
     run(cmd, cwd=ROOT_DIR)    
@@ -70,5 +75,5 @@ if "__main__"==__name__:
 
     #load_pretrained_nlp_models(False)
 
-    build()
-    #build_all_python_versions()
+    #build_local()
+    build_all_python_versions()
