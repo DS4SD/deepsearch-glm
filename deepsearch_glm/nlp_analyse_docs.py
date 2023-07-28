@@ -96,6 +96,9 @@ def show_page(doc, page_num=1, show_orig=True):
 
     draw.line(points, fill="blue", width=2)
 
+    for i,point in enumerate(points):
+        draw.text(point, str(i), fill="black")
+    
     if show_orig:
         for i,row in df_page.iterrows():
             bbox = row["bbox"]
@@ -110,6 +113,9 @@ def show_page(doc, page_num=1, show_orig=True):
         
         draw.line(opoints, fill="orange", width=2)    
 
+        for i,point in enumerate(opoints):
+            draw.text(point, str(i), fill="black")
+        
     image.show()        
     
 def extract_text(doc):

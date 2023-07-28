@@ -180,7 +180,7 @@ namespace andromeda
 
       for(auto& prov:provs)
         {
-          std::string path = prov->path;
+          std::string path = prov->get_path();
 
           if(paths.count(path)==1) // skip items that have already been included
             {
@@ -195,7 +195,7 @@ namespace andromeda
             item.erase("span");
           }
 
-          if(maintext_types.count(prov->type))
+          if(maintext_types.count(prov->get_type()))
             {
               main_text.push_back(item);
             }
@@ -247,7 +247,7 @@ namespace andromeda
         {
           auto& prov = tables.at(l)->provs.at(0);
 
-          std::vector<std::string> parts = utils::split(prov->path, "/");
+          std::vector<std::string> parts = utils::split(prov->get_path(), "/");
 
           std::string base = parts.at(1);
           std::size_t index = std::stoi(parts.at(2));
@@ -274,7 +274,7 @@ namespace andromeda
         {
           auto& prov = figures.at(l)->provs.at(0);
 
-          std::vector<std::string> parts = utils::split(prov->path, "/");
+          std::vector<std::string> parts = utils::split(prov->get_path(), "/");
 
           std::string base = parts.at(1);
           std::size_t index = std::stoi(parts.at(2));

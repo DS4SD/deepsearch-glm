@@ -22,7 +22,7 @@ namespace andromeda
 	        
     ~subject();
 
-    std::string get_path() const { return (provs.size()>0? (provs.at(0)->path):"#"); }
+    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
     
     void clear();
 
@@ -349,12 +349,12 @@ namespace andromeda
     if(provs.size()>0)
       {
 	ss << "prov: "
-	   << provs.at(0)->page << ", "
+	   << provs.at(0)->get_page() << ", "
 	   << " ["
-	   << provs.at(0)->bbox[0] << ", "
-	   << provs.at(0)->bbox[1] << ", "
-	   << provs.at(0)->bbox[2] << ", "
-	   << provs.at(0)->bbox[3]
+	   << provs.at(0)->x0() << ", "
+	   << provs.at(0)->y0() << ", "
+	   << provs.at(0)->x1() << ", "
+	   << provs.at(0)->y1()
 	   << "]";
       }
     

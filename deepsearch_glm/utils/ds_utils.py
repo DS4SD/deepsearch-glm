@@ -18,8 +18,6 @@ from deepsearch.cps.client.components.elastic import ElasticDataCollectionSource
 from deepsearch.cps.queries import DataQuery
 from deepsearch.cps.client.components.queries import RunQueryError
 
-#from deepsearch.artifacts.artifact_manager import ArtifactManager
-
 def get_scratch_dir():
     
     load_dotenv()

@@ -245,7 +245,7 @@ namespace andromeda
             auto prov = std::make_shared<prov_element>(pdforder, maintext,
                                                        ref, name, type);
 
-            std::vector<std::string> parts = utils::split(prov->path, "/");
+            std::vector<std::string> parts = utils::split(prov->get_path(), "/");
             assert(parts.size()>=3);
 
             std::string base = parts.at(1);
@@ -261,7 +261,7 @@ namespace andromeda
             else
               {
                 LOG_S(WARNING) << "undefined reference path in document: "
-                               << prov->path;
+                               << prov->get_path();
               }
           }
         else if(item.count(doc_type::prov_lbl) and
@@ -323,14 +323,14 @@ namespace andromeda
     
     for(auto& prov:provs)
       {
-        std::vector<std::string> parts = utils::split(prov->path, "/");
+        std::vector<std::string> parts = utils::split(prov->get_path(), "/");
 
         std::string base = parts.at(1);
         std::size_t index = std::stoi(parts.at(2));
 
         auto& item = orig.at(base).at(index);
 
-        if(is_text.count(prov->type))
+        if(is_text.count(prov->get_type()))
           {
             auto subj = std::make_shared<subject<PARAGRAPH> >(doc.doc_hash, prov);
             bool valid = subj->set_data(item);
@@ -344,7 +344,7 @@ namespace andromeda
                 LOG_S(WARNING) << "found invalid paragraph: " << item.dump();
               }
           }
-        else if(is_table.count(prov->type))
+        else if(is_table.count(prov->get_type()))
           {
             auto subj = std::make_shared<subject<TABLE> >(doc.doc_hash, prov);
             bool valid = subj->set_data(item);
@@ -353,14 +353,14 @@ namespace andromeda
 
 	    if(not valid)
 	      {
-                LOG_S(WARNING) << "invalid table: "<< prov->path;
+                LOG_S(WARNING) << "invalid table: "<< prov->get_path();
 	      }
 	    else
 	      {
 		//LOG_S(WARNING) << "valid table: " << prov->path;
 	      }
           }
-        else if(is_figure.count(prov->type))
+        else if(is_figure.count(prov->get_type()))
           {
             auto subj = std::make_shared<subject<FIGURE> >(doc.doc_hash, prov);
             bool valid = subj->set_data(item);
@@ -374,10 +374,11 @@ namespace andromeda
           }
         else
           {
-            prov->ignore=true;
-            if(not is_ignored.count(prov->type))
+            //prov->ignore=true;
+	    prov->set_ignored(true);
+            if(not is_ignored.count(prov->get_type()))
               {
-                LOG_S(WARNING) << "found new `other` type: " << prov->type;
+                LOG_S(WARNING) << "found new `other` type: " << prov->get_type();
               }
 
             auto subj = std::make_shared<subject<PARAGRAPH> >(doc.doc_hash, prov);
@@ -425,7 +426,7 @@ namespace andromeda
 	    std::stringstream ss;
 	    ss << "#/" << doc_type::texts_lbl << "/" << l;
 
-	    prov->path = ss.str();
+	    prov->set_path(ss.str());
 	  }
       }
 
@@ -436,7 +437,8 @@ namespace andromeda
 	    std::stringstream ss;
 	    ss << "#/" << doc_type::tables_lbl << "/" << l;
 
-	    prov->path = ss.str();
+	    //prov->path = ss.str();
+	    prov->set_path(ss.str());
 	  }
 
 	for(index_type k=0; k<tables.at(l)->captions.size(); k++)
@@ -448,7 +450,8 @@ namespace andromeda
 		   << doc_type::tables_lbl << "/" << l << "/"
 		   << doc_type::captions_lbl << "/" << k;
 		
-		prov->path = ss.str();
+		//prov->path = ss.str();
+		prov->set_path(ss.str());
 	      }
 	  }
       }
@@ -460,7 +463,8 @@ namespace andromeda
 	    std::stringstream ss;
 	    ss << "#/" << doc_type::figures_lbl << "/" << l;
 
-	    prov->path = ss.str();
+	    //prov->path = ss.str();
+	    prov->set_path(ss.str());
 	  }
 
 	for(index_type k=0; k<figures.at(l)->captions.size(); k++)
@@ -472,7 +476,8 @@ namespace andromeda
 		   << doc_type::figures_lbl << "/" << l << "/"
 		   << doc_type::captions_lbl << "/" << k;
 		
-		prov->path = ss.str();
+		//prov->path = ss.str();
+		prov->set_path(ss.str());
 	      }
 	  }	
       }        
