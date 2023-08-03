@@ -141,6 +141,13 @@ namespace andromeda
 	}
 	break;
 
+      case GEOLOC:
+	{
+	  typedef nlp_model<ENT, GEOLOC> model_type;
+	  model = std::make_shared<model_type>();	  	  
+	}
+	break;
+	
       case PARENTHESIS:
 	{
 	  typedef nlp_model<ENT, PARENTHESIS> model_type;

@@ -81,27 +81,27 @@ namespace andromeda
     base_instance();
     
     base_instance(hash_type subj_hash,
-                model_name type,
-                range_type char_range,
-                range_type ctok_range,
-                range_type wtok_range);
+		  model_name type,
+		  range_type char_range,
+		  range_type ctok_range,
+		  range_type wtok_range);
     
     // Paragraph entity
     base_instance(hash_type subj_hash,
-                model_name type, std::string subtype,
-                std::string name, std::string orig,
-                range_type char_range,
-                range_type ctok_range,
-                range_type wtok_range);
+		  model_name type, std::string subtype,
+		  std::string name, std::string orig,
+		  range_type char_range,
+		  range_type ctok_range,
+		  range_type wtok_range);
     
     // Table entity
     base_instance(hash_type subj_hash,
-                model_name type, std::string subtype,
-                std::string name, std::string orig,
-                range_type coor, range_type span,
-                range_type char_range,
-                range_type ctok_range,
-                range_type wtok_range);
+		  model_name type, std::string subtype,
+		  std::string name, std::string orig,
+		  range_type coor, range_type span,
+		  range_type char_range,
+		  range_type ctok_range,
+		  range_type wtok_range);
     
     // Document entity
     base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,

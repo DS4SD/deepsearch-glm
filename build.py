@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 
 import os
 import re
@@ -6,12 +6,31 @@ import re
 import json
 import glob
 
+import argparse
 import subprocess
 
 from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
 
 ROOT_DIR=os.path.abspath("./")
 BUILD_DIR=os.path.join(ROOT_DIR, "build")
+
+def parse_arguments():
+
+    parser = argparse.ArgumentParser(
+        prog = 'apply_nlp_on_doc',
+        description = 'Apply NLP on `Deep Search` documents',
+        epilog =
+"""
+""",
+        formatter_class=argparse.RawTextHelpFormatter)
+
+    parser.add_argument('--mode', required=False,
+                        type=str, default="local",
+                        help="build-mode")
+
+    args = parser.parse_args()
+
+    return args.mode
 
 def download_nlp_models():
     load_pretrained_nlp_models(False)
@@ -73,7 +92,9 @@ def build_all_python_versions():
     
 if "__main__"==__name__:
 
+    mode = parse_arguments()
+    
     #load_pretrained_nlp_models(False)
 
-    #build_local()
-    build_all_python_versions()
+    build_local()
+    #build_all_python_versions()

@@ -28,19 +28,21 @@ namespace andromeda
 
      // ENT
      NUMVAL, // numerical value's
-     QUOTE, // numerical value's
+     GEOLOC,
+
      DATE, // dates
      CITE,
      LINK, // weblinks in text
      NAME, // person/organisation names
-     
+
+     QUOTE, // numerical value's
      PARENTHESIS, // anything in brackets
      EXPRESSION, // anything concatencated
      
      SENTENCE,
      REFERENCE,
 
-     LOCATION,
+     //LOCATION,
      ORGANISATION,
      
      // POS-patterns
@@ -66,7 +68,9 @@ namespace andromeda
 
      // ENT
      NUMVAL, // numerical value's
+     GEOLOC, // numerical value's
      QUOTE, // numerical value's
+
      DATE, // dates
      CITE,
      LINK, // weblinks in text
@@ -78,7 +82,7 @@ namespace andromeda
      SENTENCE,
      REFERENCE,
 
-     LOCATION,
+     //LOCATION,
      ORGANISATION,
      
      // POS-patterns
@@ -106,18 +110,21 @@ namespace andromeda
 
         // ENT
       case NUMVAL: return "NUMVAL";
+      case GEOLOC: return "GEOLOC";
+
       case QUOTE: return "QUOTE";
       case PARENTHESIS: return "PARENTHESIS";
       case EXPRESSION: return "EXPRESSION";
 	
       case SENTENCE: return "SENTENCE";
       case REFERENCE: return "REFERENCE";
-	
+
+      case DATE: return "DATE";
       case LINK: return "LINK";	
       case NAME: return "NAME";
       case CITE: return "CITE";
 
-      case LOCATION: return "LOCATION";
+	//case LOCATION: return "LOCATION";
       case ORGANISATION: return "ORGANISATION";
 	
       case CONN: return "CONN";
@@ -125,8 +132,6 @@ namespace andromeda
       case VERB: return "VERB";
 
       case ABBREVIATION: return "ABBREVIATION";
-
-      case DATE: return "DATE";
 
       case NULL_MODEL: return "NULL";
       }

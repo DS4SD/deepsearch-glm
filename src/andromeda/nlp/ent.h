@@ -1,10 +1,12 @@
 //-*-C++-*-
 
+#include <andromeda/nlp/ent/numval.h>
+#include <andromeda/nlp/ent/geoloc.h>
+
 #include <andromeda/nlp/ent/name.h>
 #include <andromeda/nlp/ent/link.h>
 #include <andromeda/nlp/ent/cite.h>
 #include <andromeda/nlp/ent/quote.h>
-#include <andromeda/nlp/ent/numval.h>
 
 #include <andromeda/nlp/ent/parenthesis.h>
 #include <andromeda/nlp/ent/expression.h>
