@@ -35,6 +35,59 @@ res = mdl.apply_on_text(text)
 print_on_shell(text, res)
 ```
 
+The last command will print the pandas dataframes on the shell and provides the
+following output,
+
+```sh
+text:
+
+   #France (French: [fʁɑ̃s] Listen), officially the French Republic
+(French: République française [ʁepyblik fʁɑ̃sɛz]),[14] is a country
+located primarily in Western Europe. It also includes overseas regions
+and territories in the Americas and the Atlantic, Pacific and Indian
+Oceans, giving it one of the largest discontiguous exclusive economic
+zones in the world.
+
+properties:
+
+         type label  confidence
+0  language    en    0.897559
+
+instances:
+
+  type         subtype               subj_path      char_i    char_j  original
+-----------  --------------------  -----------  --------  --------  ---------------------------------------------------------------------
+sentence                           #                   1       180  France (French: [fʁɑ̃s] Listen), officially the French Republic
+                                                                    (French: République française [ʁepyblik fʁɑ̃sɛz]),[14] is a country
+                                                                    located primarily in Western Europe.
+term         single-term           #                   1         8  #France
+expression   wtoken-concatenation  #                   1         8  #France
+parenthesis  round brackets        #                   9        36  (French: [fʁɑ̃s] Listen)
+expression   wtoken-concatenation  #                  18        28  [fʁɑ̃s]
+term         single-term           #                  29        35  Listen
+term         single-term           #                  53        68  French Republic
+parenthesis  round brackets        #                  69       125  (French: République française [ʁepyblik fʁɑ̃sɛz])
+term         single-term           #                  78       100  République française
+term         single-term           #                 112       124  fʁɑ̃sɛz]
+parenthesis  reference             #                 126       130  [14]
+numval       ival                  #                 127       129  14
+term         single-term           #                 136       143  country
+term         single-term           #                 165       179  Western Europe
+sentence                           #                 181       373  It also includes overseas regions and territories in the Americas and
+                                                                    the Atlantic, Pacific and Indian Oceans, giving it one of the largest
+                                                                    discontiguous exclusive economic zones in the world.
+term         single-term           #                 198       214  overseas regions
+term         enum-term-mark-3      #                 207       230  regions and territories
+term         single-term           #                 219       230  territories
+term         single-term           #                 238       246  Americas
+term         enum-term-mark-4      #                 255       290  Atlantic, Pacific and Indian Oceans
+term         single-term           #                 255       263  Atlantic
+term         single-term           #                 265       272  Pacific
+term         single-term           #                 277       290  Indian Oceans
+term         single-term           #                 313       359  largest discontiguous exclusive economic zones
+term         single-term           #                 367       372  world
+```
+
 The NLP can also be applied on entire documents which were converted using
 Deep Search. A simple example is shown below,
 
