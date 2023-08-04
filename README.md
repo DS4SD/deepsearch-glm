@@ -5,7 +5,127 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
 [![License MIT](https://img.shields.io/github/license/ds4sd/deepsearch-glm)](https://opensource.org/licenses/MIT)
 
-## Install
+## Getting Started
+
+### Finding entities and relations via NLP on text and documents
+
+To get easily started, simply install the `deepsearch-glm` package from PyPi. This can be
+done using the traditional `pip install deepsearch-glm` or via poetry `poetry add deepsearch-glm`.
+
+Below, you can find the code-snippet to process pieces of text,
+
+```python
+from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
+from deepsearch_glm.nlp_utils import init_nlp_model, print_on_shell
+
+load_pretrained_nlp_models(force=False, verbose=False)
+mdl = init_nlp_model()
+
+# from Wikipedia (https://en.wikipedia.org/wiki/France)
+text = """
+France (French: [fʁɑ̃s] Listen), officially the French Republic
+(French: République française [ʁepyblik fʁɑ̃sɛz]),[14] is a country
+located primarily in Western Europe. It also includes overseas regions
+and territories in the Americas and the Atlantic, Pacific and Indian
+Oceans,[XII] giving it one of the largest discontiguous exclusive
+economic zones in the world.
+"""
+
+res = mdl.apply_on_text(text)
+print_on_shell(text, res)
+```
+
+The last command will print the pandas dataframes on the shell and provides the
+following output,
+
+```sh
+text:
+
+   #France (French: [fʁɑ̃s] Listen), officially the French Republic
+(French: République française [ʁepyblik fʁɑ̃sɛz]),[14] is a country
+located primarily in Western Europe. It also includes overseas regions
+and territories in the Americas and the Atlantic, Pacific and Indian
+Oceans, giving it one of the largest discontiguous exclusive economic
+zones in the world.
+
+properties:
+
+         type label  confidence
+0  language    en    0.897559
+
+instances:
+
+  type         subtype               subj_path      char_i    char_j  original
+-----------  --------------------  -----------  --------  --------  ---------------------------------------------------------------------
+sentence                           #                   1       180  France (French: [fʁɑ̃s] Listen), officially the French Republic
+                                                                    (French: République française [ʁepyblik fʁɑ̃sɛz]),[14] is a country
+                                                                    located primarily in Western Europe.
+term         single-term           #                   1         8  #France
+expression   wtoken-concatenation  #                   1         8  #France
+parenthesis  round brackets        #                   9        36  (French: [fʁɑ̃s] Listen)
+expression   wtoken-concatenation  #                  18        28  [fʁɑ̃s]
+term         single-term           #                  29        35  Listen
+term         single-term           #                  53        68  French Republic
+parenthesis  round brackets        #                  69       125  (French: République française [ʁepyblik fʁɑ̃sɛz])
+term         single-term           #                  78       100  République française
+term         single-term           #                 112       124  fʁɑ̃sɛz]
+parenthesis  reference             #                 126       130  [14]
+numval       ival                  #                 127       129  14
+term         single-term           #                 136       143  country
+term         single-term           #                 165       179  Western Europe
+sentence                           #                 181       373  It also includes overseas regions and territories in the Americas and
+                                                                    the Atlantic, Pacific and Indian Oceans, giving it one of the largest
+                                                                    discontiguous exclusive economic zones in the world.
+term         single-term           #                 198       214  overseas regions
+term         enum-term-mark-3      #                 207       230  regions and territories
+term         single-term           #                 219       230  territories
+term         single-term           #                 238       246  Americas
+term         enum-term-mark-4      #                 255       290  Atlantic, Pacific and Indian Oceans
+term         single-term           #                 255       263  Atlantic
+term         single-term           #                 265       272  Pacific
+term         single-term           #                 277       290  Indian Oceans
+term         single-term           #                 313       359  largest discontiguous exclusive economic zones
+term         single-term           #                 367       372  world
+```
+
+The NLP can also be applied on entire documents which were converted using
+Deep Search. A simple example is shown below,
+
+```python
+from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
+from deepsearch_glm.nlp_utils import init_nlp_model, print_on_shell
+
+load_pretrained_nlp_models(force=False, verbose=False)
+mdl = init_nlp_model()
+
+with open("<path-to-json-file-of-converted-pdf-doc>", "r") as fr:
+    doc = json.load(fr)
+
+enriched_doc = mdl.apply_on_doc(doc)
+```
+
+### Creating Graphs from NLP entities and relations in document collections
+
+To create graphs, you need two ingredients, namely,
+
+1. a collection of text or documents
+2. a set of NLP models that provide entities and relations
+
+Below is a code snippet to create the graph using these basic ingredients,
+
+```python
+odir = "<ouput-dir-to-save-graph>"
+json_files = ["json-file of converted PDF document"]
+model_names = "<list of NLP models:langauge;term;verb;abbreviation>"
+
+glm = create_glm_from_docs(odir, json_files, model_names)	
+```
+
+### Querying Graphs 
+
+TBD
+
+## Install for development
 
 ### Python installation
 

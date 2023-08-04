@@ -48,7 +48,7 @@ namespace andromeda
 
   nlp_model<CLS, LANGUAGE>::nlp_model():
     fasttext_supervised_model(),
-    model_file(get_fasttext_dir() / "language/fst_language.bin")
+    model_file(get_fst_dir() / "language/fst_language.bin")
   {
     initialise();
   }

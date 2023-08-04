@@ -12,10 +12,12 @@ import argparse
 
 import textColor as tc
 
+from deepsearch_glm.andromeda_nlp import nlp_model
+
 from deepsearch_glm.utils.ds_utils import convert_pdffiles, ds_index_query
 from deepsearch_glm.nlp_utils import create_nlp_dir, init_nlp_model, print_on_shell
 
-import andromeda_nlp
+#import andromeda_nlp
 
 def parse_arguments():
 
@@ -323,7 +325,8 @@ def process_data(dfile, afile):
 #
 def train_fst(train_file, model_file, metrics_file):
 
-    model = andromeda_nlp.nlp_model()
+    #model = andromeda_nlp.nlp_model()
+    model = nlp_model()
                 
     configs = model.get_train_configs()    
     print(json.dumps(configs, indent=2))

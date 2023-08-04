@@ -32,11 +32,10 @@ data/*/*/*.csv
 *.bin
 *.gz
 *.tar
-python/venv
-python/figs
-python/ds_config.json
-resources/*/*/*.txt
-resources/*/*/*/*.txt
+deepsearch_glm/resources/*/*/*.txt
+deepsearch_glm/resources/*/*/*.json
+deepsearch_glm/resources/*/*/*/*.txt
+deepsearch_glm/resources/*/*/*/*.json
 
 ### CXX ###
 

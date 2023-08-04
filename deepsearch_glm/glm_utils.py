@@ -13,8 +13,10 @@ from tabulate import tabulate
 
 from deepsearch_glm.utils.ds_utils import get_scratch_dir
 
+from deepsearch_glm.andromeda_glm import glm_model
+
 #import andromeda_nlp
-import andromeda_glm
+#import andromeda_glm
 
 def create_glm_dir():
 
@@ -42,7 +44,8 @@ def load_glm(idir:str):
 
     config = load_glm_config(idir)
     
-    glm = andromeda_glm.glm_model()
+    #glm = andromeda_glm.glm_model()
+    glm = glm_model()
     glm.load(config)
 
     return glm
@@ -126,7 +129,8 @@ def create_glm_from_docs(odir:str, json_files:list[str],
     
     config = create_glm_config_from_docs(odir, json_files, nlp_models)
     
-    glm = andromeda_glm.glm_model()
+    #glm = andromeda_glm.glm_model()
+    glm = glm_model()
     glm.create(config)
 
     return odir, glm

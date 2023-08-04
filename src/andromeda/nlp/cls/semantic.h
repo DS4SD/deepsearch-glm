@@ -61,7 +61,7 @@ namespace andromeda
 
   nlp_model<CLS, SEMANTIC>::nlp_model():
     fasttext_supervised_model(),
-    model_file(glm_variables::get_fasttext_dir() / "semantic/fst_semantic.bin")
+    model_file(glm_variables::get_fst_dir() / "semantic/fst_semantic.bin")
   {
     initialise();    
   }

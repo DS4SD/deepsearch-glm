@@ -7,65 +7,147 @@ namespace andromeda
 {
   class base_rgx_model: public base_nlp_model
   {
-    typedef std::pair<std::string, std::string> key_type; // <label, sublabel>
-    typedef std::vector<pcre2_expr>             val_type;
-    
   public:
 
-    base_rgx_model() {};
-    virtual ~base_rgx_model() {};
+    base_rgx_model();
+    virtual ~base_rgx_model();
 
+    /* add expressions */
+
+    bool push_back(std::string type, std::string subtype,
+		   std::string expr);
+    
     /*   IO   */    
     virtual bool load(std::filesystem::path ifile, bool verbose);
     virtual bool save(std::filesystem::path ofile);
 
     /*   INFERENCE   */
     
-    virtual bool apply(std::string& text, nlohmann::json& annots);// { return false; }
+    virtual bool apply(std::string& text, nlohmann::json& annots) { return false; }
 
     virtual bool apply(subject<PARAGRAPH>& subj);// = 0;// { return false; }
-    virtual bool apply(subject<TABLE>& subj);// { return false; }
+    virtual bool apply(subject<TABLE>& subj) { return false; }
 
-    virtual bool apply(subject<DOCUMENT>& subj);
+    virtual bool apply(subject<DOCUMENT>& subj) { return false; }
     
     /*   TRAIN   */
-    virtual bool is_trainable() { return true; }
-    virtual bool train(nlohmann::json args);
+    virtual bool is_trainable() { return false; }
+    virtual bool train(nlohmann::json args) { return true; }
 
   private:
 
     nlohmann::json config;
-    
-    std::map<key_type, val_type> exprs;
+
+    std::vector<pcre2_expr> exprs;
   };
 
-  bool base_rgx_model::apply(std::string& text, nlohmann::json& annots)
+  base_rgx_model::base_rgx_model():
+    config({}),
+    exprs({})
   {
-    return false;
+    config = nlohmann::json::object();
+    
+    config["headers"] = {"type", "subtype", "expression"};
+    config["data"] = nlohmann::json::array();
+  }
+
+  base_rgx_model::~base_rgx_model()
+  {}
+
+  bool base_rgx_model::load(std::filesystem::path ifile, bool verbose)
+  {
+    std::ifstream ifs(ifile.c_str());
+
+    if(ifs)
+      {
+	ifs >> config;
+      }
+    else
+      {
+	LOG_S(ERROR) << __FILE__ << ":" << __LINE__ << "\t"
+		     << "could not read from file " << ifile;
+
+	return false;
+      }
+
+    exprs.clear();
+    for(auto& row:config["data"])
+      {
+	this->push_back(row.at(0).get<std::string>(),
+			row.at(1).get<std::string>(),
+			row.at(2).get<std::string>());
+      }
+    
+    return true;        
+  }
+
+  bool base_rgx_model::save(std::filesystem::path ofile)
+  {
+    std::ofstream ofs(ofile.c_str());
+
+    if(ofs)
+      {
+	ofs << std::setw(2) << config;
+      }
+    else
+      {
+	LOG_S(ERROR) << __FILE__ << ":" << __LINE__ << "\t"
+		     << "could not write to file " << ofile;
+
+	return false;
+      }
+
+    return true;    
+  }
+  
+  bool base_rgx_model::push_back(std::string type, std::string subtype,
+				 std::string expr_)
+  {
+    try
+      {
+	pcre2_expr expr(type, subtype, expr_);
+	exprs.push_back(expr);
+
+	config["data"].push_back({type, subtype, expr_});	
+      }
+    catch(std::exception exc)
+      {
+	LOG_S(ERROR) << __FILE__ << ":" << __LINE__ << "\t"
+		     << "could not make the regex for " << expr_;
+	return false;
+      }
+
+    return true;
   }
 
   bool base_rgx_model::apply(subject<PARAGRAPH>& subj)
   {
-    return false;
-  }
-  
-  bool base_rgx_model::apply(subject<TABLE>& subj)
-  {
-    return false;
-  }
+    std::string text = subj.get_text();
 
-  bool base_rgx_model::apply(subject<DOCUMENT>& subj)
-  {
-    return false;
+    for(auto& expr:exprs)
+      {
+        std::vector<pcre2_item> items;
+        expr.find_all(text, items);
+
+        for(auto& item:items)
+          {
+	    auto char_range = item.rng;
+
+	    auto ctok_range = subj.get_char_token_range(char_range);
+	    auto wtok_range = subj.get_word_token_range(char_range);
+	    
+	    std::string orig = subj.from_char_range(char_range);
+	    std::string name = subj.from_ctok_range(ctok_range);
+	    
+	    subj.instances.emplace_back(subj.get_hash(),
+					this->get_name(), expr.get_subtype(), 
+					name, orig,
+					char_range, ctok_range, wtok_range);
+          }
+      }
+
+    return update_applied_models(subj);
   }
-  
-  bool base_rgx_model::train(nlohmann::json args)
-  {
-    LOG_S(INFO) << "starting to train regex-model ...";
-    
-    return false;
-  }
-  
 
 }
 

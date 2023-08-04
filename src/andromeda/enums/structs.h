@@ -6,7 +6,8 @@
 namespace andromeda
 {
   enum subject_name { UNDEF,
-		      TEXT, PROMPT,
+		      TEXT,
+		      PROMPT,
 		      PARAGRAPH, TABLE, FIGURE,
 		      DOCUMENT};
 

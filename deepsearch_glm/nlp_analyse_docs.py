@@ -14,7 +14,8 @@ import pandas as pd
 from tabulate import tabulate
 from PIL import Image, ImageDraw
 
-import andromeda_nlp
+#import andromeda_nlp
+from deepsearch_glm.andromeda_nlp import nlp_model
 
 def parse_arguments():
 
@@ -66,8 +67,13 @@ def show_page(doc, page_num=1, show_orig=True):
 
     df_page = df[df["page"]==page_num]
 
-    ph = int(df_dims[df_dims["page"]==page_num]["height"][0])
-    pw = int(df_dims[df_dims["page"]==page_num]["width"][0])
+    print(df_dims[df_dims["page"]==page_num])
+
+    ph = int(df_dims[df_dims["page"]==page_num]["height"])
+    pw = int(df_dims[df_dims["page"]==page_num]["width"])
+    
+    #ph = int(df_dims[df_dims["page"]==page_num]["height"][0])
+    #pw = int(df_dims[df_dims["page"]==page_num]["width"][0])
 
     print("height: ", ph)
     print("width: ", pw)
@@ -226,7 +232,7 @@ if __name__ == '__main__':
             doc = json.load(fr)
 
         if "page" in mode or mode=="all":
-            show_page(doc, page_num=1)
+            show_page(doc, page_num=8)
 
         if "text" in mode or mode=="all":
             extract_text(doc)
