@@ -17,7 +17,8 @@ from tabulate import tabulate
 
 from deepsearch_glm.utils.ds_utils import get_scratch_dir
 
-import andromeda_nlp
+from deepsearch_glm.andromeda_nlp import nlp_model
+#import andromeda_nlp
 
 def create_nlp_dir(tdir=None):
 
@@ -41,17 +42,18 @@ def list_nlp_model_configs():
 
 def init_nlp_model(model_names:str="language;term"):
 
-    nlp_model = andromeda_nlp.nlp_model()
+    #model = andromeda_nlp.nlp_model()
+    model = nlp_model()
 
-    configs = nlp_model.get_apply_configs()
+    configs = model.get_apply_configs()
     #print(json.dumps(configs, indent=2))
     
-    config = nlp_model.get_apply_configs()[0]
+    config = model.get_apply_configs()[0]
     config["models"] = model_names
 
-    nlp_model.initialise(config)
+    model.initialise(config)
     
-    return nlp_model
+    return model
 
 def print_key_on_shell(key, items):
 

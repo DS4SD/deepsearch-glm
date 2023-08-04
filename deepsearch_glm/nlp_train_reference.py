@@ -23,12 +23,11 @@ import textColor as tc
 #import deepsearch as ds
 #from tabulate import tabulate
 
-import andromeda_nlp
+#import andromeda_nlp
+from deepsearch_glm.andromeda_nlp import nlp_model
 
 from deepsearch_glm.utils.ds_utils import convert_pdffiles
 from deepsearch_glm.nlp_utils import create_nlp_dir
-
-
 
 def parse_arguments():
 
@@ -107,7 +106,8 @@ def extract_references(filenames, sfile, rfile):
         "models": "numval,link"
     }
     
-    model = andromeda_nlp.nlp_model()
+    #model = andromeda_nlp.nlp_model()
+    model = nlp_model()
     model.initialise(config)
     
     MINLEN = 5
@@ -524,7 +524,8 @@ def prepare_for_crf(afile):
 
 def train_crf(train_file, model_file, metrics_file):
 
-    model = andromeda_nlp.nlp_model()
+    #model = andromeda_nlp.nlp_model()
+    model = nlp_model()
                 
     configs = model.get_train_configs()
 
@@ -549,7 +550,8 @@ def train_crf(train_file, model_file, metrics_file):
 #
 def train_fst(train_file, model_file, metrics_file):
 
-    model = andromeda_nlp.nlp_model()
+    #model = andromeda_nlp.nlp_model()
+    model = nlp_model()
                 
     configs = model.get_train_configs()    
     print(configs)

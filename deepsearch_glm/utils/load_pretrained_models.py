@@ -3,14 +3,15 @@ import os
 import json
 import subprocess
 
-def load_pretrained_nlp_models(force:bool=False):
+def load_pretrained_nlp_models(force:bool=False, verbose:bool=False):
 
     if "DEEPSEARCH_GLM_RESOURCES_DIR" in os.environ:
         RESOURCES_DIR = os.getenv("DEEPSEARCH_GLM_RESOURCES_DIR")
     else:
-        # FIXME: not sure about this ...
-        ROOT_DIR=os.path.abspath("./deepsearch_glm")
-        RESOURCES_DIR=os.path.join(ROOT_DIR, "resources")
+        from deepsearch_glm.andromeda_nlp import nlp_model
+
+        model = nlp_model()
+        RESOURCES_DIR = model.get_resources_path()
     
     with open(f"{RESOURCES_DIR}/models.json") as fr:
         models = json.load(fr)
@@ -25,14 +26,21 @@ def load_pretrained_nlp_models(force:bool=False):
         target = os.path.join(RESOURCES_DIR, files[1])
 
         cmd = ["curl", source, "-o", target, "-s"]
-        #print(" ".join(cmd))        
         cmds.append(cmd)
         
     for cmd in cmds:
-        if force or (not os.path.exists(cmd[3])):
-            #print(f"downloading {cmd[3]} ... ", end="")
-            print(f"downloading {os.path.basename(cmd[3])} ... ", end="")            
+
+        model_weights = cmd[3]
+        
+        if force or (not os.path.exists(model_weights)):
+
+            if verbose:
+                print(f"downloading {os.path.basename(model_weights)} ... ", end="")            
+
             message = subprocess.run(cmd)#, cwd=ROOT_DIR)    
-            print("done!")
-        else:
+
+            if verbose:
+                print("done!")
+                
+        elif verbose:
             print(f" -> already downloaded {os.path.basename(cmd[3])}")

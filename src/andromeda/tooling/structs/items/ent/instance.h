@@ -106,6 +106,8 @@ namespace andromeda
     // Document entity
     base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
 		  const base_instance& other);
+
+    bool is_wtok_range_match() { return wtok_range_match; }
     
     bool verify_wtok_range_match(std::vector<word_token>& wtokens);
 

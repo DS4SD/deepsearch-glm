@@ -15,15 +15,9 @@ namespace andromeda
 
   private:
     
-    //#ifdef ROOT_PATH
     static inline std::filesystem::path ROOT_DIR = ROOT_PATH;
     static inline std::filesystem::path PACKAGE_DIR = ROOT_PATH / package_name;
     static inline std::filesystem::path RESOURCES_DIR = PACKAGE_DIR / resources_relative_path;
-    //static inline std::filesystem::path RESOURCES_DIR = ROOT_DIR / "deepsearch_glm/resources";
-    //#else
-    //static inline std::filesystem::path ROOT_DIR = std::filesystem::current_path() / "..";      
-    //static inline std::filesystem::path RESOURCES_DIR = std::filesystem::current_path() / "../deepsearch_glm/resources" 
-    ///#endif
     
   public:
 
@@ -31,10 +25,9 @@ namespace andromeda
 
     static std::filesystem::path get_resources_dir(bool verify=true);
 
-    static std::filesystem::path get_fasttext_dir();
-
+    static std::filesystem::path get_rgx_dir();    
+    static std::filesystem::path get_fst_dir();
     static std::filesystem::path get_crf_dir();
-    
   };
     
   bool glm_variables::set_resources_dir(std::filesystem::path path)
@@ -69,8 +62,21 @@ namespace andromeda
     
     return RESOURCES_DIR;
   }
-    
-  std::filesystem::path glm_variables::get_fasttext_dir()
+
+  std::filesystem::path glm_variables::get_rgx_dir()
+  {
+    auto path = get_resources_dir() / "models" / "rgx";
+
+    if(not std::filesystem::exists(path))
+      {
+	LOG_S(FATAL) << "non-existent regex-path: "
+		     << path;
+      }
+
+    return path;
+  }
+  
+  std::filesystem::path glm_variables::get_fst_dir()
   {
     auto path = get_resources_dir() / "models" / "fasttext";
 

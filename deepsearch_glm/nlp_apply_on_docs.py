@@ -9,7 +9,8 @@ import pandas as pd
 
 from utils.ds_utils import convert_pdffiles
 
-import andromeda_nlp
+#import andromeda_nlp
+from deepsearch_glm.andromeda_nlp import nlp_model
 
 def parse_arguments():
 
@@ -77,10 +78,12 @@ examples of execution:
         
     return pdf_files, json_files, args.models, args.force_convert
 
+# FIXME: to be replaced with function in nlp_utils
 def init_nlp_model(models:str):
     
-    model = andromeda_nlp.nlp_model()
-
+    #model = andromeda_nlp.nlp_model()
+    model = nlp_model()
+    
     config = model.get_apply_configs()[0]
     config["models"] = models
     

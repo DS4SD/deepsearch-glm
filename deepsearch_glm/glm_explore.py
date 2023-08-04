@@ -13,8 +13,11 @@ from tabulate import tabulate
 
 from deepsearch_glm.glm_utils import load_glm
 
-import andromeda_nlp
-import andromeda_glm
+from deepsearch_glm.andromeda_nlp import nlp_model
+from deepsearch_glm.andromeda_glm import glm_model, glm_query
+
+#import andromeda_nlp
+#import andromeda_glm
 
 def parse_arguments():
 
@@ -61,12 +64,14 @@ def show_query_result(res, max_nodes=16):
                     
         print(f"operation {i}: \n", tabulate(data[0:max_nodes], headers=headers), "\n")
 
-def expand_terms(terms, glm_model):
+def expand_terms(terms, glm):
 
     for term in terms:
         print(term)
         
-        qry = andromeda_glm.glm_query()
+        #qry = andromeda_glm.glm_query()
+        qry = glm_query()
+        
         qry.select({"nodes":[[term]]})
         qry.filter_by({"mode": "node-flavor", "node-flavors":["token"]})
         #qry.filter_by({"mode": "node-flavor", "node-flavors":["term"]})
@@ -86,7 +91,7 @@ def expand_terms(terms, glm_model):
         config = qry.to_config()    
         #print("query: ", json.dumps(config, indent=2))    
         
-        res = glm_model.query(config)
+        res = glm.query(config)
         if "status" in res and res["status"]=="success":
             show_query_result(res)
         else:

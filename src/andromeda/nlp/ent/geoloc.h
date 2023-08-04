@@ -32,6 +32,8 @@ namespace andromeda
     
   private:
 
+    const static inline std::set<std::string> allowed_subtypes={"continent", "country", "aquatic-region"};
+    
     const static std::set<model_name> dependencies;
 
     std::vector<pcre2_expr> exprs;
@@ -41,8 +43,10 @@ namespace andromeda
 
     nlohmann::json assets;
 
+    std::map<std::string, std::string> l2s; // label to subtype (subtypes might have `-` in the name, which are not accepted as regex named groups)
+    
     std::map<std::string, index_type> h2j; // headers to column index
-    std::map<std::string, std::vector<index_type> > s2c={}; // subtype to row-indices
+    std::map<std::string, std::vector<index_type> > l2inds={}; // label to row-indices
 
     //base_rgx_model rgx_model;
   };
@@ -52,7 +56,7 @@ namespace andromeda
   nlp_model<ENT, GEOLOC>::nlp_model():
     exprs({}),
     
-    asset_file(get_crf_dir() / "geoloc/rgx_geoloc.json"),
+    asset_file(get_rgx_dir() / "geoloc/rgx_geoloc.json"),
     model_file(get_crf_dir() / "geoloc/crf_geoloc.bin"),
 
     assets(nlohmann::json::value_t::null)
@@ -79,10 +83,9 @@ namespace andromeda
       }
 
     std::vector<std::string> headers = {};    
-    std::vector<std::vector<std::string> > data ={};
-
     headers = assets.value("headers", headers);
-    data = assets.value("data", data);
+
+    auto& data = assets.at("data");
 
     h2j={};
     for(index_type j=0; j<headers.size(); j++)
@@ -90,50 +93,64 @@ namespace andromeda
 	h2j[headers.at(j)] = j;
       }
 
-    assert(h2j.count("type")==1);
-    assert(h2j.count("subtype")==1);
-    assert(h2j.count("expression")==1);
+    //index_type type_cind = h2j.at("type");
+    index_type subtype_cind = h2j.at("subtype");
+    index_type expr_cind = h2j.at("expression");   
 
-    s2c={};
+    l2s={};    
+    l2inds={};
+    
     for(index_type i=0; i<data.size(); i++)
       {
-	std::string subtype = data.at(i).at(h2j.at("subtype"));
-
-	if(s2c.count(subtype))
+	std::string subtype = data.at(i).at(subtype_cind).get<std::string>();
+	std::string label = utils::replace(subtype, "-", "_");
+	
+	if(l2inds.count(label))
 	  {
-	    s2c.at(subtype).push_back(i);
+	    l2inds.at(label).push_back(i);
 	  }
-	else
+	else if(allowed_subtypes.count(subtype))
 	  {
-	    s2c[subtype] = {i};
+	    l2inds[label] = {i};
+	    l2s[label] = subtype;
 	  }
       }
 
-    for(auto itr=s2c.begin(); itr!=s2c.end(); itr++)
+    index_type delta=128;
+    for(auto itr=l2inds.begin(); itr!=l2inds.end(); itr++)
       {
-	auto subtype = itr->first;	
+	auto label = itr->first;	
 	auto& inds = itr->second;
 
-	std::stringstream ss;
-
-	ss << R"((^|\s))" << "(?<" << subtype << ">";
-	for(index_type l=0; l<inds.size(); l++)
-	  {
-	    if(l+1==inds.size())
-	      {
-		ss << data.at(inds.at(l)).at(h2j.at("expression"));
-	      }
-	    else
-	      {
-		ss << data.at(inds.at(l)).at(h2j.at("expression")) << "|";
-	      }
-	  }
-	ss << ")" << R"(($|\s|\,|.|\:|\;|\?))";
-
-	LOG_S(INFO) << subtype << ": " << ss.str();
+	LOG_S(INFO) << "init geoloc subtype " << l2s.at(label) << ": " << l2inds.at(label).size();
 	
-	pcre2_expr expr(this->get_key(), subtype, ss.str());
-	exprs.push_back(expr);
+	index_type len = inds.size();	
+	for(index_type i0=0; i0<inds.size(); i0+=delta)
+	  {
+	    index_type lb = i0;
+	    index_type ub = std::min(i0+delta, len);
+	    
+	    std::stringstream ss;
+		
+	    ss << R"((^|\s))" << "(?<" << label << ">";
+	    for(index_type i1=lb; i1<ub; i1++)
+	      {
+		std::string cexpr = data.at(inds.at(i1)).at(expr_cind).get<std::string>(); 
+		
+		ss << cexpr;
+		
+		if(i1+1<ub)
+		  {
+		    ss << "|";
+		  }
+	      }
+	    ss << ")" << R"(($|\s|\,|.|\:|\;|\?))";
+	    
+	    //LOG_S(INFO) << l2s.at(label) << "(" << lb << "," << ub << "): " << ss.str();
+	    
+	    pcre2_expr expr(this->get_key(), l2s.at(label), ss.str());
+	    exprs.push_back(expr);
+	  }
       }
 
     return (exprs.size()>0);
@@ -141,13 +158,13 @@ namespace andromeda
 
   bool nlp_model<ENT, GEOLOC>::apply(std::string& text, nlohmann::json& annots)
   {
-    LOG_S(ERROR) << __FUNCTION__ << " on text ...";
+    LOG_S(ERROR) << __FUNCTION__ << " on text not implemented ...";
     return false;
   }
   
   bool nlp_model<ENT, GEOLOC>::apply(subject<PARAGRAPH>& subj)
   {
-    LOG_S(ERROR) << __FUNCTION__ << " on paragraph ...";
+    //LOG_S(ERROR) << __FUNCTION__ << " on paragraph ...";
     
     std::string text = subj.get_text();
 
@@ -160,7 +177,7 @@ namespace andromeda
 	  {
 	    for(auto& grp:item.groups)
 	      {
-		if(s2c.count(grp.group_name)==1)
+		if(l2inds.count(grp.group_name)==1)
 		  {
 		    // NOTE: in future, we might need to have individual post-processing
 		    // to determine the range.
@@ -179,12 +196,24 @@ namespace andromeda
 						name, orig, 
 						char_range, ctok_range, wtok_range);
 
-		    utils::mask(text, item.rng);
+		    //utils::mask(text, item.rng);
 		  }
 	      }
 	  }
       }
 
+    for(auto itr=subj.instances.begin(); itr!=subj.instances.end(); )
+      {
+	if(not itr->is_wtok_range_match())
+	  {
+	    itr = subj.instances.erase(itr);
+	  }
+	else
+	  {
+	    itr++;
+	  }
+      }
+    
     return update_applied_models(subj);
   }
   

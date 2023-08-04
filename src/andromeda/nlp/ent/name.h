@@ -48,7 +48,7 @@ namespace andromeda
   
   nlp_model<ENT, NAME>::nlp_model():
     fasttext_supervised_model(),
-    model_file(get_fasttext_dir() / "person-name/fst_person_name.bin")
+    model_file(get_fst_dir() / "person-name/fst_person_name.bin")
   {
     initialise();
   }
