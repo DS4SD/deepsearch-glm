@@ -55,13 +55,14 @@ jobs:
       - name: Install poetry
         run: curl -sSL https://install.python-poetry.org | python3 -
 
-      - name: Export path
-        # if: matrix.os == 'macos-latest'
-        # run: export PATH="/Users/runner/.local/bin:$PATH"
-        run: ln -s /Users/runner/.local/bin/poetry /usr/bin/poetry
+      - name: Test poetry [macos]
+        if: matrix.os == 'macos-latest'
+        run: /Users/runner/.local/bin/poetry run python --version
 
-      - name: Test poetry
+      - name: Test poetry [linux]
+        if: matrix.os == 'ubuntu-latest'
         run: poetry run python --version
 
       - name: Build GLM
+        if: matrix.os == 'ubuntu-latest'
         run: poetry build
