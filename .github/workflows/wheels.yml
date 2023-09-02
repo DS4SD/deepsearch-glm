@@ -1,0 +1,63 @@
+# Workflow to build and test wheels
+name: Wheel builder
+
+# inspiration from `https://raw.githubusercontent.com/scikit-learn/scikit-learn/main/.github/workflows/wheels.yml`
+
+on:
+  schedule:
+    # Nightly build at 3:42 A.M.
+    - cron: "42 3 */1 * *"
+  push:
+    branches:
+      - main
+      # Release branches
+      - "[0-9]+.[0-9]+.X"
+  pull_request:
+    branches:
+      - main
+      - "[0-9]+.[0-9]+.X"
+  # Manual run
+  workflow_dispatch:
+
+jobs:
+
+  # Build the wheels for Linux, Windows and macOS for Python 3.8 and newer
+  build_wheels:
+    name: Build wheel for cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      # Ensure that a wheel builder finishes even if another fails
+      fail-fast: false
+      matrix:
+        include:
+
+          # Linux 64 bit manylinux2014
+          - os: ubuntu-latest
+            python: 310
+            platform_id: manylinux_x86_64
+            manylinux_image: manylinux2014
+
+          # MacOS x86_64
+          - os: macos-latest
+            python: 310
+            platform_id: macosx_x86_64
+
+          # MacOS arm64
+          - os: macos-latest
+            python: 310
+            platform_id: macosx_arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install poetry
+        run: curl -sSL https://install.python-poetry.org | python3 -
+	
+      - name: Test poetry
+        run: poetry run python --version	
+
+      - name: Build GLM
+        run: poetry build
+
