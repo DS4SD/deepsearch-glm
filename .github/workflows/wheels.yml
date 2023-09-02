@@ -21,7 +21,7 @@ on:
 
 jobs:
 
-  # Build the wheels for Linux, Windows and macOS for Python 3.8 and newer
+  # Build the wheels for Linux, Windows and macOS for Python 3.x and newer
   build_wheels:
     name: Build wheel for cp${{ matrix.python }}-${{ matrix.platform_id }}-${{ matrix.manylinux_image }}
     runs-on: ${{ matrix.os }}
@@ -59,10 +59,14 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: /Users/runner/.local/bin/poetry run python --version
 
+      - name: Build GLM [mac-os]
+        if: matrix.os == 'macos-latest'
+        run: /Users/runner/.local/bin/poetry build
+
       - name: Test poetry [linux]
         if: matrix.os == 'ubuntu-latest'
         run: poetry run python --version
 
-      - name: Build GLM
+      - name: Build GLM [linux]
         if: matrix.os == 'ubuntu-latest'
         run: poetry build
