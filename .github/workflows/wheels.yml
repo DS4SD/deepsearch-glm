@@ -59,6 +59,10 @@ jobs:
         # if: matrix.os == 'macos-latest'
         run: export PATH="/Users/runner/.local/bin:$PATH"
 
+      - name: Check path
+        # if: matrix.os == 'macos-latest'
+        run: echo $PATH
+
       - name: Test poetry
         run: poetry run python --version
 
