@@ -110,10 +110,11 @@ namespace andromeda
 
 	config["data"].push_back({type, subtype, expr_});	
       }
-    catch(std::exception exc)
+    catch(std::exception& exc)
       {
-	LOG_S(ERROR) << __FILE__ << ":" << __LINE__ << "\t"
-		     << "could not make the regex for " << expr_;
+	LOG_S(ERROR) << __FILE__ << ":" << __LINE__ << "\n"
+		     << "\t error-message: " << exc.what() << "\n"
+		     << "\t regex-expr: " << expr_;
 	return false;
       }
 
