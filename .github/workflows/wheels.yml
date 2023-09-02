@@ -55,7 +55,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'  # update once build dependencies are available
+          python-version: '3.10'  # update once build dependencies are available
 
       - name: Install poetry
         run: curl -sSL https://install.python-poetry.org | python3 -
