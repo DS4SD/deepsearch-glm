@@ -57,7 +57,7 @@ def build_local(setup_kwargs=None):
     else:
         print(f"build directory detected: {BUILD_DIR}")
         
-    cmd = f"cmake -std=c++17 --build {BUILD_DIR} --target install -j"
+    cmd = f"cmake --build {BUILD_DIR} --target install -j"
     run(cmd, cwd=ROOT_DIR)    
 
 def build_all_python_versions():
