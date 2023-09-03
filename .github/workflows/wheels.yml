@@ -95,6 +95,19 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: poetry run python --version
 
+      - name: Test CIBW [linux]
+        if: matrix.os == 'ubuntu-latest'
+        env:
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_ARCHS: all
+          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
+        run: |
+          poetry run python --version
+          poetry add cibuildwheel
+          poetry run python -m cibuildwheel --output-dir wheelhouse
+          ls -l wheelhouse
+
       - name: Build GLM [linux]
         if: matrix.os == 'ubuntu-latest'
         run: poetry build
