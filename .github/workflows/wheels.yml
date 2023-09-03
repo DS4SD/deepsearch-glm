@@ -76,7 +76,7 @@ jobs:
         run: |
           /Users/runner/.local/bin/poetry run python --version
           /Users/runner/.local/bin/poetry add cibuildwheel
-          /Users/runner/.local/bin/poetry run python cibuildwheel --output-dir wheelhouse
+          /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
           ls -l wheelhouse
 
       - name: Build GLM [mac-os]
