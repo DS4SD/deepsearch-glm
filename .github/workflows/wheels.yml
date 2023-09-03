@@ -75,6 +75,14 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           /Users/runner/.local/bin/poetry run python --version
+
+      - name: Test CIBW [macos]
+        if: matrix.os == 'macos-latest'
+        env:
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_ARCHS: all
+        run: |
+          /Users/runner/.local/bin/poetry run python --version
           /Users/runner/.local/bin/poetry add cibuildwheel
           /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
           ls -l wheelhouse
