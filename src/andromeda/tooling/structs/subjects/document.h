@@ -50,6 +50,7 @@ namespace andromeda
     nlohmann::json to_json();
 
     uint64_t get_hash() const { return doc_hash; }
+    std::string get_name() const { return doc_name; }
 
     void show(bool txt=true, bool mdls=false,
               bool ctokens=false, bool wtokens=true,
