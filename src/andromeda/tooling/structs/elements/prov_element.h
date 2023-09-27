@@ -20,10 +20,16 @@ namespace andromeda
   public:
     
     prov_element();
-    prov_element(ind_type pdforder_ind, ind_type maintext_ind, std::string name, std::string type);
+    prov_element(ind_type pdforder_ind,
+		 ind_type maintext_ind,
+		 std::string name,
+		 std::string type);
 
-    prov_element(ind_type pdforder_ind, ind_type maintext_ind,
-		 std::string dref, std::string name, std::string type);
+    prov_element(ind_type pdforder_ind,
+		 ind_type maintext_ind,
+		 std::string path,
+		 std::string name,
+		 std::string type);
 
     static std::vector<std::string> get_headers();
 
@@ -94,7 +100,6 @@ namespace andromeda
     std::string name, type;
 
     std::string path;
-    //std::pair<subject_name, ind_type> dref;
 
     bool ignore;
     ind_type page;
@@ -126,8 +131,10 @@ namespace andromeda
     coor_range({0,0})
   {}
 
-  prov_element::prov_element(ind_type pdforder_ind, ind_type maintext_ind,
-			     std::string name, std::string type):
+  prov_element::prov_element(ind_type pdforder_ind,
+			     ind_type maintext_ind,
+			     std::string name,
+			     std::string type):
     pdforder_ind(pdforder_ind),
     maintext_ind(maintext_ind),
 
@@ -171,14 +178,6 @@ namespace andromeda
     coor_range({0,0})
   {}
 
-  /*
-  std::string prov_element::get_path()
-  {
-    return path;
-  }
-  */
-  
-  
   bool prov_element::follows_maintext_order(const prov_element& rhs) const
   {
     return (maintext_ind+1==rhs.maintext_ind);

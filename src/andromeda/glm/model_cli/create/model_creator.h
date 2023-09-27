@@ -207,10 +207,21 @@ namespace andromeda
 
       auto& parameters = model_ptr->get_parameters();
 
-      base_node text_node(node_names::TEXT, subj.get_hash());      
+      hash_type text_hash = -1;
       if(parameters.keep_texts)
 	{
+	  std::string doc_path = "";
+	  for(const auto& prov:subj.provs)
+	    {
+	      doc_path += prov->get_path();
+	      doc_path += ";";	  
+	    }
+	  
+	  base_node text_node(node_names::TEXT, subj.get_hash(), doc_path);      
 	  text_node = nodes.insert(text_node, false);
+
+	  text_hash = text_node.get_hash();
+	  LOG_S(INFO) << "inserted node: " << doc_path;
 	}
       
       std::vector<word_token>& tokens = subj.word_tokens;
@@ -316,12 +327,22 @@ namespace andromeda
 	  insert_relations(instances, relations, nodes, edges, ehash_to_node);
 	}
 
-      if(parameters.keep_fdocs)
+      if(parameters.keep_texts and parameters.keep_terms and text_hash!=-1)
 	{
-	  /*
-	  edges.insert(edge_names::from_doc, doc_hash, term_i.get_hash(), false);
-	  edges.insert(edge_names::to_doc, term_i.get_hash(), doc_hash, false);
-	  */
+	  for(auto itr=rng_to_term.begin(); itr!=rng_to_term.end(); itr++)
+	    {
+	      edges.insert(edge_names::from_text, text_hash, itr->second, false);
+	      edges.insert(edge_names::to_text, itr->second, text_hash, false);
+	    }
+	}
+      
+      if(parameters.keep_fdocs and parameters.keep_terms and doc_hash!=-1)
+	{
+	  for(auto itr=rng_to_term.begin(); itr!=rng_to_term.end(); itr++)
+	    {
+	      edges.insert(edge_names::from_doc, doc_hash, itr->second, false);
+	      edges.insert(edge_names::to_doc, itr->second, doc_hash, false);
+	    }
 	}
     }
 
@@ -336,9 +357,7 @@ namespace andromeda
       base_node table_node(node_names::TABL, subj.get_hash());      
       if(parameters.keep_tabls)
 	{
-	  //LOG_S(INFO) << "table-cnt(" << table_node.get_hash() << "): " << table_node.get_tabl_cnt();
 	  table_node = nodes.insert(table_node, false);
-	  //LOG_S(INFO) << " -> " << table_node.get_tabl_cnt();
 	}
       
       subj.sort();
@@ -867,7 +886,6 @@ namespace andromeda
               edges.insert(edge_names::from_label, beg_term_hash, term_hashes.front(), false);
               edges.insert(edge_names::from_label, end_term_hash, term_hashes.back(), false);
 	      */
-
 	      
               for(std::size_t i=0; i<term_hashes.size()-1; i++)
                 {
@@ -878,7 +896,6 @@ namespace andromeda
                 {
                   edges.insert(edge_names::tax_up, term_hashes.at(i), term_hashes.at(i-1), false);
                 }
-	      
 	      
               base_node term_i(node_names::TERM, term_hashes);
               nodes.insert(term_i, false);
@@ -891,11 +908,13 @@ namespace andromeda
 		  edges.insert(edge_names::to_token, term_i.get_hash(), term_hashes.at(0), false);		  
 		}
 
+	      /*
 	      if(doc_hash!=-1)
 		{
 		  edges.insert(edge_names::from_doc, doc_hash, term_i.get_hash(), false);
 		  edges.insert(edge_names::to_doc, term_i.get_hash(), doc_hash, false);	  
 		}
+	      */
 	      
 	      /*
               if(term_hashes.size()>1)

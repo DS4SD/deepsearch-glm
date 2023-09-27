@@ -198,9 +198,12 @@ namespace andromeda
       }
   }
 
+  /*
   template<typename doc_type>
   void doc_normalisation<doc_type>::init_provs()
   {
+    std::string doc_name = doc.doc_name;
+    
     auto& orig = doc.orig;
     auto& provs = doc.provs;
 
@@ -216,7 +219,7 @@ namespace andromeda
 	nlohmann::json item = orig.at(doc_type::maintext_lbl).at(l);
 
         std::stringstream ss;
-        ss << "#/" << doc_type::maintext_lbl << "/" << l;
+        ss << doc_name << "#/" << doc_type::maintext_lbl << "/" << l;
 
         std::string ref = ss.str();
 
@@ -280,7 +283,94 @@ namespace andromeda
           }
       }
   }
+  */
 
+  template<typename doc_type>
+  void doc_normalisation<doc_type>::init_provs()
+  {
+    std::string doc_name = doc.doc_name;
+    
+    auto& orig = doc.orig;
+    auto& provs = doc.provs;
+
+    provs.clear();
+
+    std::string pdforder_lbl = doc_type::pdforder_lbl;    
+
+    std::string maintext_name_lbl = doc_type::maintext_name_lbl;
+    std::string maintext_type_lbl = doc_type::maintext_type_lbl;
+    
+    for(std::size_t l=0; l<orig.at(doc_type::maintext_lbl).size(); l++)
+      {
+	nlohmann::json item = orig.at(doc_type::maintext_lbl).at(l);
+
+	std::string path="";
+	if(item.count("$ref"))
+	  {
+	    auto lpath = item["$ref"].get<std::string>();
+
+	    std::stringstream ss;
+	    ss << doc_name << lpath;
+
+	    path = ss.str();
+	  }
+	else if(item.count("__ref"))
+	  {
+	    auto lpath = item["__ref"].get<std::string>();
+
+	    std::stringstream ss;
+	    ss << doc_name << lpath;
+
+	    path = ss.str();
+	  }
+	else
+	  {
+	    std::stringstream ss;
+	    ss << doc_name << "#/" << doc_type::maintext_lbl << "/" << l;
+
+	    path = ss.str();
+	  }
+
+	LOG_S(INFO) << "path: " << path;
+	
+        ind_type pdforder = item.at(pdforder_lbl).get<ind_type>();
+        ind_type maintext = l;
+
+        std::string name = item.at(maintext_name_lbl).get<std::string>();
+        std::string type = item.at(maintext_type_lbl).get<std::string>();
+
+	auto prov = std::make_shared<prov_element>(pdforder, maintext,
+						   path, name, type);
+
+	std::vector<std::string> parts = utils::split(prov->get_path(), "/");
+	assert(parts.size()>=3);
+
+	std::string base = parts.at(1);
+	std::size_t index = std::stoi(parts.at(2));
+	
+	if(orig.count(base) and index<orig[base].size())
+	  {
+	    auto& ref_item = orig[base][index];
+
+	    if(ref_item.count(doc_type::prov_lbl) and
+	       ref_item[doc_type::prov_lbl].size()==1)
+	      {
+		prov->set(ref_item[doc_type::prov_lbl][0]);		
+		provs.push_back(prov);
+	      }
+	    else
+	      {
+		LOG_S(ERROR) << "undefined prov for main-text item: " << item.dump();
+	      } 
+	  }
+	else
+	  {
+	    LOG_S(WARNING) << "undefined reference path in document: "
+			   << item.dump();
+	  }
+      }
+  }
+  
   template<typename doc_type>
   void doc_normalisation<doc_type>::sort_provs()
   {

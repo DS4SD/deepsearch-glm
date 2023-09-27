@@ -329,7 +329,8 @@ namespace andromeda
     return set_data(data, update_maintext);
   }
 
-  bool subject<DOCUMENT>::set_data(nlohmann::json& data, bool update_maintext)
+  bool subject<DOCUMENT>::set_data(nlohmann::json& data,
+				   bool update_maintext)
   {
     clear();
 
