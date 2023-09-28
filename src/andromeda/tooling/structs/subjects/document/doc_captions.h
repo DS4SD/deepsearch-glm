@@ -45,7 +45,7 @@ namespace andromeda
 
     std::map<std::shared_ptr<prov_element>, index_type> prov_to_index={};
 
-    std::map<std::shared_ptr<prov_element>, std::shared_ptr<subject<PARAGRAPH> > > prov_to_paragraph={};
+    std::map<std::shared_ptr<prov_element>, std::shared_ptr<subject<PARAGRAPH> > > prov_to_text={};
     std::map<std::shared_ptr<prov_element>, std::shared_ptr<subject<TABLE> > > prov_to_table={};
     std::map<std::shared_ptr<prov_element>, std::shared_ptr<subject<FIGURE> > > prov_to_figure={};
   };
@@ -136,34 +136,13 @@ namespace andromeda
           }
         else
           {}
-
-        /*
-          if(prov_i->dref.first==PARAGRAPH)
-          {
-          std::string text = doc.paragraphs.at(prov_i->dref.second)->text;
-
-          text = utils::to_lower(text);
-          text = utils::strip(text);
-
-          if(text.starts_with("tab"))
-          {
-          table_caption_inds.at(page_num).insert(i);
-          }
-          else if(text.starts_with("fig"))
-          {
-          figure_caption_inds.at(page_num).insert(i);
-          }
-          else
-          {}
-          }
-        */
       }
 
-    for(auto paragraph:doc.paragraphs)
+    for(auto text:doc.texts)
       {
-	for(auto& prov:paragraph->provs)
+	for(auto& prov:text->provs)
 	  {
-	    prov_to_paragraph[prov] = paragraph;
+	    prov_to_text[prov] = text;
 	  }
       }
 
@@ -183,14 +162,14 @@ namespace andromeda
 	  }
       }        
     
-    for(auto paragraph:doc.paragraphs)
+    for(auto& elem:doc.texts)
       {	
-        auto& prov = paragraph->provs.at(0);
+        auto& prov = elem->provs.at(0);
 
         ind_type prov_ind = prov_to_index.at(prov);
         ind_type page_num = prov->get_page();
 
-        std::string text = paragraph->text;
+        std::string text = elem->text;
 
         text = utils::to_lower(text);
         text = utils::strip(text);
@@ -305,13 +284,13 @@ namespace andromeda
 	if(prov_i->get_type()=="table" and prov_to_table.count(prov_i)==0)
 	  {
 	    LOG_S(WARNING) << "no table associated with prov: "
-			   << prov_i->to_json().dump();
+			   << prov_i->to_json(false).dump();
 	    continue;
 	  }
 	else if(prov_i->get_type()=="figure" and prov_to_figure.count(prov_i)==0)
 	  {
 	    LOG_S(WARNING) << "no figure associated with prov: "
-			   << prov_i->to_json().dump();
+			   << prov_i->to_json(false).dump();
 	    continue;
 	  }
 	else
@@ -329,7 +308,7 @@ namespace andromeda
             for(ind_type j:itr->second)
               {
                 auto& prov_j = provs.at(j);
-		auto& caption = prov_to_paragraph.at(prov_j);
+		auto& caption = prov_to_text.at(prov_j);
 
                 //LOG_S(WARNING) << "\tassigning caption "
 		//<< prov_i->maintext_ind
@@ -351,7 +330,7 @@ namespace andromeda
             for(ind_type j:itr->second)
               {
                 auto& prov_j = provs.at(j);
-		auto& caption = prov_to_paragraph.at(prov_j);
+		auto& caption = prov_to_text.at(prov_j);
 		
                 //LOG_S(WARNING) << "\tassigning caption "
 		//<< prov_i->maintext_ind
@@ -391,8 +370,8 @@ namespace andromeda
       }
 
     {
-      auto itr=doc.paragraphs.begin();
-      while(itr!=doc.paragraphs.end())
+      auto itr=doc.texts.begin();
+      while(itr!=doc.texts.end())
 	{
 	  bool is_caption=false;
 	  for(auto& prov:(*itr)->provs)
@@ -405,7 +384,7 @@ namespace andromeda
 
 	  if(is_caption)
 	    {
-	      itr = doc.paragraphs.erase(itr);
+	      itr = doc.texts.erase(itr);
 	    }
 	  else
 	    {

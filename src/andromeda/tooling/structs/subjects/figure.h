@@ -12,20 +12,19 @@ namespace andromeda
   public:
 
     subject();
-    subject(uint64_t dhash);
-    subject(uint64_t dhash, std::shared_ptr<prov_element> prov);
+    subject(uint64_t dhash, std::string dloc);
+    subject(uint64_t dhash, std::string dloc,
+	    std::shared_ptr<prov_element> prov);
     
-    ~subject();
+    virtual ~subject();
 
-    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
-    
     void clear();
 
-    bool is_valid() { return (base_subject::valid); }
+    virtual nlohmann::json to_json();
+    virtual bool from_json(const nlohmann::json& data);
     
-    nlohmann::json to_json();
-
-    bool from_json(const nlohmann::json& data);
+    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
+    bool is_valid() { return (base_subject::valid); }
     
     bool set_data(const nlohmann::json& data);
 
@@ -55,8 +54,8 @@ namespace andromeda
     mentions({})
   {}
 
-  subject<FIGURE>::subject(uint64_t dhash):
-    base_subject(dhash, FIGURE),
+  subject<FIGURE>::subject(uint64_t dhash, std::string dloc):
+    base_subject(dhash, dloc, FIGURE),
 
     provs({}),
     
@@ -65,8 +64,9 @@ namespace andromeda
     mentions({})
   {}
   
-  subject<FIGURE>::subject(uint64_t dhash, std::shared_ptr<prov_element> prov):
-    base_subject(dhash, FIGURE),
+  subject<FIGURE>::subject(uint64_t dhash, std::string dloc,
+			   std::shared_ptr<prov_element> prov):
+    base_subject(dhash, dloc, FIGURE),
 
     provs({prov}),
     
@@ -91,8 +91,8 @@ namespace andromeda
 
   nlohmann::json subject<FIGURE>::to_json()
   {
-    nlohmann::json result = nlohmann::json::object({});
-
+    nlohmann::json result = base_subject::_to_json();
+    
     {
       nlohmann::json& _ = result[base_subject::captions_lbl];
       _ = nlohmann::json::array({});

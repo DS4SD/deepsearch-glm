@@ -28,26 +28,35 @@ namespace andromeda
     base_subject();
     base_subject(subject_name name);
 
-    base_subject(uint64_t dhash, subject_name name);//, prov_element& prov);
+    base_subject(uint64_t dhash, std::string dloc, subject_name name);//, prov_element& prov);
 
-    subject_name get_name() const { return name; };
+    virtual ~base_subject() {}
+    
+    subject_name get_name() const { return name; }
     hash_type get_hash() const { return hash; }
 
     void clear();
 
     void clear_models();
 
-    nlohmann::json to_json();
-    bool from_json(const nlohmann::json& item);
+    virtual nlohmann::json to_json() = 0;
+    virtual bool from_json(const nlohmann::json& item) = 0;
+    
+  protected:
+    
+    nlohmann::json _to_json();
+    bool _from_json(const nlohmann::json& item);
     
   public:
 
     bool valid;
     subject_name name;
 
-    hash_type hash;
-    hash_type dhash;
+    hash_type hash; // hash of the item
+    hash_type dhash; // hash of the document of the item
 
+    std::string dloc; // location of item in the document <doc-hash>#<JSON-path-in-doc>
+    
     std::set<std::string> applied_models;
 
     std::vector<base_property> properties;
@@ -64,7 +73,7 @@ namespace andromeda
     hash(-1),
     dhash(-1),
 
-    //provs({}),
+    dloc(""),
 
     applied_models({}),
 
@@ -80,8 +89,8 @@ namespace andromeda
     hash(-1),
     dhash(-1),
 
-    //provs({}),
-
+    dloc(""),
+    
     applied_models({}),
 
     properties({}),
@@ -89,15 +98,17 @@ namespace andromeda
     relations({})
   {}
 
-  base_subject::base_subject(uint64_t dhash, subject_name name)://, prov_element& prov):
+  base_subject::base_subject(uint64_t dhash,
+			     std::string dloc,
+			     subject_name name)://, prov_element& prov):
     valid(true),
     name(name),
 
     hash(-1),
     dhash(dhash),
 
-    //provs({prov}),
-
+    dloc(dloc),
+    
     applied_models({}),
 
     properties({}),
@@ -126,12 +137,14 @@ namespace andromeda
     relations.clear();
   }
 
-  nlohmann::json base_subject::to_json()
+  nlohmann::json base_subject::_to_json()
   {
     nlohmann::json result = nlohmann::json::object({});
 
     {
       result["hash"] = hash;
+      result["dloc"] = dloc;
+
       result["applied-models"] = applied_models;
     }
 
@@ -153,7 +166,7 @@ namespace andromeda
     return result;
   }
 
-  bool base_subject::from_json(const nlohmann::json& item)
+  bool base_subject::_from_json(const nlohmann::json& item)
   {
     hash = item.value("hash", hash);
     applied_models = item.value("applied-models", applied_models);
@@ -182,7 +195,6 @@ namespace andromeda
       }
 
     return (read_props and read_insts and read_rels);
-
   }
 
 }

@@ -145,7 +145,7 @@ namespace andromeda
 	return false;
       }  
 
-    for(auto& para:subj.paragraphs)
+    for(auto& para:subj.texts)
       {
 	this->apply(*para);
       }
@@ -158,7 +158,7 @@ namespace andromeda
     std::map<std::string, std::size_t> lang_mapping;
 
     std::size_t total=0;
-    for(auto& para:subj.paragraphs)
+    for(auto& para:subj.texts)
       {
 	this->apply(*para);
 

@@ -17,19 +17,18 @@ namespace andromeda
   public:
 
     subject();
-    subject(uint64_t dhash);
-    subject(uint64_t dhash, std::shared_ptr<prov_element> prov);
+    subject(uint64_t dhash, std::string dloc);
+    subject(uint64_t dhash, std::string dloc, std::shared_ptr<prov_element> prov);
 	        
-    ~subject();
+    virtual ~subject();
 
-    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
-    
     void clear();
-
+    
+    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
     bool is_valid() { return (base_subject::valid); }
     
-    nlohmann::json to_json();
-    bool from_json(const nlohmann::json& data);
+    virtual nlohmann::json to_json();
+    virtual bool from_json(const nlohmann::json& data);
     
     bool set_data(const nlohmann::json& data);
 
@@ -55,13 +54,13 @@ namespace andromeda
 
     table_element_type& operator()(std::array<uint64_t,2> coor) { return data.at(coor.at(0)).at(coor.at(1)); }
     table_element_type& operator()(uint64_t i, uint64_t j) { return data.at(i).at(j); }
-
+    
   private:
-
+    
     void set_hash();
     
   public:
-
+    
     std::vector<std::shared_ptr<prov_element> > provs;
     
     std::vector<std::shared_ptr<subject<PARAGRAPH> > > captions;
@@ -87,8 +86,8 @@ namespace andromeda
     data({})
   {}
 
-  subject<TABLE>::subject(uint64_t dhash):
-    base_subject(dhash, TABLE),
+  subject<TABLE>::subject(uint64_t dhash, std::string dloc):
+    base_subject(dhash, dloc, TABLE),
 
     provs({}),
     
@@ -102,8 +101,9 @@ namespace andromeda
     data({})
   {}
   
-  subject<TABLE>::subject(uint64_t dhash, std::shared_ptr<prov_element> prov):
-    base_subject(dhash, TABLE),
+  subject<TABLE>::subject(uint64_t dhash, std::string dloc,
+			  std::shared_ptr<prov_element> prov):
+    base_subject(dhash, dloc, TABLE),
 
     provs({prov}),
     
@@ -138,7 +138,7 @@ namespace andromeda
   
   nlohmann::json subject<TABLE>::to_json()
   {
-    nlohmann::json result = base_subject::to_json();
+    nlohmann::json result = base_subject::_to_json();
 
     {
       nlohmann::json& _ = result[base_subject::captions_lbl];

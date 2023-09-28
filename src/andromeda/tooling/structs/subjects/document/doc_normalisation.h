@@ -24,7 +24,7 @@ namespace andromeda
 
     doc_normalisation(doc_type& doc);
 
-    void execute_on_doc();
+    //void execute_on_doc();
     
     void execute_on_pdf();
 
@@ -52,11 +52,10 @@ namespace andromeda
     doc(doc)
   {}
 
+  /*
   template<typename doc_type>
   void doc_normalisation<doc_type>::execute_on_doc()
   {
-    LOG_S(WARNING);
-    
     auto& orig = doc.orig;
 
     if(orig.count(doc_type::maintext_lbl)==0)
@@ -159,6 +158,7 @@ namespace andromeda
 	  }	
       }
   }
+  */
   
   template<typename doc_type>
   void doc_normalisation<doc_type>::execute_on_pdf()
@@ -326,12 +326,11 @@ namespace andromeda
 	else
 	  {
 	    std::stringstream ss;
-	    ss << doc_name << "#/" << doc_type::maintext_lbl << "/" << l;
+	    ss /*<< doc_name*/ << "#/" << doc_type::maintext_lbl << "/" << l;
 
 	    path = ss.str();
 	  }
-
-	LOG_S(INFO) << "path: " << path;
+	//LOG_S(INFO) << "path: " << path;
 	
         ind_type pdforder = item.at(pdforder_lbl).get<ind_type>();
         ind_type maintext = l;
@@ -381,38 +380,37 @@ namespace andromeda
   template<typename doc_type>
   void doc_normalisation<doc_type>::init_items()
   {
+    std::string doc_name = doc.doc_name;
+    
     auto& orig = doc.orig;
     auto& provs = doc.provs;
     
-    auto& paragraphs = doc.paragraphs;
     auto& other = doc.other;
 
+    auto& texts = doc.texts;
     auto& tables = doc.tables;
     auto& figures = doc.figures;
     
     {
-      paragraphs.clear();
+      texts.clear();
       other.clear();
       
       tables.clear();
       figures.clear();
     }
 
-    /*
-    std::set<std::string> is_ignored = {"page-header", "page-footer"};
-
-    std::set<std::string> is_text = {
-      "title", "subtitle-level-1", "paragraph",
-      "footnote", "caption",
-      "formula", "equation"
-    };
-
-    std::set<std::string> is_table = {"table"};
-    std::set<std::string> is_figure = {"figure"};
-    */
-    
-    for(auto& prov:provs)
+    for(uint64_t i=0; i<provs.size(); i++)
       {
+	auto& prov = provs.at(i);
+	
+	// set a self-reference for later use ...
+	{
+	  std::stringstream ss;
+	  ss /*<< doc_name*/ << "#/" << doc_type::provs_lbl << "/" << i;
+
+	  prov->set_pref(ss.str());
+	}
+	
         std::vector<std::string> parts = utils::split(prov->get_path(), "/");
 
         std::string base = parts.at(1);
@@ -422,21 +420,31 @@ namespace andromeda
 
         if(is_text.count(prov->get_type()))
           {
-            auto subj = std::make_shared<subject<PARAGRAPH> >(doc.doc_hash, prov);
+	    std::stringstream ss;
+	    ss << doc_name << "#/" << doc_type::texts_lbl << "/" << texts.size();	    
+
+	    std::string dloc = ss.str();
+	    
+            auto subj = std::make_shared<subject<PARAGRAPH> >(doc.doc_hash, dloc, prov);
             bool valid = subj->set_data(item);
 
             if(valid)
               {
-                paragraphs.push_back(subj);
+                texts.push_back(subj);
               }
             else
               {
-                LOG_S(WARNING) << "found invalid paragraph: " << item.dump();
+                LOG_S(WARNING) << "found invalid text: " << item.dump();
               }
           }
         else if(is_table.count(prov->get_type()))
           {
-            auto subj = std::make_shared<subject<TABLE> >(doc.doc_hash, prov);
+	    std::stringstream ss;
+	    ss << doc_name << "#/" << doc_type::tables_lbl << "/" << texts.size();	    
+
+	    std::string dloc = ss.str();
+	    
+            auto subj = std::make_shared<subject<TABLE> >(doc.doc_hash, dloc, prov);
             bool valid = subj->set_data(item);
 
 	    tables.push_back(subj);
@@ -452,7 +460,12 @@ namespace andromeda
           }
         else if(is_figure.count(prov->get_type()))
           {
-            auto subj = std::make_shared<subject<FIGURE> >(doc.doc_hash, prov);
+	    std::stringstream ss;
+	    ss << doc_name << "#/" << doc_type::figures_lbl << "/" << texts.size();	    
+
+	    std::string dloc = ss.str();
+	    
+            auto subj = std::make_shared<subject<FIGURE> >(doc.doc_hash, dloc, prov);
             bool valid = subj->set_data(item);
 
 	    figures.push_back(subj);
@@ -471,7 +484,12 @@ namespace andromeda
                 LOG_S(WARNING) << "found new `other` type: " << prov->get_type();
               }
 
-            auto subj = std::make_shared<subject<PARAGRAPH> >(doc.doc_hash, prov);
+	    std::stringstream ss;
+	    ss << doc_name << "#/" << doc_type::meta_lbl << "/" << texts.size();	    
+
+	    std::string dloc = ss.str();
+	    
+            auto subj = std::make_shared<subject<PARAGRAPH> >(doc.doc_hash, dloc, prov);
             bool valid = subj->set_data(item);
 
             if(valid)
@@ -480,7 +498,7 @@ namespace andromeda
               }
             else
               {
-                LOG_S(WARNING) << "found invalid paragraph: " << item.dump();
+                LOG_S(WARNING) << "found invalid text: " << item.dump();
               }
           }
       }
@@ -505,16 +523,18 @@ namespace andromeda
   template<typename doc_type>
   void doc_normalisation<doc_type>::resolve_paths()
   {
-    auto& paragraphs = doc.paragraphs;
+    std::string doc_name = doc.doc_name;
+    
+    auto& texts = doc.texts;
     auto& tables = doc.tables;
     auto& figures = doc.figures;    
     
-    for(index_type l=0; l<paragraphs.size(); l++)
+    for(index_type l=0; l<texts.size(); l++)
       {
-	for(auto& prov:paragraphs.at(l)->provs)
+	for(auto& prov:texts.at(l)->provs)
 	  {
 	    std::stringstream ss;
-	    ss << "#/" << doc_type::texts_lbl << "/" << l;
+	    ss /*<< doc_name*/ << "#/" << doc_type::texts_lbl << "/" << l;
 
 	    prov->set_path(ss.str());
 	  }
@@ -525,9 +545,8 @@ namespace andromeda
 	for(auto& prov:tables.at(l)->provs)
 	  {
 	    std::stringstream ss;
-	    ss << "#/" << doc_type::tables_lbl << "/" << l;
+	    ss /*<< doc_name*/ << "#/" << doc_type::tables_lbl << "/" << l;
 
-	    //prov->path = ss.str();
 	    prov->set_path(ss.str());
 	  }
 
@@ -536,11 +555,10 @@ namespace andromeda
 	    for(auto& prov:tables.at(l)->captions.at(k)->provs)
 	      {
 		std::stringstream ss;
-		ss << "#/"
+		ss /*<< doc_name*/ << "#/"
 		   << doc_type::tables_lbl << "/" << l << "/"
 		   << doc_type::captions_lbl << "/" << k;
 		
-		//prov->path = ss.str();
 		prov->set_path(ss.str());
 	      }
 	  }
@@ -551,9 +569,8 @@ namespace andromeda
 	for(auto& prov:figures.at(l)->provs)
 	  {
 	    std::stringstream ss;
-	    ss << "#/" << doc_type::figures_lbl << "/" << l;
+	    ss /*<< doc_name*/ << "#/" << doc_type::figures_lbl << "/" << l;
 
-	    //prov->path = ss.str();
 	    prov->set_path(ss.str());
 	  }
 
@@ -562,11 +579,10 @@ namespace andromeda
 	    for(auto& prov:figures.at(l)->captions.at(k)->provs)
 	      {
 		std::stringstream ss;
-		ss << "#/"
+		ss /*<< doc_name*/ << "#/"
 		   << doc_type::figures_lbl << "/" << l << "/"
 		   << doc_type::captions_lbl << "/" << k;
 		
-		//prov->path = ss.str();
 		prov->set_path(ss.str());
 	      }
 	  }	

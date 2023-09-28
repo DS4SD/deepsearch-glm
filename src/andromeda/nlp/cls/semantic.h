@@ -287,9 +287,9 @@ namespace andromeda
       }
 
     uint64_t abs_ind=-1, intro_ind=-1, ref_ind=-1;
-    for(uint64_t ind=0; ind<subj.paragraphs.size(); ind++)
+    for(uint64_t ind=0; ind<subj.texts.size(); ind++)
       {
-	auto& para = subj.paragraphs.at(ind);
+	auto& para = subj.texts.at(ind);
 
 	std::string otext = para->get_text();
 	std::string ltext = utils::to_lower(otext);
@@ -318,11 +318,11 @@ namespace andromeda
     double conf=0.0;
 
     //for(auto& para:subj.paragraphs)
-    for(uint64_t ind=0; ind<subj.paragraphs.size(); ind++)
+    for(uint64_t ind=0; ind<subj.texts.size(); ind++)
       {
         //this->apply(*paragraph_ptr);
 
-	auto& para = subj.paragraphs.at(ind);
+	auto& para = subj.texts.at(ind);
 	
 	if(not preprocess(*para, text))
 	  {

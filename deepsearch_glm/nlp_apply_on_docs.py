@@ -51,7 +51,7 @@ examples of execution:
                         help="filename(s) of json document")
 
     parser.add_argument('--models', required=False,                        
-                        type=str, default="language",
+                        type=str, default="language;sementic",
                         help="set NLP models (e.g. `language` or `term;sentence`)")
 
     parser.add_argument('--force-convert', required=False,
@@ -114,6 +114,20 @@ if __name__ == '__main__':
         print(f"applying models ... ", end="")
         doc_j = model.apply_on_doc(doc_i)
 
+        print(doc_j.keys())
+
+        print('page-elements')
+        print(json.dumps(doc_j["page-elements"][0:10], indent=2))
+
+        print('main-text')
+        print(json.dumps(doc_j["main-text"][0:10], indent=2))
+
+        print('body')
+        print(json.dumps(doc_j["body"][0:10], indent=2))
+        
+        print('texts')
+        print(json.dumps(doc_j["texts"][0:10], indent=2))
+        
         """
         props = pd.DataFrame(doc_j["properties"]["data"],
                              columns=doc_j["properties"]["headers"])

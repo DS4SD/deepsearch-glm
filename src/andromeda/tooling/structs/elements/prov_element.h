@@ -48,6 +48,9 @@ namespace andromeda
     
     std::string get_path() { return path; }
     void set_path(std::string val) { path = val; }
+
+    std::string get_pref() { return pref; }
+    void set_pref(std::string val) { pref = val; }
     
     std::string get_name() { return name; }
     void set_name(std::string val) { name = val; }
@@ -68,7 +71,7 @@ namespace andromeda
     
     std::vector<std::string> to_row();
 
-    nlohmann::json to_json();
+    nlohmann::json to_json(bool json_ref);
     nlohmann::json to_json_row();
     
     bool from_json(const nlohmann::json& item);
@@ -99,7 +102,7 @@ namespace andromeda
     ind_type pdforder_ind, maintext_ind;
     std::string name, type;
 
-    std::string path;
+    std::string path, pref;
 
     bool ignore;
     ind_type page;
@@ -407,18 +410,25 @@ namespace andromeda
     return true;
   }
   
-  nlohmann::json prov_element::to_json()
+  nlohmann::json prov_element::to_json(bool json_ref)
   {
     nlohmann::json result = nlohmann::json::object();
 
+    if(path!="" and json_ref)
+      {
+	result["$ref"] = path;
+	return result;
+      }      
+    else if(path!="")
+      {
+	result["dref"] = path;
+      }
+    else
+      {}
+    
     result["type"] = type;
     result["name"] = name;
-
-    if(path!="")
-      {
-	result["__ref"] = path;
-      }
-
+    
     result["page"] = page;
     result["bbox"] = bbox;
     result["span"] = char_range;

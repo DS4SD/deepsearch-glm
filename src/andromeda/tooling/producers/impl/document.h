@@ -257,8 +257,9 @@ namespace andromeda
   {
     std::filesystem::path filepath = subj.filepath;
     std::filesystem::path filename = filepath.filename();
+    //std::filesystem::path filedir = filepath.dirname();
     
-    std::filesystem::path opath;
+    std::filesystem::path opath;// = filedir;
     if(not get_output_file(opath, filename))
       {
 	LOG_S(ERROR) << "can not write: " << opath.c_str();

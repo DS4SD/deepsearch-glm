@@ -462,7 +462,7 @@ namespace andromeda
       
       doc_inserts.clear();
 
-      for(auto& paragraph:subj.paragraphs)
+      for(auto& paragraph:subj.texts)
         {
           this->update(*paragraph, doc_hash, doc_inserts);
         }
@@ -487,7 +487,7 @@ namespace andromeda
 
     void model_creator::contract_tokens(subject<DOCUMENT>& subj)
     {
-      for(auto& item:subj.paragraphs)
+      for(auto& item:subj.texts)
         {
           contract_tokens(*item);
         }

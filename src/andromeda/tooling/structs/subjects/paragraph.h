@@ -12,21 +12,20 @@ namespace andromeda
   public:
 
     subject();
-    subject(uint64_t dhash);
-    subject(uint64_t dhash, std::shared_ptr<prov_element> prov);
+    subject(uint64_t dhash, std::string dloc);
+    subject(uint64_t dhash, std::string dloc,
+	    std::shared_ptr<prov_element> prov);
     
-    ~subject();
+    virtual ~subject();
 
     void finalise();
+    void clear();
     
     std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
-    
-    void clear();
-
     bool is_valid() { return (base_subject::valid and text_element::text_valid); }
     
-    nlohmann::json to_json();
-    bool from_json(const nlohmann::json& data);
+    virtual nlohmann::json to_json();
+    virtual bool from_json(const nlohmann::json& data);
 
     bool concatenate(std::shared_ptr<subject<PARAGRAPH> > other);
     
@@ -79,14 +78,15 @@ namespace andromeda
     provs({})
   {}
 
-  subject<PARAGRAPH>::subject(uint64_t dhash):
-    base_subject(dhash, PARAGRAPH),
+  subject<PARAGRAPH>::subject(uint64_t dhash, std::string dloc):
+    base_subject(dhash, dloc, PARAGRAPH),
     labels({}),
     provs({})
   {}
   
-  subject<PARAGRAPH>::subject(uint64_t dhash, std::shared_ptr<prov_element> prov):
-    base_subject(dhash, PARAGRAPH),
+  subject<PARAGRAPH>::subject(uint64_t dhash, std::string dloc,
+			      std::shared_ptr<prov_element> prov):
+    base_subject(dhash, dloc, PARAGRAPH),
     labels({}),
     provs({prov})
   {}
@@ -95,9 +95,7 @@ namespace andromeda
   {}
 
   void subject<PARAGRAPH>::finalise()
-  {
-    // FIXME ...
-  }
+  {}
   
   void subject<PARAGRAPH>::clear()
   {
@@ -301,7 +299,7 @@ namespace andromeda
 
   nlohmann::json subject<PARAGRAPH>::to_json()
   {
-    nlohmann::json result = base_subject::to_json();
+    nlohmann::json result = base_subject::_to_json();
     
     {      
       result["orig"] = text_element::orig;
@@ -309,13 +307,24 @@ namespace andromeda
 
       result["text-hash"] = text_element::text_hash;
       
-      result["word-tokens"] = andromeda::to_json(text_element::word_tokens, text);
+      //result["word-tokens"] = andromeda::to_json(text_element::word_tokens, text);
 
       result["prov"] = nlohmann::json::array({});
       for(auto& prov:provs)
 	{
-	  nlohmann::json item = prov->to_json();
-	  result["prov"].push_back(item);
+	  //nlohmann::json item = prov->to_json();
+	  //result["prov"].push_back(item);
+	  if(prov!=NULL)
+	    {
+	      nlohmann::json pref;
+	      pref["$ref"] = prov->get_pref();	      
+
+	      result["prov"].push_back(pref);
+	    }
+	  else
+	    {
+	      LOG_S(WARNING) << "encountered prov with NULL";
+	    }
 	}
     }
     

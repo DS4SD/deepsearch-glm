@@ -28,16 +28,16 @@ namespace andromeda
   template<typename doc_type>
   void doc_maintext::filter_maintext(doc_type& doc)
   {
-    auto& paragraphs = doc.paragraphs;
+    auto& texts = doc.texts;
 
-    auto itr=paragraphs.begin();
-    while(itr!=paragraphs.end())
+    auto itr=texts.begin();
+    while(itr!=texts.end())
       {
         std::string type = (*itr)->provs.at(0)->get_type();
 
         if(itr->use_count()>1)
           {
-            itr = paragraphs.erase(itr);
+            itr = texts.erase(itr);
           }
         else if(doc.texts_types.count(type)==0)
           {
@@ -50,7 +50,7 @@ namespace andromeda
               }
             else
               {
-                itr = paragraphs.erase(itr);
+                itr = texts.erase(itr);
               }
           }
         else
@@ -63,23 +63,23 @@ namespace andromeda
   template<typename doc_type>
   void doc_maintext::concatenate_maintext(doc_type& doc)
   {
-    auto& paragraphs = doc.paragraphs;
+    auto& texts = doc.texts;
 
     bool updating=true;
     while(updating)
       {
 	updating=false;
 
-	for(ind_type l=0; l+1<paragraphs.size(); l++)
+	for(ind_type l=0; l+1<texts.size(); l++)
 	  {
-	    auto& curr = paragraphs.at(l+0);
+	    auto& curr = texts.at(l+0);
 	    
 	    if(not curr->is_valid())
 	      {
 		continue;
 	      }
 	    
-	    auto& next = paragraphs.at(l+1);
+	    auto& next = texts.at(l+1);
 	    
 	    auto& curr_prov = curr->provs.back();
 	    auto& next_prov = next->provs.front();
@@ -110,8 +110,8 @@ namespace andromeda
 	  }
 	
 	{
-	  auto itr=paragraphs.begin();
-	  while(itr!=paragraphs.end())
+	  auto itr=texts.begin();
+	  while(itr!=texts.end())
 	    {
 	      if((*itr)->valid)
 		{
@@ -119,7 +119,7 @@ namespace andromeda
 		}
 	      else
 		{
-		  itr = paragraphs.erase(itr);
+		  itr = texts.erase(itr);
 		  updating = true;
 		}
 	    }

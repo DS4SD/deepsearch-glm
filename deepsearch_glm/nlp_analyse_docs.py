@@ -58,7 +58,7 @@ def show_page(doc, page_num=1, show_orig=True):
     df_dims = pd.read_json(json.dumps(page_dims), orient='records')
     print(df_dims)
     
-    page_items = doc["page-items"]
+    page_items = doc["page-elements"]
     print(page_items[0])
 
     # FIXME: ineffecient but works ...
@@ -114,6 +114,7 @@ def show_page(doc, page_num=1, show_orig=True):
 
         opoints = copy.deepcopy(points)
         for i,j in enumerate(orig_order):
+            #print(i, "\t", j, "\t", len(points), "\t", len(opoints))
             x,y = points[i]
             opoints[j] = (x+pw,y)
         
@@ -232,7 +233,7 @@ if __name__ == '__main__':
             doc = json.load(fr)
 
         if "page" in mode or mode=="all":
-            show_page(doc, page_num=8)
+            show_page(doc, page_num=1)
 
         if "text" in mode or mode=="all":
             extract_text(doc)

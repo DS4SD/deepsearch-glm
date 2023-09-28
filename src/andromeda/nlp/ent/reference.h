@@ -87,7 +87,7 @@ namespace andromeda
   
   bool nlp_model<ENT, REFERENCE>::apply(subject<DOCUMENT>& doc)
   {
-    for(auto& paragraph:doc.paragraphs)
+    for(auto& paragraph:doc.texts)
       {
 	this->apply(*paragraph);
       }
