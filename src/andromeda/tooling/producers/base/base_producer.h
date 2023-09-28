@@ -27,7 +27,7 @@ namespace andromeda
     typedef andromeda::base_nlp_model model_type;
     typedef std::shared_ptr<model_type> model_ptr_type;
 
-    typedef subject<PARAGRAPH> paragraph_type;
+    typedef subject<TEXT> paragraph_type;
     typedef subject<TABLE> table_type;
 
     typedef subject<DOCUMENT> doc_type;

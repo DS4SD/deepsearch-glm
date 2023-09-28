@@ -23,8 +23,6 @@ namespace andromeda
   public:
 
     doc_normalisation(doc_type& doc);
-
-    //void execute_on_doc();
     
     void execute_on_pdf();
 
@@ -52,114 +50,6 @@ namespace andromeda
     doc(doc)
   {}
 
-  /*
-  template<typename doc_type>
-  void doc_normalisation<doc_type>::execute_on_doc()
-  {
-    auto& orig = doc.orig;
-
-    if(orig.count(doc_type::maintext_lbl)==0)
-      {
-        LOG_S(WARNING) << "no `main-text` identified";
-        return;
-      }
-
-    auto& paragraphs = doc.paragraphs;
-    auto& other = doc.other;
-
-    auto& tables = doc.tables;
-    auto& figures = doc.figures;
-    
-    {
-      paragraphs.clear();
-      other.clear();
-      
-      tables.clear();
-      figures.clear();
-    }
-
-    std::string maintext_name_lbl = doc_type::maintext_name_lbl;
-    std::string maintext_type_lbl = doc_type::maintext_type_lbl;
-    
-    //auto& main_text = orig.at(doc_type::maintext_lbl);
-    for(std::size_t ind=0; ind<orig.at(doc_type::maintext_lbl).size(); ind++)
-      {
-	const nlohmann::json& item = orig.at(doc_type::maintext_lbl).at(ind);
-
-        std::string name = item.at(maintext_name_lbl).get<std::string>();
-        std::string type = item.at(maintext_type_lbl).get<std::string>();
-
-	std::string ref = "#";
-	if(item.count("$ref"))
-	  {
-	    ref = item["$ref"].get<std::string>();
-	  }
-	else if(item.count("__ref"))
-	  {
-	    ref = item["__ref"].get<std::string>();
-	  }
-	else
-	  {
-	    std::stringstream ss;
-	    ss << "#/" << doc_type::maintext_lbl << "/" << ind;
-
-	    ref = ss.str();
-	  }
-
-        if(is_text.count(type))
-          {
-            auto subj = std::make_shared<subject<PARAGRAPH> >(doc.doc_hash);
-            bool valid = subj->set_data(item);
-
-            if(valid)
-              {
-                paragraphs.push_back(subj);
-              }
-            else
-              {
-                LOG_S(WARNING) << "found invalid paragraph: " << item.dump();
-              }
-          }
-        else if(is_table.count(type))
-          {
-            auto subj = std::make_shared<subject<TABLE> >(doc.doc_hash);
-            bool valid = subj->set_data(item);
-
-	    tables.push_back(subj);
-
-	    if(not valid)
-	      {
-                LOG_S(WARNING) << "found table without structure";
-	      }
-          }
-        else if(is_figure.count(type))
-          {
-            auto subj = std::make_shared<subject<FIGURE> >(doc.doc_hash);
-            bool valid = subj->set_data(item);
-
-	    figures.push_back(subj);
-	    
-            if(not valid)
-	      {
-                LOG_S(WARNING) << "found figure without structure";
-              }
-          }
-	else
-	  {
-            auto subj = std::make_shared<subject<PARAGRAPH> >(doc.doc_hash);
-            bool valid = subj->set_data(item);
-
-	    other.push_back(subj);
-	    
-            if(not valid)
-              {
-                LOG_S(WARNING) << "found invalid other-text: " << item.dump();
-              }
-	  }	
-      }
-  }
-  */
-  
   template<typename doc_type>
   void doc_normalisation<doc_type>::execute_on_pdf()
   {
@@ -198,93 +88,6 @@ namespace andromeda
       }
   }
 
-  /*
-  template<typename doc_type>
-  void doc_normalisation<doc_type>::init_provs()
-  {
-    std::string doc_name = doc.doc_name;
-    
-    auto& orig = doc.orig;
-    auto& provs = doc.provs;
-
-    provs.clear();
-
-    std::string pdforder_lbl = doc_type::pdforder_lbl;    
-
-    std::string maintext_name_lbl = doc_type::maintext_name_lbl;
-    std::string maintext_type_lbl = doc_type::maintext_type_lbl;
-    
-    for(std::size_t l=0; l<orig.at(doc_type::maintext_lbl).size(); l++)
-      {
-	nlohmann::json item = orig.at(doc_type::maintext_lbl).at(l);
-
-        std::stringstream ss;
-        ss << doc_name << "#/" << doc_type::maintext_lbl << "/" << l;
-
-        std::string ref = ss.str();
-
-        ind_type pdforder = item.at(pdforder_lbl).get<ind_type>();
-        ind_type maintext = l;
-
-        std::string name = item.at(maintext_name_lbl).get<std::string>();
-        std::string type = item.at(maintext_type_lbl).get<std::string>();
-
-        if(item.count("$ref") or
-           item.count("__ref"))
-          {
-            if(item.count("$ref"))
-              {
-                ref = item["$ref"].get<std::string>();
-              }
-            else if(item.count("__ref"))
-              {
-                ref = item["__ref"].get<std::string>();
-              }
-            else
-              {
-                LOG_S(FATAL) << "no `$ref` or `__ref` defined in " << item.dump();
-              }
-
-            auto prov = std::make_shared<prov_element>(pdforder, maintext,
-                                                       ref, name, type);
-
-            std::vector<std::string> parts = utils::split(prov->get_path(), "/");
-            assert(parts.size()>=3);
-
-            std::string base = parts.at(1);
-            std::size_t index = std::stoi(parts.at(2));
-
-            if(orig.count(base))
-              {
-                auto& ref_item = orig[base][index];
-                prov->set(ref_item[doc_type::prov_lbl][0]);
-
-                provs.push_back(prov);
-              }
-            else
-              {
-                LOG_S(WARNING) << "undefined reference path in document: "
-                               << prov->get_path();
-              }
-          }
-        else if(item.count(doc_type::prov_lbl) and
-                item[doc_type::prov_lbl].size()==1)
-          {
-            auto prov = std::make_shared<prov_element>(pdforder, maintext,
-                                                       ref, name, type);
-
-            prov->set(item[doc_type::prov_lbl][0]);
-
-            provs.push_back(prov);
-          }
-        else
-          {
-            LOG_S(ERROR) << "undefined prov for main-text item: " << item.dump();
-          }
-      }
-  }
-  */
-
   template<typename doc_type>
   void doc_normalisation<doc_type>::init_provs()
   {
@@ -307,21 +110,23 @@ namespace andromeda
 	std::string path="";
 	if(item.count("$ref"))
 	  {
-	    auto lpath = item["$ref"].get<std::string>();
+	    path = item["$ref"].get<std::string>();
+	    //auto lpath = item["$ref"].get<std::string>();
 
-	    std::stringstream ss;
-	    ss << doc_name << lpath;
+	    //std::stringstream ss;
+	    //ss << doc_name << lpath;
 
-	    path = ss.str();
+	    //path = ss.str();
 	  }
 	else if(item.count("__ref"))
 	  {
-	    auto lpath = item["__ref"].get<std::string>();
+	    path = item["__ref"].get<std::string>();
+	    //auto lpath = item["__ref"].get<std::string>();
 
-	    std::stringstream ss;
-	    ss << doc_name << lpath;
+	    //std::stringstream ss;
+	    //ss << doc_name << lpath;
 
-	    path = ss.str();
+	    //path = ss.str();
 	  }
 	else
 	  {
@@ -347,7 +152,7 @@ namespace andromeda
 	std::string base = parts.at(1);
 	std::size_t index = std::stoi(parts.at(2));
 	
-	if(orig.count(base) and index<orig[base].size())
+	if(orig.count(base) and index<orig[base].size()) // make sure that the path exists in the orig document
 	  {
 	    auto& ref_item = orig[base][index];
 
@@ -359,7 +164,8 @@ namespace andromeda
 	      }
 	    else
 	      {
-		LOG_S(ERROR) << "undefined prov for main-text item: " << item.dump();
+		LOG_S(ERROR) << "undefined prov for main-text item: "
+			     << item.dump();
 	      } 
 	  }
 	else
@@ -425,7 +231,7 @@ namespace andromeda
 
 	    std::string dloc = ss.str();
 	    
-            auto subj = std::make_shared<subject<PARAGRAPH> >(doc.doc_hash, dloc, prov);
+            auto subj = std::make_shared<subject<TEXT> >(doc.doc_hash, dloc, prov);
             bool valid = subj->set_data(item);
 
             if(valid)
@@ -489,7 +295,7 @@ namespace andromeda
 
 	    std::string dloc = ss.str();
 	    
-            auto subj = std::make_shared<subject<PARAGRAPH> >(doc.doc_hash, dloc, prov);
+            auto subj = std::make_shared<subject<TEXT> >(doc.doc_hash, dloc, prov);
             bool valid = subj->set_data(item);
 
             if(valid)

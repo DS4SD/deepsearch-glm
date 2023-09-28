@@ -39,9 +39,9 @@ namespace andromeda
 
     std::vector<std::shared_ptr<prov_element> > provs;
     
-    std::vector<std::shared_ptr<subject<PARAGRAPH> > > captions;
-    std::vector<std::shared_ptr<subject<PARAGRAPH> > > footnotes;
-    std::vector<std::shared_ptr<subject<PARAGRAPH> > > mentions;
+    std::vector<std::shared_ptr<subject<TEXT> > > captions;
+    std::vector<std::shared_ptr<subject<TEXT> > > footnotes;
+    std::vector<std::shared_ptr<subject<TEXT> > > mentions;
   };
 
   subject<FIGURE>::subject():
@@ -136,8 +136,8 @@ namespace andromeda
       captions.clear();
       for(const nlohmann::json& item:data.at(base_subject::captions_lbl))
 	{
-	  std::shared_ptr<subject<PARAGRAPH> > ptr
-	    = std::make_shared<subject<PARAGRAPH> >();
+	  std::shared_ptr<subject<TEXT> > ptr
+	    = std::make_shared<subject<TEXT> >();
 
 	  ptr->from_json(item);
 	  captions.push_back(ptr);
@@ -148,8 +148,8 @@ namespace andromeda
       footnotes.clear();
       for(const nlohmann::json& item:data.at(base_subject::footnotes_lbl))
 	{
-	  std::shared_ptr<subject<PARAGRAPH> > ptr
-	    = std::make_shared<subject<PARAGRAPH> >();
+	  std::shared_ptr<subject<TEXT> > ptr
+	    = std::make_shared<subject<TEXT> >();
 
 	  ptr->from_json(item);
 	  footnotes.push_back(ptr);
@@ -160,8 +160,8 @@ namespace andromeda
       mentions.clear();
       for(const nlohmann::json& item:data.at(base_subject::mentions_lbl))
 	{
-	  std::shared_ptr<subject<PARAGRAPH> > ptr
-	    = std::make_shared<subject<PARAGRAPH> >();
+	  std::shared_ptr<subject<TEXT> > ptr
+	    = std::make_shared<subject<TEXT> >();
 
 	  ptr->from_json(item);
 	  mentions.push_back(ptr);

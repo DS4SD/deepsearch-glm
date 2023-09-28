@@ -154,14 +154,14 @@ namespace andromeda_py
 
     auto& nlp_models = (model->get_parameters()).models;
 
-    andromeda::subject<andromeda::PARAGRAPH> subj;
+    andromeda::subject<andromeda::TEXT> subj;
     if(not subj.set_text(text))
       {
         LOG_S(WARNING) << "could not set text for paragraph ...";
         return result;
       }
 
-    andromeda::producer<andromeda::PARAGRAPH> prod(nlp_models);
+    andromeda::producer<andromeda::TEXT> prod(nlp_models);
     if(not prod.apply(subj))
       {
         LOG_S(WARNING) << "could not set text for paragraph ...";

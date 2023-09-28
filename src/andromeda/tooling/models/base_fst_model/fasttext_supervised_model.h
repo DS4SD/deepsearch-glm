@@ -39,10 +39,10 @@ namespace andromeda
     virtual std::string preprocess(const std::string& orig);
     virtual bool classify(const std::string& orig, std::string& label, double& conf);
 
-    virtual bool preprocess(const subject<PARAGRAPH>& subj, std::string& text);
+    virtual bool preprocess(const subject<TEXT>& subj, std::string& text);
     virtual bool preprocess(const subject<TABLE>& subj, std::string& text);
 
-    bool classify(subject<PARAGRAPH>& subj);
+    bool classify(subject<TEXT>& subj);
     bool classify(subject<TABLE>& subj);
 
   protected:
@@ -310,7 +310,7 @@ namespace andromeda
     return orig;
   }
   
-  bool fasttext_supervised_model::preprocess(const subject<PARAGRAPH>& subj, std::string& text)
+  bool fasttext_supervised_model::preprocess(const subject<TEXT>& subj, std::string& text)
   {
     auto& wtokens = subj.word_tokens;
     //LOG_S(INFO) << "tokens: \n\n" << tabulate(wtokens); 
@@ -388,7 +388,7 @@ namespace andromeda
 
         bool training_sample = item.value("training-sample", true);
 	
-	subject<PARAGRAPH> paragraph;
+	subject<TEXT> paragraph;
 	//subject<TABLE> table;
 
 	if(paragraph.from_json(item) and preprocess(paragraph, text) and
@@ -622,7 +622,7 @@ namespace andromeda
     return false;
   }
 
-  bool fasttext_supervised_model::classify(subject<PARAGRAPH>& subj)
+  bool fasttext_supervised_model::classify(subject<TEXT>& subj)
   {
     if(not satisfies_dependencies(subj))
       {

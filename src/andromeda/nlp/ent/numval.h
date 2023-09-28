@@ -20,16 +20,16 @@ namespace andromeda
     virtual model_type get_type() { return ENT; }
     virtual model_name get_name() { return NUMVAL; }
 
-    virtual bool apply(subject<PARAGRAPH>& subj);
+    virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj);
     
   private:
     
     bool initialise();
 
-    bool apply_regex(subject<PARAGRAPH>& subj);
+    bool apply_regex(subject<TEXT>& subj);
     
-    bool contract_regex(subject<PARAGRAPH>& subj);
+    bool contract_regex(subject<TEXT>& subj);
     
   private:
 
@@ -125,7 +125,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<ENT, NUMVAL>::apply(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, NUMVAL>::apply(subject<TEXT>& subj)
   {
     //LOG_S(INFO) << "starting numval ...";
     
@@ -147,7 +147,7 @@ namespace andromeda
     return true;
   }
   
-  bool nlp_model<ENT, NUMVAL>::apply_regex(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, NUMVAL>::apply_regex(subject<TEXT>& subj)
   {    
     std::string text = subj.text;
     for(auto& expr:exprs)

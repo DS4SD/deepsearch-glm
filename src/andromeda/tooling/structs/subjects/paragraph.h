@@ -1,12 +1,12 @@
 //-*-C++-*-
 
-#ifndef ANDROMEDA_SUBJECTS_PARAGRAPH_H_
-#define ANDROMEDA_SUBJECTS_PARAGRAPH_H_
+#ifndef ANDROMEDA_SUBJECTS_TEXT_H_
+#define ANDROMEDA_SUBJECTS_TEXT_H_
 
 namespace andromeda
 {
   template<>
-  class subject<PARAGRAPH>: public base_subject,
+  class subject<TEXT>: public base_subject,
 			    public text_element
   {
   public:
@@ -27,7 +27,7 @@ namespace andromeda
     virtual nlohmann::json to_json();
     virtual bool from_json(const nlohmann::json& data);
 
-    bool concatenate(std::shared_ptr<subject<PARAGRAPH> > other);
+    bool concatenate(std::shared_ptr<subject<TEXT> > other);
     
     bool set_text(const std::string& ctext);
     bool set_data(const nlohmann::json& item);
@@ -72,32 +72,32 @@ namespace andromeda
     std::vector<std::shared_ptr<prov_element> > provs;
   };
 
-  subject<PARAGRAPH>::subject():
-    base_subject(PARAGRAPH),
+  subject<TEXT>::subject():
+    base_subject(TEXT),
     labels({}),
     provs({})
   {}
 
-  subject<PARAGRAPH>::subject(uint64_t dhash, std::string dloc):
-    base_subject(dhash, dloc, PARAGRAPH),
+  subject<TEXT>::subject(uint64_t dhash, std::string dloc):
+    base_subject(dhash, dloc, TEXT),
     labels({}),
     provs({})
   {}
   
-  subject<PARAGRAPH>::subject(uint64_t dhash, std::string dloc,
+  subject<TEXT>::subject(uint64_t dhash, std::string dloc,
 			      std::shared_ptr<prov_element> prov):
-    base_subject(dhash, dloc, PARAGRAPH),
+    base_subject(dhash, dloc, TEXT),
     labels({}),
     provs({prov})
   {}
   
-  subject<PARAGRAPH>::~subject()
+  subject<TEXT>::~subject()
   {}
 
-  void subject<PARAGRAPH>::finalise()
+  void subject<TEXT>::finalise()
   {}
   
-  void subject<PARAGRAPH>::clear()
+  void subject<TEXT>::clear()
   {
     base_subject::clear();
     text_element::clear();
@@ -107,7 +107,7 @@ namespace andromeda
   }
 
   // FIXME: we might need to add some rules for the text-concatenation ...
-  bool subject<PARAGRAPH>::concatenate(std::shared_ptr<subject<PARAGRAPH> > other)
+  bool subject<TEXT>::concatenate(std::shared_ptr<subject<TEXT> > other)
   {
     std::string ctext = text_element::text;
     auto offset = ctext.size();
@@ -137,7 +137,7 @@ namespace andromeda
     return set_text(ctext);
   }
   
-  bool subject<PARAGRAPH>::set_text(const std::string& ctext)
+  bool subject<TEXT>::set_text(const std::string& ctext)
   {
     text_element::set_text(ctext);
 
@@ -147,7 +147,7 @@ namespace andromeda
     return text_element::text_valid;
   }
 
-  bool subject<PARAGRAPH>::set_data(const nlohmann::json& item)
+  bool subject<TEXT>::set_data(const nlohmann::json& item)
   {
     base_subject::clear_models();
     text_element::clear();
@@ -172,13 +172,13 @@ namespace andromeda
     return valid;
   }
 
-  bool subject<PARAGRAPH>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
+  bool subject<TEXT>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
 				      std::shared_ptr<utils::text_normaliser> text_normaliser)
   {
     return text_element::set_tokens(char_normaliser, text_normaliser);
   }  
   
-  bool subject<PARAGRAPH>::set(const std::string& ctext,
+  bool subject<TEXT>::set(const std::string& ctext,
 			       std::shared_ptr<utils::char_normaliser> char_normaliser,
 			       std::shared_ptr<utils::text_normaliser> text_normaliser)
   {
@@ -190,12 +190,12 @@ namespace andromeda
     return false;
   }
 
-  void subject<PARAGRAPH>::sort()
+  void subject<TEXT>::sort()
   {
     std::sort(instances.begin(), instances.end());
   }
 
-  typename std::vector<base_instance>::iterator subject<PARAGRAPH>::insts_beg(std::array<uint64_t, 2> char_rng)
+  typename std::vector<base_instance>::iterator subject<TEXT>::insts_beg(std::array<uint64_t, 2> char_rng)
   {
     base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake",
 		       char_rng, {0,0}, {0,0});
@@ -203,7 +203,7 @@ namespace andromeda
     return std::lower_bound(instances.begin(), instances.end(), fake);    
   }
   
-  typename std::vector<base_instance>::iterator subject<PARAGRAPH>::insts_end(std::array<uint64_t, 2> char_rng)
+  typename std::vector<base_instance>::iterator subject<TEXT>::insts_end(std::array<uint64_t, 2> char_rng)
   {
     base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake",
 		       char_rng, {0,0}, {0,0});
@@ -211,7 +211,7 @@ namespace andromeda
     return std::upper_bound(instances.begin(), instances.end(), fake);    
   }
   
-  bool subject<PARAGRAPH>::get_property_label(const std::string name, std::string& label)
+  bool subject<TEXT>::get_property_label(const std::string name, std::string& label)
   {
     for(auto& prop:properties)
       {
@@ -225,12 +225,12 @@ namespace andromeda
     return false;
   }
 
-  std::string subject<PARAGRAPH>::get_text(range_type rng)
+  std::string subject<TEXT>::get_text(range_type rng)
   {
     return text_element::get_text(rng);
   }
 
-  void subject<PARAGRAPH>::apply_wtoken_contractions(std::vector<candidate_type>& candidates)
+  void subject<TEXT>::apply_wtoken_contractions(std::vector<candidate_type>& candidates)
   {
     text_element::apply_word_contractions(candidates);
 
@@ -243,7 +243,7 @@ namespace andromeda
       }
   }
 
-  void subject<PARAGRAPH>::contract_wtokens_from_instances(model_name name)
+  void subject<TEXT>::contract_wtokens_from_instances(model_name name)
   {
     std::vector<candidate_type> candidates={};
 
@@ -270,7 +270,7 @@ namespace andromeda
       }
   }
 
-  void subject<PARAGRAPH>::contract_wtokens_from_instances(model_name name, std::string subtype)
+  void subject<TEXT>::contract_wtokens_from_instances(model_name name, std::string subtype)
   {
     std::vector<candidate_type> candidates={};
 
@@ -297,7 +297,7 @@ namespace andromeda
       }
   }
 
-  nlohmann::json subject<PARAGRAPH>::to_json()
+  nlohmann::json subject<TEXT>::to_json()
   {
     nlohmann::json result = base_subject::_to_json();
     
@@ -331,7 +331,7 @@ namespace andromeda
     return result;
   }
 
-  bool subject<PARAGRAPH>::from_json(const nlohmann::json& data)
+  bool subject<TEXT>::from_json(const nlohmann::json& data)
   {    
     if(data.count("hash")>0 and data.count("applied-models")>0 and
        data.count("orig")>0 and data.count("text")>0)
@@ -374,7 +374,7 @@ namespace andromeda
     return true;
   }
   
-  void subject<PARAGRAPH>::show(bool txt, bool mdls,
+  void subject<TEXT>::show(bool txt, bool mdls,
                                 bool ctok, bool wtok,
                                 bool prps, bool insts, bool rels)
   {

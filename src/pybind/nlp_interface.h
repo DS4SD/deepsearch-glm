@@ -27,7 +27,7 @@ namespace andromeda_py
 
   private:
 
-    void apply_paragraphs(std::shared_ptr<andromeda::producer<andromeda::PARAGRAPH> > producer,
+    void apply_paragraphs(std::shared_ptr<andromeda::producer<andromeda::TEXT> > producer,
 			  nlohmann::json& results);
 
     void apply_docs(std::shared_ptr<andromeda::producer<andromeda::DOCUMENT> > producer,
@@ -180,9 +180,9 @@ namespace andromeda_py
       {
 	switch(base_producer->get_subject_name())
 	  {
-	  case andromeda::PARAGRAPH:
+	  case andromeda::TEXT:
 	    {
-	      typedef andromeda::producer<andromeda::PARAGRAPH> producer_type;
+	      typedef andromeda::producer<andromeda::TEXT> producer_type;
 	      auto producer = std::dynamic_pointer_cast<producer_type>(base_producer);
 
 	      apply_paragraphs(producer, results);
@@ -211,10 +211,10 @@ namespace andromeda_py
     return results;
   }
 
-  void nlp_model::apply_paragraphs(std::shared_ptr<andromeda::producer<andromeda::PARAGRAPH> > producer,
+  void nlp_model::apply_paragraphs(std::shared_ptr<andromeda::producer<andromeda::TEXT> > producer,
 				   nlohmann::json& results)
   {
-    andromeda::subject<andromeda::PARAGRAPH> subj;
+    andromeda::subject<andromeda::TEXT> subj;
 
     std::size_t count=0;
     
@@ -315,7 +315,7 @@ namespace andromeda_py
   
   nlohmann::json nlp_model::apply_on_text(std::string& text)
   {
-    andromeda::subject<andromeda::PARAGRAPH> paragraph;
+    andromeda::subject<andromeda::TEXT> paragraph;
     bool valid = paragraph.set(text, char_normaliser, text_normaliser);
 
     bool success=false;

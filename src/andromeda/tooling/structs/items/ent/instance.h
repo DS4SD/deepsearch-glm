@@ -175,7 +175,7 @@ namespace andromeda
                            range_type ctok_range,
                            range_type wtok_range):
     subj_hash(subj_hash),
-    subj_name(PARAGRAPH),
+    subj_name(TEXT),
     subj_path(""),
 
 
@@ -216,7 +216,7 @@ namespace andromeda
                            range_type wtok_range):
 
     subj_hash(subj_hash),
-    subj_name(PARAGRAPH),
+    subj_name(TEXT),
     subj_path("#"),
 
     ehash(DEFAULT_HASH),
@@ -424,7 +424,7 @@ namespace andromeda
   {
     switch(subj)
       {
-      case PARAGRAPH:
+      case TEXT:
         {
           return TEXT_HEADERS;
         }
@@ -449,7 +449,7 @@ namespace andromeda
 
     switch(subj)
       {
-      case PARAGRAPH:
+      case TEXT:
         {
           row = nlohmann::json::array({to_key(model_type), model_subtype,
                                        conf, ehash, ihash,
@@ -558,7 +558,7 @@ namespace andromeda
   {
     switch(subj_name)
       {
-      case PARAGRAPH:
+      case TEXT:
         {
           std::vector<std::string> row =
             {

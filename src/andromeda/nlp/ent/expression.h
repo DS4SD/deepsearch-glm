@@ -23,7 +23,7 @@ namespace andromeda
     virtual model_type get_type() { return ENT; }
     virtual model_name get_name() { return EXPRESSION; }
 
-    virtual bool apply(subject<PARAGRAPH>& subj);
+    virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj);
 
   private:
@@ -32,24 +32,24 @@ namespace andromeda
 
     std::string normalise(std::string orig);
 
-    bool apply_normalisation_regexes(subject<PARAGRAPH>& subj);
+    bool apply_normalisation_regexes(subject<TEXT>& subj);
 
-    bool apply_common_regex(subject<PARAGRAPH>& subj);
-    bool apply_apostrophe_regex(subject<PARAGRAPH>& subj);
-    bool apply_abbr_regex(subject<PARAGRAPH>& subj);
+    bool apply_common_regex(subject<TEXT>& subj);
+    bool apply_apostrophe_regex(subject<TEXT>& subj);
+    bool apply_abbr_regex(subject<TEXT>& subj);
 
-    bool apply_regex(subject<PARAGRAPH>& subj);
+    bool apply_regex(subject<TEXT>& subj);
 
-    bool apply_concatenation_regex(subject<PARAGRAPH>& subj);
+    bool apply_concatenation_regex(subject<TEXT>& subj);
     bool apply_concatenation_regex(subject<TABLE>& subj);
     
-    bool apply_latex_regex(subject<PARAGRAPH>& subj);
+    bool apply_latex_regex(subject<TEXT>& subj);
 
-    bool find_concatenated_wtokens(subject<PARAGRAPH>& subj);
-    void add_concatenated_expression(subject<PARAGRAPH>& subj,
+    bool find_concatenated_wtokens(subject<TEXT>& subj);
+    void add_concatenated_expression(subject<TEXT>& subj,
                                      std::list<std::size_t> wtoken_inds);
 
-    bool post_process(subject<PARAGRAPH>& subj);
+    bool post_process(subject<TEXT>& subj);
 
   private:
 
@@ -319,7 +319,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<ENT, EXPRESSION>::apply(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, EXPRESSION>::apply(subject<TEXT>& subj)
   {
     //LOG_S(INFO) << "starting expression ...";
 
@@ -347,7 +347,7 @@ namespace andromeda
     return update_applied_models(subj);
   }
 
-  bool nlp_model<ENT, EXPRESSION>::apply_normalisation_regexes(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, EXPRESSION>::apply_normalisation_regexes(subject<TEXT>& subj)
   {
     apply_common_regex(subj);
 
@@ -374,7 +374,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<ENT, EXPRESSION>::apply_common_regex(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, EXPRESSION>::apply_common_regex(subject<TEXT>& subj)
   {
     //std::string orig = subj.text;
     std::string text = subj.text;
@@ -425,7 +425,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<ENT, EXPRESSION>::apply_apostrophe_regex(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, EXPRESSION>::apply_apostrophe_regex(subject<TEXT>& subj)
   {
     std::string text = subj.text;
 
@@ -468,7 +468,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<ENT, EXPRESSION>::apply_abbr_regex(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, EXPRESSION>::apply_abbr_regex(subject<TEXT>& subj)
   {
     std::string text = subj.text;
 
@@ -522,7 +522,7 @@ namespace andromeda
     return name;
   }
 
-  bool nlp_model<ENT, EXPRESSION>::apply_regex(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, EXPRESSION>::apply_regex(subject<TEXT>& subj)
   {
     apply_concatenation_regex(subj);
 
@@ -531,7 +531,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<ENT, EXPRESSION>::apply_concatenation_regex(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, EXPRESSION>::apply_concatenation_regex(subject<TEXT>& subj)
   {
     std::string text = subj.text;
 
@@ -652,7 +652,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<ENT, EXPRESSION>::apply_latex_regex(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, EXPRESSION>::apply_latex_regex(subject<TEXT>& subj)
   {
     //std::string orig = subj.text;
     std::string text = subj.text;
@@ -710,7 +710,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<ENT, EXPRESSION>::find_concatenated_wtokens(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, EXPRESSION>::find_concatenated_wtokens(subject<TEXT>& subj)
   {
     std::set<std::size_t> forbidden_inds={};
     for(auto& ent:subj.instances)
@@ -759,7 +759,7 @@ namespace andromeda
     return true;
   }
 
-  void nlp_model<ENT, EXPRESSION>::add_concatenated_expression(subject<PARAGRAPH>& subj,
+  void nlp_model<ENT, EXPRESSION>::add_concatenated_expression(subject<TEXT>& subj,
                                                                std::list<std::size_t> wtoken_inds)
   {
     auto& wtokens = subj.word_tokens;
@@ -839,7 +839,7 @@ namespace andromeda
       }
   }
 
-  bool nlp_model<ENT, EXPRESSION>::post_process(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, EXPRESSION>::post_process(subject<TEXT>& subj)
   {
     auto& insts = subj.instances;
 

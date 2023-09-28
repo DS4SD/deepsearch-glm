@@ -45,7 +45,7 @@ namespace andromeda
 
     std::map<std::shared_ptr<prov_element>, index_type> prov_to_index={};
 
-    std::map<std::shared_ptr<prov_element>, std::shared_ptr<subject<PARAGRAPH> > > prov_to_text={};
+    std::map<std::shared_ptr<prov_element>, std::shared_ptr<subject<TEXT> > > prov_to_text={};
     std::map<std::shared_ptr<prov_element>, std::shared_ptr<subject<TABLE> > > prov_to_table={};
     std::map<std::shared_ptr<prov_element>, std::shared_ptr<subject<FIGURE> > > prov_to_figure={};
   };
@@ -315,7 +315,7 @@ namespace andromeda
 		//<< " to table "
 		//<< prov_j->maintext_ind;
 
-                //assert(prov_j->dref.first==PARAGRAPH);
+                //assert(prov_j->dref.first==TEXT);
                 table->captions.push_back(caption);
               }
           }
@@ -337,7 +337,7 @@ namespace andromeda
 		//<< " to figure "
 		//<< prov_j->maintext_ind;
 
-                //assert(prov_j->dref.first==PARAGRAPH);
+                //assert(prov_j->dref.first==TEXT);
                 figure->captions.push_back(caption);
               }
           }

@@ -20,7 +20,7 @@ namespace andromeda
     virtual model_type get_type() { return ENT; }
     virtual model_name get_name() { return PARENTHESIS; }
 
-    virtual bool apply(subject<PARAGRAPH>& subj);
+    virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj);
 
   private:
@@ -89,7 +89,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<ENT, PARENTHESIS>::apply(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, PARENTHESIS>::apply(subject<TEXT>& subj)
   {
     if(not satisfies_dependencies(subj))
       {

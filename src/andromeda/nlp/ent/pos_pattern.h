@@ -15,7 +15,7 @@ namespace andromeda
     base_pos_pattern();
     ~base_pos_pattern();
 
-    void get_ranges(subject<PARAGRAPH>& subj,
+    void get_ranges(subject<TEXT>& subj,
                     std::vector<range_type >& ranges_01,
                     std::vector<range_type >& ranges_02);
 
@@ -31,7 +31,7 @@ namespace andromeda
     bool contains(range_type& range,
                   std::vector<range_type >& ranges);
 
-    void add_instances(model_name name, subject<PARAGRAPH>& subj,
+    void add_instances(model_name name, subject<TEXT>& subj,
 		      std::vector<range_type >& ranges_01,
 		      std::vector<range_type >& ranges_02,
 		      std::vector<pcre2_item>& chunks);
@@ -59,7 +59,7 @@ namespace andromeda
   base_pos_pattern::~base_pos_pattern()
   {}
 
-  void base_pos_pattern::get_ranges(subject<PARAGRAPH>& subj,
+  void base_pos_pattern::get_ranges(subject<TEXT>& subj,
                                     std::vector<range_type>& ranges_01,
                                     std::vector<range_type>& ranges_02)
   {
@@ -79,7 +79,7 @@ namespace andromeda
   }
 
   /*
-  void base_pos_pattern::get_chunks(subject<PARAGRAPH>& subj,
+  void base_pos_pattern::get_chunks(subject<TEXT>& subj,
 				    std::vector<pcre2_expr>& exprs,
                                     std::vector<pcre2_item>& chunks)
   {
@@ -179,7 +179,7 @@ namespace andromeda
     return false;
   }
 
-  void base_pos_pattern::add_instances(model_name name, subject<PARAGRAPH>& subj,
+  void base_pos_pattern::add_instances(model_name name, subject<TEXT>& subj,
 				      std::vector<range_type >& ranges_01,
 				      std::vector<range_type >& ranges_02,
 				      std::vector<pcre2_item>& chunks)

@@ -16,21 +16,21 @@ namespace andromeda
 
       model_creator(std::shared_ptr<model_type> model);
 
-      void update(subject<PARAGRAPH>& subj, std::set<hash_type>& docs_inserts);
+      void update(subject<TEXT>& subj, std::set<hash_type>& docs_inserts);
       void update(subject<TABLE>& subj, std::set<hash_type>& docs_inserts);
       
       void update(subject<DOCUMENT>& subj, std::set<hash_type>& docs_cnt);
 
     private:
       
-      void update(subject<PARAGRAPH>& subj, hash_type doc_hash,
+      void update(subject<TEXT>& subj, hash_type doc_hash,
 		  std::set<hash_type>& docs_inserts);
 
       void update(subject<TABLE>& subj, hash_type doc_hash,
 		  std::set<hash_type>& docs_inserts);
 
 
-      void contract_tokens(subject<PARAGRAPH>& subj);
+      void contract_tokens(subject<TEXT>& subj);
 
       void contract_tokens(subject<TABLE>& subj);
 
@@ -187,7 +187,7 @@ namespace andromeda
       undef_pos_hash = node_names::to_hash.at(node_names::UNDEFINED_POS);
     }
 
-    void model_creator::update(subject<PARAGRAPH>& subj,
+    void model_creator::update(subject<TEXT>& subj,
 			       std::set<hash_type>& docs_cnt) // hashes of nodes already in doc
     {
       this->update(subj, -1, docs_cnt);
@@ -199,7 +199,7 @@ namespace andromeda
       this->update(subj, -1, docs_cnt);
     }
     
-    void model_creator::update(subject<PARAGRAPH>& subj, hash_type doc_hash,
+    void model_creator::update(subject<TEXT>& subj, hash_type doc_hash,
 			       std::set<hash_type>& docs_cnt) // hashes of nodes already in doc
     {
       auto& nodes = model_ptr->get_nodes();
@@ -241,8 +241,8 @@ namespace andromeda
       
       insert_nodes(nodes, tokens, tok_hashes, pos_hashes);
 
-      update_counters(PARAGRAPH, nodes, instances, tok_hashes, text_hashes, table_hashes, docs_cnt);
-      update_counters(PARAGRAPH, nodes, instances, pos_hashes, text_hashes, table_hashes, docs_cnt);
+      update_counters(TEXT, nodes, instances, tok_hashes, text_hashes, table_hashes, docs_cnt);
+      update_counters(TEXT, nodes, instances, pos_hashes, text_hashes, table_hashes, docs_cnt);
 
       insert_edges(tok_hashes, pos_hashes, edges);
 
@@ -473,7 +473,7 @@ namespace andromeda
         }      
     }
     
-    void model_creator::contract_tokens(subject<PARAGRAPH>& subj)
+    void model_creator::contract_tokens(subject<TEXT>& subj)
     {
       subj.contract_wtokens_from_instances(LINK);
       subj.contract_wtokens_from_instances(CITE);
@@ -567,7 +567,7 @@ namespace andromeda
     {      
       std::set<hash_type> sent_beg={};
 
-      if(name==PARAGRAPH)
+      if(name==TEXT)
 	{
 	  for(auto& inst:instances)
 	    {
@@ -599,7 +599,7 @@ namespace andromeda
 
           node.incr_word_cnt();// += 1;
 
-	  if(name==PARAGRAPH)
+	  if(name==TEXT)
 	    {
 	      node.incr_sent_cnt(sent_ins.second);
 	      node.incr_text_cnt(text_ins.second);

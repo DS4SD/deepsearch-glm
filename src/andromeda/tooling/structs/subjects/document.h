@@ -108,9 +108,9 @@ namespace andromeda
     std::vector<std::shared_ptr<base_subject> > body;
     std::vector<std::shared_ptr<base_subject> > meta;
     
-    std::vector<std::shared_ptr<subject<PARAGRAPH> > > other;
+    std::vector<std::shared_ptr<subject<TEXT> > > other;
 
-    std::vector<std::shared_ptr<subject<PARAGRAPH> > > texts;
+    std::vector<std::shared_ptr<subject<TEXT> > > texts;
     std::vector<std::shared_ptr<subject<TABLE> > > tables;
     std::vector<std::shared_ptr<subject<FIGURE> > > figures;
   };
@@ -486,8 +486,8 @@ namespace andromeda
       {
         const nlohmann::json& item = orig.at(texts_lbl).at(l);
 
-        std::shared_ptr<subject<PARAGRAPH> > ptr
-          = std::make_shared<subject<PARAGRAPH> >();
+        std::shared_ptr<subject<TEXT> > ptr
+          = std::make_shared<subject<TEXT> >();
 
         ptr->from_json(item);
 
@@ -503,8 +503,8 @@ namespace andromeda
       {
         const nlohmann::json& item = orig.at(meta_lbl).at(l);
 
-        std::shared_ptr<subject<PARAGRAPH> > ptr
-          = std::make_shared<subject<PARAGRAPH> >();
+        std::shared_ptr<subject<TEXT> > ptr
+          = std::make_shared<subject<TEXT> >();
 
         ptr->from_json(item);
 
