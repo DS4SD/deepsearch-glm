@@ -21,6 +21,8 @@ namespace andromeda
     void clear();
 
     virtual nlohmann::json to_json();
+    virtual nlohmann::json to_json(const std::set<std::string>& filters);
+
     virtual bool from_json(const nlohmann::json& data);
     
     std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
@@ -122,6 +124,51 @@ namespace andromeda
 	  _.push_back(mention->to_json());
 	}
     }        
+
+    {
+      result[base_subject::prov_lbl] = base_subject::get_prov_refs(provs);
+    }      
+    
+    return result;
+  }
+
+  nlohmann::json subject<FIGURE>::to_json(const std::set<std::string>& filters)
+  {
+    nlohmann::json result = base_subject::_to_json(filters);
+    
+    {
+      nlohmann::json& _ = result[base_subject::captions_lbl];
+      _ = nlohmann::json::array({});
+      
+      for(auto& caption:captions)
+	{
+	  _.push_back(caption->to_json(filters));
+	}
+    }
+
+    {
+      nlohmann::json& _ = result[base_subject::footnotes_lbl];
+      _ = nlohmann::json::array({});
+      
+      for(auto& footnote:footnotes)
+	{
+	  _.push_back(footnote->to_json(filters));
+	}
+    }
+
+    {
+      nlohmann::json& _ = result[base_subject::mentions_lbl];
+      _ = nlohmann::json::array({});
+      
+      for(auto& mention:mentions)
+	{
+	  _.push_back(mention->to_json(filters));
+	}
+    }        
+
+    {
+      result[base_subject::prov_lbl] = base_subject::get_prov_refs(provs);
+    }      
     
     return result;
   }

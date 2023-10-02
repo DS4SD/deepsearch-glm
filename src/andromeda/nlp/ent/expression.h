@@ -635,7 +635,8 @@ namespace andromeda
 							   EXPRESSION, expr.get_subtype(),
                                                            name, orig,
                                                            subj(i,j).get_coor(),
-                                                           subj(i,j).get_span(),
+                                                           subj(i,j).get_row_span(),
+							    subj(i,j).get_col_span(),
                                                            char_range,
 							   ctok_range,
 							   wtok_range);

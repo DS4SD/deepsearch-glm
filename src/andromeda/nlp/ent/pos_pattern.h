@@ -32,15 +32,17 @@ namespace andromeda
                   std::vector<range_type >& ranges);
 
     void add_instances(model_name name, subject<TEXT>& subj,
-		      std::vector<range_type >& ranges_01,
-		      std::vector<range_type >& ranges_02,
-		      std::vector<pcre2_item>& chunks);
+		       std::vector<range_type >& ranges_01,
+		       std::vector<range_type >& ranges_02,
+		       std::vector<pcre2_item>& chunks);
 
     void add_instances(model_name name, subject<TABLE>& subj,
-		      range_type coor, range_type span,
-		      std::vector<range_type >& ranges_01,
-		      std::vector<range_type >& ranges_02,
-		      std::vector<pcre2_item>& chunks);    
+		       range_type coor,
+		       range_type row_span,
+		       range_type col_span,
+		       std::vector<range_type >& ranges_01,
+		       std::vector<range_type >& ranges_02,
+		       std::vector<pcre2_item>& chunks);    
     
   protected:
 
@@ -232,10 +234,11 @@ namespace andromeda
   }
 
   void base_pos_pattern::add_instances(model_name name, subject<TABLE>& subj,
-				      range_type coor, range_type span,
-				      std::vector<range_type >& ranges_01,
-				      std::vector<range_type >& ranges_02,
-				      std::vector<pcre2_item>& chunks)
+				       range_type coor,
+				       range_type row_span, range_type col_span,
+				       std::vector<range_type >& ranges_01,
+				       std::vector<range_type >& ranges_02,
+				       std::vector<pcre2_item>& chunks)
   {
     for(pcre2_item& chunk:chunks)
       {
@@ -281,7 +284,7 @@ namespace andromeda
 	    subj.instances.emplace_back(subj.get_hash(),
 				       name, subtype,
 				       text, orig,
-				       coor, span,
+					coor, row_span, col_span,
 				       char_range, ctok_range, wtok_range);
 	  }
       }    

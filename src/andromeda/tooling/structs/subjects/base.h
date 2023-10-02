@@ -19,10 +19,23 @@ namespace andromeda
 
     const static inline std::string prps_lbl = "properties";
     const static inline std::string insts_lbl = "instances";
-    //const static inline std::string ents_lbl = "entities";
+    const static inline std::string ents_lbl = "entities";
     const static inline std::string rels_lbl = "relations";
     const static inline std::string recs_lbl = "records";
 
+    const static inline std::string prov_lbl = "prov";
+    const static inline std::string hash_lbl = "hash";
+    
+    const static inline std::string dloc_lbl = "dloc";
+    const static inline std::string dref_lbl = "dref";
+    const static inline std::string jref_lbl = "$ref";
+
+    const static inline std::string applied_models_lbl = "applied-models";
+
+    const static inline std::string text_lbl = "text"; // for text
+    const static inline std::string table_data_lbl = "data"; // for tables and figures
+    const static inline std::string figure_data_lbl = "data"; // for tables and figures
+    
   public:
 
     base_subject();
@@ -31,6 +44,8 @@ namespace andromeda
     base_subject(uint64_t dhash, std::string dloc, subject_name name);//, prov_element& prov);
 
     virtual ~base_subject() {}
+
+    static nlohmann::json get_prov_refs(std::vector<std::shared_ptr<prov_element> >& provs);
     
     subject_name get_name() const { return name; }
     hash_type get_hash() const { return hash; }
@@ -40,11 +55,14 @@ namespace andromeda
     void clear_models();
 
     virtual nlohmann::json to_json() = 0;
+    virtual nlohmann::json to_json(const std::set<std::string>& filters) = 0;
     virtual bool from_json(const nlohmann::json& item) = 0;
     
   protected:
     
     nlohmann::json _to_json();
+    nlohmann::json _to_json(const std::set<std::string>& filters);
+
     bool _from_json(const nlohmann::json& item);
     
   public:
@@ -116,14 +134,33 @@ namespace andromeda
     relations({})
   {}
 
+  nlohmann::json base_subject::get_prov_refs(std::vector<std::shared_ptr<prov_element> >& provs)
+  {
+    nlohmann::json result = nlohmann::json::array({});
+    for(auto& prov:provs)
+      {
+	if(prov!=NULL)
+	  {
+	    nlohmann::json pref;
+	    pref[base_subject::jref_lbl] = prov->get_pref();
+	    
+	    result.push_back(pref);
+	  }
+	else
+	  {
+	    LOG_S(WARNING) << "base_subject encountered prov with NULL";
+	  }
+      }
+
+    return result;
+  }
+  
   void base_subject::clear()
   {
     valid = false;
 
     hash = -1;
     dhash = -1;
-
-    //provs.clear();
 
     clear_models();
   }
@@ -142,8 +179,8 @@ namespace andromeda
     nlohmann::json result = nlohmann::json::object({});
 
     {
-      result["hash"] = hash;
-      result["dloc"] = dloc;
+      result[base_subject::hash_lbl] = hash;
+      result[base_subject::dloc_lbl] = dloc;
 
       result["applied-models"] = applied_models;
     }
@@ -166,6 +203,46 @@ namespace andromeda
     return result;
   }
 
+  nlohmann::json base_subject::_to_json(const std::set<std::string>& filters)
+  {
+    nlohmann::json result = nlohmann::json::object({});
+
+    if(filters.count(base_subject::hash_lbl))
+      {	  
+	result[base_subject::hash_lbl] = hash;
+      }
+    
+    if(filters.count(base_subject::dloc_lbl))
+      {
+	result[base_subject::dloc_lbl] = dloc;
+      }
+    
+    if(filters.count(base_subject::applied_models_lbl))
+      {
+	result["applied-models"] = applied_models;
+      }
+
+    if(filters.count(base_subject::prps_lbl))
+      {
+	nlohmann::json& props = result[prps_lbl];
+	andromeda::to_json(properties, props);
+      }
+
+    if(filters.count(base_subject::insts_lbl))    
+      {
+	nlohmann::json& insts = result[insts_lbl];
+	andromeda::to_json(instances, insts);
+      }
+
+    if(filters.count(base_subject::rels_lbl))
+      {
+	nlohmann::json& rels = result[rels_lbl];
+	andromeda::to_json(relations, rels);
+      }
+
+    return result;    
+  }
+  
   bool base_subject::_from_json(const nlohmann::json& item)
   {
     hash = item.value("hash", hash);

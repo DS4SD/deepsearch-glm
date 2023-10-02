@@ -114,8 +114,9 @@ if __name__ == '__main__':
         print(f"applying models ... ", end="")
         doc_j = model.apply_on_doc(doc_i)
 
-        print(doc_j.keys())
+        #print(doc_j.keys())
 
+        """
         print('page-elements')
         print(json.dumps(doc_j["page-elements"][0:10], indent=2))
 
@@ -130,6 +131,13 @@ if __name__ == '__main__':
         
         print('texts')
         print(json.dumps(doc_j["texts"][0:10], indent=2))
+        """
+
+        print('figures')
+        print(json.dumps(doc_j["figures"][0], indent=2))
+
+        print('tables')
+        print(json.dumps(doc_j["tables"][0], indent=2))
         
         """
         props = pd.DataFrame(doc_j["properties"]["data"],

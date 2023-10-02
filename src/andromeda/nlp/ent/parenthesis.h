@@ -169,12 +169,13 @@ namespace andromeda
                     std::string name = subj(i,j).from_ctok_range(ctok_range);
 
 		    auto coor = subj(i,j).get_coor();
-		    auto span = subj(i,j).get_span();
+		    auto row_span = subj(i,j).get_row_span();
+		    auto col_span = subj(i,j).get_col_span();
 		    
                     subj.instances.emplace_back(subj.get_hash(),
 					       PARENTHESIS, expr.get_subtype(),
                                                name, orig,
-					       coor, span,
+						coor, row_span, col_span,
                                                char_range,
                                                ctok_range,
                                                wtok_range);

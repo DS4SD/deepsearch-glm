@@ -28,6 +28,8 @@ namespace andromeda
     bool is_valid() { return (base_subject::valid); }
     
     virtual nlohmann::json to_json();
+    virtual nlohmann::json to_json(const std::set<std::string>& filters);
+    
     virtual bool from_json(const nlohmann::json& data);
     
     bool set_data(const nlohmann::json& data);
@@ -141,6 +143,27 @@ namespace andromeda
     nlohmann::json result = base_subject::_to_json();
 
     {
+      result["#-rows"] = nrows;
+      result["#-cols"] = ncols;
+
+      auto& json_table = result[base_subject::table_data_lbl];
+      for(index_type i=0; i<nrows; i++)
+	{
+	  nlohmann::json row = nlohmann::json::array({});
+	  
+	  for(index_type j=0; j<ncols; j++)
+	    {
+	      auto cell = data.at(i).at(j).to_json();
+	      row.push_back(cell);
+	    }
+
+	  json_table.push_back(row);
+	}
+
+      result["data"] = json_table;
+    }
+    
+    {
       nlohmann::json& _ = result[base_subject::captions_lbl];
       _ = nlohmann::json::array({});
       
@@ -169,10 +192,76 @@ namespace andromeda
 	  _.push_back(mention->to_json());
 	}
     }        
-          
+
+    {
+      result["prov"] = base_subject::get_prov_refs(provs);
+    }      
+    
     return result;
   }
 
+  nlohmann::json subject<TABLE>::to_json(const std::set<std::string>& filters)
+  {
+    nlohmann::json result = base_subject::_to_json(filters);
+
+    {
+      result["#-rows"] = nrows;
+      result["#-cols"] = ncols;
+
+      auto& json_table = result[base_subject::table_data_lbl];
+      for(index_type i=0; i<nrows; i++)
+	{
+	  nlohmann::json row = nlohmann::json::array({});
+	  
+	  for(index_type j=0; j<ncols; j++)
+	    {
+	      auto cell = data.at(i).at(j).to_json();
+	      row.push_back(cell);
+	    }
+
+	  json_table.push_back(row);
+	}
+
+      result["data"] = json_table;
+    }
+    
+    {
+      nlohmann::json& _ = result[base_subject::captions_lbl];
+      _ = nlohmann::json::array({});
+      
+      for(auto& caption:captions)
+	{
+	  _.push_back(caption->to_json(filters));
+	}
+    }
+
+    {
+      nlohmann::json& _ = result[base_subject::footnotes_lbl];
+      _ = nlohmann::json::array({});
+      
+      for(auto& footnote:footnotes)
+	{
+	  _.push_back(footnote->to_json(filters));
+	}
+    }
+
+    {
+      nlohmann::json& _ = result[base_subject::mentions_lbl];
+      _ = nlohmann::json::array({});
+      
+      for(auto& mention:mentions)
+	{
+	  _.push_back(mention->to_json(filters));
+	}
+    }        
+    
+    {
+      result[base_subject::prov_lbl] = base_subject::get_prov_refs(provs);
+    }      
+    
+    return result;    
+  }
+  
   bool subject<TABLE>::from_json(const nlohmann::json& data)
   {
     {
@@ -233,13 +322,35 @@ namespace andromeda
 	    data.push_back({});
 	    for(ind_type j=0; j<grid.at(i).size(); j++)
 	      {
+		//LOG_S(INFO) << i << ", " << j << ": " << grid.at(i).at(j).dump();
+		
 		std::string text = "";
 		if(grid.at(i).at(j).count("text"))
 		  {		    
 		    text = grid.at(i).at(j).at("text");
 		  }
 
-		data.back().emplace_back(i,j,text);
+		std::array<uint64_t,2> row_span={i,i+1};
+		std::array<uint64_t,2> col_span={j,j+1};
+		
+		if(grid.at(i).at(j).count("spans"))
+		  {
+		    auto& spans = grid.at(i).at(j).at("spans");
+		    
+		    for(auto& span:spans)
+		      {
+			uint64_t si = span[0].get<uint64_t>();
+			uint64_t sj = span[1].get<uint64_t>();
+
+			row_span[0] = std::min(row_span[0], si);
+			row_span[1] = std::max(row_span[1], si);
+
+			col_span[0] = std::min(col_span[0], sj);
+			col_span[1] = std::max(col_span[1], sj);
+		      }
+		  }
+		
+		data.back().emplace_back(i,j,row_span,col_span,text);		
 	      }	   	    
 	  }
       }
@@ -314,7 +425,7 @@ namespace andromeda
   {
     range_type min_range = {0, 0};
     
-    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake", coor, {1,1},
+    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake", coor, min_range, min_range,
 		       min_range, min_range, min_range);
 
     return std::lower_bound(instances.begin(), instances.end(), fake);    
@@ -326,7 +437,7 @@ namespace andromeda
       { std::numeric_limits<uint64_t>::max(),
 	std::numeric_limits<uint64_t>::max()};
     
-    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake", coor, {1,1},
+    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake", coor, max_range, max_range,
 		       max_range, max_range, max_range);
 
     return std::upper_bound(instances.begin(), instances.end(), fake);    

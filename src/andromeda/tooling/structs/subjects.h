@@ -14,7 +14,7 @@ namespace andromeda
 
 #include <andromeda/tooling/structs/subjects/base.h>
 
-#include <andromeda/tooling/structs/subjects/paragraph.h>
+#include <andromeda/tooling/structs/subjects/text.h>
 #include <andromeda/tooling/structs/subjects/table.h>
 #include <andromeda/tooling/structs/subjects/figure.h>
 

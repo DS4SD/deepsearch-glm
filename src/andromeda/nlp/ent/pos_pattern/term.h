@@ -169,8 +169,10 @@ namespace andromeda
 	    
 	    get_chunks(subj(i,j), single_exprs, single_chunks);	    
 
-	    add_instances(get_name(), subj, subj(i,j).get_coor(), subj(i,j).get_span(),
-			 ranges_01, ranges_02, single_chunks);
+	    add_instances(get_name(), subj, subj(i,j).get_coor(),
+			  subj(i,j).get_row_span(),
+			  subj(i,j).get_col_span(),
+			  ranges_01, ranges_02, single_chunks);
 	  }
       }
     

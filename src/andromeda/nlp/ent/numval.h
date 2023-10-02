@@ -233,10 +233,12 @@ namespace andromeda
 			    std::string name = subj(i,j).from_ctok_range(ctok_range);
 			    
 			    subj.instances.emplace_back(subj.get_hash(),
-						       NUMVAL, expr.get_subtype(),
-						       name, orig, 
-						       subj(i,j).get_coor(), subj(i,j).get_span(),
-						       char_range, ctok_range, wtok_range);
+							NUMVAL, expr.get_subtype(),
+							name, orig, 
+							subj(i,j).get_coor(),
+							subj(i,j).get_row_span(),
+							subj(i,j).get_col_span(),
+							char_range, ctok_range, wtok_range);
 			    
 			    utils::mask(text, item.rng);
 			  }

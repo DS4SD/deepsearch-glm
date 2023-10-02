@@ -12,13 +12,16 @@ namespace andromeda
     const static inline std::set<std::string> is_ignored = {"page-header", "page-footer"};
 
     const static inline std::set<std::string> is_text = {
-      "title", "subtitle-level-1", "paragraph",
+      "title", "subtitle-level-1", "paragraph", "list-item",
       "footnote", "caption",
       "formula", "equation"
     };
 
     const static inline std::set<std::string> is_table = {"table"};
     const static inline std::set<std::string> is_figure = {"figure"};
+
+    const static inline std::set<std::string> is_page_header = {"page-header"};
+    const static inline std::set<std::string> is_page_footer = {"page-footer"};
     
   public:
 
@@ -111,31 +114,18 @@ namespace andromeda
 	if(item.count("$ref"))
 	  {
 	    path = item["$ref"].get<std::string>();
-	    //auto lpath = item["$ref"].get<std::string>();
-
-	    //std::stringstream ss;
-	    //ss << doc_name << lpath;
-
-	    //path = ss.str();
 	  }
 	else if(item.count("__ref"))
 	  {
 	    path = item["__ref"].get<std::string>();
-	    //auto lpath = item["__ref"].get<std::string>();
-
-	    //std::stringstream ss;
-	    //ss << doc_name << lpath;
-
-	    //path = ss.str();
 	  }
 	else
 	  {
 	    std::stringstream ss;
-	    ss /*<< doc_name*/ << "#/" << doc_type::maintext_lbl << "/" << l;
+	    ss << "#/" << doc_type::maintext_lbl << "/" << l;
 
 	    path = ss.str();
 	  }
-	//LOG_S(INFO) << "path: " << path;
 	
         ind_type pdforder = item.at(pdforder_lbl).get<ind_type>();
         ind_type maintext = l;
@@ -191,29 +181,32 @@ namespace andromeda
     auto& orig = doc.orig;
     auto& provs = doc.provs;
     
-    auto& other = doc.other;
-
     auto& texts = doc.texts;
     auto& tables = doc.tables;
     auto& figures = doc.figures;
+
+    auto& page_headers = doc.page_headers;
+    auto& page_footers = doc.page_footers;
+    auto& other = doc.other;
     
     {
       texts.clear();
-      other.clear();
-      
       tables.clear();
       figures.clear();
+
+      page_headers.clear();
+      page_footers.clear();
+      other.clear();
     }
 
     for(uint64_t i=0; i<provs.size(); i++)
       {
 	auto& prov = provs.at(i);
 	
-	// set a self-reference for later use ...
+	// set a self-reference for later use after sorting ...
 	{
 	  std::stringstream ss;
-	  ss /*<< doc_name*/ << "#/" << doc_type::provs_lbl << "/" << i;
-
+	  ss << "#/" << doc_type::provs_lbl << "/" << i;
 	  prov->set_pref(ss.str());
 	}
 	
@@ -246,7 +239,7 @@ namespace andromeda
         else if(is_table.count(prov->get_type()))
           {
 	    std::stringstream ss;
-	    ss << doc_name << "#/" << doc_type::tables_lbl << "/" << texts.size();	    
+	    ss << doc_name << "#/" << doc_type::tables_lbl << "/" << tables.size();	    
 
 	    std::string dloc = ss.str();
 	    
@@ -267,7 +260,7 @@ namespace andromeda
         else if(is_figure.count(prov->get_type()))
           {
 	    std::stringstream ss;
-	    ss << doc_name << "#/" << doc_type::figures_lbl << "/" << texts.size();	    
+	    ss << doc_name << "#/" << doc_type::figures_lbl << "/" << figures.size();	    
 
 	    std::string dloc = ss.str();
 	    
@@ -281,9 +274,46 @@ namespace andromeda
                 LOG_S(WARNING) << "found figure without structure";
               }
           }
+        else if(is_page_header.count(prov->get_type()))
+          {
+	    std::stringstream ss;
+	    ss << doc_name << "#/" << doc_type::page_headers_lbl << "/" << page_headers.size();	    
+
+	    std::string dloc = ss.str();
+	    
+            auto subj = std::make_shared<subject<TEXT> >(doc.doc_hash, dloc, prov);
+            bool valid = subj->set_data(item);
+
+            if(valid)
+              {
+                page_headers.push_back(subj);
+              }
+            else
+              {
+                LOG_S(WARNING) << "found invalid text: " << item.dump();
+              }
+          }	
+        else if(is_page_footer.count(prov->get_type()))
+          {
+	    std::stringstream ss;
+	    ss << doc_name << "#/" << doc_type::page_footers_lbl << "/" << page_footers.size();	    
+
+	    std::string dloc = ss.str();
+	    
+            auto subj = std::make_shared<subject<TEXT> >(doc.doc_hash, dloc, prov);
+            bool valid = subj->set_data(item);
+
+            if(valid)
+              {
+                page_footers.push_back(subj);
+              }
+            else
+              {
+                LOG_S(WARNING) << "found invalid text: " << item.dump();
+              }
+          }	
         else
           {
-            //prov->ignore=true;
 	    prov->set_ignored(true);
             if(not is_ignored.count(prov->get_type()))
               {
@@ -329,8 +359,6 @@ namespace andromeda
   template<typename doc_type>
   void doc_normalisation<doc_type>::resolve_paths()
   {
-    std::string doc_name = doc.doc_name;
-    
     auto& texts = doc.texts;
     auto& tables = doc.tables;
     auto& figures = doc.figures;    
@@ -340,7 +368,7 @@ namespace andromeda
 	for(auto& prov:texts.at(l)->provs)
 	  {
 	    std::stringstream ss;
-	    ss /*<< doc_name*/ << "#/" << doc_type::texts_lbl << "/" << l;
+	    ss << "#/" << doc_type::texts_lbl << "/" << l;
 
 	    prov->set_path(ss.str());
 	  }
@@ -351,7 +379,7 @@ namespace andromeda
 	for(auto& prov:tables.at(l)->provs)
 	  {
 	    std::stringstream ss;
-	    ss /*<< doc_name*/ << "#/" << doc_type::tables_lbl << "/" << l;
+	    ss << "#/" << doc_type::tables_lbl << "/" << l;
 
 	    prov->set_path(ss.str());
 	  }
@@ -361,7 +389,7 @@ namespace andromeda
 	    for(auto& prov:tables.at(l)->captions.at(k)->provs)
 	      {
 		std::stringstream ss;
-		ss /*<< doc_name*/ << "#/"
+		ss << "#/"
 		   << doc_type::tables_lbl << "/" << l << "/"
 		   << doc_type::captions_lbl << "/" << k;
 		
@@ -375,7 +403,7 @@ namespace andromeda
 	for(auto& prov:figures.at(l)->provs)
 	  {
 	    std::stringstream ss;
-	    ss /*<< doc_name*/ << "#/" << doc_type::figures_lbl << "/" << l;
+	    ss << "#/" << doc_type::figures_lbl << "/" << l;
 
 	    prov->set_path(ss.str());
 	  }
@@ -385,7 +413,7 @@ namespace andromeda
 	    for(auto& prov:figures.at(l)->captions.at(k)->provs)
 	      {
 		std::stringstream ss;
-		ss /*<< doc_name*/ << "#/"
+		ss << "#/"
 		   << doc_type::figures_lbl << "/" << l << "/"
 		   << doc_type::captions_lbl << "/" << k;
 		
