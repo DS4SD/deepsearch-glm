@@ -127,7 +127,7 @@ def show_page(doc, page_num=1, show_orig=True):
     
 def extract_text(doc):
 
-    page_items = doc["page-items"]
+    page_items = doc["page-elements"]
     texts = doc["texts"]
 
     print("\n\t TEXT: \n")
@@ -140,7 +140,7 @@ def extract_text(doc):
         for row in item["properties"]["data"]:
             labels.append(row[item["properties"]["headers"].index("label")])
         
-        type_ = item["prov"][0]["type"]
+        type_ = item["type"]
         print(f"text: {type_}, labels: ", ", ".join(labels))
         for line in wrapper.wrap(text=item["text"]):
             print(f"\t{line}")
@@ -195,7 +195,7 @@ def extract_references(doc):
 
     print("\n\t REFERENCES: \n")
     
-    page_items = doc["page-items"]
+    page_items = doc["page-elements"]
     texts = doc["texts"]
 
     df = pd.DataFrame(doc["instances"]["data"],

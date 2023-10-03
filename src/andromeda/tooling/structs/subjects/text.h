@@ -304,14 +304,22 @@ namespace andromeda
     nlohmann::json result = base_subject::_to_json();
 
     {
-      result["orig"] = text_element::orig;
-      result["text"] = text_element::text;
+      //result["orig"] = text_element::orig;
+      result[base_subject::text_lbl] = text_element::text;
 
-      result["text-hash"] = text_element::text_hash;
-
+      //result["text-hash"] = text_element::text_hash;
       //result["word-tokens"] = andromeda::to_json(text_element::word_tokens, text);
 
-      result["prov"] = base_subject::get_prov_refs(provs);
+      result[base_subject::prov_lbl] = base_subject::get_prov_refs(provs);
+
+      if(provs.size()>0)
+	{
+	  result[base_subject::type_lbl] = provs.at(0)->get_type();
+	}
+      else
+	{
+	  result[base_subject::type_lbl] = "text";
+	}
     }
 
     return result;
@@ -347,8 +355,16 @@ namespace andromeda
       //result["word-tokens"] = andromeda::to_json(text_element::word_tokens, text);
 
       result[base_subject::prov_lbl] = base_subject::get_prov_refs(provs);
-    }
 
+      if(provs.size()>0)
+	{
+	  result[base_subject::type_lbl] = provs.at(0)->get_type();
+	}
+      else
+	{
+	  result[base_subject::type_lbl] = "text";
+	}      
+    }
     
     return result;
   }

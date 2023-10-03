@@ -30,6 +30,9 @@ namespace andromeda
     const static inline std::string dref_lbl = "dref";
     const static inline std::string jref_lbl = "$ref";
 
+    const static inline std::string name_lbl = "name";
+    const static inline std::string type_lbl = "type";
+    
     const static inline std::string applied_models_lbl = "applied-models";
 
     const static inline std::string text_lbl = "text"; // for text

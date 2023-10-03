@@ -33,6 +33,8 @@ namespace andromeda
 
     void set_pdforder();
 
+    void init_pages();
+    
     void init_provs();
 
     void sort_provs();
@@ -60,6 +62,8 @@ namespace andromeda
     
     set_pdforder();
 
+    init_pages();
+    
     init_provs();
 
     sort_provs();
@@ -91,6 +95,27 @@ namespace andromeda
       }
   }
 
+  template<typename doc_type>
+  void doc_normalisation<doc_type>::init_pages()
+  {
+    auto& orig = doc.orig;
+    
+    auto& pages = doc.pages;
+    pages.clear();
+
+    for(ind_type l=0; l<orig.at(doc_type::pages_lbl).size(); l++)
+      {
+        const nlohmann::json& item = orig.at(doc_type::pages_lbl).at(l);
+
+        std::shared_ptr<page_element> ptr
+          = std::make_shared<page_element>();
+
+        ptr->from_json(item);
+
+        pages.push_back(ptr);
+      }
+  }
+  
   template<typename doc_type>
   void doc_normalisation<doc_type>::init_provs()
   {

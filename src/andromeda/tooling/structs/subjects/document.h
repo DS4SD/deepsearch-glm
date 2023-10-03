@@ -15,6 +15,7 @@ namespace andromeda
     const static inline std::string maintext_lbl = "main-text";
 
     // top-level document elements
+    const static inline std::string pages_lbl = "page-dimensions";
     const static inline std::string provs_lbl = "page-elements";
 
     const static inline std::string body_lbl = "body"; // containng the body of the document (text/tables/figures)
@@ -34,8 +35,8 @@ namespace andromeda
     //const static inline std::string text_lbl = "text";
     //const static inline std::string data_lbl = "data";
 
-    const static inline std::string maintext_name_lbl = "name";
-    const static inline std::string maintext_type_lbl = "type";
+    const static inline std::string maintext_name_lbl = name_lbl;
+    const static inline std::string maintext_type_lbl = type_lbl;
 
     const static inline std::set<std::string> texts_types = {"title",
       "subtitle-level-1", "paragraph",
@@ -81,15 +82,14 @@ namespace andromeda
 
   private:
 
-    void set_meta(nlohmann::json& data);
+    void set_dscr(nlohmann::json& data);
     void set_orig(nlohmann::json& data);
 
     bool is_preprocessed();
     bool originates_from_pdf();
-    
-    void set_provs();
 
-    //void set_other();
+    void set_pages();
+    void set_provs();
 
     void set_texts();
     void set_tables();
@@ -108,6 +108,7 @@ namespace andromeda
     
     nlohmann::json orig, dscr;
 
+    std::vector<std::shared_ptr<page_element> > pages;
     std::vector<std::shared_ptr<prov_element> > provs;
 
     std::vector<std::shared_ptr<base_subject> > body;
@@ -128,6 +129,7 @@ namespace andromeda
     doc_hash(-1),
     doc_name(""),
 
+    pages(),
     provs(),
 
     body(),
@@ -181,20 +183,31 @@ namespace andromeda
 	}
       //LOG_S(INFO) << "description: " << desc.dump(2);
     }
+
+    // pages contain everything on the document pages including index, widht and height
+    {
+      nlohmann::json& json_pages = result[pages_lbl];
+      json_pages = nlohmann::json::array({});
+
+      for(auto& page:pages)
+        {
+          json_pages.push_back(page->to_json());
+        }
+    }
     
-    // page-items contain everything on the document pages including page-header/footer,
+    // page-elements contain everything on the document pages including page-header/footer,
     // title, subtitle, paragraph, table, figure, etc
     {
-      nlohmann::json& page_items = result[provs_lbl];
-      page_items = nlohmann::json::array({});
+      nlohmann::json& page_elements = result[provs_lbl];
+      page_elements = nlohmann::json::array({});
 
       for(auto& prov:provs)
         {
-          page_items.push_back(prov->to_json(false));
+          page_elements.push_back(prov->to_json(false));
         }
     }
 
-    // the main-text will only have page-item prov and references to other
+    // the body will only have page-item prov and references to other
     // other parts of the document (text, table, figure, page-header/footer, footnotes)
     {
       nlohmann::json& body_text = result[body_lbl];
@@ -338,15 +351,14 @@ namespace andromeda
     clear();
 
     {
-      set_meta(data);
+      set_dscr(data);
       set_orig(data);
     }
 
     if(is_preprocessed())
       {
+	set_pages();
         set_provs();
-
-        //set_other();
 	
         set_texts();
         set_tables();
@@ -370,7 +382,7 @@ namespace andromeda
     return true;
   }
 
-  void subject<DOCUMENT>::set_meta(nlohmann::json& data)
+  void subject<DOCUMENT>::set_dscr(nlohmann::json& data)
   {
     if(data.count("file-info") and
        data["file-info"].count("document-hash"))
@@ -401,8 +413,9 @@ namespace andromeda
 
   bool subject<DOCUMENT>::is_preprocessed()
   {
-    if(orig.count(provs_lbl) and
-       //orig.count(maintext_lbl) and
+    if(orig.count(pages_lbl) and
+       orig.count(provs_lbl) and
+
        orig.count(body_lbl) and
        orig.count(meta_lbl) and
 
@@ -418,6 +431,9 @@ namespace andromeda
 
   bool subject<DOCUMENT>::originates_from_pdf()
   {
+    return (orig.count(maintext_lbl) and (not orig.count(body_lbl)));
+    
+    /*
     bool all_have_prov_or_ref = true;
     if(orig.count(maintext_lbl))
       {	
@@ -436,8 +452,26 @@ namespace andromeda
     //LOG_S(INFO) << "all_have_prov_or_ref: " << all_have_prov_or_ref;
     
     return all_have_prov_or_ref;
+    */
   }
-  
+
+  void subject<DOCUMENT>::set_pages()
+  {
+    pages.clear();
+
+    for(ind_type l=0; l<orig.at(pages_lbl).size(); l++)
+      {
+        const nlohmann::json& item = orig.at(pages_lbl).at(l);
+
+        std::shared_ptr<page_element> ptr
+          = std::make_shared<page_element>();
+
+        ptr->from_json(item);
+
+        pages.push_back(ptr);
+      }
+  }
+      
   void subject<DOCUMENT>::set_provs()
   {
     provs.clear();
@@ -472,25 +506,6 @@ namespace andromeda
       }
   }
 
-  /*
-  void subject<DOCUMENT>::set_other()
-  {
-    other.clear();
-
-    for(ind_type l=0; l<orig.at(meta_lbl).size(); l++)
-      {
-        const nlohmann::json& item = orig.at(meta_lbl).at(l);
-
-        std::shared_ptr<subject<TEXT> > ptr
-          = std::make_shared<subject<TEXT> >();
-
-        ptr->from_json(item);
-
-        other.push_back(ptr);
-      }
-  }
-  */
-  
   void subject<DOCUMENT>::set_tables()
   {
     tables.clear();
