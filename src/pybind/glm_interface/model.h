@@ -168,7 +168,7 @@ namespace andromeda_py
         return result;
       }
 
-    return subj.to_json();
+    return subj.to_json({});
   }
 
   nlohmann::json glm_model::query(nlohmann::json params)

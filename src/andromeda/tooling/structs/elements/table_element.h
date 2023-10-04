@@ -9,6 +9,8 @@ namespace andromeda
   {
   public:
 
+    table_element(nlohmann::json& json_cell);
+    
     table_element(uint64_t i,
 		  uint64_t j,
 		  std::string orig);
@@ -20,6 +22,7 @@ namespace andromeda
 		  std::string orig);
 
     nlohmann::json to_json();
+    bool from_json(nlohmann::json& json_cell);
     
     std::array<uint64_t, 2> get_coor() { return {i,j}; }
     std::array<uint64_t, 2> get_row_span() { return row_span; }
@@ -45,6 +48,11 @@ namespace andromeda
     bool row_header, col_header, numeric;
   };
 
+  table_element::table_element(nlohmann::json& json_cell)
+  {
+    from_json(json_cell);
+  }
+  
   table_element::table_element(uint64_t i,
 			       uint64_t j,
 			       std::string orig):
@@ -106,6 +114,22 @@ namespace andromeda
     cell["col-header"] = col_header;
 
     return cell;
+  }
+
+  bool table_element::from_json(nlohmann::json& json_cell)
+  {
+    i = json_cell.at("row").get<index_type>();
+    j = json_cell.at("col").get<index_type>();
+    
+    row_span = json_cell.at("row-span").get<std::array<index_type, 2>>();
+    col_span = json_cell.at("col-span").get<std::array<index_type, 2>>();
+    
+    text = json_cell.at("text").get<std::string>();
+    
+    row_header = json_cell.at("row-header").get<bool>();
+    col_header = json_cell.at("col-header").get<bool>();
+
+    return true;
   }
   
   void table_element::show()

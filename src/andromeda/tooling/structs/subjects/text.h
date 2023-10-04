@@ -24,10 +24,10 @@ namespace andromeda
     std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
     bool is_valid() { return (base_subject::valid and text_element::text_valid); }
 
-    virtual nlohmann::json to_json();
-    virtual bool from_json(const nlohmann::json& data);
+    //virtual nlohmann::json to_json();
 
-    nlohmann::json to_json(const std::set<std::string>& filters);
+    virtual nlohmann::json to_json(const std::set<std::string> filters);
+    virtual bool from_json(const nlohmann::json& data);
     
     bool concatenate(std::shared_ptr<subject<TEXT> > other);
 
@@ -299,6 +299,7 @@ namespace andromeda
       }
   }
 
+  /*
   nlohmann::json subject<TEXT>::to_json()
   {
     nlohmann::json result = base_subject::_to_json();
@@ -324,38 +325,20 @@ namespace andromeda
 
     return result;
   }
-
-  nlohmann::json subject<TEXT>::to_json(const std::set<std::string>& filters)
+  */
+  
+  nlohmann::json subject<TEXT>::to_json(const std::set<std::string> filters)
   {
-    /*
-    nlohmann::json tmp = this->to_json();
-
-    nlohmann::json result = nlohmann::json::object({});
-    for(auto filter:filters)
-      {
-	if(tmp.count(filter))
-	  {
-	    result[filter] = tmp.at(filter);
-	  }
-	else
-	  {
-	    LOG_S(WARNING) << "subject<TEXT> does not have field " << filter;
-	  }
-      }
-    */
-
     nlohmann::json result = base_subject::_to_json(filters);
 
     {
-      result[base_subject::text_lbl] = text_element::orig;
+      result[base_subject::text_lbl] = text_element::text;
       //result["text"] = text_element::text;
-
       //result["text-hash"] = text_element::text_hash;
-
       //result["word-tokens"] = andromeda::to_json(text_element::word_tokens, text);
 
       result[base_subject::prov_lbl] = base_subject::get_prov_refs(provs);
-
+      
       if(provs.size()>0)
 	{
 	  result[base_subject::type_lbl] = provs.at(0)->get_type();

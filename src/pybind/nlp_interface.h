@@ -339,7 +339,7 @@ namespace andromeda_py
 
     paragraph.sort();
     
-    nlohmann::json result = paragraph.to_json();
+    nlohmann::json result = paragraph.to_json({});
     {
       nlohmann::json& application = result["model-application"];
       {
@@ -395,7 +395,7 @@ namespace andromeda_py
 	}
       doc.finalise();
       
-      result = doc.to_json();
+      result = doc.to_json({});
       {
 	nlohmann::json& application = result["model-application"];
 	{

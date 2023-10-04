@@ -273,7 +273,7 @@ namespace andromeda
     
     if(ofs.good())
       {
-	nlohmann::json data = subj.to_json();
+	nlohmann::json data = subj.to_json({});
 
 	std::string ext=opath.extension();
 	if(ext==".json")
