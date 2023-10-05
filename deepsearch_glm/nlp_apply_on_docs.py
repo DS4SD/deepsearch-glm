@@ -95,6 +95,7 @@ def init_nlp_model(models:str, filters:list[str]=[]):
 
 def show_doc(doc_j):
 
+    """
     print('page-elements')
     print(json.dumps(doc_j["page-elements"][0:10], indent=2))
     
@@ -115,20 +116,30 @@ def show_doc(doc_j):
 
     print('tables')
     print(json.dumps(doc_j["tables"][0], indent=2))
-        
+    """        
     
     props = pd.DataFrame(doc_j["properties"]["data"],
                          columns=doc_j["properties"]["headers"])
     print("properties: \n\n", props)
 
-    ints = pd.DataFrame(doc_j["instances"]["data"], 
+    inst = pd.DataFrame(doc_j["instances"]["data"], 
                         columns=doc_j["instances"]["headers"])
-    print("instances: \n\n", ints)
+    print("instances: \n\n", inst)
 
+    terms = inst[inst["type"]=="term"]
+    print("terms: \n\n", terms)
+
+    hist = terms["hash"].value_counts()
+    for key,val in hist.items():
+        name = terms[terms["hash"]==key].iloc[0]["name"]
+        print(f"{val}\t{name}")
+    
+    """
     ents = pd.DataFrame(doc_j["entities"]["data"], 
                         columns=doc_j["entities"]["headers"])
     print(ents)
-
+    """
+    
 if __name__ == '__main__':
 
     pdf_files, json_files, model_names, force_convert = parse_arguments()
@@ -142,7 +153,7 @@ if __name__ == '__main__':
     json_files = sorted(list(set(json_files)))        
     
     #filters = []
-    filters = ["instances"]
+    filters = ["properties", "instances"]
     
     model = init_nlp_model(model_names, filters)
 
@@ -156,7 +167,7 @@ if __name__ == '__main__':
         doc_j = model.apply_on_doc(doc_i)
 
         print(doc_j.keys())
-        #show_doc(doc_j)
+        show_doc(doc_j)
         
         nlp_file = json_file.replace(".json", ".nlp.json")
         print(f"writing  models {nlp_file}")
