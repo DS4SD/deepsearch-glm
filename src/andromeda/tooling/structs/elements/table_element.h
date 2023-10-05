@@ -9,21 +9,26 @@ namespace andromeda
   {
   public:
 
+    table_element(nlohmann::json& json_cell);
+    
     table_element(uint64_t i,
 		  uint64_t j,
 		  std::string orig);
 
     table_element(uint64_t i,
 		  uint64_t j,
-		  uint64_t col_span,
-		  uint64_t row_span,
+		  std::array<uint64_t,2> row_span,			       
+		  std::array<uint64_t,2> col_span,
 		  std::string orig);
+
+    nlohmann::json to_json();
+    bool from_json(nlohmann::json& json_cell);
     
     std::array<uint64_t, 2> get_coor() { return {i,j}; }
-    std::array<uint64_t, 2> get_span() { return {col_span, row_span}; }
-    
-    std::string get_text() const { return text; }
+    std::array<uint64_t, 2> get_row_span() { return row_span; }
+    std::array<uint64_t, 2> get_col_span() { return col_span; }
 
+    std::string get_text() const { return text; }
     
     bool is_col_header() { return col_header; }
     bool is_row_header() { return row_header; }
@@ -38,22 +43,27 @@ namespace andromeda
   private:
     
     uint64_t i, j;
-    uint64_t col_span, row_span;
+    std::array<uint64_t,2> row_span, col_span;
 
-    bool col_header, row_header, numeric;
+    bool row_header, col_header, numeric;
   };
 
+  table_element::table_element(nlohmann::json& json_cell)
+  {
+    from_json(json_cell);
+  }
+  
   table_element::table_element(uint64_t i,
 			       uint64_t j,
 			       std::string orig):
     text_element(),
     i(i), j(j),
 
-    col_span(1),
-    row_span(1),
+    row_span({i,i+1}),
+    col_span({j,j+1}),
 
-    col_header(false),
     row_header(false),
+    col_header(false),
 
     numeric(false)
   {
@@ -61,23 +71,67 @@ namespace andromeda
   }
 
   table_element::table_element(uint64_t i, uint64_t j,
-			       uint64_t col_span,
-			       uint64_t row_span,
+			       std::array<uint64_t,2> row_span,			       
+			       std::array<uint64_t,2> col_span,
 			       std::string orig):
     text_element(),
     i(i), j(j),
 
-    col_span(col_span),
     row_span(row_span),
+    col_span(col_span),
 
-    col_header(false),
     row_header(false),
+    col_header(false),
 
     numeric(false)
   {
     text_element::set(orig, NULL, NULL);
   }    
 
+  nlohmann::json table_element::to_json()
+  {
+    nlohmann::json cell = nlohmann::json::object({});
+
+    cell["row"] = i;
+    cell["col"] = j;
+
+    cell["row-span"] = row_span;
+    cell["col-span"] = col_span;
+
+    std::vector<std::vector<uint64_t> >spans={};
+    for(auto i=row_span[0]; i<row_span[1]; i++)
+      {
+	for(auto j=col_span[0]; j<col_span[1]; j++)
+	  {
+	    spans.push_back({i,j});
+	  }
+      }
+    cell["spans"] = spans;
+    
+    cell["text"] = text;
+
+    cell["row-header"] = row_header;
+    cell["col-header"] = col_header;
+
+    return cell;
+  }
+
+  bool table_element::from_json(nlohmann::json& json_cell)
+  {
+    i = json_cell.at("row").get<index_type>();
+    j = json_cell.at("col").get<index_type>();
+    
+    row_span = json_cell.at("row-span").get<std::array<index_type, 2>>();
+    col_span = json_cell.at("col-span").get<std::array<index_type, 2>>();
+    
+    text = json_cell.at("text").get<std::string>();
+    
+    row_header = json_cell.at("row-header").get<bool>();
+    col_header = json_cell.at("col-header").get<bool>();
+
+    return true;
+  }
+  
   void table_element::show()
   {
     LOG_S(INFO) << "table(" << i << ", " << j << "): " << text;

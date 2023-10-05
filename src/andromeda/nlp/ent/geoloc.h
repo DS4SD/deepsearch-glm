@@ -20,15 +20,15 @@ namespace andromeda
 
     virtual bool apply(std::string& text, nlohmann::json& annots);
     
-    virtual bool apply(subject<PARAGRAPH>& subj);
+    virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj);
     
   private:
     
     bool initialise();
 
-    //bool apply_regex(subject<PARAGRAPH>& subj);    
-    //bool contract_regex(subject<PARAGRAPH>& subj);
+    //bool apply_regex(subject<TEXT>& subj);    
+    //bool contract_regex(subject<TEXT>& subj);
     
   private:
 
@@ -162,7 +162,7 @@ namespace andromeda
     return false;
   }
   
-  bool nlp_model<ENT, GEOLOC>::apply(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, GEOLOC>::apply(subject<TEXT>& subj)
   {
     //LOG_S(ERROR) << __FUNCTION__ << " on paragraph ...";
     

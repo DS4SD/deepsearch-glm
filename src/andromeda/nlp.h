@@ -100,7 +100,7 @@ namespace andromeda
 	}
 	
 	{
-	  andromeda::producer<andromeda::PARAGRAPH> producer;
+	  andromeda::producer<andromeda::TEXT> producer;
 	  for(auto item:producer.to_json())
 	    {
 	      producers.push_back(item);
@@ -199,9 +199,9 @@ namespace andromeda
 	    }
 	    break;
 	    
-	  case andromeda::PARAGRAPH:
+	  case andromeda::TEXT:
 	    {
-	      typedef andromeda::producer<andromeda::PARAGRAPH> producer_type;
+	      typedef andromeda::producer<andromeda::TEXT> producer_type;
 	      auto producer = std::dynamic_pointer_cast<producer_type>(base_producer);
 	      
 	      nlp_predict_on_producer(producer, config, true);

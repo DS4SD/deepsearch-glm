@@ -11,45 +11,57 @@ namespace andromeda
   {
   public:
 
-    const static inline std::string provs_lbl = "page-items";
-
+    // legacy
     const static inline std::string maintext_lbl = "main-text";
-    const static inline std::string other_lbl = "other-text";
+
+    // top-level document elements
+    const static inline std::string pages_lbl = "page-dimensions";
+    const static inline std::string provs_lbl = "page-elements";
+
+    const static inline std::string body_lbl = "body"; // containng the body of the document (texts/tables/figures)
+    const static inline std::string meta_lbl = "meta"; // containing other stuff (page-headers/footers etc)
 
     const static inline std::string texts_lbl = "texts";
     const static inline std::string tables_lbl = "tables";
     const static inline std::string figures_lbl = "figures";
 
+    const static inline std::string page_headers_lbl = "page-headers";
+    const static inline std::string page_footers_lbl = "page-footers";
+
+    const static inline std::string other_lbl = "other";
+
+    // element-labels
     const static inline std::string pdforder_lbl = "pdf-order";
 
-    const static inline std::string prov_lbl = "prov";
-    const static inline std::string text_lbl = "text";
-    const static inline std::string data_lbl = "data";
+    //const static inline std::string prov_lbl = "prov";
+    //const static inline std::string text_lbl = "text";
+    //const static inline std::string data_lbl = "data";
 
-    const static inline std::string maintext_name_lbl = "name";
-    const static inline std::string maintext_type_lbl = "type";
+    const static inline std::string maintext_name_lbl = name_lbl;
+    const static inline std::string maintext_type_lbl = type_lbl;
 
     const static inline std::set<std::string> texts_types = {"title",
-      "subtitle-level-1", "paragraph",
-      "formula", "equation"};
+                                                             "subtitle-level-1", "paragraph",
+                                                             "formula", "equation"};
 
     const static inline std::set<std::string> maintext_types = {"title",
-      "subtitle-level-1", "paragraph",
-      "formula", "equation",
-      "table", "figure"};
+                                                                "subtitle-level-1", "paragraph",
+                                                                "formula", "equation",
+                                                                "table", "figure"};
 
   public:
 
     subject();
-    ~subject();
+    virtual ~subject();
 
     void show();
-
     void clear();
 
-    nlohmann::json to_json();
+    virtual nlohmann::json to_json(const std::set<std::string> filters);
+    virtual bool from_json(const nlohmann::json& item);
 
     uint64_t get_hash() const { return doc_hash; }
+    std::string get_name() const { return doc_name; }
 
     void show(bool txt=true, bool mdls=false,
               bool ctokens=false, bool wtokens=true,
@@ -70,15 +82,16 @@ namespace andromeda
 
   private:
 
-    void set_meta(nlohmann::json& data);
+    void set_dscr(nlohmann::json& data);
     void set_orig(nlohmann::json& data);
 
     bool is_preprocessed();
     bool originates_from_pdf();
-    
+
+    void set_pages();
     void set_provs();
-    void set_paragraphs();
-    void set_other();
+
+    void set_texts();
     void set_tables();
     void set_figures();
 
@@ -90,18 +103,22 @@ namespace andromeda
 
     std::filesystem::path filepath;
 
-    std::string doc_name;
     uint64_t doc_hash;
+    std::string doc_name;
 
     nlohmann::json orig, dscr;
 
+    std::vector<std::shared_ptr<page_element> > pages;
     std::vector<std::shared_ptr<prov_element> > provs;
 
-    std::vector<std::shared_ptr<subject<PARAGRAPH> > > paragraphs;
-    std::vector<std::shared_ptr<subject<PARAGRAPH> > > other;
+    std::vector<std::shared_ptr<base_subject> > body;
+    std::vector<std::shared_ptr<base_subject> > meta;
 
+    std::vector<std::shared_ptr<subject<TEXT> > > texts;
     std::vector<std::shared_ptr<subject<TABLE> > > tables;
     std::vector<std::shared_ptr<subject<FIGURE> > > figures;
+
+    std::vector<std::shared_ptr<subject<TEXT> > > page_headers, page_footers, other;
   };
 
   subject<DOCUMENT>::subject():
@@ -109,72 +126,72 @@ namespace andromeda
 
     filepath("<undef>"),
 
-    doc_name(""),
     doc_hash(-1),
+    doc_name(""),
 
+    pages(),
     provs(),
 
-    paragraphs(),
-    other(),
+    body(),
+    meta(),
 
+    texts(),
     tables(),
-    figures()
+    figures(),
+
+    page_headers(),
+    page_footers(),
+    other()
   {}
 
   subject<DOCUMENT>::~subject()
   {}
 
-  nlohmann::json subject<DOCUMENT>::to_json()
+  nlohmann::json subject<DOCUMENT>::to_json(std::set<std::string> filters)
   {
-    nlohmann::json result = orig;
-
-    {
-      nlohmann::json base = base_subject::to_json();
-
-      for(auto& elem:base.items())
-        {
-          result[elem.key()] = elem.value();
-        }
-    }
-
-    // updated the description with predefined labels in schema
-    if(result.count("description"))
+    for(auto filter:filters)
+      LOG_S(WARNING) << filter;
+    
+    nlohmann::json result = base_subject::_to_json(filters);
+    
+    if(orig.count("description"))
       {
-        auto& desc = result.at("description");
-        for(auto& prop:properties)
-          {
-	    //LOG_S(INFO) << prop.get_type(); 
-            if(prop.get_type()=="language")
-              {
-                std::vector<std::string> langs = {prop.get_name()};
-                desc["languages"] = langs;
-              }
-          }
-
-	//LOG_S(INFO) << "description: " << desc.dump(2);
+        result["description"] = orig["description"];
+      }
+    else
+      {
+        result["description"] = nlohmann::json::object({});
       }
 
-    // page-items contain everything on the document pages including page-header/footer,
-    // title, subtitle, paragraph, table, figure, etc
+    // updated the description with predefined labels in schema
     {
-      nlohmann::json& page_items = result[provs_lbl];
-      page_items = nlohmann::json::array({});
-
-      for(auto& prov:provs)
+      auto& desc = result.at("description");
+      for(auto& prop:properties)
         {
-          //std::string ref = to_dref(*prov);
-          page_items.push_back(prov->to_json());
+          if(prop.get_type()=="language")
+            {
+              std::vector<std::string> langs = {prop.get_name()};
+              desc["languages"] = langs;
+            }
         }
+      //LOG_S(INFO) << "description: " << desc.dump(2);
     }
 
-    // the main-text will only have page-item prov and references to other
+    // pages contain everything on the document pages including index, widht and height
+    base_subject::to_json(result, pages_lbl, pages);
+    
+    // page-elements contain everything on the document pages including page-header/footer,
+    // title, subtitle, paragraph, table, figure, etc
+    base_subject::to_json(result, provs_lbl, provs, false);
+
+    // the body will only have page-item prov and references to other
     // other parts of the document (text, table, figure, page-header/footer, footnotes)
     {
-      nlohmann::json& main_text = result[maintext_lbl];
-      nlohmann::json& other_text = result[other_lbl];
+      nlohmann::json& body_text = result[body_lbl];
+      nlohmann::json& meta_text = result[meta_lbl];
 
-      main_text = nlohmann::json::array({});
-      other_text = nlohmann::json::array({});
+      body_text = nlohmann::json::array({});
+      meta_text = nlohmann::json::array({});
 
       std::set<std::string> paths={};
 
@@ -188,111 +205,52 @@ namespace andromeda
             }
           paths.insert(path);
 
-          auto item = prov->to_json();
-          {
-            item.erase("page");
-            item.erase("bbox");
-            item.erase("span");
-          }
-
+          auto item = prov->to_json(true);
           if(maintext_types.count(prov->get_type()))
             {
-              main_text.push_back(item);
+              body_text.push_back(item);
             }
           else
             {
-              other_text.push_back(item);
+              meta_text.push_back(item);
             }
         }
     }
 
-    {
-      std::set<std::string> keys
-        = { "hash", "orig", "text", "prov", "properties", "word-tokens"};
-      //"instances", "relations"};
+    std::set<std::string> doc_filters
+        = { "hash", "dloc", "prov", "text", "data",
+            "captions", "footnotes", "mentions",
+            "properties"};
 
-      auto& texts = result[texts_lbl];
-      texts = nlohmann::json::array({});
+    base_subject::to_json(result, texts_lbl, texts, doc_filters);
+    base_subject::to_json(result, tables_lbl, tables, doc_filters);
+    base_subject::to_json(result, figures_lbl, figures, doc_filters);
 
-      for(std::size_t l=0; l<paragraphs.size(); l++)
-        {
-          if(not paragraphs.at(l)->is_valid())
-            {
-              continue;
-            }
+    base_subject::to_json(result, page_headers_lbl, page_headers, doc_filters);
+    base_subject::to_json(result, page_footers_lbl, page_footers, doc_filters);
 
-          nlohmann::json item = nlohmann::json::object({});
+    base_subject::to_json(result, other_lbl, other, doc_filters);        
 
-          auto& paragraph = paragraphs.at(l);
-
-          auto _ = paragraph->to_json();
-          for(auto& elem:_.items())
-            {
-              if(keys.count(elem.key()))
-                {
-                  item[elem.key()] = elem.value();
-                }
-            }
-
-          texts.push_back(item);
-        }
-    }
-
-    {
-      std::set<std::string> keys
-        = { "hash", "captions", "footnotes", "mentions", "properties"};
-      //"instances", "relations"};
-
-      for(std::size_t l=0; l<tables.size(); l++)
-        {
-          auto& prov = tables.at(l)->provs.at(0);
-
-          std::vector<std::string> parts = utils::split(prov->get_path(), "/");
-
-          std::string base = parts.at(1);
-          std::size_t index = std::stoi(parts.at(2));
-
-          auto& item = result.at(base).at(index);
-
-          auto json_tab = tables.at(l)->to_json();
-          for(auto& elem:json_tab.items())
-            {
-              if(keys.count(elem.key()))
-                {
-                  item[elem.key()] = elem.value();
-                }
-            }
-        }
-    }
-
-    {
-      std::set<std::string> keys
-        = { "hash",  "captions", "footnotes", "mentions", "properties"};
-      //, "instances", "relations"};
-
-      for(std::size_t l=0; l<figures.size(); l++)
-        {
-          auto& prov = figures.at(l)->provs.at(0);
-
-          std::vector<std::string> parts = utils::split(prov->get_path(), "/");
-
-          std::string base = parts.at(1);
-          std::size_t index = std::stoi(parts.at(2));
-
-          auto& item = result.at(base).at(index);
-
-          auto json_fig = figures.at(l)->to_json();
-          for(auto& elem:json_fig.items())
-            {
-              if(keys.count(elem.key()))
-                {
-                  item[elem.key()] = elem.value();
-                }
-            }
-        }
-    }
-    
     return result;
+  }
+
+  bool subject<DOCUMENT>::from_json(const nlohmann::json& doc)
+  {
+    base_subject::_from_json(doc);
+
+    base_subject::from_json(doc, pages_lbl, pages);
+    base_subject::from_json(doc, provs_lbl, provs);
+    
+    base_subject::from_json(doc, texts_lbl, texts);
+    base_subject::from_json(doc, tables_lbl, tables);
+    base_subject::from_json(doc, figures_lbl, figures);
+
+    base_subject::from_json(doc, page_headers_lbl, page_headers);
+    base_subject::from_json(doc, page_footers_lbl, page_footers);
+
+    base_subject::from_json(doc, other_lbl, other);        
+    
+    return true;
   }
 
   void subject<DOCUMENT>::clear()
@@ -302,20 +260,26 @@ namespace andromeda
     dscr = nlohmann::json::object({});
     orig = nlohmann::json::object({});
 
-    paragraphs.clear();
-    other.clear();
+    body.clear();
+    meta.clear();
 
+    texts.clear();
     tables.clear();
     figures.clear();
+
+    page_headers.clear();
+    page_footers.clear();
+
+    other.clear();
   }
 
   void subject<DOCUMENT>::show(bool txt, bool mdls,
                                bool ctok, bool wtok,
                                bool prps, bool insts, bool rels)
   {
-    for(auto paragraph:paragraphs)
+    for(auto text:texts)
       {
-        paragraph->show(txt,mdls, ctok,wtok, prps,insts,rels);
+        text->show(txt,mdls, ctok,wtok, prps,insts,rels);
       }
   }
 
@@ -328,44 +292,47 @@ namespace andromeda
     return set_data(data, update_maintext);
   }
 
-  bool subject<DOCUMENT>::set_data(nlohmann::json& data, bool update_maintext)
+  bool subject<DOCUMENT>::set_data(nlohmann::json& data,
+                                   bool update_maintext)
   {
     clear();
 
     {
-      set_meta(data);
+      set_dscr(data);
       set_orig(data);
     }
 
     if(is_preprocessed())
       {
+	from_json(data);
+	/*
+        set_pages();
         set_provs();
-	
-        set_paragraphs();
-        set_other();
-	
+
+        set_texts();
         set_tables();
         set_figures();
+	*/
       }
     else if(originates_from_pdf())
       {
-	LOG_S(INFO) << "originates-from-pdf ... ";
+        LOG_S(INFO) << "originates-from-pdf ... ";
 
         doc_normalisation<subject<DOCUMENT> > normaliser(*this);
         normaliser.execute_on_pdf();
       }
     else
       {
-	LOG_S(INFO) << "does not originates-from-pdf ... ";
-	
-	doc_normalisation<subject<DOCUMENT> > normaliser(*this);
-	normaliser.execute_on_doc();
+        LOG_S(WARNING) << "does not originates-from-pdf ... ";
+        return false;
+        //doc_normalisation<subject<DOCUMENT> > normaliser(*this);
+        //normaliser.execute_on_doc();
       }
-    
+
     return true;
   }
 
-  void subject<DOCUMENT>::set_meta(nlohmann::json& data)
+  void subject<DOCUMENT>::set_dscr(nlohmann::json& data)
   {
     if(data.count("file-info") and
        data["file-info"].count("document-hash"))
@@ -385,6 +352,8 @@ namespace andromeda
       {
         dscr = data.at("description");
       }
+
+    base_subject::dloc = doc_name + "#";
   }
 
   void subject<DOCUMENT>::set_orig(nlohmann::json& data)
@@ -394,9 +363,12 @@ namespace andromeda
 
   bool subject<DOCUMENT>::is_preprocessed()
   {
-    if(orig.count(provs_lbl) and
-       orig.count(maintext_lbl) and
-       orig.count(other_lbl) and
+    if(orig.count(pages_lbl) and
+       orig.count(provs_lbl) and
+
+       orig.count(body_lbl) and
+       orig.count(meta_lbl) and
+
        orig.count(texts_lbl) and
        orig.count(tables_lbl) and
        orig.count(figures_lbl))
@@ -409,26 +381,27 @@ namespace andromeda
 
   bool subject<DOCUMENT>::originates_from_pdf()
   {
-    bool all_have_prov_or_ref = true;
-    if(orig.count(maintext_lbl))
-      {	
-	for(const auto& item:orig.at(maintext_lbl))
-	  {
-	    bool has_prov = item.count(prov_lbl);
-	    bool has_ref = (item.count("$ref") or item.count("__ref"));
-	    
-	    if((not has_prov) and (not has_ref))
-	      {
-		//LOG_S(INFO) << "item: " << item.dump(2);
-		all_have_prov_or_ref = false;
-	      }
-	  }
-      }
-    //LOG_S(INFO) << "all_have_prov_or_ref: " << all_have_prov_or_ref;
-    
-    return all_have_prov_or_ref;
+    return (orig.count(maintext_lbl) and (not orig.count(body_lbl)));
   }
-  
+
+  /*
+  void subject<DOCUMENT>::set_pages()
+  {
+    pages.clear();
+
+    for(ind_type l=0; l<orig.at(pages_lbl).size(); l++)
+      {
+        const nlohmann::json& item = orig.at(pages_lbl).at(l);
+
+        std::shared_ptr<page_element> ptr
+          = std::make_shared<page_element>();
+
+        ptr->from_json(item);
+
+        pages.push_back(ptr);
+      }
+  }
+
   void subject<DOCUMENT>::set_provs()
   {
     provs.clear();
@@ -446,37 +419,20 @@ namespace andromeda
       }
   }
 
-  void subject<DOCUMENT>::set_paragraphs()
+  void subject<DOCUMENT>::set_texts()
   {
-    paragraphs.clear();
+    texts.clear();
 
     for(ind_type l=0; l<orig.at(texts_lbl).size(); l++)
       {
         const nlohmann::json& item = orig.at(texts_lbl).at(l);
 
-        std::shared_ptr<subject<PARAGRAPH> > ptr
-          = std::make_shared<subject<PARAGRAPH> >();
+        std::shared_ptr<subject<TEXT> > ptr
+          = std::make_shared<subject<TEXT> >();
 
         ptr->from_json(item);
 
-        paragraphs.push_back(ptr);
-      }
-  }
-
-  void subject<DOCUMENT>::set_other()
-  {
-    other.clear();
-
-    for(ind_type l=0; l<orig.at(other_lbl).size(); l++)
-      {
-        const nlohmann::json& item = orig.at(other_lbl).at(l);
-
-        std::shared_ptr<subject<PARAGRAPH> > ptr
-          = std::make_shared<subject<PARAGRAPH> >();
-
-        ptr->from_json(item);
-
-        other.push_back(ptr);
+        texts.push_back(ptr);
       }
   }
 
@@ -513,7 +469,8 @@ namespace andromeda
         figures.push_back(ptr);
       }
   }
-
+  */
+  
   void subject<DOCUMENT>::show_provs()
   {
     //LOG_S(INFO) << __FUNCTION__;
@@ -532,9 +489,9 @@ namespace andromeda
   bool subject<DOCUMENT>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
                                      std::shared_ptr<utils::text_normaliser> text_normaliser)
   {
-    for(auto& paragraph:paragraphs)
+    for(auto& text:texts)
       {
-        bool valid = paragraph->set_tokens(char_normaliser, text_normaliser);
+        bool valid = text->set_tokens(char_normaliser, text_normaliser);
 
         if(not valid)
           {
@@ -584,15 +541,15 @@ namespace andromeda
     std::map<std::string, val_type>                         property_total;
     std::map<std::pair<std::string, std::string>, val_type> property_label_mapping;
 
-    for(auto& paragraph:paragraphs)
+    for(auto& text:texts)
       {
-        for(auto& prop:paragraph->properties)
+        for(auto& prop:text->properties)
           {
             std::string mdl = prop.get_type();
             std::string lbl = prop.get_name();
 
             val_type conf = prop.get_conf();
-            val_type dst = paragraph->dst;
+            val_type dst = text->dst;
 
             if(property_total.count(mdl)==1)
               {
@@ -657,7 +614,7 @@ namespace andromeda
   {
     instances.clear();
 
-    for(auto& subj:paragraphs)
+    for(auto& subj:texts)
       {
         //LOG_S(INFO) << __FUNCTION__ << ": " << subj.instances.size();
 
@@ -722,9 +679,9 @@ namespace andromeda
   {
     relations.clear();
 
-    for(auto& paragraph:paragraphs)
+    for(auto& text:texts)
       {
-        for(auto& rel:paragraph->relations)
+        for(auto& rel:text->relations)
           {
             relations.push_back(rel);
           }

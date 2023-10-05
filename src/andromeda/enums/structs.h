@@ -6,16 +6,19 @@
 namespace andromeda
 {
   enum subject_name { UNDEF,
-		      TEXT,
+		      //TEXT,
 		      PROMPT,
-		      PARAGRAPH, TABLE, FIGURE,
+		      //PARAGRAPH, TABLE, FIGURE,
+		      TEXT, TABLE, FIGURE,
 		      DOCUMENT};
 
   const static std::vector<subject_name> SUBJECT_NAMES =
     {
      UNDEF,
-     TEXT, PROMPT,
-     PARAGRAPH, TABLE, FIGURE,
+     //TEXT,
+     PROMPT,
+     //PARAGRAPH, TABLE, FIGURE,
+     TEXT, TABLE, FIGURE,
      DOCUMENT
     }; 
   
@@ -24,11 +27,11 @@ namespace andromeda
     switch(name)
       {
       case UNDEF: return "UNDEF";
-
-      case TEXT: return "TEXT";
+	
       case PROMPT: return "PROMPT";
 	
-      case PARAGRAPH: return "PARAGRAPH";
+	//case PARAGRAPH: return "PARAGRAPH";
+      case TEXT: return "TEXT";
       case TABLE: return "TABLE";
       case FIGURE: return "FIGURE";
 	

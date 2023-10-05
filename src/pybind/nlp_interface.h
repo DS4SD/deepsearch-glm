@@ -27,7 +27,7 @@ namespace andromeda_py
 
   private:
 
-    void apply_paragraphs(std::shared_ptr<andromeda::producer<andromeda::PARAGRAPH> > producer,
+    void apply_paragraphs(std::shared_ptr<andromeda::producer<andromeda::TEXT> > producer,
 			  nlohmann::json& results);
 
     void apply_docs(std::shared_ptr<andromeda::producer<andromeda::DOCUMENT> > producer,
@@ -59,28 +59,6 @@ namespace andromeda_py
   nlp_model::~nlp_model()
   {}
   
-  /*
-  std::string nlp_model::get_resources_path()
-  {
-    // Get the module object of your package
-    PyObject* myPackageModule = PyImport_ImportModule("deepsearch_glm");
-    
-    // Get the filename object of the module
-    PyObject* filenameObj = PyModule_GetFilenameObject(myPackageModule);
-    
-    // Extract the string value of the filename
-    const char* filename = PyUnicode_AsUTF8(filenameObj);
-    
-    // Manipulate the filename to get the resources directory
-    // In this example, we assume the resources directory is in the same folder as the package's __init__.py file
-    std::string resourcesDirectory = filename;
-    size_t lastSlash = resourcesDirectory.find_last_of("/\\");
-    resourcesDirectory = resourcesDirectory.substr(0, lastSlash + 1) + "resources";
-    
-    return resourcesDirectory;
-  }
-  */
-  
   bool nlp_model::initialise(const nlohmann::json config_)
   {       
     std::string mode = config_["mode"].get<std::string>();
@@ -92,7 +70,7 @@ namespace andromeda_py
 	order_text = true;
 	order_text = config.value("order-text", order_text);
 	
-	std::string models_expr = "term";
+	std::string models_expr = "semantic;term"; // default models
 	models_expr = config.value("models", models_expr);
 
 	return andromeda::to_models(models_expr, this->models, false);
@@ -127,6 +105,7 @@ namespace andromeda_py
 	config["interactive"] = true;
 	
 	config["subject"] = "<prompt;paragraph;paragraph:jsonl:text;pdfdoc>";
+	config["subject-filters"] = std::set<std::string>({});
 	
 	config["input"] = "";
 	config["output"] = "";
@@ -180,9 +159,9 @@ namespace andromeda_py
       {
 	switch(base_producer->get_subject_name())
 	  {
-	  case andromeda::PARAGRAPH:
+	  case andromeda::TEXT:
 	    {
-	      typedef andromeda::producer<andromeda::PARAGRAPH> producer_type;
+	      typedef andromeda::producer<andromeda::TEXT> producer_type;
 	      auto producer = std::dynamic_pointer_cast<producer_type>(base_producer);
 
 	      apply_paragraphs(producer, results);
@@ -211,10 +190,10 @@ namespace andromeda_py
     return results;
   }
 
-  void nlp_model::apply_paragraphs(std::shared_ptr<andromeda::producer<andromeda::PARAGRAPH> > producer,
+  void nlp_model::apply_paragraphs(std::shared_ptr<andromeda::producer<andromeda::TEXT> > producer,
 				   nlohmann::json& results)
   {
-    andromeda::subject<andromeda::PARAGRAPH> subj;
+    andromeda::subject<andromeda::TEXT> subj;
 
     std::size_t count=0;
     
@@ -315,7 +294,7 @@ namespace andromeda_py
   
   nlohmann::json nlp_model::apply_on_text(std::string& text)
   {
-    andromeda::subject<andromeda::PARAGRAPH> paragraph;
+    andromeda::subject<andromeda::TEXT> paragraph;
     bool valid = paragraph.set(text, char_normaliser, text_normaliser);
 
     bool success=false;
@@ -338,8 +317,10 @@ namespace andromeda_py
       }
 
     paragraph.sort();
+
+    std::set<std::string> subj_filters = config["subject-filters"].get<std::set<std::string> >();
     
-    nlohmann::json result = paragraph.to_json();
+    nlohmann::json result = paragraph.to_json(subj_filters);
     {
       nlohmann::json& application = result["model-application"];
       {
@@ -394,8 +375,11 @@ namespace andromeda_py
 	  model->apply(doc);
 	}
       doc.finalise();
+
+      std::set<std::string> subj_filters = {};
+      subj_filters = config.value("subject-filters", subj_filters);
       
-      result = doc.to_json();
+      result = doc.to_json(subj_filters);
       {
 	nlohmann::json& application = result["model-application"];
 	{

@@ -22,16 +22,16 @@ namespace andromeda
     virtual model_type get_type() { return ENT; }
     virtual model_name get_name() { return ABBREVIATION; }
 
-    virtual bool apply(subject<PARAGRAPH>& subj);
+    virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj) { return false; }
 
   private:
 
     bool initialise();
 
-    void find_abbreviation_instances(subject<PARAGRAPH>& subj);
+    void find_abbreviation_instances(subject<TEXT>& subj);
 
-    void find_abbreviation_relations(subject<PARAGRAPH>& subj);
+    void find_abbreviation_relations(subject<TEXT>& subj);
     
   private:
 
@@ -57,7 +57,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<REL, ABBREVIATION>::apply(subject<PARAGRAPH>& subj)
+  bool nlp_model<REL, ABBREVIATION>::apply(subject<TEXT>& subj)
   {
     //LOG_S(INFO) << __FUNCTION__;
     
@@ -73,7 +73,7 @@ namespace andromeda
     return update_applied_models(subj);
   }
 
-  void nlp_model<REL, ABBREVIATION>::find_abbreviation_instances(subject<PARAGRAPH>& subj)
+  void nlp_model<REL, ABBREVIATION>::find_abbreviation_instances(subject<TEXT>& subj)
   {  
     std::string& text = subj.text;
 
@@ -101,7 +101,7 @@ namespace andromeda
       }    
   }
   
-  void nlp_model<REL, ABBREVIATION>::find_abbreviation_relations(subject<PARAGRAPH>& subj)
+  void nlp_model<REL, ABBREVIATION>::find_abbreviation_relations(subject<TEXT>& subj)
   {
     std::map<std::size_t, std::size_t> i1_to_name, i1_to_term, i0_to_abbr;
     

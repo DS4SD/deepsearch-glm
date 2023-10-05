@@ -92,7 +92,7 @@ def build_all_python_versions():
     
 if "__main__"==__name__:
 
-    mode = parse_arguments()
+    #mode = parse_arguments()
     
     #load_pretrained_nlp_models(False)
 

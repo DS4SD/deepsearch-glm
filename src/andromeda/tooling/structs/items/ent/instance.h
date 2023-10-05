@@ -98,7 +98,9 @@ namespace andromeda
     base_instance(hash_type subj_hash,
 		  model_name type, std::string subtype,
 		  std::string name, std::string orig,
-		  range_type coor, range_type span,
+		  range_type coor,
+		  range_type row_span,
+		  range_type col_span,
 		  range_type char_range,
 		  range_type ctok_range,
 		  range_type wtok_range);
@@ -152,7 +154,8 @@ namespace andromeda
     val_type conf;
 
     range_type coor; // table-coors (ignore for text)
-    range_type span; // table-spans (ignore for text)
+    range_type row_span; // table-spans (ignore for text)
+    range_type col_span; // table-spans (ignore for text)
 
     model_name model_type;
     std::string model_subtype;
@@ -175,7 +178,7 @@ namespace andromeda
                            range_type ctok_range,
                            range_type wtok_range):
     subj_hash(subj_hash),
-    subj_name(PARAGRAPH),
+    subj_name(TEXT),
     subj_path(""),
 
 
@@ -185,7 +188,8 @@ namespace andromeda
     conf(1.0),
 
     coor(DEFAULT_COOR),
-    span(DEFAULT_SPAN),
+    row_span(DEFAULT_SPAN),
+    col_span(DEFAULT_SPAN),
 
     model_type(type),
     model_subtype(""),
@@ -209,14 +213,14 @@ namespace andromeda
   }
 
   base_instance::base_instance(hash_type subj_hash,
-                           model_name type, std::string subtype,
-                           std::string name, std::string orig,
-                           range_type char_range,
-                           range_type ctok_range,
-                           range_type wtok_range):
+			       model_name type, std::string subtype,
+			       std::string name, std::string orig,
+			       range_type char_range,
+			       range_type ctok_range,
+			       range_type wtok_range):
 
     subj_hash(subj_hash),
-    subj_name(PARAGRAPH),
+    subj_name(TEXT),
     subj_path("#"),
 
     ehash(DEFAULT_HASH),
@@ -225,7 +229,8 @@ namespace andromeda
     conf(1.0),
 
     coor(DEFAULT_COOR),
-    span(DEFAULT_SPAN),
+    row_span(DEFAULT_SPAN),
+    col_span(DEFAULT_SPAN),
 
     model_type(type),
     model_subtype(subtype),
@@ -251,7 +256,9 @@ namespace andromeda
   base_instance::base_instance(hash_type subj_hash,
                            model_name type, std::string subtype,
                            std::string name, std::string orig,
-                           range_type coor, range_type span,
+                           range_type coor,
+			       range_type row_span,
+			       range_type col_span,
                            range_type char_range,
                            range_type ctok_range,
                            range_type wtok_range):
@@ -266,7 +273,8 @@ namespace andromeda
     conf(1.0),
 
     coor(coor),
-    span(span),
+    row_span(row_span),
+    col_span(col_span),
 
     model_type(type),
     model_subtype(subtype),
@@ -291,18 +299,9 @@ namespace andromeda
 
   base_instance::base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
 			   const base_instance& other):
-    /*
-                           model_name type, std::string subtype,
-                           std::string name, std::string orig,
-                           range_type coor, range_type span,
-                           range_type char_range,
-                           range_type ctok_range,
-                           range_type wtok_range):
-    */
     subj_hash(subj_hash),
     subj_name(subj_name),
     subj_path(subj_path),
-
 
     ehash(other.ehash),
     ihash(other.ihash),
@@ -310,7 +309,8 @@ namespace andromeda
     conf(other.conf),
 
     coor(other.coor),
-    span(other.span),
+    row_span(other.row_span),
+    col_span(other.col_span),
 
     model_type(other.model_type),
     model_subtype(other.model_subtype),
@@ -424,7 +424,7 @@ namespace andromeda
   {
     switch(subj)
       {
-      case PARAGRAPH:
+      case TEXT:
         {
           return TEXT_HEADERS;
         }
@@ -449,7 +449,7 @@ namespace andromeda
 
     switch(subj)
       {
-      case PARAGRAPH:
+      case TEXT:
         {
           row = nlohmann::json::array({to_key(model_type), model_subtype,
                                        conf, ehash, ihash,
@@ -541,7 +541,8 @@ namespace andromeda
       result["orig"] = orig;
 
       result["coor"] = coor;
-      result["span"] = span;
+      result["row-span"] = row_span;
+      result["col-span"] = col_span;
 
       result["char-range"] = char_range;
       result["ctok-range"] = ctok_range;
@@ -558,7 +559,7 @@ namespace andromeda
   {
     switch(subj_name)
       {
-      case PARAGRAPH:
+      case TEXT:
         {
           std::vector<std::string> row =
             {

@@ -70,7 +70,7 @@ namespace andromeda
         ss << "\ninstances: " << instances.size() << "\n";
         return ss.str();
       }
-    else if(instances.at(0).subj_name==PARAGRAPH)
+    else if(instances.at(0).subj_name==TEXT)
       {
         headers = base_instance::short_text_headers();
       }

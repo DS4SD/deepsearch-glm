@@ -160,7 +160,7 @@ namespace andromeda
   {
     if(write_output and ofs.good())
       {
-        ofs << subj.to_json() << "\n";
+        ofs << subj.to_json({}) << "\n";
         return true;
       }
 
