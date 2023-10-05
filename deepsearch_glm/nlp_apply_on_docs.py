@@ -79,17 +79,55 @@ examples of execution:
     return pdf_files, json_files, args.models, args.force_convert
 
 # FIXME: to be replaced with function in nlp_utils
-def init_nlp_model(models:str):
+def init_nlp_model(models:str, filters:list[str]=[]):
     
     #model = andromeda_nlp.nlp_model()
     model = nlp_model()
     
     config = model.get_apply_configs()[0]
+
     config["models"] = models
+    config["subject-filters"] = filters
     
     model.initialise(config)
 
     return model
+
+def show_doc(doc_j):
+
+    print('page-elements')
+    print(json.dumps(doc_j["page-elements"][0:10], indent=2))
+    
+    print('main-text')
+    print(json.dumps(doc_j["main-text"][0:10], indent=2))
+
+    print('body')
+    print(json.dumps(doc_j["body"][0:10], indent=2))
+
+    print('meta')
+    print(json.dumps(doc_j["meta"][0:10], indent=2))        
+        
+    print('texts')
+    print(json.dumps(doc_j["texts"][0:10], indent=2))
+    
+    print('figures')
+    print(json.dumps(doc_j["figures"][0], indent=2))
+
+    print('tables')
+    print(json.dumps(doc_j["tables"][0], indent=2))
+        
+    
+    props = pd.DataFrame(doc_j["properties"]["data"],
+                         columns=doc_j["properties"]["headers"])
+    print("properties: \n\n", props)
+
+    ints = pd.DataFrame(doc_j["instances"]["data"], 
+                        columns=doc_j["instances"]["headers"])
+    print("instances: \n\n", ints)
+
+    ents = pd.DataFrame(doc_j["entities"]["data"], 
+                        columns=doc_j["entities"]["headers"])
+    print(ents)
 
 if __name__ == '__main__':
 
@@ -102,8 +140,11 @@ if __name__ == '__main__':
             json_files.append(_)
 
     json_files = sorted(list(set(json_files)))        
-
-    model = init_nlp_model(model_names)
+    
+    #filters = []
+    filters = ["instances"]
+    
+    model = init_nlp_model(model_names, filters)
 
     for json_file in json_files:
 
@@ -114,44 +155,8 @@ if __name__ == '__main__':
         print(f"applying models ... ", end="")
         doc_j = model.apply_on_doc(doc_i)
 
-        #print(doc_j.keys())
-
-        """
-        print('page-elements')
-        print(json.dumps(doc_j["page-elements"][0:10], indent=2))
-
-        print('main-text')
-        print(json.dumps(doc_j["main-text"][0:10], indent=2))
-
-        print('body')
-        print(json.dumps(doc_j["body"][0:10], indent=2))
-
-        print('meta')
-        print(json.dumps(doc_j["meta"][0:10], indent=2))        
-        
-        print('texts')
-        print(json.dumps(doc_j["texts"][0:10], indent=2))
-        """
-
-        print('figures')
-        print(json.dumps(doc_j["figures"][0], indent=2))
-
-        print('tables')
-        print(json.dumps(doc_j["tables"][0], indent=2))
-        
-        """
-        props = pd.DataFrame(doc_j["properties"]["data"],
-                             columns=doc_j["properties"]["headers"])
-        print("properties: \n\n", props)
-
-        ints = pd.DataFrame(doc_j["instances"]["data"], 
-                            columns=doc_j["instances"]["headers"])
-        print("instances: \n\n", ints)
-
-        ents = pd.DataFrame(doc_j["entities"]["data"], 
-                            columns=doc_j["entities"]["headers"])
-        print(ents)
-        """
+        print(doc_j.keys())
+        #show_doc(doc_j)
         
         nlp_file = json_file.replace(".json", ".nlp.json")
         print(f"writing  models {nlp_file}")

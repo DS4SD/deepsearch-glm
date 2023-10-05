@@ -149,6 +149,9 @@ namespace andromeda
 
   nlohmann::json subject<DOCUMENT>::to_json(std::set<std::string> filters)
   {
+    for(auto filter:filters)
+      LOG_S(WARNING) << filter;
+    
     nlohmann::json result = base_subject::_to_json(filters);
     
     if(orig.count("description"))
