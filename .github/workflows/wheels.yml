@@ -35,11 +35,11 @@ jobs:
           # Linux 64 bit manylinux2014
           - os: ubuntu-latest
             python: 310
-            platform_id: manylinux_x86_64
+            #platform_id: manylinux_x86_64
             #manylinux_image: manylinux2014
           - os: ubuntu-latest
             python: 311
-            platform_id: manylinux_x86_64
+            #platform_id: manylinux_x86_64
             #manylinux_image: manylinux2014
 
           # MacOS x86_64
@@ -79,7 +79,7 @@ jobs:
       - name: Build wheels [macos]
         if: matrix.os == 'macos-latest'
         env:
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          #CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           #CIBW_ARCHS_LINUX: auto aarch64
           #CIBW_ARCHS_MACOS: x86_64 arm64
           CIBW_SKIP: "pp* *-musllinux_*"
@@ -98,8 +98,9 @@ jobs:
       - name: Build wheels [linux]
         if: matrix.os == 'ubuntu-latest'
         env:
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          #CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: x86_64
+          CIBW_PLATFORM: linux
           #CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           #CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_SKIP: "pp* *-musllinux_*"
@@ -109,6 +110,6 @@ jobs:
           /home/runner/.local/bin/poetry add cibuildwheel
           /home/runner/.local/bin/poetry install
           ls -l /home/runner/work/deepsearch-glm/deepsearch-glm/deepsearch_glm/
-          rm /home/runner/work/deepsearch-glm/deepsearch-glm/build/*.so
+          #rm /home/runner/work/deepsearch-glm/deepsearch-glm/build/*.so
           /home/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse          
           ls -l wheelhouse
