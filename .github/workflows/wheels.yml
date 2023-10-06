@@ -106,6 +106,7 @@ jobs:
           CIBW_BUILD_VERBOSITY: 1
         run: |
           #/home/runner/.local/bin/poetry run python --version
+          rm -rf /home/runner/.cache/pypoetry/virtualenvs/deepsearch-glm-pnxDM9J--py3.10
           /home/runner/.local/bin/poetry run python install
           poetry add cibuildwheel
           poetry run python -m cibuildwheel --output-dir wheelhouse
