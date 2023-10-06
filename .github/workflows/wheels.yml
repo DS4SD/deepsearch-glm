@@ -105,7 +105,7 @@ jobs:
           CIBW_SKIP: "pp* *-musllinux_*"
           CIBW_BUILD_VERBOSITY: 1
         run: |
-          /home/runner/.local/bin/poetry run python --version
+          #/home/runner/.local/bin/poetry run python --version
           /home/runner/.local/bin/poetry run python install
           poetry add cibuildwheel
           poetry run python -m cibuildwheel --output-dir wheelhouse
