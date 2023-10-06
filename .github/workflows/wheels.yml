@@ -99,7 +99,7 @@ jobs:
         run: |
           /Users/runner/.local/bin/poetry run python --version
           /Users/runner/.local/bin/poetry add cibuildwheel
-          /Users/runner/.local/bin/poetry install
+          #/Users/runner/.local/bin/poetry install
           /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
           ls -l wheelhouse
           /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
@@ -111,7 +111,7 @@ jobs:
       - name: Build wheels [linux]
         if: matrix.os == 'ubuntu-latest'
         env:
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform }}
           CIBW_ARCHS: x86_64
           CIBW_PLATFORM: linux
           #CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
