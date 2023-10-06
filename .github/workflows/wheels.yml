@@ -86,14 +86,10 @@ jobs:
           CIBW_BUILD_VERBOSITY: 1
         run: |
           /Users/runner/.local/bin/poetry run python --version
-          /Users/runner/.local/bin/poetry install
           /Users/runner/.local/bin/poetry add cibuildwheel
+          /Users/runner/.local/bin/poetry install
           /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
           ls -l wheelhouse
-
-      - name: Build GLM [mac-os]
-        if: matrix.os == 'macos-latest'
-        run: /Users/runner/.local/bin/poetry build
 
       - name: Test poetry [linux]
         if: matrix.os == 'ubuntu-latest'
@@ -103,15 +99,14 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
-          CIBW_ARCHS: all
-          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
-          CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_ARCHS: x86_64
+          #CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
+          #CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_SKIP: "pp* *-musllinux_*"
+          CIBW_BUILD_VERBOSITY: 1
         run: |
           poetry run python --version
           poetry add cibuildwheel
+          poetry run python install
           poetry run python -m cibuildwheel --output-dir wheelhouse
           ls -l wheelhouse
-
-      - name: Build GLM [linux]
-        if: matrix.os == 'ubuntu-latest'
-        run: poetry build
