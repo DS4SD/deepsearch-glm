@@ -20,7 +20,7 @@ namespace andromeda
     virtual model_type get_type() { return ENT; }
     virtual model_name get_name() { return PARENTHESIS; }
 
-    virtual bool apply(subject<PARAGRAPH>& subj);
+    virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj);
 
   private:
@@ -89,7 +89,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<ENT, PARENTHESIS>::apply(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, PARENTHESIS>::apply(subject<TEXT>& subj)
   {
     if(not satisfies_dependencies(subj))
       {
@@ -169,12 +169,13 @@ namespace andromeda
                     std::string name = subj(i,j).from_ctok_range(ctok_range);
 
 		    auto coor = subj(i,j).get_coor();
-		    auto span = subj(i,j).get_span();
+		    auto row_span = subj(i,j).get_row_span();
+		    auto col_span = subj(i,j).get_col_span();
 		    
                     subj.instances.emplace_back(subj.get_hash(),
 					       PARENTHESIS, expr.get_subtype(),
                                                name, orig,
-					       coor, span,
+						coor, row_span, col_span,
                                                char_range,
                                                ctok_range,
                                                wtok_range);

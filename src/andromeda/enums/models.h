@@ -151,6 +151,7 @@ namespace andromeda
 	  }
       }
 
+    LOG_S(WARNING) << "could not find model with name: " << name;    
     return NULL_MODEL;    
   }
   

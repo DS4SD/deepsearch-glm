@@ -27,12 +27,12 @@ namespace andromeda
     template<typename subject_type>  
     bool get(subject_type& subj, base_property& prop);
     
-    virtual bool preprocess(const subject<PARAGRAPH>& subj, std::string& text);
+    virtual bool preprocess(const subject<TEXT>& subj, std::string& text);
     virtual bool preprocess(const subject<TABLE>& subj, std::string& text);
 
     //virtual bool classify(const std::string& orig, std::string& label, double& conf);
     
-    virtual bool apply(subject<PARAGRAPH>& subj);
+    virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj);
     virtual bool apply(subject<DOCUMENT>& subj);
     
@@ -170,7 +170,7 @@ namespace andromeda
     return false;
   }
 
-  bool nlp_model<CLS, SEMANTIC>::preprocess(const subject<PARAGRAPH>& subj, std::string& text)
+  bool nlp_model<CLS, SEMANTIC>::preprocess(const subject<TEXT>& subj, std::string& text)
   {
     //assert(authors.size()>0);
     //assert(author_list.size()>0);
@@ -266,7 +266,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<CLS, SEMANTIC>::apply(subject<PARAGRAPH>& subj)
+  bool nlp_model<CLS, SEMANTIC>::apply(subject<TEXT>& subj)
   {       
     return fasttext_supervised_model::classify(subj);
   }
@@ -287,9 +287,9 @@ namespace andromeda
       }
 
     uint64_t abs_ind=-1, intro_ind=-1, ref_ind=-1;
-    for(uint64_t ind=0; ind<subj.paragraphs.size(); ind++)
+    for(uint64_t ind=0; ind<subj.texts.size(); ind++)
       {
-	auto& para = subj.paragraphs.at(ind);
+	auto& para = subj.texts.at(ind);
 
 	std::string otext = para->get_text();
 	std::string ltext = utils::to_lower(otext);
@@ -318,11 +318,11 @@ namespace andromeda
     double conf=0.0;
 
     //for(auto& para:subj.paragraphs)
-    for(uint64_t ind=0; ind<subj.paragraphs.size(); ind++)
+    for(uint64_t ind=0; ind<subj.texts.size(); ind++)
       {
         //this->apply(*paragraph_ptr);
 
-	auto& para = subj.paragraphs.at(ind);
+	auto& para = subj.texts.at(ind);
 	
 	if(not preprocess(*para, text))
 	  {

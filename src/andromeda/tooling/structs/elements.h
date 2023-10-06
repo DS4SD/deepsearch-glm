@@ -1,5 +1,6 @@
 //-*-C++-*-
 
+#include <andromeda/tooling/structs/elements/page_element.h> 
 #include <andromeda/tooling/structs/elements/prov_element.h> 
 
 #include <andromeda/tooling/structs/elements/text_element.h> 

@@ -12,20 +12,21 @@ namespace andromeda
   public:
 
     subject();
-    subject(uint64_t dhash);
-    subject(uint64_t dhash, std::shared_ptr<prov_element> prov);
+    subject(uint64_t dhash, std::string dloc);
+    subject(uint64_t dhash, std::string dloc,
+	    std::shared_ptr<prov_element> prov);
     
-    ~subject();
+    virtual ~subject();
 
-    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
-    
     void clear();
 
-    bool is_valid() { return (base_subject::valid); }
-    
-    nlohmann::json to_json();
+    //virtual nlohmann::json to_json();
+    virtual nlohmann::json to_json(const std::set<std::string> filters);
 
-    bool from_json(const nlohmann::json& data);
+    virtual bool from_json(const nlohmann::json& data);
+    
+    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
+    bool is_valid() { return (base_subject::valid); }
     
     bool set_data(const nlohmann::json& data);
 
@@ -40,9 +41,9 @@ namespace andromeda
 
     std::vector<std::shared_ptr<prov_element> > provs;
     
-    std::vector<std::shared_ptr<subject<PARAGRAPH> > > captions;
-    std::vector<std::shared_ptr<subject<PARAGRAPH> > > footnotes;
-    std::vector<std::shared_ptr<subject<PARAGRAPH> > > mentions;
+    std::vector<std::shared_ptr<subject<TEXT> > > captions;
+    std::vector<std::shared_ptr<subject<TEXT> > > footnotes;
+    std::vector<std::shared_ptr<subject<TEXT> > > mentions;
   };
 
   subject<FIGURE>::subject():
@@ -55,8 +56,8 @@ namespace andromeda
     mentions({})
   {}
 
-  subject<FIGURE>::subject(uint64_t dhash):
-    base_subject(dhash, FIGURE),
+  subject<FIGURE>::subject(uint64_t dhash, std::string dloc):
+    base_subject(dhash, dloc, FIGURE),
 
     provs({}),
     
@@ -65,8 +66,9 @@ namespace andromeda
     mentions({})
   {}
   
-  subject<FIGURE>::subject(uint64_t dhash, std::shared_ptr<prov_element> prov):
-    base_subject(dhash, FIGURE),
+  subject<FIGURE>::subject(uint64_t dhash, std::string dloc,
+			   std::shared_ptr<prov_element> prov):
+    base_subject(dhash, dloc, FIGURE),
 
     provs({prov}),
     
@@ -89,86 +91,40 @@ namespace andromeda
     mentions.clear();
   }
 
-  nlohmann::json subject<FIGURE>::to_json()
+  nlohmann::json subject<FIGURE>::to_json(const std::set<std::string> filters)
   {
-    nlohmann::json result = nlohmann::json::object({});
+    nlohmann::json result = base_subject::_to_json(filters);
+    result[base_subject::prov_lbl] = base_subject::get_prov_refs(provs);
+    
+    if(filters.size()==0 or filters.count(base_subject::captions_lbl))
+      {
+        base_subject::to_json(result, base_subject::captions_lbl, captions, filters);
+      }
 
-    {
-      nlohmann::json& _ = result[base_subject::captions_lbl];
-      _ = nlohmann::json::array({});
-      
-      for(auto& caption:captions)
-	{
-	  _.push_back(caption->to_json());
-	}
-    }
+    if(filters.size()==0 or filters.count(base_subject::footnotes_lbl))
+      {
+        base_subject::to_json(result, base_subject::footnotes_lbl, footnotes, filters);
+      }
 
-    {
-      nlohmann::json& _ = result[base_subject::footnotes_lbl];
-      _ = nlohmann::json::array({});
-      
-      for(auto& footnote:footnotes)
-	{
-	  _.push_back(footnote->to_json());
-	}
-    }
-
-    {
-      nlohmann::json& _ = result[base_subject::mentions_lbl];
-      _ = nlohmann::json::array({});
-      
-      for(auto& mention:mentions)
-	{
-	  _.push_back(mention->to_json());
-	}
-    }        
+    if(filters.size()==0 or filters.count(base_subject::mentions_lbl))
+      {
+        base_subject::to_json(result, base_subject::mentions_lbl, mentions, filters);
+      }
     
     return result;
   }
   
-  bool subject<FIGURE>::from_json(const nlohmann::json& data)
+  bool subject<FIGURE>::from_json(const nlohmann::json& json_figure)
   {
     {
-      set_data(data);
-    }
-    
-    {
-      captions.clear();
-      for(const nlohmann::json& item:data.at(base_subject::captions_lbl))
-	{
-	  std::shared_ptr<subject<PARAGRAPH> > ptr
-	    = std::make_shared<subject<PARAGRAPH> >();
-
-	  ptr->from_json(item);
-	  captions.push_back(ptr);
-	}
+      base_subject::valid = true;
     }
 
-    {
-      footnotes.clear();
-      for(const nlohmann::json& item:data.at(base_subject::footnotes_lbl))
-	{
-	  std::shared_ptr<subject<PARAGRAPH> > ptr
-	    = std::make_shared<subject<PARAGRAPH> >();
-
-	  ptr->from_json(item);
-	  footnotes.push_back(ptr);
-	}
-    }
+    base_subject::from_json(json_figure, base_subject::captions_lbl, captions);
+    base_subject::from_json(json_figure, base_subject::footnotes_lbl, footnotes);
+    base_subject::from_json(json_figure, base_subject::mentions_lbl, mentions);
     
-    {
-      mentions.clear();
-      for(const nlohmann::json& item:data.at(base_subject::mentions_lbl))
-	{
-	  std::shared_ptr<subject<PARAGRAPH> > ptr
-	    = std::make_shared<subject<PARAGRAPH> >();
-
-	  ptr->from_json(item);
-	  mentions.push_back(ptr);
-	}
-    }        
-    
-    return true;
+    return base_subject::valid;
   }
 
   bool subject<FIGURE>::set_data(const nlohmann::json& data)

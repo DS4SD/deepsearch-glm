@@ -21,7 +21,7 @@ namespace andromeda
     virtual model_type get_type() { return ENT; }
     virtual model_name get_name() { return NAME; }
 
-    virtual bool apply(subject<PARAGRAPH>& subj);
+    virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj) { return false; }
     
   private:
@@ -31,7 +31,7 @@ namespace andromeda
     bool initialise_model();
     bool initialise_regex();
     
-    bool apply_regex(subject<PARAGRAPH>& subj);
+    bool apply_regex(subject<TEXT>& subj);
     
     bool post_process(nlohmann::json& insts);
     
@@ -120,7 +120,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<ENT, NAME>::apply(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, NAME>::apply(subject<TEXT>& subj)
   {
     if(not satisfies_dependencies(subj))
       {
@@ -134,7 +134,7 @@ namespace andromeda
     return true;
   }
   
-  bool nlp_model<ENT, NAME>::apply_regex(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, NAME>::apply_regex(subject<TEXT>& subj)
   {    
     std::string text = subj.text;
     for(auto& expr:exprs)

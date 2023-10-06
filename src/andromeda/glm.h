@@ -43,7 +43,7 @@ namespace andromeda
 
         {
           auto& nlp_models = model->get_parameters().models;
-          andromeda::producer<andromeda::PARAGRAPH> producer(nlp_models);
+          andromeda::producer<andromeda::TEXT> producer(nlp_models);
 
           for(auto item:producer.to_json())
             {

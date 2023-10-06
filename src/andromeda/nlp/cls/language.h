@@ -26,10 +26,10 @@ namespace andromeda
     
     /*  PREDICT  */
     
-    virtual bool preprocess(const subject<PARAGRAPH>& subj, std::string& text);
+    virtual bool preprocess(const subject<TEXT>& subj, std::string& text);
     virtual bool preprocess(const subject<TABLE>& subj, std::string& text);
     
-    virtual bool apply(subject<PARAGRAPH>& subj);
+    virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj);
 
     virtual bool apply(subject<DOCUMENT>& subj);
@@ -82,7 +82,7 @@ namespace andromeda
       }
   }
   
-  bool nlp_model<CLS, LANGUAGE>::preprocess(const subject<PARAGRAPH>& subj, std::string& text)
+  bool nlp_model<CLS, LANGUAGE>::preprocess(const subject<TEXT>& subj, std::string& text)
   {
     text = subj.text;
     return true;
@@ -104,7 +104,7 @@ namespace andromeda
     return true;
   }
     
-  bool nlp_model<CLS, LANGUAGE>::apply(subject<PARAGRAPH>& subj)
+  bool nlp_model<CLS, LANGUAGE>::apply(subject<TEXT>& subj)
   {
     if(not satisfies_dependencies(subj))
       {
@@ -145,7 +145,7 @@ namespace andromeda
 	return false;
       }  
 
-    for(auto& para:subj.paragraphs)
+    for(auto& para:subj.texts)
       {
 	this->apply(*para);
       }
@@ -158,7 +158,7 @@ namespace andromeda
     std::map<std::string, std::size_t> lang_mapping;
 
     std::size_t total=0;
-    for(auto& para:subj.paragraphs)
+    for(auto& para:subj.texts)
       {
 	this->apply(*para);
 

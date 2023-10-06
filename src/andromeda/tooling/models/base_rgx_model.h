@@ -25,7 +25,7 @@ namespace andromeda
     
     virtual bool apply(std::string& text, nlohmann::json& annots) { return false; }
 
-    virtual bool apply(subject<PARAGRAPH>& subj);// = 0;// { return false; }
+    virtual bool apply(subject<TEXT>& subj);// = 0;// { return false; }
     virtual bool apply(subject<TABLE>& subj) { return false; }
 
     virtual bool apply(subject<DOCUMENT>& subj) { return false; }
@@ -121,7 +121,7 @@ namespace andromeda
     return true;
   }
 
-  bool base_rgx_model::apply(subject<PARAGRAPH>& subj)
+  bool base_rgx_model::apply(subject<TEXT>& subj)
   {
     std::string text = subj.get_text();
 

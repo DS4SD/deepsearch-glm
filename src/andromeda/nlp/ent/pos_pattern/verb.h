@@ -21,7 +21,7 @@ namespace andromeda
     virtual model_type get_type() { return ENT; }
     virtual model_name get_name() { return VERB; }
 
-    virtual bool apply(subject<PARAGRAPH>& subj);
+    virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj) { return false; }
 
     //virtual bool apply(subject<WEBDOC>& subj) { return false; }
@@ -47,7 +47,7 @@ namespace andromeda
   nlp_model<ENT, VERB>::~nlp_model()
   {}
 
-  bool nlp_model<ENT, VERB>::apply(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, VERB>::apply(subject<TEXT>& subj)
   {
     if(not satisfies_dependencies(subj))
       {
