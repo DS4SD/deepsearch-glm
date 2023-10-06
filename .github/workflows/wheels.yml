@@ -36,28 +36,32 @@ jobs:
           - os: ubuntu-latest
             python: 310
             platform: linux
-            #platform_id: manylinux_x86_64
+            platform_id: manylinux_x86_64
             #manylinux_image: manylinux2014
+
           - os: ubuntu-latest
             python: 311
-            #platform_id: manylinux_x86_64
+            platform: linux
+            platform_id: manylinux_x86_64
             #manylinux_image: manylinux2014
 
           # MacOS x86_64
           - os: macos-latest
             python: 310
+            platform: macos
             platform_id: macosx_x86_64
 
           # MacOS x86_64
           - os: macos-latest
             python: 311
+            platform: macos
             platform_id: macosx_x86_64
 
           # MacOS arm64
           - os: macos-latest
             python: 310
             platform: macos
-            #platform_id: macosx_arm64
+            platform_id: macosx_arm64
 
     steps:
       - name: Checkout
@@ -98,6 +102,7 @@ jobs:
           /Users/runner/.local/bin/poetry install
           /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
           ls -l wheelhouse
+          /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
 
       - name: Test poetry [linux]
         if: matrix.os == 'ubuntu-latest'
@@ -111,13 +116,13 @@ jobs:
           CIBW_PLATFORM: linux
           #CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           #CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
-          CIBW_SKIP: "pp* *-musllinux_* cp36-macosx_* cp37-macosx_* cp38-macosx_* cp39-macosx_*"
+          CIBW_SKIP: "pp* *-musllinux_*"
           CIBW_BUILD_VERBOSITY: 1
         run: |
           /home/runner/.local/bin/poetry run python --version
           /home/runner/.local/bin/poetry add cibuildwheel
-          /home/runner/.local/bin/poetry install
-          ls -l /home/runner/work/deepsearch-glm/deepsearch-glm/deepsearch_glm/
+          #/home/runner/.local/bin/poetry install
+          #ls -l /home/runner/work/deepsearch-glm/deepsearch-glm/deepsearch_glm/
           #rm /home/runner/work/deepsearch-glm/deepsearch-glm/build/*.so
           /home/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse          
           ls -l wheelhouse
