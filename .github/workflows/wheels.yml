@@ -107,6 +107,6 @@ jobs:
         run: |
           /home/runner/.local/bin/poetry run python --version
           /home/runner/.local/bin/poetry add cibuildwheel
-          #/home/runner/.local/bin/poetry install
+          /home/runner/.local/bin/poetry install
           /home/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
           ls -l wheelhouse
