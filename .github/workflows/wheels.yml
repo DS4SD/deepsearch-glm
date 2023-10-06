@@ -90,8 +90,8 @@ jobs:
       - name: Build wheels [macos]
         if: matrix.os == 'macos-latest'
         env:
-          #CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform }}
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          #CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform }}
           #CIBW_ARCHS_LINUX: auto aarch64
           #CIBW_ARCHS_MACOS: x86_64 arm64
           CIBW_SKIP: "pp* *-musllinux_*"
