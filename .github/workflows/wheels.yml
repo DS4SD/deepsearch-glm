@@ -37,13 +37,13 @@ jobs:
             python: 310
             platform: linux
             platform_id: manylinux_x86_64
-            #manylinux_image: manylinux2014
+            manylinux_image: manylinux2014
 
           - os: ubuntu-latest
             python: 311
             platform: linux
             platform_id: manylinux_x86_64
-            #manylinux_image: manylinux2014
+            manylinux_image: manylinux2014
 
           # MacOS x86_64
           - os: macos-latest
@@ -114,7 +114,7 @@ jobs:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform }}
           CIBW_ARCHS: x86_64
           CIBW_PLATFORM: linux
-          #CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           #CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_SKIP: "pp* *-musllinux_*"
           CIBW_BUILD_VERBOSITY: 1
