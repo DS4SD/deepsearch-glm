@@ -103,7 +103,7 @@ jobs:
           CIBW_PLATFORM: linux
           #CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           #CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
-          CIBW_SKIP: "pp* *-musllinux_*"
+          CIBW_SKIP: "pp* *-musllinux_* cp36-macosx_* cp37-macosx_* cp38-macosx_* cp39-macosx_*"
           CIBW_BUILD_VERBOSITY: 1
         run: |
           /home/runner/.local/bin/poetry run python --version
