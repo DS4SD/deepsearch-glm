@@ -108,5 +108,7 @@ jobs:
           /home/runner/.local/bin/poetry run python --version
           /home/runner/.local/bin/poetry add cibuildwheel
           /home/runner/.local/bin/poetry install
-          /home/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
+          ls -l /home/runner/work/deepsearch-glm/deepsearch-glm/deepsearch_glm/
+          rm /home/runner/work/deepsearch-glm/deepsearch-glm/build/*.so
+          /home/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse          
           ls -l wheelhouse
