@@ -28,5 +28,6 @@ ExternalProject_Add(extlib_pcre2
     LOG_BUILD ON)
 
 add_library(pcre2 STATIC IMPORTED)
-set_target_properties(pcre2 PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libpcre2-8.a)
+#set_target_properties(pcre2 PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libpcre2-8.a)
+set_target_properties(pcre2 PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib64/libpcre2-8.a)
 add_dependencies(pcre2 extlib_pcre2)
