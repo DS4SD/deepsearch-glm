@@ -91,6 +91,8 @@ jobs:
         if: matrix.os == 'macos-latest'
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_ARCHS: x86_64 arm64 
+          CIBW_PLATFORM: macos
           #CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform }}
           #CIBW_ARCHS_LINUX: auto aarch64
           #CIBW_ARCHS_MACOS: x86_64 arm64
