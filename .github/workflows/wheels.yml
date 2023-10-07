@@ -114,7 +114,8 @@ jobs:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: x86_64
           CIBW_PLATFORM: linux
-          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014_x86_64
+          #CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           #CIBW_MANYLINUX_I686_IMAGE: 
           CIBW_SKIP: "pp* *-musllinux_* *-manylinux_i686"
           CIBW_BUILD_VERBOSITY: 1
