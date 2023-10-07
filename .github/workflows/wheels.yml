@@ -128,3 +128,4 @@ jobs:
           #rm /home/runner/work/deepsearch-glm/deepsearch-glm/build/*.so
           /home/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse          
           ls -l wheelhouse
+          /home/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
