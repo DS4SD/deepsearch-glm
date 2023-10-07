@@ -122,7 +122,7 @@ jobs:
         run: |
           /home/runner/.local/bin/poetry run python --version
           /home/runner/.local/bin/poetry add cibuildwheel
-          /home/runner/.local/bin/poetry install
+          #/home/runner/.local/bin/poetry install
           #/home/runner/.local/bin/poetry run python build.py
           #ls -l /home/runner/work/deepsearch-glm/deepsearch-glm/deepsearch_glm/
           #rm /home/runner/work/deepsearch-glm/deepsearch-glm/build/*.so
