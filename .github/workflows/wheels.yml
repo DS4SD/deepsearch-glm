@@ -47,18 +47,6 @@ jobs:
 
           # MacOS x86_64
           - os: macos-latest
-            python: 38
-            platform: macos
-            platform_id: macosx_x86_64
-
-          # MacOS x86_64
-          - os: macos-latest
-            python: 39
-            platform: macos
-            platform_id: macosx_x86_64
-
-          # MacOS x86_64
-          - os: macos-latest
             python: 310
             platform: macos
             platform_id: macosx_x86_64
@@ -83,18 +71,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Setup Python 3.8
-        if: matrix.python == '38'
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.8'  # update once build dependencies are available
-
-      - name: Setup Python 3.9
-        if: matrix.python == '39'
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'  # update once build dependencies are available
 
       - name: Setup Python 3.10
         if: matrix.python == '310'
@@ -151,3 +127,7 @@ jobs:
           /home/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse          
           ls -l wheelhouse
           /home/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
