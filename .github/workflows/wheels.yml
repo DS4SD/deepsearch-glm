@@ -16,8 +16,10 @@ on:
     branches:
       - main
       - "[0-9]+.[0-9]+.X"
+  release:
+    types: [published]
   # Manual run
-  workflow_dispatch:
+  #workflow_dispatch:
 
 jobs:
 
@@ -37,13 +39,23 @@ jobs:
             python: 310
             platform: linux
             platform_id: manylinux_x86_64
-            #manylinux_image: manylinux2014
 
           - os: ubuntu-latest
             python: 311
             platform: linux
             platform_id: manylinux_x86_64
-            #manylinux_image: manylinux2014
+
+          # MacOS x86_64
+          - os: macos-latest
+            python: 38
+            platform: macos
+            platform_id: macosx_x86_64
+
+          # MacOS x86_64
+          - os: macos-latest
+            python: 39
+            platform: macos
+            platform_id: macosx_x86_64
 
           # MacOS x86_64
           - os: macos-latest
@@ -63,9 +75,26 @@ jobs:
             platform: macos
             platform_id: macosx_arm64
 
+          # MacOS arm64
+          - os: macos-latest
+            python: 311
+            platform: macos
+            platform_id: macosx_arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Setup Python 3.8
+        if: matrix.python == '38'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'  # update once build dependencies are available
+
+      - name: Setup Python 3.9
+        if: matrix.python == '39'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'  # update once build dependencies are available
 
       - name: Setup Python 3.10
         if: matrix.python == '310'
@@ -93,10 +122,7 @@ jobs:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: x86_64 arm64 
           CIBW_PLATFORM: macos
-          #CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform }}
-          #CIBW_ARCHS_LINUX: auto aarch64
-          #CIBW_ARCHS_MACOS: x86_64 arm64
-          CIBW_SKIP: "pp* *-musllinux_*"
+          CIBW_SKIP: "pp* *-musllinux_* *_i686* *_s390*"
           CIBW_BUILD_VERBOSITY: 1
         run: |
           /Users/runner/.local/bin/poetry run python --version
@@ -116,18 +142,12 @@ jobs:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: x86_64
           CIBW_PLATFORM: linux
-          #CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014_x86_64
-          #CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
-          #CIBW_MANYLINUX_I686_IMAGE: 
           CIBW_SKIP: "pp* *musllinux_* *_i686* *_s390*"
           CIBW_BUILD_VERBOSITY: 1
         run: |
           /home/runner/.local/bin/poetry run python --version
           /home/runner/.local/bin/poetry add cibuildwheel
           #/home/runner/.local/bin/poetry install
-          #/home/runner/.local/bin/poetry run python build.py
-          #ls -l /home/runner/work/deepsearch-glm/deepsearch-glm/deepsearch_glm/
-          #rm /home/runner/work/deepsearch-glm/deepsearch-glm/build/*.so
           /home/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse          
           ls -l wheelhouse
           /home/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
