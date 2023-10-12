@@ -9,6 +9,9 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD_REQUIRED ON )
 endif()
 
+# minimum macosx, ignored on other platforms 
+set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15) 
+
 # ************************
 # ***     paths        ***
 # ************************
