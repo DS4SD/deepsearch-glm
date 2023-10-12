@@ -4,9 +4,13 @@ project(andromeda VERSION 1.0.0 LANGUAGES CXX C)
 
 set(CMAKE_VERBOSE_MAKEFILE off)
 
+message(STATUS "cmake osx-deployment: " ${CMAKE_OSX_DEPLOYMENT_TARGET})
+
 # minimum macosx, ignored on other platforms
 if(APPLE)
-    if(CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "10.15")
+    if(NOT CMAKE_OSX_DEPLOYMENT_TARGET)
+        message(STATUS "cmake is not set")            
+    elseif(CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS 10.15)
         set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum macOS version" FORCE)
     endif()
 endif()
