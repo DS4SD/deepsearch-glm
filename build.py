@@ -3,6 +3,8 @@
 import os
 import re
 
+import sys
+
 import json
 import glob
 
@@ -51,6 +53,8 @@ def run(cmd, cwd="./"):
     
 def build_local(setup_kwargs=None):
 
+    print("python exectable: ", sys.executable)
+    
     if not os.path.exists(BUILD_DIR):
         cmd = f"cmake -B {BUILD_DIR}"
         run(cmd, cwd=ROOT_DIR)
