@@ -99,7 +99,8 @@ jobs:
           CIBW_ARCHS: x86_64 arm64 
           CIBW_PLATFORM: macos
           CIBW_SKIP: "pp* *-musllinux_* *_i686* *_s390*"
-          CIBW_BUILD_VERBOSITY: 1
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.10"
+          CIBW_BUILD_VERBOSITY: 3
         run: |
           /Users/runner/.local/bin/poetry run python --version
           /Users/runner/.local/bin/poetry add cibuildwheel
@@ -119,11 +120,12 @@ jobs:
           CIBW_ARCHS: x86_64
           CIBW_PLATFORM: linux
           CIBW_SKIP: "pp* *musllinux_* *_i686* *_s390*"
-          CIBW_BUILD_VERBOSITY: 1
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.10"
+          CIBW_BUILD_VERBOSITY: 3
         run: |
           /home/runner/.local/bin/poetry run python --version
           /home/runner/.local/bin/poetry add cibuildwheel
-          /home/runner/.local/bin/poetry install
+          #/home/runner/.local/bin/poetry install
           /home/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse          
           ls -l wheelhouse
           /home/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
