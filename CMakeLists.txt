@@ -53,10 +53,8 @@ message(STATUS " python path: " ${})
 # ***  cxx-flags       ***
 # ************************
 
-#if(NOT CMAKE_CXX_STANDARD)
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON )
-#endif()
+set(CMAKE_CXX_STANDARD          20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -Ofast -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")

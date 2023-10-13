@@ -56,13 +56,14 @@ def build_local(setup_kwargs=None):
     print("python executable: ", sys.executable)
     
     if not os.path.exists(BUILD_DIR):
-        cmd = f"cmake -B {BUILD_DIR}"
+        #cmd = f"cmake -B {BUILD_DIR}"
+        cmd = f"cmake -B {BUILD_DIR} -DPYTHON_EXECUTABLE={sys.executable}"
         run(cmd, cwd=ROOT_DIR)
     else:
         print(f"build directory detected: {BUILD_DIR}")
         
     #cmd = f"cmake --build {BUILD_DIR} --target install -j"
-    cmd = f"cmake --build {BUILD_DIR} --target install"
+    cmd = f"cmake --build {BUILD_DIR} --target install "
     run(cmd, cwd=ROOT_DIR)    
 
 def build_all_python_versions():
