@@ -111,12 +111,19 @@ jobs:
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
 
-      - name: publish wheels [macos]
+      - name: publish wheels (dry run) [macos]
         if: matrix.os == 'macos-latest'
         run: |
           ls -l ./
           ls -l ./dist
           /Users/runner/.local/bin/poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+
+      - name: publish wheels (on publishing) [macos]
+        if: ${{ matrix.os == 'macos-latest' && startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          ls -l ./
+          ls -l ./dist
+          /Users/runner/.local/bin/poetry publish --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       - name: Test poetry [linux]
         if: matrix.os == 'ubuntu-latest'
@@ -141,13 +148,20 @@ jobs:
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
 
-      - name: publish wheels [linux]
+      - name: publish wheels (dry run) [linux]
         if: matrix.os == 'ubuntu-latest'
         run: |
           ls -l ./
           ls -l ./dist
           /home/runner/.local/bin/poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
           #/home/runner/.local/bin/poetry publish --dry-run --build --no-interaction --skip-existing -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+
+      - name: publish wheels (on publishing) [linux]
+        if: ${{ matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          ls -l ./
+          ls -l ./dist
+          /home/runner/.local/bin/poetry publish --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       - uses: actions/upload-artifact@v3
         with:
