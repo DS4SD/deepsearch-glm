@@ -164,6 +164,7 @@ target_link_libraries(andromeda_glm PRIVATE glm)
 # *****************
 
 # add the install targets
+
 install(TARGETS nlp.exe DESTINATION bin)
 install(TARGETS glm.exe DESTINATION bin)
 

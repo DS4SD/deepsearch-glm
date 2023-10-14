@@ -108,6 +108,9 @@ jobs:
           /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
           ls -l wheelhouse
           /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
+          ls -l ./
+          mkdir ./dist
+          cp wheelhouse/*.whl ./dist/
 
       - name: Test poetry [linux]
         if: matrix.os == 'ubuntu-latest'
@@ -126,9 +129,16 @@ jobs:
           /home/runner/.local/bin/poetry run python --version
           /home/runner/.local/bin/poetry add cibuildwheel
           #/home/runner/.local/bin/poetry install
-          /home/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse          
-          ls -l wheelhouse
-          /home/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
+          /home/runner/.local/bin/poetry run python -m cibuildwheel --output-dir ./wheelhouse
+          ls -l ./wheelhouse
+          /home/runner/.local/bin/poetry run python -m zipfile --list ./wheelhouse/*.whl
+          ls -l ./
+          mkdir ./dist
+          cp wheelhouse/*.whl ./dist/
+
+      - name: publish wheels
+        run: |
+          poetry publish --dry-run --build --no-interaction --skip-existing -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       - uses: actions/upload-artifact@v3
         with:
