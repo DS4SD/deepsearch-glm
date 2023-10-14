@@ -140,13 +140,14 @@ jobs:
           /home/runner/.local/bin/poetry run python -m zipfile --list ./wheelhouse/*.whl
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
-          ls -l ./
-          ls -l ./dist
 
       - name: publish wheels [linux]
         if: matrix.os == 'ubuntu-latest'
         run: |
-          /home/runner/.local/bin/poetry publish --dry-run --build --no-interaction --skip-existing -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+          ls -l ./
+          ls -l ./dist
+          /Users/runner/.local/bin/poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+          #/home/runner/.local/bin/poetry publish --dry-run --build --no-interaction --skip-existing -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       - uses: actions/upload-artifact@v3
         with:
