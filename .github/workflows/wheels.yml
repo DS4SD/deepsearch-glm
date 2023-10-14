@@ -146,7 +146,7 @@ jobs:
         run: |
           ls -l ./
           ls -l ./dist
-          /Users/runner/.local/bin/poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+          /home/runner/.local/bin/poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
           #/home/runner/.local/bin/poetry publish --dry-run --build --no-interaction --skip-existing -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       - uses: actions/upload-artifact@v3
