@@ -6,21 +6,8 @@ import glob
 
 import argparse
 
-"""
-import textwrap
-wrapper = textwrap.TextWrapper(width=70)
-
-import pandas as pd
-pd.options.display.width=48
-
-import textColor as tc
-"""
-
 from deepsearch_glm.andromeda_nlp import nlp_model
 from deepsearch_glm.nlp_utils import print_on_shell
-
-#import andromeda_nlp
-#from deepsearch_glm.nlp_utils import init_nlp_model, print_on_shell
 
 default_text = """A team of physicists at Université Paris-Saclay has, for the first time, observed spontaneous quasi-crystal self-assembly. The observation occurred during an experiment they were conducting with tiny vibrating magnetic spheres. The team has written a paper describing their experiment and have posted it on the arXiv preprint server while they await peer review."""
 
@@ -72,9 +59,8 @@ if __name__ == '__main__':
 
     text, model_names, interactive = parse_arguments()
     
-    #model = andromeda_nlp.nlp_model()
     model = nlp_model()
-    print("resource-dir: ", model.get_resources_path())
+    #print("resource-dir: ", model.get_resources_path())
 
     model.initialise_models(model_names)
 
@@ -92,4 +78,3 @@ if __name__ == '__main__':
     else:
         result = model.apply_on_text(text)
         print_on_shell(text, result)
-
