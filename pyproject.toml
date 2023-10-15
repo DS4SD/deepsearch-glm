@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "deepsearch-glm"
-version = "0.2.3"
+version = "0.4.1"
 description = "Graph Language Models"
 authors = ["Peter Staar <taa@zurich.ibm.com>"]
 license = "MIT"
@@ -9,6 +9,7 @@ packages = [{include = "deepsearch_glm"}]
 include = [
     {path = "deepsearch_glm/*.so", format = "wheel"}
 ]
+build = "build.py"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -30,5 +31,5 @@ numerize = "^0.12"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.build]
-script = "build.py"
+#[tool.poetry.build]
+#script = "build.py"

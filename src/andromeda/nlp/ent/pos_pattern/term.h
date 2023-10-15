@@ -21,7 +21,7 @@ namespace andromeda
     virtual model_type get_type() { return ENT; }
     virtual model_name get_name() { return TERM; }
 
-    virtual bool apply(subject<PARAGRAPH>& subj);
+    virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj);
     
   private:
@@ -120,7 +120,7 @@ namespace andromeda
   nlp_model<ENT, TERM>::~nlp_model()
   {}
 
-  bool nlp_model<ENT, TERM>::apply(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, TERM>::apply(subject<TEXT>& subj)
   {
     if(not satisfies_dependencies(subj, text_dependencies))
       {
@@ -169,8 +169,10 @@ namespace andromeda
 	    
 	    get_chunks(subj(i,j), single_exprs, single_chunks);	    
 
-	    add_instances(get_name(), subj, subj(i,j).get_coor(), subj(i,j).get_span(),
-			 ranges_01, ranges_02, single_chunks);
+	    add_instances(get_name(), subj, subj(i,j).get_coor(),
+			  subj(i,j).get_row_span(),
+			  subj(i,j).get_col_span(),
+			  ranges_01, ranges_02, single_chunks);
 	  }
       }
     

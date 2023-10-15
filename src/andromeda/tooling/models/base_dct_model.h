@@ -23,7 +23,7 @@ namespace andromeda
     
     virtual bool apply(std::string& text, nlohmann::json& annots);// { return false; }
 
-    virtual bool apply(subject<PARAGRAPH>& subj);// = 0;// { return false; }
+    virtual bool apply(subject<TEXT>& subj);// = 0;// { return false; }
     virtual bool apply(subject<TABLE>& subj);// { return false; }
 
     virtual bool apply(subject<DOCUMENT>& subj);
@@ -44,7 +44,7 @@ namespace andromeda
     return false;
   }
 
-  bool base_dct_model::apply(subject<PARAGRAPH>& subj)
+  bool base_dct_model::apply(subject<TEXT>& subj)
   {
     return false;
   }

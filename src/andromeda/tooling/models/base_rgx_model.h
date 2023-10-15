@@ -25,7 +25,7 @@ namespace andromeda
     
     virtual bool apply(std::string& text, nlohmann::json& annots) { return false; }
 
-    virtual bool apply(subject<PARAGRAPH>& subj);// = 0;// { return false; }
+    virtual bool apply(subject<TEXT>& subj);// = 0;// { return false; }
     virtual bool apply(subject<TABLE>& subj) { return false; }
 
     virtual bool apply(subject<DOCUMENT>& subj) { return false; }
@@ -110,17 +110,18 @@ namespace andromeda
 
 	config["data"].push_back({type, subtype, expr_});	
       }
-    catch(std::exception exc)
+    catch(std::exception& exc)
       {
-	LOG_S(ERROR) << __FILE__ << ":" << __LINE__ << "\t"
-		     << "could not make the regex for " << expr_;
+	LOG_S(ERROR) << __FILE__ << ":" << __LINE__ << "\n"
+		     << "\t error-message: " << exc.what() << "\n"
+		     << "\t regex-expr: " << expr_;
 	return false;
       }
 
     return true;
   }
 
-  bool base_rgx_model::apply(subject<PARAGRAPH>& subj)
+  bool base_rgx_model::apply(subject<TEXT>& subj)
   {
     std::string text = subj.get_text();
 

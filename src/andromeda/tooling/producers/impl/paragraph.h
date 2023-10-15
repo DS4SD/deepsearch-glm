@@ -1,7 +1,7 @@
 //-*-C++-*-
 
-#ifndef ANDROMEDA_PRODUCERS_PARAGRAPH_H_
-#define ANDROMEDA_PRODUCERS_PARAGRAPH_H_
+#ifndef ANDROMEDA_PRODUCERS_TEXT_H_
+#define ANDROMEDA_PRODUCERS_TEXT_H_
 
 #include <iostream>
 #include <fstream>
@@ -10,7 +10,7 @@ namespace andromeda
 {
 
   template<>
-  class producer<PARAGRAPH>: public base_producer
+  class producer<TEXT>: public base_producer
   {
   public:
 
@@ -22,13 +22,13 @@ namespace andromeda
     producer(std::vector<model_ptr_type> models);
     producer(nlohmann::json& config, std::vector<model_ptr_type>& models);
 
-    producer(const producer<PARAGRAPH>& other);
+    producer(const producer<TEXT>& other);
 
     ~producer();
 
     nlohmann::json to_json();
 
-    virtual subject_name get_subject_name() { return PARAGRAPH; }
+    virtual subject_name get_subject_name() { return TEXT; }
 
     virtual bool initialise(nlohmann::json& config);
     virtual bool reset_pointer();
@@ -76,7 +76,7 @@ namespace andromeda
     std::ofstream ofs;
   };
 
-  producer<PARAGRAPH>::producer():
+  producer<TEXT>::producer():
     base_producer(),
 
     key(""),
@@ -85,7 +85,7 @@ namespace andromeda
     curr_line(0)
   {}
 
-  producer<PARAGRAPH>::producer(std::vector<model_ptr_type> models):
+  producer<TEXT>::producer(std::vector<model_ptr_type> models):
     base_producer(models),
 
     key(""),
@@ -94,7 +94,7 @@ namespace andromeda
     curr_line(0)
   {}
 
-  producer<PARAGRAPH>::producer(nlohmann::json& config, std::vector<model_ptr_type>& models):
+  producer<TEXT>::producer(nlohmann::json& config, std::vector<model_ptr_type>& models):
     base_producer(config, models),
 
     key(""),
@@ -105,7 +105,7 @@ namespace andromeda
     initialise(config);
   }
 
-  producer<PARAGRAPH>::producer(const producer<PARAGRAPH>& other):
+  producer<TEXT>::producer(const producer<TEXT>& other):
     base_producer(),
 
     key(other.key),
@@ -114,16 +114,16 @@ namespace andromeda
     curr_line(other.curr_line)
   {}
 
-  producer<PARAGRAPH>::~producer()
+  producer<TEXT>::~producer()
   {}
 
-  nlohmann::json producer<PARAGRAPH>::to_json()
+  nlohmann::json producer<TEXT>::to_json()
   {
     nlohmann::json configs = nlohmann::json::array({});
 
     {
       nlohmann::json config = nlohmann::json::object({});
-      config[base_producer::subject_lbl] = to_string(PARAGRAPH);
+      config[base_producer::subject_lbl] = to_string(TEXT);
 
       config[maxnum_docs_lbl] = "<optional:int>";
       
@@ -143,7 +143,7 @@ namespace andromeda
 
     {
       nlohmann::json config = nlohmann::json::object({});
-      config[base_producer::subject_lbl] = to_string(PARAGRAPH);
+      config[base_producer::subject_lbl] = to_string(TEXT);
 
       config[maxnum_docs_lbl] = "<optional:int>";
       
@@ -167,7 +167,7 @@ namespace andromeda
     return configs;
   }
 
-  bool producer<PARAGRAPH>::initialise(nlohmann::json& config)
+  bool producer<TEXT>::initialise(nlohmann::json& config)
   {
     if(not base_producer::initialise(config))
       {
@@ -180,7 +180,7 @@ namespace andromeda
     return reset_pointer();
   }
 
-  bool producer<PARAGRAPH>::reset_pointer()
+  bool producer<TEXT>::reset_pointer()
   {
     curr_line = 0;
     
@@ -200,7 +200,7 @@ namespace andromeda
     return true;
   }
 
-  bool producer<PARAGRAPH>::set_ofs(std::filesystem::path path)
+  bool producer<TEXT>::set_ofs(std::filesystem::path path)
   {
     if(ofs.is_open())
       {
@@ -213,7 +213,7 @@ namespace andromeda
     return ofs.good();
   }
   
-  bool producer<PARAGRAPH>::next(std::string& text,
+  bool producer<TEXT>::next(std::string& text,
                                  std::size_t& cnt)
   {
     if(cnt++>=maxnum_docs)
@@ -303,7 +303,7 @@ namespace andromeda
     return false;
   }
 
-  bool producer<PARAGRAPH>::next(paragraph_type& subject,
+  bool producer<TEXT>::next(paragraph_type& subject,
                                  std::size_t& cnt)
   {
     if(read(subject, cnt))
@@ -314,7 +314,7 @@ namespace andromeda
     return false;
   }
 
-  bool producer<PARAGRAPH>::read(paragraph_type& subject,
+  bool producer<TEXT>::read(paragraph_type& subject,
                                  std::size_t& cnt)
   {
     std::string line;
@@ -326,18 +326,18 @@ namespace andromeda
     return false;
   }
 
-  bool producer<PARAGRAPH>::write(paragraph_type& subj)
+  bool producer<TEXT>::write(paragraph_type& subj)
   {
     if(write_output and ofs.good())
       {
-        ofs << subj.to_json() << "\n";
+        ofs << subj.to_json({}) << "\n";
         return true;
       }
 
     return false;
   }
 
-  bool producer<PARAGRAPH>::apply(paragraph_type& subject)
+  bool producer<TEXT>::apply(paragraph_type& subject)
   {
     subject.set_tokens(char_normaliser, text_normaliser);
 

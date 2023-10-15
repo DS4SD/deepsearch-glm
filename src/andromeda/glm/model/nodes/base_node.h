@@ -45,6 +45,8 @@ namespace andromeda
       base_node();
       
       base_node(flvr_type flvr, hash_type hash);
+      base_node(flvr_type flvr, hash_type hash, const std::string& text);
+
       base_node(flvr_type flavor, const std::string& text);
       base_node(flvr_type flavor, const std::vector<std::string>& text);
       base_node(flvr_type flavor, const std::vector<hash_type>& path);
@@ -165,6 +167,25 @@ namespace andromeda
       edges_ptr(NULL)
     {}    
 
+    /* this constructor is useful for text, table and document nodes */
+    base_node::base_node(flvr_type flavor, hash_type hash, const std::string& text_):
+      flvr(flavor),
+      hash(hash),
+
+      word_cnt(0),
+      sent_cnt(0),
+      text_cnt(0),
+      tabl_cnt(0),
+      fdoc_cnt(0),
+
+      text_ptr(std::make_shared<std::string>(text_)),
+
+      nodes_ptr(NULL),
+      edges_ptr(NULL)
+    {
+      initialise();
+    }
+    
     base_node::base_node(flvr_type flavor, const std::string& text_):
       flvr(flavor),
       hash(node_names::UNKNOWN_HASH),

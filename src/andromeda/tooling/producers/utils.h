@@ -27,9 +27,9 @@ namespace andromeda
 	}
 	break;    
 	
-      case PARAGRAPH:
+      case TEXT:
 	{
-	  producer = std::make_shared<andromeda::producer<andromeda::PARAGRAPH> >(config, models);
+	  producer = std::make_shared<andromeda::producer<andromeda::TEXT> >(config, models);
 
 	  producers.push_back(producer);
 	  return true;	  

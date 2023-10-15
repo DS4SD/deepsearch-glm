@@ -4,10 +4,20 @@ project(andromeda VERSION 1.0.0 LANGUAGES CXX C)
 
 set(CMAKE_VERBOSE_MAKEFILE off)
 
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 20)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON )
+message(STATUS "cmake osx-deployment: " ${CMAKE_OSX_DEPLOYMENT_TARGET})
+
+# minimum macosx, ignored on other platforms
+if(APPLE)
+    if(NOT CMAKE_OSX_DEPLOYMENT_TARGET)
+        message(STATUS "cmake is not set")            
+    elseif(CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS 10.15)
+        set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum macOS version" FORCE)
+    endif()
 endif()
+
+#set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0)
+message(STATUS "cmake system-version: " ${CMAKE_SYSTEM_VERSION})
+message(STATUS "cmake osx-deployment: " ${CMAKE_OSX_DEPLOYMENT_TARGET})
 
 # ************************
 # ***     paths        ***
@@ -43,9 +53,12 @@ message(STATUS " python path: " ${})
 # ***  cxx-flags       ***
 # ************************
 
+set(CMAKE_CXX_STANDARD          20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -Ofast -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -g3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
 
 message(STATUS "cxx-compiler: " ${CMAKE_CXX_COMPILER})
 message(STATUS "cxx-flags   : " ${CMAKE_CXX_FLAGS})
@@ -151,6 +164,7 @@ target_link_libraries(andromeda_glm PRIVATE glm)
 # *****************
 
 # add the install targets
+
 install(TARGETS nlp.exe DESTINATION bin)
 install(TARGETS glm.exe DESTINATION bin)
 

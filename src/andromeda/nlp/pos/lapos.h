@@ -26,7 +26,7 @@ namespace andromeda
     virtual model_type get_type() { return POS; }
     virtual model_name get_name() { return LAPOS; }
 
-    virtual bool apply(subject<PARAGRAPH>& subj);
+    virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj);
 
   private:
@@ -37,14 +37,14 @@ namespace andromeda
     bool check_dependency(const std::set<model_name>& deps,
 			  subject_type& subj, std::string& lang);
 
-    bool contract_word_tokens(subject<PARAGRAPH>& subj);
+    bool contract_word_tokens(subject<TEXT>& subj);
 
     void pre_process(std::vector<word_token>& wtokens,
 		     range_type& rng,
                      std::vector<pos_token_type>& pos_tokens,
                      std::map<index_type, index_type>& ptid_to_wtid);
     
-    void run_pos_tagger(subject<PARAGRAPH>& subj,
+    void run_pos_tagger(subject<TEXT>& subj,
                         std::shared_ptr<pos_model_type> pos_model);
 
     void run_pos_tagger(subject<TABLE>& subj,
@@ -144,7 +144,7 @@ namespace andromeda
     return (static_dependency and dyn_dependency);
   }
 
-  bool nlp_model<POS, LAPOS>::apply(subject<PARAGRAPH>& subj)
+  bool nlp_model<POS, LAPOS>::apply(subject<TEXT>& subj)
   {
     // initialise
     for(auto& token:subj.word_tokens)
@@ -165,7 +165,7 @@ namespace andromeda
     return update_applied_models(subj);
   }
 
-  void nlp_model<POS, LAPOS>::run_pos_tagger(subject<PARAGRAPH>& subj,
+  void nlp_model<POS, LAPOS>::run_pos_tagger(subject<TEXT>& subj,
                                              std::shared_ptr<pos_model_type> pos_model)
   {
     std::vector<pos_token_type> pos_tokens={};

@@ -117,9 +117,9 @@ namespace andromeda
 
       switch(producer->get_subject_name())
 	{
-	case PARAGRAPH:
+	case TEXT:
 	  {
-	    auto producer_ = std::dynamic_pointer_cast<andromeda::producer<andromeda::PARAGRAPH> >(producer);
+	    auto producer_ = std::dynamic_pointer_cast<andromeda::producer<andromeda::TEXT> >(producer);
 	    update_mt(producer_);
 	  }
 	  break;
@@ -299,7 +299,7 @@ namespace andromeda
 
       if(configuration.write_nlp_output)
 	{
-	  if(nlp.get_subject_name()==PARAGRAPH)
+	  if(nlp.get_subject_name()==TEXT)
 	    {
 	      std::filesystem::path file = "nlp-"+std::to_string(thread_id) + ".jsonl";	  
 	      std::filesystem::path path = configuration.nlp_output_dir / file;

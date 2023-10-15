@@ -38,7 +38,7 @@ namespace andromeda
     virtual bool match(std::string& text, nlohmann::json& annot) { return false; }
     virtual bool apply(std::string& text, nlohmann::json& annots) { return false; }
 
-    virtual bool apply(subject<PARAGRAPH>& subj) = 0;// { return false; }
+    virtual bool apply(subject<TEXT>& subj) = 0;// { return false; }
     virtual bool apply(subject<TABLE>& subj) = 0;//{ return false; }
 
     virtual bool apply(subject<DOCUMENT>& subj);
@@ -91,9 +91,9 @@ namespace andromeda
 
     //LOG_S(INFO) << "apply " << get_key() << " on document: " << subj.doc_name;
 
-    for(auto& paragraph_ptr:subj.paragraphs)
+    for(auto& text_ptr:subj.texts)
       {
-        this->apply(*paragraph_ptr);
+        this->apply(*text_ptr);
       }
     
     for(auto& table_ptr:subj.tables)

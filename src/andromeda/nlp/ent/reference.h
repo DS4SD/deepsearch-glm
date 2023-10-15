@@ -25,7 +25,7 @@ namespace andromeda
     virtual model_type get_type() { return ENT; }
     virtual model_name get_name() { return REFERENCE; }
 
-    virtual bool apply(subject<PARAGRAPH>& subj);
+    virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj) { return false; }
     virtual bool apply(subject<DOCUMENT>& subj);
     
@@ -34,9 +34,9 @@ namespace andromeda
     //void initialise(std::filesystem::path resources_dir);
     bool initialise();
 
-    void run_model(subject<PARAGRAPH>& subj);
+    void run_model(subject<TEXT>& subj);
     
-    void post_process(subject<PARAGRAPH>& subj);
+    void post_process(subject<TEXT>& subj);
     
   private:
 
@@ -87,7 +87,7 @@ namespace andromeda
   
   bool nlp_model<ENT, REFERENCE>::apply(subject<DOCUMENT>& doc)
   {
-    for(auto& paragraph:doc.paragraphs)
+    for(auto& paragraph:doc.texts)
       {
 	this->apply(*paragraph);
       }
@@ -95,7 +95,7 @@ namespace andromeda
     return true;
   }
   
-  bool nlp_model<ENT, REFERENCE>::apply(subject<PARAGRAPH>& subj)
+  bool nlp_model<ENT, REFERENCE>::apply(subject<TEXT>& subj)
   {
     //LOG_S(WARNING) << "reference parsing started ...";
     
@@ -131,7 +131,7 @@ namespace andromeda
     return true;
   }
 
-  void nlp_model<ENT, REFERENCE>::run_model(subject<PARAGRAPH>& subj)
+  void nlp_model<ENT, REFERENCE>::run_model(subject<TEXT>& subj)
   {
     //LOG_S(WARNING) << __FILE__ << ":" << __LINE__;
     
@@ -183,7 +183,7 @@ namespace andromeda
       }
   }
   
-  void nlp_model<ENT, REFERENCE>::post_process(subject<PARAGRAPH>& subj)
+  void nlp_model<ENT, REFERENCE>::post_process(subject<TEXT>& subj)
   {
     auto& wtokens = subj.word_tokens;
 

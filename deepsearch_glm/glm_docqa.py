@@ -10,7 +10,10 @@ import textwrap
 
 from tabulate import tabulate
 
-from ds_convert import convert_pdffile
+#from ds_convert import convert_pdffile
+
+import pandas as pd
+import matplotlib.pyplot as plt
 
 import andromeda_nlp
 import andromeda_glm
@@ -22,13 +25,13 @@ def parse_arguments():
         description = 'Do Q&A on pdf document',
         epilog = 'Text at the bottom of help')
 
-    parser.add_argument('--pdf', required=True,
+    parser.add_argument('--glm-dir', required=True,
                         type=str,
-                        help="filename of pdf document")
+                        help="directory of GLM model")
 
-    parser.add_argument('--force', required=False, 
-                        type=bool, default=False,
-                        help="force pdf conversion")
+    parser.add_argument('--qa-pairs', required=False, 
+                        type=str, default="prompt",
+                        help="CSV file with QA pairs or `prompt`")
     
     parser.add_argument('--models', required=False,                        
                         type=str, default="name;verb;term;abbreviation",
@@ -36,7 +39,7 @@ def parse_arguments():
     
     args = parser.parse_args()
 
-    return args.pdf, args.force, args.models
+    return args.glm_dir, args.qa_pairs, args.models
     
 def load_nlp(models:str="name;conn;verb;term;language;reference;abbreviation"):
 
@@ -48,10 +51,6 @@ def load_nlp(models:str="name;conn;verb;term;language;reference;abbreviation"):
     nlp_model.initialise(config)    
 
     return nlp_model
-
-def apply_nlp(doc_i):
-
-    doc_j = model.apply_on_doc(doc_i)
 
 def load_glm(path:str):
 
@@ -68,6 +67,16 @@ def load_glm(path:str):
 
     return glm_model
 
+def apply_nlp_on_doc(doc_i, nlp_model):
+
+    doc_j = nlp_model.apply_on_doc(doc_i)
+
+def apply_nlp_on_text(text, nlp_model):
+
+    res = nlp_model.apply_on_text(text)    
+
+    return res
+    
 def analyse_prompt(prompt, nlp_model):
 
     res = nlp_model.apply_on_text(prompt)
@@ -161,25 +170,176 @@ def do_qa(nlp_model, glm_model):
         """
 
         #break
+
+def compute_topk_on_documents(df, nlp_model, glm_model):
+
+    topk = {0:0}
+    for ind in range(1, 10):
+        topk[ind] = 0
         
+    for i,row in df.iterrows():
+        print(i, row["question"])
+
+        doc_hash = row["doc_hash"]
+        question = row["question"]
+
+        context = row["text"]
+        
+        qres = apply_nlp_on_text(question, nlp_model)
+        cres = apply_nlp_on_text(context, nlp_model)
+        
+        """
+        print(json.dumps(res, indent=2))
+        print(tabulate(res["instances"]["data"],
+                       headers=res["instances"]["headers"]))
+        """
+
+        data = cres["instances"]["data"]
+        headers = cres["instances"]["headers"]
+
+        insts=[]
+        for j,row in enumerate(data):
+            insts.append([row[headers.index("type")],
+                          row[headers.index("subtype")],
+                          row[headers.index("name")]])
+
+        """
+        print(f"context: {context}\n")
+            
+        print("instances: ")
+        print(tabulate(insts, headers=["type", "subtype", "name"]), "\n")
+        """
+        
+        data = qres["instances"]["data"]
+        headers = qres["instances"]["headers"]
+        
+        insts=[]
+        for j,row in enumerate(data):
+            insts.append([row[headers.index("type")],
+                          row[headers.index("subtype")],
+                          row[headers.index("name")]])
+        """
+        print(f"question: {question}\n")
+            
+        print("instances: ")
+        print(tabulate(insts, headers=["type", "subtype", "name"]), "\n")
+        """
+        
+        terms=[]
+        for j,row in enumerate(insts):
+            if "term"==row[0]:
+                term=row[2].split()
+                terms.append(term)
+                
+        qry = andromeda_glm.glm_query()
+        qry.select({"nodes":terms})
+        qry.traverse({"edge":"to-doc"})
+
+        config = qry.to_config()    
+        #print("query: ", json.dumps(config, indent=2))            
+
+        out = glm_model.query(config)
+        #print(json.dumps(out, indent=2))
+                
+        if out["status"]=="success":
+
+            docs = pd.DataFrame(out["result"][1]["nodes"]["data"],
+                                columns=out["result"][1]["nodes"]["headers"])
+
+            doc_hashes = list(docs["text"])
+            
+            for k,v in topk.items():
+                if k==0:
+                    topk[k] += 1
+                elif doc_hash in doc_hashes[0:k]:
+                    topk[k] += 1
+
+    print(json.dumps(topk, indent=2))
+
+    x=[]
+    y=[]
+    for i in range(1,10):
+        x.append(i)
+        y.append(topk[i]/topk[0])
+    
+    plt.figure(1)
+    plt.plot(x,y, "r.-", label="doc-topk")
+    plt.ylim(0,1.05)
+    plt.legend(loc="lower right")
+    plt.show()
+
+def compute_topk_on_element(df, nlp_model, glm_model):
+
+    topk = {0:0}
+    for ind in range(1, 10):
+        topk[ind] = 0
+        
+    for i,row in df.iterrows():
+        print(i, row["question"])
+
+        doc_hash = row["doc_hash"]
+        question = row["question"]
+
+        context = row["text"]
+        
+        qres = apply_nlp_on_text(question, nlp_model)
+        cres = apply_nlp_on_text(context, nlp_model)    
+
+        data = qres["instances"]["data"]
+        headers = qres["instances"]["headers"]
+        
+        insts=[]
+        for j,row in enumerate(data):
+            insts.append([row[headers.index("type")],
+                          row[headers.index("subtype")],
+                          row[headers.index("name")]])
+        """
+        print(f"question: {question}\n")
+            
+        print("instances: ")
+        print(tabulate(insts, headers=["type", "subtype", "name"]), "\n")
+        """
+        
+        terms=[]
+        for j,row in enumerate(insts):
+            if "term"==row[0]:
+                term=row[2].split()
+                terms.append(term)
+                
+        qry = andromeda_glm.glm_query()
+        qry.select({"nodes":terms})
+        qry.traverse({"edge":"to-text"})
+
+        config = qry.to_config()    
+        #print("query: ", json.dumps(config, indent=2))            
+
+        out = glm_model.query(config)
+        #print(json.dumps(out, indent=2))
+                
+        if out["status"]=="success":
+
+            docs = pd.DataFrame(out["result"][1]["nodes"]["data"],
+                                columns=out["result"][1]["nodes"]["headers"])
+
+            doc_hashes = list(docs["text"])
+            
+            for k,v in topk.items():
+                if k==0:
+                    topk[k] += 1
+                elif doc_hash in doc_hashes[0:k]:
+                    topk[k] += 1
+
+    print(json.dumps(topk, indent=2))
+
+    
 if __name__ == '__main__':
 
-    pdffile, force, models = parse_arguments()
+    glm_dir, qa_pairs_file, models = parse_arguments()
 
-    success, jsonfile = convert_pdffile(pdffile, force=force)
-
-    if not success:
-        return -1
-    
-    print(f"json-file: {jsonfile}")
+    glm_model = load_glm(glm_dir)    
     nlp_model = load_nlp(models)    
 
-    with open(jsonfile, "r") as fr:        
-        doc_i = json.load(fr)
-        doc_j = nlp_model.apply_on_doc(doc_i)
+    df = pd.read_csv(qa_pairs_file)
 
-    #for item in doc_j["main-text"]:
-    #    print(item)
-    
-    #glm_model = load_glm("../build/glm-model-reports")
-    #do_qa(nlp_model, glm_model)
+    compute_topk_on_documents(df, nlp_model, glm_model)
+    #compute_topk_on_element(df, nlp_model, glm_model)
