@@ -9,7 +9,6 @@ import pandas as pd
 
 from utils.ds_utils import convert_pdffiles
 
-#import andromeda_nlp
 from deepsearch_glm.andromeda_nlp import nlp_model
 
 def parse_arguments():
@@ -54,6 +53,10 @@ examples of execution:
                         type=str, default="language;semantic",
                         help="set NLP models (e.g. `language` or `term;sentence`)")
 
+    parser.add_argument('--filters', required=False,                        
+                        type=str, default="",
+                        help="set output filters (e.g. `properties;instances` only keeps properties and instances), default is no filter")
+    
     parser.add_argument('--force-convert', required=False,
                         type=bool, default=False,
                         help="force pdf conversion")
@@ -76,7 +79,7 @@ examples of execution:
     else:
         json_files=[]
         
-    return pdf_files, json_files, args.models, args.force_convert
+    return pdf_files, json_files, args.models, args.filters, args.force_convert
 
 # FIXME: to be replaced with function in nlp_utils
 def init_nlp_model(models:str, filters:list[str]=[]):
@@ -151,11 +154,12 @@ if __name__ == '__main__':
             json_files.append(_)
 
     json_files = sorted(list(set(json_files)))        
-    
-    #filters = []
-    filters = ["properties", "instances"]
-    
-    model = init_nlp_model(model_names, filters)
+
+    filters_list = []    
+    if len(filters)>0:
+        filters_list = filters.split(";")
+        
+    model = init_nlp_model(model_names, filters_list)
 
     for json_file in json_files:
 

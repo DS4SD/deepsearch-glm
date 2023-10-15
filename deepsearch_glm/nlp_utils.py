@@ -40,7 +40,7 @@ def list_nlp_model_configs():
 
     return configs
 
-def init_nlp_model(model_names:str="language;term"):
+def init_nlp_model(model_names:str="language;term", filters:list[str]=[]):
 
     #model = andromeda_nlp.nlp_model()
     model = nlp_model()
@@ -50,7 +50,8 @@ def init_nlp_model(model_names:str="language;term"):
     
     config = model.get_apply_configs()[0]
     config["models"] = model_names
-
+    config["subject-filters"] = filters
+    
     model.initialise(config)
     
     return model
