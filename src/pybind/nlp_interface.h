@@ -318,7 +318,11 @@ namespace andromeda_py
 
     paragraph.sort();
 
-    std::set<std::string> subj_filters = config["subject-filters"].get<std::set<std::string> >();
+    std::set<std::string> subj_filters = {};
+    if(config.is_object())
+      {
+	subj_filters = config.value("subject-filters", subj_filters);
+      }
     
     nlohmann::json result = paragraph.to_json(subj_filters);
     {
@@ -377,7 +381,10 @@ namespace andromeda_py
       doc.finalise();
 
       std::set<std::string> subj_filters = {};
-      subj_filters = config.value("subject-filters", subj_filters);
+      if(config.is_object())
+	{
+	  subj_filters = config.value("subject-filters", subj_filters);
+	}
       
       result = doc.to_json(subj_filters);
       {
