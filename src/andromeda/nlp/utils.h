@@ -81,6 +81,8 @@ namespace andromeda
 	// POS
       case LAPOS:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<POS, LAPOS> model_type;
 	  //model = std::make_shared<model_type>(RESOURCES_DIR, verbose);
 	  model = std::make_shared<model_type>();	  	  
@@ -90,6 +92,8 @@ namespace andromeda
 	// CLS
       case LANGUAGE:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<CLS, LANGUAGE> model_type;
 	  //model = std::make_shared<model_type>(RESOURCES_DIR);
 	  model = std::make_shared<model_type>();	  
@@ -98,6 +102,8 @@ namespace andromeda
 
       case SEMANTIC:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<CLS, SEMANTIC> model_type;
 	  //model = std::make_shared<model_type>(RESOURCES_DIR);
 	  model = std::make_shared<model_type>();
@@ -107,6 +113,8 @@ namespace andromeda
 	// ENT
       case NAME:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<ENT, NAME> model_type;
 	  //model = std::make_shared<model_type>(RESOURCES_DIR);
 	  model = std::make_shared<model_type>();	  	  
@@ -115,6 +123,8 @@ namespace andromeda
 
       case LINK:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<ENT, LINK> model_type;
 	  model = std::make_shared<model_type>();	  
 	}
@@ -122,6 +132,8 @@ namespace andromeda
 
       case CITE:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<ENT, CITE> model_type;
 	  model = std::make_shared<model_type>();	  
 	}
@@ -129,6 +141,8 @@ namespace andromeda
 
       case QUOTE:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<ENT, QUOTE> model_type;
 	  model = std::make_shared<model_type>();	  
 	}
@@ -136,6 +150,8 @@ namespace andromeda
 	
       case NUMVAL:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<ENT, NUMVAL> model_type;
 	  model = std::make_shared<model_type>();	  	  
 	}
@@ -143,6 +159,8 @@ namespace andromeda
 
       case GEOLOC:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<ENT, GEOLOC> model_type;
 	  model = std::make_shared<model_type>();	  	  
 	}
@@ -150,6 +168,8 @@ namespace andromeda
 	
       case PARENTHESIS:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<ENT, PARENTHESIS> model_type;
 	  model = std::make_shared<model_type>();	  	  
 	}
@@ -157,6 +177,8 @@ namespace andromeda
 
       case EXPRESSION:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<ENT, EXPRESSION> model_type;
 	  model = std::make_shared<model_type>();	  	  
 	}
@@ -164,6 +186,8 @@ namespace andromeda
 
       case SENTENCE:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<ENT, SENTENCE> model_type;
 	  model = std::make_shared<model_type>();	  	  	  
 	}
@@ -171,6 +195,8 @@ namespace andromeda
 
       case REFERENCE:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<ENT, REFERENCE> model_type;
 	  //model = std::make_shared<model_type>(RESOURCES_DIR);
 	  model = std::make_shared<model_type>();	  	  	  
@@ -179,6 +205,8 @@ namespace andromeda
 
       case CONN:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<ENT, CONN> model_type;
 	  model = std::make_shared<model_type>();	  	  	  
 	}
@@ -186,6 +214,8 @@ namespace andromeda
 	
       case TERM:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<ENT, TERM> model_type;
 	  model = std::make_shared<model_type>();	  	  	  
 	}
@@ -193,6 +223,8 @@ namespace andromeda
 
       case VERB:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<ENT, VERB> model_type;
 	  model = std::make_shared<model_type>();	  	  	  
 	}
@@ -200,6 +232,8 @@ namespace andromeda
 
       case ABBREVIATION:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  typedef nlp_model<REL, ABBREVIATION> model_type;
 	  model = std::make_shared<model_type>();	  
 	}
@@ -207,6 +241,8 @@ namespace andromeda
 	
       default:
 	{
+	  LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	  
 	  LOG_S(ERROR) << "no implementation for model: " << to_string(name);
 	  return false;
 	}
@@ -232,6 +268,8 @@ namespace andromeda
   bool to_model(std::string name, std::vector<std::shared_ptr<base_nlp_model> >& models,
 		bool verbose)
   {
+    LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+    
     model_name name_ = to_modelname(name);
     return to_models(name_, models, verbose);
   }
@@ -240,6 +278,8 @@ namespace andromeda
 		 std::vector<std::shared_ptr<base_nlp_model> >& models,
 		 bool verbose)
   {
+    LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+    
     if(verbose)
       {
 	LOG_S(INFO) << "initialising models-expression: " << expr;

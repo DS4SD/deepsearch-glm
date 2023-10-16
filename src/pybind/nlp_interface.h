@@ -47,7 +47,7 @@ namespace andromeda_py
   
   nlp_model::nlp_model():
     base_log::base_log(),
-    config(nlohmann::json::value_t::null),
+    config(nlohmann::json::object({})),
     
     order_text(false),
     models({}),
@@ -60,7 +60,8 @@ namespace andromeda_py
   {}
   
   bool nlp_model::initialise(const nlohmann::json config_)
-  {       
+  {
+    LOG_S(INFO) << __FILE__ << ":" << __LINE__;
     std::string mode = config_["mode"].get<std::string>();
     
     if(mode=="apply")
@@ -73,7 +74,8 @@ namespace andromeda_py
 	std::string models_expr = "semantic;term"; // default models
 	models_expr = config.value("models", models_expr);
 
-	return andromeda::to_models(models_expr, this->models, false);
+	LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+	return andromeda::to_models(models_expr, this->models, true);
       }
     else
       {
@@ -84,10 +86,12 @@ namespace andromeda_py
 
   bool nlp_model::initialise_models(const std::string model_names)
   {
+    LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+    
     config.clear();
     order_text = true;
     
-    return andromeda::to_models(model_names, this->models, false);    
+    return andromeda::to_models(model_names, this->models, true);    
   }
   
   nlohmann::json nlp_model::get_apply_configs()
