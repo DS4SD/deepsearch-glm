@@ -105,6 +105,7 @@ jobs:
           /Users/runner/.local/bin/poetry run python --version
           /Users/runner/.local/bin/poetry add cibuildwheel
           #/Users/runner/.local/bin/poetry install
+          cat ./pyproject.toml
           /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
           ls -l wheelhouse
           /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
@@ -142,6 +143,7 @@ jobs:
           /home/runner/.local/bin/poetry run python --version
           /home/runner/.local/bin/poetry add cibuildwheel
           #/home/runner/.local/bin/poetry install
+          cat ./pyproject.toml
           /home/runner/.local/bin/poetry run python -m cibuildwheel --output-dir ./wheelhouse
           ls -l ./wheelhouse
           /home/runner/.local/bin/poetry run python -m zipfile --list ./wheelhouse/*.whl
