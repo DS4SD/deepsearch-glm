@@ -154,13 +154,13 @@ namespace andromeda
 	return false;
       }
 
-    LOG_S(INFO) << __FILE__ << ":" << __LINE__ << " create shared-ptr ..."
+    LOG_S(INFO) << __FILE__ << ":" << __LINE__ << " create shared-ptr ...";
     if(model==NULL)
       {
 	model = std::make_shared<ft_model_type>();
       }    
 
-    LOG_S(INFO) << __FILE__ << ":" << __LINE__ << " loadModel ..."
+    LOG_S(INFO) << __FILE__ << ":" << __LINE__ << " loadModel ...";
     model->loadModel(model_path);
     
     return true;
