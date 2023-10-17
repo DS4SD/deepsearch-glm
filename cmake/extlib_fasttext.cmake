@@ -5,7 +5,8 @@ message(STATUS "entering in extlib_fasttext.cmake")
 include(ExternalProject)
 include(CMakeParseArguments)
 
-set(FASTTEXT_URL https://github.com/facebookresearch/fastText.git)
+#set(FASTTEXT_URL https://github.com/facebookresearch/fastText.git)
+set(FASTTEXT_URL https://github.com/PeterStaar-IBM/fastText.git)
 #set(FASTTEXT_TAG v0.9.2)
 
 ExternalProject_Add(extlib_fasttext
@@ -17,7 +18,8 @@ ExternalProject_Add(extlib_fasttext
     UPDATE_COMMAND ""
     #CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH}
     #CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} -DCMAKE_CXX_FLAGS="-Wall -Wno-sign-compare -g3 -Wno-dev"
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} -DCMAKE_CXX_FLAGS="-g3"
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} -DCMAKE_CXX_FLAGS=-g3
+    #CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} -DCMAKE_BUILD_TYPE=RELEASE #-DCMAKE_CXX_FLAGS=-g3
     #CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} -DBUILD_SHARED_LIBS=OFF -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -Wno-dev"
 
     #BUILD_ALWAYS ON
