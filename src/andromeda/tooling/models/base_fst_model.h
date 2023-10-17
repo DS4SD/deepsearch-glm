@@ -41,6 +41,8 @@ namespace andromeda
 
   bool base_fst_model::load(std::filesystem::path ifile, bool verbose)
   {
+    LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+    
     if(not std::filesystem::exists(ifile))
       {
 	return false;
@@ -53,6 +55,7 @@ namespace andromeda
 	LOG_S(INFO) << "fasttext model load from " << model_name;
       }
     
+    LOG_S(INFO) << __FILE__ << ":" << __LINE__ << " -> start loading ...";    
     model->loadModel(model_name);    
     
     return true;

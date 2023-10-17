@@ -50,35 +50,22 @@ namespace andromeda
     fasttext_supervised_model(),
     model_file(get_fst_dir() / "language/fst_language.bin")
   {
+    LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+    
     initialise();
   }
 
-  /*
-  nlp_model<CLS, LANGUAGE>::nlp_model(std::filesystem::path resources_dir):
-    fasttext_supervised_model()
-  {
-    initialise(resources_dir);
-  }
-  */
-  
   nlp_model<CLS, LANGUAGE>::~nlp_model()
   {}
 
-  /*
-  void nlp_model<CLS, LANGUAGE>::initialise(std::filesystem::path resources_dir)
-  {
-    //std::filesystem::path ifile = resources_dir / "models/fasttext/language/lid.176.bin";
-    //std::filesystem::path ifile = glm_variables::get_resources_dir() / "models/fasttext/language/lid.176.bin";
-
-    fasttext_supervised_model::load(model_file);
-  }
-  */
-
   void nlp_model<CLS, LANGUAGE>::initialise()
   {
+    LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+    
     if(not fasttext_supervised_model::load(model_file))
       {
-	LOG_S(FATAL) << "could not load `language` classifier model ...";
+	//LOG_S(FATAL) << "could not load `language` classifier model ...";
+	LOG_S(ERROR) << "could not load `language` classifier model ...";
       }
   }
   
