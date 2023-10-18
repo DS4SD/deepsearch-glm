@@ -37,3 +37,5 @@ jobs:
       run: sudo apt-get install python3.10-dev python3.11-dev -y
     - name: Build with poetry
       run: poetry build
+    - name: Testing
+      run: poetry run pytest ./tests -vvv
