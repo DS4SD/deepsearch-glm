@@ -16,14 +16,13 @@ from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_mode
 ROOT_DIR=os.path.abspath("./")
 BUILD_DIR=os.path.join(ROOT_DIR, "build")
 
+"""
 def parse_arguments():
 
     parser = argparse.ArgumentParser(
         prog = 'apply_nlp_on_doc',
         description = 'Apply NLP on `Deep Search` documents',
-        epilog =
-"""
-""",
+        epilog = "",
         formatter_class=argparse.RawTextHelpFormatter)
 
     parser.add_argument('--mode', required=False,
@@ -33,9 +32,12 @@ def parse_arguments():
     args = parser.parse_args()
 
     return args.mode
+"""
 
+"""
 def download_nlp_models():
     load_pretrained_nlp_models(False)
+"""
 
 def run(cmd, cwd="./"):
 
@@ -51,21 +53,24 @@ def run(cmd, cwd="./"):
     print(f" -> ERROR with message: '{message}'\n")        
     return False
     
-def build_local(setup_kwargs=None):
-
-    print("python executable: ", sys.executable)
+def build_local(multi_threaded=True):
     
     if not os.path.exists(BUILD_DIR):
-        #cmd = f"cmake -B {BUILD_DIR}"
+        print("python executable: ", sys.executable)
+        
         cmd = f"cmake -B {BUILD_DIR} -DPYTHON_EXECUTABLE={sys.executable}"
         run(cmd, cwd=ROOT_DIR)
     else:
         print(f"build directory detected: {BUILD_DIR}")
-        
-    #cmd = f"cmake --build {BUILD_DIR} --target install -j"
-    cmd = f"cmake --build {BUILD_DIR} --target install"
-    run(cmd, cwd=ROOT_DIR)    
 
+    if multi_threaded:
+        cmd = f"cmake --build {BUILD_DIR} --target install -j"    
+        run(cmd, cwd=ROOT_DIR)    
+    else:
+        cmd = f"cmake --build {BUILD_DIR} --target install"
+        run(cmd, cwd=ROOT_DIR)    
+
+"""
 def build_all_python_versions():
 
     candidates = glob.glob("/usr/local/bin/python3.*")
@@ -95,12 +100,8 @@ def build_all_python_versions():
             
         cmd = f"cmake --build {PYBUILD_DIR} --target install -j"
         run(cmd, cwd=ROOT_DIR)    
-    
+"""
+
 if "__main__"==__name__:
 
-    #mode = parse_arguments()
-    
-    #load_pretrained_nlp_models(False)
-
     build_local()
-    #build_all_python_versions()

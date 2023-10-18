@@ -39,15 +39,13 @@ namespace andromeda
 	PACKAGE_DIR = RESOURCES_DIR.parent_path();
 	ROOT_DIR = PACKAGE_DIR.parent_path();
 
-	//LOG_S(WARNING) << "updated root-dir: " << ROOT_DIR;
-	//LOG_S(WARNING) << "updated pack-dir: " << PACKAGE_DIR;
-	LOG_S(WARNING) << "updated resourrces-dir: " << RESOURCES_DIR;
+	//LOG_S(INFO) << "updated resourrces-dir: " << RESOURCES_DIR;
 	return true;
       }
     else
       {
-	LOG_S(FATAL) << "updated resources-dir to non-existant path: "
-		     << path;
+	LOG_S(ERROR) << "updated resources-dir to non-existant path: "
+		     << path << " at " << __FILE__ << ":" << __LINE__;
 	return false;
       }
   }
@@ -56,8 +54,8 @@ namespace andromeda
   {
     if(verify and (not std::filesystem::exists(RESOURCES_DIR)))
       {
-	LOG_S(FATAL) << "resource-directory does not exist: "
-		     << RESOURCES_DIR;
+	LOG_S(ERROR) << "resource-directory does not exist: "
+		     << RESOURCES_DIR << " at " << __FILE__ << ":" << __LINE__;
       }
     
     return RESOURCES_DIR;
@@ -69,8 +67,8 @@ namespace andromeda
 
     if(not std::filesystem::exists(path))
       {
-	LOG_S(FATAL) << "non-existent regex-path: "
-		     << path;
+	LOG_S(ERROR) << "non-existent regex-path: "
+		     << path << " at " << __FILE__ << ":" << __LINE__;
       }
 
     return path;
@@ -82,8 +80,8 @@ namespace andromeda
 
     if(not std::filesystem::exists(path))
       {
-	LOG_S(FATAL) << "non-existent fasttext-path: "
-		     << path;
+	LOG_S(ERROR) << "non-existent fasttext-path: "
+		     << path << " at " << __FILE__ << ":" << __LINE__;
       }
 
     return path;
@@ -95,8 +93,8 @@ namespace andromeda
 
     if(not std::filesystem::exists(path))
       {
-	LOG_S(FATAL) << "non-existent crf-path: "
-		     << path;
+	LOG_S(ERROR) << "non-existent crf-path: "
+		     << path << " at " << __FILE__ << ":" << __LINE__;
       }
 
     return path;
