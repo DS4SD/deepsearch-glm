@@ -143,10 +143,9 @@ namespace andromeda
   
   bool fasttext_supervised_model::load(std::filesystem::path ifile)
   {
-    LOG_S(INFO) << __FILE__ << ":" << __LINE__;
+    //LOG_S(INFO) << __FILE__ << ":" << __LINE__;
     
     std::string model_path = ifile.string();
-    LOG_S(INFO) << "model: " << model_path;
     
     if(not std::filesystem::exists(ifile))
       {
@@ -154,13 +153,11 @@ namespace andromeda
 	return false;
       }
 
-    LOG_S(INFO) << __FILE__ << ":" << __LINE__ << " create shared-ptr ...";
     if(model==NULL)
       {
 	model = std::make_shared<ft_model_type>();
       }    
 
-    LOG_S(INFO) << __FILE__ << ":" << __LINE__ << " loadModel ...";
     model->loadModel(model_path);
     
     return true;
@@ -168,7 +165,7 @@ namespace andromeda
 
   bool fasttext_supervised_model::save(std::filesystem::path ofile)
   {
-    LOG_S(INFO) << __FUNCTION__;
+    //LOG_S(INFO) << __FUNCTION__;
     
     std::string model_name = ofile.string();
     

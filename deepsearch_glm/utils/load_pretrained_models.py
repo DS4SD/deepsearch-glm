@@ -37,7 +37,7 @@ def load_pretrained_nlp_models(force:bool=False, verbose:bool=False):
             if verbose:
                 print(f"downloading {os.path.basename(model_weights)} ... ", end="")            
 
-            message = subprocess.run(cmd)#, cwd=ROOT_DIR)    
+            message = subprocess.run(cmd)    
 
             if verbose:
                 print("done!")

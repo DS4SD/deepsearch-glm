@@ -61,7 +61,6 @@ namespace andromeda_py
   
   bool nlp_model::initialise(const nlohmann::json config_)
   {
-    LOG_S(INFO) << __FILE__ << ":" << __LINE__;
     std::string mode = config_["mode"].get<std::string>();
     
     if(mode=="apply")
@@ -86,8 +85,6 @@ namespace andromeda_py
 
   bool nlp_model::initialise_models(const std::string model_names)
   {
-    LOG_S(INFO) << __FILE__ << ":" << __LINE__;
-    
     config.clear();
     order_text = true;
     

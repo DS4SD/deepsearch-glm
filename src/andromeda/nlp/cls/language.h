@@ -50,8 +50,6 @@ namespace andromeda
     fasttext_supervised_model(),
     model_file(get_fst_dir() / "language/fst_language.bin")
   {
-    LOG_S(INFO) << __FILE__ << ":" << __LINE__;
-    
     initialise();
   }
 
@@ -60,11 +58,8 @@ namespace andromeda
 
   void nlp_model<CLS, LANGUAGE>::initialise()
   {
-    LOG_S(INFO) << __FILE__ << ":" << __LINE__;
-    
     if(not fasttext_supervised_model::load(model_file))
       {
-	//LOG_S(FATAL) << "could not load `language` classifier model ...";
 	LOG_S(ERROR) << "could not load `language` classifier model ...";
       }
   }
