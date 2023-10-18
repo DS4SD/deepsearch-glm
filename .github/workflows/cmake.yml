@@ -38,4 +38,6 @@ jobs:
     - name: Build with poetry
       run: poetry build
     - name: Testing
-      run: poetry run pytest ./tests -vvv
+      run: |
+        poetry install --with test
+        poetry run pytest ./tests -vvv
