@@ -120,7 +120,7 @@ def extract_references_from_doc(doc, verbose=False):
         if "reference" in labels:
 
             refs = df[df["subj_path"]==path]
-            result.append({"text": item["text"], "instances": refs)
+            result.append({"text": item["text"], "instances": refs})
             
             if verbose:
                 print(f"text: ") #{type_}, labels: ", ",".join(labels))
