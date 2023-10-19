@@ -115,7 +115,7 @@ def test_03C_run_nlp_models_on_document():
         with open(source) as fr:
             sdoc = json.load(fr)
 
-        res = model.apply_on_text(sdoc)        
+        res = model.apply_on_doc(sdoc)        
 
         with open(target) as fr:
             tdoc = json.load(fr)
