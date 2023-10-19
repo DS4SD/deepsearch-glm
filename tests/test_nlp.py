@@ -27,17 +27,23 @@ def test_02A_run_nlp_models_on_text():
 
     model = init_nlp_model("sentence;language;term")
     res = model.apply_on_text("FeSe is a material.")
-
+    print(res.keys())
+    
     for label in ["text", "properties", "instances", "relations"]:
-        assert label in res        
+        assert label in res
+
+    check_dimensions(res["properties"])
+    check_dimensions(res["instances"])
+    check_dimensions(res["relations"])        
         
 def test_02B_run_nlp_models_on_text():
 
     filters = ["properties"]
     
-    model = init_nlp_model("sentence;language;term")
-    res = model.apply_on_text("FeSe is a material.", filters)
-
+    model = init_nlp_model("sentence;language;term", filters)
+    res = model.apply_on_text("FeSe is a material.")
+    print(res.keys())
+    
     for label in ["text", "properties"]:
         assert label in res
 
@@ -69,8 +75,8 @@ def test_03B_run_nlp_models_on_document():
 
     filters = ["properties"]
         
-    model = init_nlp_model("sentence;language;term;reference")
-    res = model.apply_on_doc(doc, filters)
+    model = init_nlp_model("sentence;language;term;reference", filters)
+    res = model.apply_on_doc(doc)
     print(res.keys())
 
     for label in ["dloc", "applied-models",
@@ -83,5 +89,3 @@ def test_03B_run_nlp_models_on_document():
         assert label not in res
                   
     check_dimensions(res["properties"])
-    check_dimensions(res["instances"])
-    check_dimensions(res["relations"])
