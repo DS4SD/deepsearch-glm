@@ -58,8 +58,6 @@ namespace andromeda
   template<typename doc_type>
   void doc_normalisation<doc_type>::execute_on_pdf()
   {
-    LOG_S(WARNING);
-    
     set_pdforder();
 
     init_pages();
