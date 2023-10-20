@@ -123,6 +123,8 @@ glm = create_glm_from_docs(odir, json_files, model_names)
 
 ### Querying Graphs 
 
+TBD
+
 ## Install for development
 
 ### Python installation
@@ -227,3 +229,10 @@ After you have generated the configuration files (see above), you can
 ./glm.exe -m explore -c glm_config_explore.json
 ```
 
+## Testing
+
+To run the tests, simply execute (after installation),
+
+```sh
+poetry run pytest ./tests -vvv -s
+```

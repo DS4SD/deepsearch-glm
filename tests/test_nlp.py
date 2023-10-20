@@ -6,6 +6,8 @@ from deepsearch_glm.nlp_utils import list_nlp_model_configs, init_nlp_model, \
     extract_references_from_doc
 from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
 
+from deepsearch_glm.nlp_train_semantic import train_semantic
+
 def test_01_load_nlp_models():
     models = load_pretrained_nlp_models()
     print(f"models: {models}")
@@ -187,5 +189,11 @@ def test_04B_references():
             res = model.apply_on_text(data["text"])
 
             assert res==data
-    
 
+"""
+def test_05A_train_semantic():
+
+    train_semantic("prepare", "./tests/data/train/semantic", autotune=True, duration=60, modelsize="1M")
+
+    train_semantic("train", "./tests/data/train/semantic", autotune=True, duration=60, modelsize="1M")
+"""
