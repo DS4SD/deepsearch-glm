@@ -73,8 +73,7 @@ namespace andromeda_py
 	std::string models_expr = "semantic;term"; // default models
 	models_expr = config.value("models", models_expr);
 
-	LOG_S(INFO) << __FILE__ << ":" << __LINE__;
-	return andromeda::to_models(models_expr, this->models, true);
+	return andromeda::to_models(models_expr, this->models, false);
       }
     else
       {
