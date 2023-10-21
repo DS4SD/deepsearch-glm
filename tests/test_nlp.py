@@ -95,7 +95,7 @@ def test_03B_run_nlp_models_on_document():
                   
     check_dimensions(res["properties"])
 
-"""    
+
 def test_03C_run_nlp_models_on_document():
 
     model = init_nlp_model("language;semantic;sentence;term;verb;conn;geoloc;reference")
@@ -126,7 +126,6 @@ def test_03C_run_nlp_models_on_document():
             tdoc = json.load(fr)
         
         assert res==tdoc
-"""
 
 def test_04A_terms():
 
@@ -173,7 +172,6 @@ def test_04A_terms():
        
     assert True
 
-"""    
 def test_04B_references():
 
     model = init_nlp_model("reference")
@@ -206,7 +204,6 @@ def test_04B_references():
             res = model.apply_on_text(data["text"])
 
             assert res==data
-"""
 
 """
 def test_05A_train_semantic():
