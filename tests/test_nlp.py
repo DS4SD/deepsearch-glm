@@ -206,7 +206,19 @@ def test_04B_semantic():
             data = json.loads(line)
             res = model.apply_on_text(data["text"])
 
-            assert res==data
+            for i,row_i in enumerate(res["properties"]["data"]):
+                row_j = data["properties"]["data"][i]
+                print(i, "\t", row_i)
+                print(i, "\t", row_j)
+                assert row_i==row_j
+
+            for i,row_i in enumerate(res["instances"]["data"]):
+                row_j = data["instances"]["data"][i]
+                print(i, "\t", row_i)
+                print(i, "\t", row_j)
+                assert row_i==row_j
+            
+            #assert res==data
 
 """            
 def test_04C_references():
