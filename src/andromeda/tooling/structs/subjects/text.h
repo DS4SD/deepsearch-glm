@@ -141,12 +141,19 @@ namespace andromeda
 
   bool subject<TEXT>::set_text(const std::string& ctext)
   {
+    LOG_S(INFO) << "subject<TEXT>:: " << __FUNCTION__;
+    
     text_element::set_text(ctext);
+
+    LOG_S(INFO) << " -> subject<TEXT>::text = '" << text_element::text << "'";
+    LOG_S(INFO) << " -> subject<TEXT>::dhash = '" << dhash << "'";
+    LOG_S(INFO) << " -> subject<TEXT>::text_hash = '" << text_element::text_hash << "'";
 
     std::vector<uint64_t> hashes={dhash, text_element::text_hash};
     base_subject::hash = utils::to_hash(hashes);
-    
-    LOG_S(INFO) << "subject<TEXT>::hash = " << subject<TEXT>::hash;
+
+    LOG_S(INFO) << " -> base_subject::hash = " << base_subject::hash;
+    LOG_S(INFO) << " -> subject<TEXT>::hash = " << subject<TEXT>::hash;
     
     return text_element::text_valid;
   }
