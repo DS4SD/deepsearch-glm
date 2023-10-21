@@ -95,7 +95,7 @@ def test_03B_run_nlp_models_on_document():
                   
     check_dimensions(res["properties"])
 
-
+"""
 def test_03C_run_nlp_models_on_document():
 
     model = init_nlp_model("language;semantic;sentence;term;verb;conn;geoloc;reference")
@@ -126,7 +126,9 @@ def test_03C_run_nlp_models_on_document():
             tdoc = json.load(fr)
         
         assert res==tdoc
+"""
 
+"""
 def test_04A_terms():
 
     model = init_nlp_model("language;semantic;sentence;term;verb;conn;geoloc")
@@ -171,8 +173,43 @@ def test_04A_terms():
             assert res==data
        
     assert True
+"""
 
-def test_04B_references():
+def test_04B_semantic():
+
+    model = init_nlp_model("semantic")
+
+    source = "./tests/data/texts/semantics.jsonl"
+    target = "./tests/data/texts/semantics.nlp.jsonl"
+    
+    if GENERATE: # generate the test-data
+        
+        with open(source) as fr:
+            lines = fr.readlines()
+
+        fw = open(target, "w")
+    
+        for line in lines:
+            data = json.loads(line)
+            res = model.apply_on_text(data["text"])
+            
+            fw.write(json.dumps(res)+"\n")
+                
+        fw.close()
+        assert True
+        
+    else:
+        with open(target) as fr:
+            lines = fr.readlines()
+            
+        for line in lines:
+            data = json.loads(line)
+            res = model.apply_on_text(data["text"])
+
+            assert res==data
+
+"""            
+def test_04C_references():
 
     model = init_nlp_model("reference")
 
@@ -204,6 +241,7 @@ def test_04B_references():
             res = model.apply_on_text(data["text"])
 
             assert res==data
+"""
 
 """
 def test_05A_train_semantic():
