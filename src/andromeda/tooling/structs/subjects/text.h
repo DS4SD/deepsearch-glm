@@ -145,7 +145,9 @@ namespace andromeda
 
     std::vector<uint64_t> hashes={dhash, text_element::text_hash};
     base_subject::hash = utils::to_hash(hashes);
-
+    
+    LOG_S(INFO) << "subject<TEXT>::hash = " << subject<TEXT>::hash;
+    
     return text_element::text_valid;
   }
 

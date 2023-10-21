@@ -174,10 +174,12 @@ namespace andromeda
 		    std::string name = subj.from_ctok_range(ctok_range);
 		    
 		    subj.instances.emplace_back(subj.get_hash(),
-					       NUMVAL, expr.get_subtype(),
-					       name, orig, 
-					       char_range, ctok_range, wtok_range);
+						NUMVAL, expr.get_subtype(),
+						name, orig, 
+						char_range, ctok_range, wtok_range);
 
+		    LOG_S(INFO) << "subj-hash: " << subj.get_hash() << ", name: " << name;
+		    
 		    utils::mask(text, item.rng);
 		  }
 	      }
