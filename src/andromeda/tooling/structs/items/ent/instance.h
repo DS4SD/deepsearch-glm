@@ -179,8 +179,7 @@ namespace andromeda
                                range_type wtok_range):
     subj_hash(subj_hash),
     subj_name(TEXT),
-    subj_path(""),
-
+    subj_path("#"),
 
     ehash(DEFAULT_HASH),
     ihash(DEFAULT_HASH),
@@ -297,7 +296,9 @@ namespace andromeda
     wtok_range_match = (wtok_range[0]<wtok_range[1]);
   }
 
-  base_instance::base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
+  base_instance::base_instance(hash_type subj_hash,
+			       subject_name subj_name,
+			       std::string subj_path,
                                const base_instance& other):
     subj_hash(subj_hash),
     subj_name(subj_name),
