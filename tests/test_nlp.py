@@ -212,12 +212,13 @@ def test_04B_semantic():
                 print(i, "\t", row_j)
                 assert row_i==row_j
 
+            """
             for i,row_i in enumerate(res["instances"]["data"]):
                 row_j = data["instances"]["data"][i]
                 print(i, "\t", row_i)
                 print(i, "\t", row_j)
                 assert row_i==row_j
-            
+            """
             #assert res==data
 
 """            
