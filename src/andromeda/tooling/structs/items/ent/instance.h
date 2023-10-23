@@ -330,7 +330,7 @@ namespace andromeda
   {
     //ehash = utils::to_hash(name);
     ehash = utils::to_reproducible_hash(name);
-
+    
     std::vector<hash_type> hash_vec =
       {
         subj_hash,
@@ -341,6 +341,8 @@ namespace andromeda
         char_range.at(1)
       };
 
+    LOG_S(INFO) << "'" << name << "' => ehash: " << ehash << " => ihash: " << ihash;
+    
     ihash = utils::to_hash(hash_vec);
   }
 

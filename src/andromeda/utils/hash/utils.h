@@ -34,7 +34,6 @@ namespace andromeda
       std::string name = seed + text;
       
       uint64_t hash = std::hash<std::string_view>{}(name.c_str());
-      //uint64_t hash = std::hash<std::string>{}(name);
       return hash;
     }
 
