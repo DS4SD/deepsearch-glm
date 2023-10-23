@@ -8,7 +8,7 @@ from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_mode
 
 from deepsearch_glm.nlp_train_semantic import train_semantic
 
-GENERATE=False
+GENERATE=True
 
 def test_01_load_nlp_models():
     models = load_pretrained_nlp_models()

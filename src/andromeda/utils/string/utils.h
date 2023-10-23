@@ -383,8 +383,6 @@ namespace andromeda
       return (itr-headers.begin());
     }
     
-    
-    
   }
 
 }
