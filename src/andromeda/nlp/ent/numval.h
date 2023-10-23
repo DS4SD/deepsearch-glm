@@ -178,7 +178,7 @@ namespace andromeda
 						name, orig, 
 						char_range, ctok_range, wtok_range);
 
-		    LOG_S(INFO) << "subj-hash: " << subj.get_hash() << ", name: " << name;
+		    //LOG_S(INFO) << "subj-hash: " << subj.get_hash() << ", name: " << name;
 		    
 		    utils::mask(text, item.rng);
 		  }

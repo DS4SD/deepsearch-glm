@@ -341,7 +341,7 @@ namespace andromeda
         char_range.at(1)
       };
 
-    LOG_S(INFO) << "'" << name << "' => ehash: " << ehash << " => ihash: " << ihash;
+    //LOG_S(INFO) << "'" << name << "' => ehash: " << ehash << " => ihash: " << ihash;
     
     ihash = utils::to_hash(hash_vec);
   }
