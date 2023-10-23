@@ -8,7 +8,7 @@ from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_mode
 
 from deepsearch_glm.nlp_train_semantic import train_semantic
 
-GENERATE=True
+GENERATE=False
 
 def test_01_load_nlp_models():
     models = load_pretrained_nlp_models()
@@ -206,23 +206,22 @@ def test_04B_semantic():
             data = json.loads(line)
             res = model.apply_on_text(data["text"])
 
-            print("headers: ", res["properties"]["headers"])
+            #print("headers: ", res["properties"]["headers"])
             for i,row_i in enumerate(res["properties"]["data"]):
                 row_j = data["properties"]["data"][i]
-                print(i, "\t", row_i)
-                print(i, "\t", row_j)
+                #print(i, "\t", row_i)
+                #print(i, "\t", row_j)
                 assert row_i==row_j
 
-            print("headers: ", res["instances"]["headers"])
+            #print("headers: ", res["instances"]["headers"])
             for i,row_i in enumerate(res["instances"]["data"]):
                 row_j = data["instances"]["data"][i]
-                print(i, "\t", row_i)
-                print(i, "\t", row_j)
-                #assert row_i==row_j
+                #print(i, "\t", row_i)
+                #print(i, "\t", row_j)
+                assert row_i==row_j
 
-            #assert res==data
+            assert res==data
 
-"""            
 def test_04C_references():
 
     model = init_nlp_model("reference")
@@ -255,7 +254,7 @@ def test_04C_references():
             res = model.apply_on_text(data["text"])
 
             assert res==data
-"""
+
 
 """
 def test_05A_train_semantic():
