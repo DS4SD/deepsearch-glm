@@ -95,7 +95,6 @@ def test_03B_run_nlp_models_on_document():
                   
     check_dimensions(res["properties"])
 
-"""
 def test_03C_run_nlp_models_on_document():
 
     model = init_nlp_model("language;semantic;sentence;term;verb;conn;geoloc;reference")
@@ -126,9 +125,7 @@ def test_03C_run_nlp_models_on_document():
             tdoc = json.load(fr)
         
         assert res==tdoc
-"""
 
-"""
 def test_04A_terms():
 
     model = init_nlp_model("language;semantic;sentence;term;verb;conn;geoloc")
@@ -160,20 +157,19 @@ def test_04A_terms():
 
             for i,row_i in enumerate(res["properties"]["data"]):
                 row_j = data["properties"]["data"][i]
-                print(i, "\t", row_i)
-                print(i, "\t", row_j)
+                #print(i, "\t", row_i)
+                #print(i, "\t", row_j)
                 assert row_i==row_j
 
             for i,row_i in enumerate(res["instances"]["data"]):
                 row_j = data["instances"]["data"][i]
-                print(i, "\t", row_i)
-                print(i, "\t", row_j)
+                #print(i, "\t", row_i)
+                #print(i, "\t", row_j)
                 assert row_i==row_j
                 
             assert res==data
        
     assert True
-"""
 
 def test_04B_semantic():
 
@@ -254,7 +250,6 @@ def test_04C_references():
             res = model.apply_on_text(data["text"])
 
             assert res==data
-
 
 """
 def test_05A_train_semantic():
