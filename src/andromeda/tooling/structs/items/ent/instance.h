@@ -328,7 +328,8 @@ namespace andromeda
 
   void base_instance::initialise_hashes()
   {
-    ehash = utils::to_hash(name);
+    //ehash = utils::to_hash(name);
+    ehash = utils::to_reproducible_hash(name);
 
     std::vector<hash_type> hash_vec =
       {
