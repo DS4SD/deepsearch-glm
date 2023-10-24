@@ -307,19 +307,9 @@ namespace andromeda
     if(is_preprocessed())
       {
 	from_json(data);
-	/*
-        set_pages();
-        set_provs();
-
-        set_texts();
-        set_tables();
-        set_figures();
-	*/
       }
     else if(originates_from_pdf())
       {
-        LOG_S(INFO) << "originates-from-pdf ... ";
-
         doc_normalisation<subject<DOCUMENT> > normaliser(*this);
         normaliser.execute_on_pdf();
       }
@@ -327,8 +317,6 @@ namespace andromeda
       {
         LOG_S(WARNING) << "does not originates-from-pdf ... ";
         return false;
-        //doc_normalisation<subject<DOCUMENT> > normaliser(*this);
-        //normaliser.execute_on_doc();
       }
 
     return true;
@@ -386,96 +374,8 @@ namespace andromeda
     return (orig.count(maintext_lbl) and (not orig.count(body_lbl)));
   }
 
-  /*
-  void subject<DOCUMENT>::set_pages()
-  {
-    pages.clear();
-
-    for(ind_type l=0; l<orig.at(pages_lbl).size(); l++)
-      {
-        const nlohmann::json& item = orig.at(pages_lbl).at(l);
-
-        std::shared_ptr<page_element> ptr
-          = std::make_shared<page_element>();
-
-        ptr->from_json(item);
-
-        pages.push_back(ptr);
-      }
-  }
-
-  void subject<DOCUMENT>::set_provs()
-  {
-    provs.clear();
-
-    for(ind_type l=0; l<orig.at(provs_lbl).size(); l++)
-      {
-        const nlohmann::json& item = orig.at(provs_lbl).at(l);
-
-        std::shared_ptr<prov_element> ptr
-          = std::make_shared<prov_element>();
-
-        ptr->from_json(item);
-
-        provs.push_back(ptr);
-      }
-  }
-
-  void subject<DOCUMENT>::set_texts()
-  {
-    texts.clear();
-
-    for(ind_type l=0; l<orig.at(texts_lbl).size(); l++)
-      {
-        const nlohmann::json& item = orig.at(texts_lbl).at(l);
-
-        std::shared_ptr<subject<TEXT> > ptr
-          = std::make_shared<subject<TEXT> >();
-
-        ptr->from_json(item);
-
-        texts.push_back(ptr);
-      }
-  }
-
-  void subject<DOCUMENT>::set_tables()
-  {
-    tables.clear();
-
-    for(ind_type l=0; l<orig.at(tables_lbl).size(); l++)
-      {
-        const nlohmann::json& item = orig.at(tables_lbl).at(l);
-
-        std::shared_ptr<subject<TABLE> > ptr
-          = std::make_shared<subject<TABLE> >();
-
-        ptr->from_json(item);
-
-        tables.push_back(ptr);
-      }
-  }
-
-  void subject<DOCUMENT>::set_figures()
-  {
-    figures.clear();
-
-    for(ind_type l=0; l<orig.at(figures_lbl).size(); l++)
-      {
-        const nlohmann::json& item = orig.at(figures_lbl).at(l);
-
-        std::shared_ptr<subject<FIGURE> > ptr
-          = std::make_shared<subject<FIGURE> >();
-
-        ptr->from_json(item);
-
-        figures.push_back(ptr);
-      }
-  }
-  */
-  
   void subject<DOCUMENT>::show_provs()
   {
-    //LOG_S(INFO) << __FUNCTION__;
     std::vector<std::string> headers = prov_element::get_headers();
 
     std::vector<std::vector<std::string> > rows={};
