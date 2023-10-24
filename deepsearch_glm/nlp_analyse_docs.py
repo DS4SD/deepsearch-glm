@@ -163,7 +163,7 @@ def extract_sentences(doc):
 
 def extract_tables(doc):
     
-    wrapper = wrapper = textwrap.TextWrapper(width=70)
+    wrapper = textwrap.TextWrapper(width=70)
 
     print("\n\t TABLES: \n")
     
@@ -180,7 +180,7 @@ def extract_figures(doc):
 
     print("\n\t FIGURES: \n")
     
-    wrapper = wrapper = textwrap.TextWrapper(width=70)
+    wrapper = textwrap.TextWrapper(width=70)
     
     for i,item in enumerate(doc["figures"]):
 
@@ -201,7 +201,7 @@ def extract_references(doc):
     df = pd.DataFrame(doc["instances"]["data"],
                       columns=doc["instances"]["headers"])
     
-    wrapper = wrapper = textwrap.TextWrapper(width=70)
+    wrapper = textwrap.TextWrapper(width=70)
     
     for i,item in enumerate(doc["texts"]):
 

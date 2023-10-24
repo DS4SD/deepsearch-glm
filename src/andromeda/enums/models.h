@@ -8,52 +8,51 @@ namespace andromeda
 
   enum model_type
     {
-     POS, // part-of-speach (POS) tagging of text, table
-     CLS, // classification of text, table
-     ENT, // entity (with normalisation) in text, table
-     REL, // binary relation between entities
-     REC, // record (combination between entities and relations)
-     GLM // graph language model
+     POS=1, // part-of-speach (POS) tagging of text, table
+     CLS=2, // classification of text, table
+     ENT=3, // entity (with normalisation) in text, table
+     REL=4, // binary relation between entities
+     REC=5, // record (combination between entities and relations)
+     GLM=6 // graph language model
     };
 
+  // the numbers are only there to make sure that the
+  // ordering is consistent
   enum model_name
     {
      // POS
-     LAPOS,
+     LAPOS=128,
 
      // CLS
-     LANGUAGE,
-     SEMANTIC, // header, text, reference, etc
-     TOPIC,
+     LANGUAGE=256,
+     SEMANTIC=257, // header, text, reference, etc
+     TOPIC=258,
 
      // ENT
-     NUMVAL, // numerical value's
-     GEOLOC,
-
-     DATE, // dates
-     CITE,
-     LINK, // weblinks in text
-     NAME, // person/organisation names
-
-     QUOTE, // numerical value's
-     PARENTHESIS, // anything in brackets
-     EXPRESSION, // anything concatencated
+     NUMVAL=512, // numerical value's
+     GEOLOC=513,
+     DATE=514, // dates
+     CITE=515,
+     LINK=516, // weblinks in text
+     NAME=517, // person/organisation names
+     //ORGANISATION=518,
      
-     SENTENCE,
-     REFERENCE,
-
-     //LOCATION,
-     ORGANISATION,
+     QUOTE=564, // numerical value's
+     PARENTHESIS=565, // anything in brackets
+     EXPRESSION=566, // anything concatencated
+     
+     SENTENCE=600,
+     REFERENCE=601,
      
      // POS-patterns
-     CONN,
-     TERM,
-     VERB,
+     CONN=700,
+     TERM=701,
+     VERB=702,
      
      // REL
-     ABBREVIATION,
+     ABBREVIATION=1000,
 
-     NULL_MODEL
+     NULL_MODEL=-1
     };
 
   const static std::vector<model_name> MODEL_NAMES =
@@ -83,7 +82,7 @@ namespace andromeda
      REFERENCE,
 
      //LOCATION,
-     ORGANISATION,
+     //ORGANISATION,
      
      // POS-patterns
      CONN,
@@ -125,7 +124,7 @@ namespace andromeda
       case CITE: return "CITE";
 
 	//case LOCATION: return "LOCATION";
-      case ORGANISATION: return "ORGANISATION";
+	//case ORGANISATION: return "ORGANISATION";
 	
       case CONN: return "CONN";
       case TERM: return "TERM";

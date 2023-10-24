@@ -1,17 +1,30 @@
-name: CMake
+# workflows to do unit-tests
+name: Unit Tests
 
 on:
+  schedule:
+    # Nightly build at 3:42 A.M.
+    - cron: "42 3 */1 * *"
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+      # Release branches
+      - "[0-9]+.[0-9]+.X"
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+      - "[0-9]+.[0-9]+.X"
+  release:
+    types: [published]
+  # Manual run
+  #workflow_dispatch:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
 
 jobs:
-  build-cxx:
+  unit-tests-cxx:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -27,7 +40,7 @@ jobs:
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       #run: ctest -C ${{env.BUILD_TYPE}}
 
-  build-python:
+  unit-tests-python:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -37,3 +50,7 @@ jobs:
       run: sudo apt-get install python3.10-dev python3.11-dev -y
     - name: Build with poetry
       run: poetry build
+    - name: Testing
+      run: |
+        poetry install --with test
+        poetry run pytest ./tests -vvv -s

@@ -37,6 +37,26 @@ namespace andromeda
       return hash;
     }
 
+    static uint64_t to_reproducible_hash(const std::string& text)
+    {
+      auto beg = text.begin();
+      auto end = utf8::find_invalid(text.begin(), text.end());
+      
+      //std::vector<unsigned short> utf16line={};
+      std::vector<uint16_t> utf16line={};
+      utf8::utf8to16(beg, end, std::back_inserter(utf16line));
+
+      uint64_t hash = utf16line.size();
+      hash = utils::murmerhash3(hash);
+
+      for(auto& utf16:utf16line)
+	{
+	  hash = utils::combine_hash(hash, utf16);
+	}
+      
+      return hash;      
+    }
+    
     static uint64_t to_hash(const std::vector<uint64_t>& hashes)
     {
       switch(hashes.size())

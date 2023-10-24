@@ -102,13 +102,15 @@ def prepare_data(json_files, data_file):
         with open(json_file, "r") as fr:
             doc = json.load(fr)
 
+        """
         #_name = doc["_name"]
         if ("description" not in doc) or \
            ("languages" not in doc["description"]) or \
            ("en" not in doc["description"]["languages"]):
-            print(f"skipping ...")
+            print(f"skipping {json_file} ...")
             continue
-            
+        """
+        
         if "file-info" in doc:
             dhash = doc["file-info"]["document-hash"]
         else:
@@ -197,7 +199,10 @@ def prepare_data(json_files, data_file):
             if title_ind==N or abs_beg==N or ref_beg==N:
                 print(f"skipping: {dhash}")
                 continue
-                    
+
+            print("ref_beg: ", ref_beg)
+            print("ref_end: ", ref_end)
+            
             for i,item in enumerate(doc["main-text"]):
 
                 if "text" not in item:
@@ -232,6 +237,7 @@ def prepare_data(json_files, data_file):
                 data.append({"label":label, "text":item["text"], "document-hash":dhash})
 
         for item in data:
+            print(item)
             fw.write(json.dumps(item)+"\n")
         data=[]
 
@@ -323,7 +329,7 @@ def process_data(dfile, afile):
 #
 # `./fasttext dump model_cooking.bin args`
 #
-def train_fst(train_file, model_file, metrics_file):
+def train_fst(train_file, model_file, metrics_file, autotune=True, duration=360, modelsize="1M"):
 
     #model = andromeda_nlp.nlp_model()
     model = nlp_model()
@@ -336,9 +342,9 @@ def train_fst(train_file, model_file, metrics_file):
            config["model"]=="semantic":
 
             config["args"] = {}
-            config["hpo"]["autotune"] = True
-            config["hpo"]["duration"] = 360
-            config["hpo"]["modelsize"] = "1M"
+            config["hpo"]["autotune"] = autotune
+            config["hpo"]["duration"] = duration
+            config["hpo"]["modelsize"] = modelsize
 
             config["args"]["n-gram"] = 0
             
@@ -348,10 +354,8 @@ def train_fst(train_file, model_file, metrics_file):
 
             model.train(config)
     
-if __name__ == '__main__':
-
-    mode, root_dir = parse_arguments()
-
+def train_semantic(mode, root_dir, autotune=True, duration=360, modelsize="1M"):
+    
     sdir = os.path.join(root_dir, "documents")
 
     data_file = os.path.join(root_dir, "nlp-train-semantic.data.jsonl")
@@ -361,6 +365,7 @@ if __name__ == '__main__':
     fst_metrics_file = os.path.join(root_dir, "fst_semantic.metrics.txt")
     
     if mode=="all" or mode=="retrieve":
+        
         tdir = retrieve_data_pubmed(sdir)
         json_files = sorted(glob.glob(os.path.join(tdir, "*.json")))
                 
@@ -374,15 +379,27 @@ if __name__ == '__main__':
         
     if mode=="all" or mode=="prepare":
 
+        """
         json_files = sorted(glob.glob(os.path.join(sdir, "pubmed/*.json")))
         json_files += sorted(glob.glob(os.path.join(sdir, "acl/*.json")))
         json_files += sorted(glob.glob(os.path.join(sdir, "arxiv/*.json")))
-
+        """
+        json_files = sorted(glob.glob(os.path.join(sdir, "*.json")))
+        json_files += sorted(glob.glob(os.path.join(sdir, "*/*.json")))        
         print("#-files: ", len(json_files))
-        
+
+        if len(json_files)==0:            
+            exit(-1)
+            
         prepare_data(json_files, data_file)
         process_data(data_file, annot_file)
 
     if mode=="all" or mode=="train":
 
-        train_fst(annot_file, fst_model_file, fst_metrics_file)    
+        train_fst(annot_file, fst_model_file, fst_metrics_file, autotune=True, duration=360, modelsize="1M")    
+
+if __name__ == '__main__':
+
+    mode, root_dir = parse_arguments()
+
+    train_semantic(mode, root_dir)

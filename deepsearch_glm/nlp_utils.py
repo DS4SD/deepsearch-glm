@@ -99,3 +99,35 @@ def print_on_shell(text, result):
         else:
             print(tc.yellow(f"{_}:"), " null\n\n")
     
+def extract_references_from_doc(doc, verbose=False):
+    
+    texts = doc["texts"]
+
+    df = pd.DataFrame(doc["instances"]["data"],
+                      columns=doc["instances"]["headers"])
+    
+    wrapper = textwrap.TextWrapper(width=70)
+
+    result=[]
+    for i,item in enumerate(doc["texts"]):
+
+        path = f"#/texts/{i}"
+        
+        labels=[]
+        for row in item["properties"]["data"]:
+            labels.append(row[item["properties"]["headers"].index("label")])
+
+        if "reference" in labels:
+
+            refs = df[df["subj_path"]==path]
+            result.append({"text": item["text"], "instances": refs})
+            
+            if verbose:
+                print(f"text: ") #{type_}, labels: ", ",".join(labels))
+                for line in wrapper.wrap(text=item["text"]):
+                    print(f"\t{line}")            
+                
+                print(refs[["type", "subtype", "original"]])            
+                
+    return result
+

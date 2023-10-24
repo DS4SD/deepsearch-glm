@@ -121,8 +121,8 @@ namespace andromeda
       {
 	auto label = itr->first;	
 	auto& inds = itr->second;
-
-	LOG_S(INFO) << "init geoloc subtype " << l2s.at(label) << ": " << l2inds.at(label).size();
+	
+	//LOG_S(INFO) << "init geoloc subtype " << l2s.at(label) << ": " << l2inds.at(label).size();
 	
 	index_type len = inds.size();	
 	for(index_type i0=0; i0<inds.size(); i0+=delta)
@@ -189,8 +189,6 @@ namespace andromeda
 		    std::string orig = subj.from_char_range(char_range);
 		    std::string name = subj.from_ctok_range(ctok_range);
 
-		    LOG_S(INFO) << "found " << grp.group_name << ": " << name;
-		    
 		    subj.instances.emplace_back(subj.get_hash(),
 						GEOLOC, expr.get_subtype(),
 						name, orig, 

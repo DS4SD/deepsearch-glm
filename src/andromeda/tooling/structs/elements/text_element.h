@@ -150,7 +150,9 @@ namespace andromeda
     len = orig.size();
 
     text_valid = utf8::is_valid(orig.c_str(), orig.c_str()+len);
-    text_hash = utils::to_hash(orig);
+
+    //text_hash = utils::to_hash(orig);
+    text_hash = utils::to_reproducible_hash(orig);
     
     return text_valid;
   }
