@@ -682,7 +682,7 @@ namespace andromeda
                   {
 		    if(lhs.char_range[1]==rhs.char_range[1])
 		      {
-			LOG_S(INFO) << lhs.model_type << "\t" << rhs.model_type;
+			//LOG_S(INFO) << lhs.model_type << "\t" << rhs.model_type;
 			
 			const auto& ltype = lhs.model_type;
 			const auto& rtype = rhs.model_type; 
@@ -692,7 +692,7 @@ namespace andromeda
 			    const auto& lstype = lhs.model_subtype;
 			    const auto& rstype = rhs.model_subtype; 
 			    
-			    LOG_S(INFO) << lhs.model_subtype << "\t" << rhs.model_subtype;
+			    //LOG_S(INFO) << lhs.model_subtype << "\t" << rhs.model_subtype;
 			    return ((lstype.compare(rstype))<0);
 			  }
 			else
