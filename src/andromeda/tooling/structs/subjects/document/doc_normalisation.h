@@ -157,6 +157,19 @@ namespace andromeda
 		    
 		    new_maintext.push_back(new_item);
 		  }
+		else if(rng.at(0)<=text.size()) // seems there is a small bug in the span ...
+		  {
+		    rng.at(1) = text.size();
+		    
+		    std::string new_text = text.substr(rng.at(0), rng.at(1)-rng.at(0));
+		    
+		    new_item[doc_type::text_lbl] = new_text;
+		    
+		    std::array<int,2> new_rng = {0, rng.at(1)-rng.at(0)};
+		    new_item[doc_type::prov_lbl][0][doc_type::prov_span_lbl] = new_rng;
+		    
+		    new_maintext.push_back(new_item);
+		  }
 		else
 		  {
 		    LOG_S(ERROR) << "encountered illegal span in item: "
