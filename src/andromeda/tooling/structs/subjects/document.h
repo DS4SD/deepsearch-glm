@@ -40,6 +40,9 @@ namespace andromeda
     const static inline std::string maintext_name_lbl = name_lbl;
     const static inline std::string maintext_type_lbl = type_lbl;
 
+    const static inline std::string prov_bbox_lbl = "bbox";
+    const static inline std::string prov_span_lbl = "span";
+
     const static inline std::set<std::string> texts_types = {"title",
                                                              "subtitle-level-1", "paragraph",
                                                              "formula", "equation"};

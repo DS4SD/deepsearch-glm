@@ -25,6 +25,7 @@ namespace andromeda
 
     const static inline std::string prov_lbl = "prov";
     const static inline std::string hash_lbl = "hash";
+    //const static inline std::string text_lbl = "text";
 
     const static inline std::string dloc_lbl = "dloc";
     const static inline std::string dref_lbl = "dref";
