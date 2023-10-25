@@ -275,7 +275,7 @@ namespace andromeda
             case node_names::LABEL:
               {
                 std::string item = "__"+node_names::to_name(flvr)+"_"+*text_ptr.get()+"__";
-                hash = utils::to_hash(item);
+                hash = utils::to_reproducible_hash(item);
               }
               break;
 
