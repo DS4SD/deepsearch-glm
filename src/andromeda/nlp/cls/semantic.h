@@ -122,13 +122,13 @@ namespace andromeda
     
     {
       pcre2_expr expr(this->get_key(), "__table__",
-		      R"(^(?P<table>(Table|TABLE|Tab|TAB))(\s*\.)?(\s*)(?P<index>(__(i|f)val__|[A-Z]))?)");
+		      R"(^(?P<table>Table|TABLE|Tab|TAB)(\s*\.)?(\s*)(?P<index>(__(i|f)val__|[A-Z])))");
       caption_refs.push_back(expr);
     }
 
     {
       pcre2_expr expr(this->get_key(), "__table__",
-		      R"(^(?P<table>(Table|TABLE|Tab|TAB)))");
+		      R"(^(?P<table>Table|TABLE|Tab|TAB))");
       caption_refs.push_back(expr);
     }
 

@@ -363,6 +363,8 @@ namespace andromeda
 	    LOG_S(WARNING) << "index " << index << " out of bounds for group-name " << name << " "
 			 << "for " << type << " (" << subtype << ")";
 
+	    LOG_S(INFO) << "text: " << text;
+	    LOG_S(INFO) << "expression: " << expr;
 	    LOG_S(INFO) << "found groups are: ";
 	    for(auto& group:item.groups)
 	      {
