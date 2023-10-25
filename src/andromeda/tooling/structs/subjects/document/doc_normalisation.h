@@ -332,7 +332,7 @@ namespace andromeda
 
             if(not valid)
               {
-                LOG_S(WARNING) << "invalid table: "<< prov->get_path();
+                //LOG_S(WARNING) << "invalid table: "<< prov->get_path();
               }
             else
               {
@@ -353,7 +353,7 @@ namespace andromeda
 
             if(not valid)
               {
-                LOG_S(WARNING) << "found figure without structure";
+                //LOG_S(WARNING) << "found figure without structure";
               }
           }
         else if(is_page_header.count(prov->get_type()))
