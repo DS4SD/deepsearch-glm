@@ -28,6 +28,7 @@ namespace andromeda
       return hash;
     }
 
+    /*
     static uint64_t to_hash(const std::string& text)
     {
       const static std::string seed = "QWERTYUIOP!@#$%^&*()_+qwertyuiop";
@@ -36,7 +37,8 @@ namespace andromeda
       uint64_t hash = std::hash<std::string_view>{}(name.c_str());
       return hash;
     }
-
+    */
+    
     static uint64_t to_reproducible_hash(const std::string& text)
     {
       auto beg = text.begin();

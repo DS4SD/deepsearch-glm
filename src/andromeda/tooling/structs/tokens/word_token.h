@@ -117,7 +117,7 @@ namespace andromeda
   };
 
   word_token::word_token(std::string word):
-    hash(utils::to_hash(word)),
+    hash(utils::to_reproducible_hash(word)),
     rng({0,word.size()}),
 
     word(word),
@@ -131,7 +131,7 @@ namespace andromeda
 
   word_token::word_token(index_type i,
                          std::string word):
-    hash(utils::to_hash(word)),
+    hash(utils::to_reproducible_hash(word)),
     rng({i,i+word.size()}),
 
     word(word),
@@ -146,7 +146,7 @@ namespace andromeda
   word_token::word_token(index_type i,
 			 index_type j,
                          std::string word):
-    hash(utils::to_hash(word)),
+    hash(utils::to_reproducible_hash(word)),
     rng({i,j}),
 
     word(word),
@@ -160,7 +160,7 @@ namespace andromeda
 
   word_token::word_token(std::string word,
                          std::string pos):
-    hash(utils::to_hash(word)),
+    hash(utils::to_reproducible_hash(word)),
     rng({0,word.size()}),
 
     word(word),
@@ -175,7 +175,7 @@ namespace andromeda
   word_token::word_token(index_type i,
                          std::string word,
                          std::string pos):
-    hash(utils::to_hash(word)),
+    hash(utils::to_reproducible_hash(word)),
     rng({i,i+word.size()}),
 
     word(word),
@@ -190,7 +190,7 @@ namespace andromeda
   word_token::word_token(index_type i, index_type j,
                          std::string word, std::string pos,
 			 std::set<std::string> tags):
-    hash(utils::to_hash(word)),
+    hash(utils::to_reproducible_hash(word)),
     rng({i,j}),
 
     word(word),

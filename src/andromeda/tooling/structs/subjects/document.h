@@ -328,14 +328,14 @@ namespace andromeda
        data["file-info"].count("document-hash"))
       {
         doc_name = data["file-info"].value("document-hash", doc_name);
-        doc_hash = utils::to_hash(doc_name);
+        doc_hash = utils::to_reproducible_hash(doc_name);
       }
     else
       {
         LOG_S(WARNING) << "no `file-info.document-hash detected ...`";
 
         doc_name = filepath.c_str();
-        doc_hash = utils::to_hash(doc_name);
+        doc_hash = utils::to_reproducible_hash(doc_name);
       }
 
     if(data.count("description"))
