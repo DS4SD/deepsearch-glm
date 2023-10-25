@@ -212,13 +212,13 @@ files = [
 
 [[package]]
 name = "deepsearch-toolkit"
-version = "0.28.0"
+version = "0.31.0"
 description = "Interact with the Deep Search platform for new knowledge explorations and discoveries"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "deepsearch_toolkit-0.28.0-py3-none-any.whl", hash = "sha256:f8a6fa1b351e6247aded6ea1e44d119228d28781871d7a3264045244eeb9f048"},
-    {file = "deepsearch_toolkit-0.28.0.tar.gz", hash = "sha256:3072cf9741c7b5610d6bdfdfb4d4d5681bd14375c304bc7ee5d96c594a4c3afb"},
+    {file = "deepsearch_toolkit-0.31.0-py3-none-any.whl", hash = "sha256:d915195507fbedb0458952a64bb884c8632cdc179157c06c5adf10380f0ab92c"},
+    {file = "deepsearch_toolkit-0.31.0.tar.gz", hash = "sha256:b4b1d21e9e6f21273580cb22ca0151dc2f0f1ec13d769e38edebc48113b169a4"},
 ]
 
 [package.dependencies]
@@ -1264,4 +1264,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "1107510c56719f7bffdcce78e5b1af1078ceea1eaffbd3017f1da44819f66f54"
+content-hash = "d987407fe7d82579c91350e083213201d54b966e895425a1af83e6580c613ff1"
