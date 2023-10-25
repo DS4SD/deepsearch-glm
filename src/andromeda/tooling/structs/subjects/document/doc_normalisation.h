@@ -34,6 +34,8 @@ namespace andromeda
     void set_pdforder();
 
     void init_pages();
+
+    void unroll_provs();
     
     void init_provs();
 
@@ -61,6 +63,8 @@ namespace andromeda
     set_pdforder();
 
     init_pages();
+
+    unroll_provs();
     
     init_provs();
 
@@ -112,6 +116,54 @@ namespace andromeda
 
         pages.push_back(ptr);
       }
+  }
+
+  template<typename doc_type>
+  void doc_normalisation<doc_type>::unroll_provs()
+  {
+    auto& orig = doc.orig;
+
+    nlohmann::json& old_maintext = orig.at(doc_type::maintext_lbl); 
+    nlohmann::json new_maintext = nlohmann::json::array({});
+    
+    for(std::size_t l=0; l<old_maintext.size(); l++)
+      {
+	nlohmann::json item = old_maintext.at(l);
+	
+	if(item.count(doc_type::prov_lbl) and
+	   item[doc_type::prov_lbl].size()>1)
+	  {
+	    LOG_S(INFO) << "item: " << item.dump();
+	    
+	    std::string text=item.at(doc_type::text_lbl).template get<std::string>();
+	    
+	    for(auto prov_item:item[doc_type::prov_lbl])
+	      {
+		nlohmann::json new_item = item;
+		new_item[doc_type::prov_lbl] = nlohmann::json::array({});
+		new_item[doc_type::prov_lbl].push_back(prov_item);
+
+		std::array<int,2> rng = prov_item.at(doc_type::prov_range_lbl).template get<std::array<int,2> >();
+
+		std::string new_text = text.substr(rng.at(0), rng.at(1)-rng.at(0));
+
+		new_item[doc_type::text_lbl] = new_text;
+
+		std::array<int,2> new_rng = {0, rng.at(1)-rng.at(0)};
+		new_item[doc_type::prov_lbl][0][doc_type::prov_range_lbl] = new_rng;
+
+		LOG_S(INFO) << " --> sub-item: " << new_item.dump();
+		
+		new_maintext.push_back(new_item);
+	      }
+	  }
+	else
+	  {
+	    new_maintext.push_back(item);
+	  }
+      }
+	
+	orig.at(doc_type::maintext_lbl) = new_maintext;
   }
   
   template<typename doc_type>
