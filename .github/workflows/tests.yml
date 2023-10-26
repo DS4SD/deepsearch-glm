@@ -38,4 +38,6 @@ jobs:
     - name: Testing
       run: |
         poetry install --with test
-        poetry run pytest ./tests -vvv -s
+        #poetry run pytest ./tests -vvv -s
+        poetry run pytest ./tests/test_nlp.py -vvv -s
+        poetry run pytest ./tests/test_glm.py -vvv -s

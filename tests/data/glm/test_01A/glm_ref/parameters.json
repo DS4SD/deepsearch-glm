@@ -1,0 +1,14 @@
+{
+  "glm-padding": 1,
+  "glm-paths": {
+    "keep-concatenation": true,
+    "keep-connectors": true,
+    "keep-docs": true,
+    "keep-sentences": true,
+    "keep-tables": true,
+    "keep-terms": true,
+    "keep-texts": true,
+    "keep-verbs": true
+  },
+  "nlp-models": "language;numval;cite;link;name;quote;parenthesis;expression;sentence;lapos;conn;verb;term;abbreviation"
+}
