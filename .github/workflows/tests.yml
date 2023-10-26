@@ -39,4 +39,4 @@ jobs:
       run: |
         poetry install --with test
         #poetry run pytest ./tests -vvv -s
-        poetry run pytest ./tests -vvv
+        poetry run pytest ./tests -vvv -s
