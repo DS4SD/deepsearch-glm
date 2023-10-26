@@ -57,7 +57,7 @@ namespace andromeda
 
     // `https://yahoo.com`
     {
-      pcre2_expr expr(this->get_key(), "url", R"((?P<link>(https?[^\s\(\)\[\]]+)))");
+      pcre2_expr expr(this->get_key(), "url", R"((?P<link>(https?([^\s\(\)\[\]]|\s\.\s)+)))");
       exprs.push_back(expr);
     }
 
@@ -128,6 +128,9 @@ namespace andromeda
 	    
 	    std::string orig = subj.from_char_range(char_range);
 	    std::string name = subj.from_ctok_range(ctok_range);
+
+	    // remove spaces
+	    name = utils::replace(name, " ", "");
 	    
 	    subj.instances.emplace_back(subj.get_hash(),
 				       LINK, expr.get_subtype(),
