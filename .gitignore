@@ -36,6 +36,8 @@ deepsearch_glm/resources/*/*/*.txt
 deepsearch_glm/resources/*/*/*.json
 deepsearch_glm/resources/*/*/*/*.txt
 deepsearch_glm/resources/*/*/*/*.json
+tests/data/glm/test_01A/glm_ref/*.csv
+tests/data/glm/test_01A/glm_ref/*.txt
 
 ### CXX ###
 
