@@ -9,8 +9,8 @@ import glob
 
 from deepsearch_glm import andromeda_glm
 
-from deepsearch_glm.glm_utils import create_glm_dir, create_glm_from_docs
 from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
+from deepsearch_glm.glm_utils import create_glm_dir, create_glm_from_docs, load_glm
 
 def test_01_load_nlp_models():
     models = load_pretrained_nlp_models()
@@ -52,21 +52,26 @@ def test_02A_create_glm_from_doc():
         row_j = out_topo["edge-count"]["data"][i]
         assert row_i==row_j        
         
-    #assert ref_topo==out_topo
+    assert ref_topo==out_topo
+   
+def test_02B_load_glm():
 
-"""    
-def test_01A_load_glm():
+    idir = "./tests/data/glm/test_01A/glm_out"
 
-    config = {
-        "IO": {
-	    "load": {
-                "root": path
-            }
-        }
-    }
+    glm = load_glm(idir)    
+
+    out_topo = glm.get_topology()
+    #print(topo)
+
+    with open(os.path.join(idir, "topology.json")) as fr:
+        ref_topo = json.load(fr)
+
+    for i,row_i in enumerate(ref_topo["node-count"]["data"]):
+        row_j = out_topo["node-count"]["data"][i]
+        assert row_i==row_j
+
+    for i,row_i in enumerate(ref_topo["edge-count"]["data"]):
+        row_j = out_topo["edge-count"]["data"][i]
+        assert row_i==row_j        
     
-    glm_model = andromeda_glm.glm_model()
-    glm_model.load(config)
-
-    assert True
-"""
+    assert ref_topo==out_topo
