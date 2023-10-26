@@ -10,8 +10,18 @@ import glob
 from deepsearch_glm import andromeda_glm
 
 from deepsearch_glm.glm_utils import create_glm_dir, create_glm_from_docs
+from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
 
-def test_01A_create_glm_from_doc():
+def test_01_load_nlp_models():
+    models = load_pretrained_nlp_models()
+    print(f"models: {models}")
+
+    assert "language" in models
+    assert "semantic" in models
+    assert "name" in models
+    assert "reference" in models
+
+def test_02A_create_glm_from_doc():
 
     sdir = "./tests/data/glm/test_01A"
     
