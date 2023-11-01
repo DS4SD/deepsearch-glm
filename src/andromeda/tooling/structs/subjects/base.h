@@ -37,6 +37,9 @@ namespace andromeda
     const static inline std::string applied_models_lbl = "applied-models";
 
     const static inline std::string text_lbl = "text"; // for text
+    const static inline std::string orig_lbl = "orig"; // for text
+    const static inline std::string text_hash_lbl = "text-hash"; // for text
+
     const static inline std::string table_data_lbl = "data"; // for tables and figures
     const static inline std::string figure_data_lbl = "data"; // for tables and figures
 
@@ -196,7 +199,7 @@ namespace andromeda
     {
       result[base_subject::hash_lbl] = hash;
       result[base_subject::dloc_lbl] = dloc;
-      result["applied-models"] = applied_models;
+      result[base_subject::applied_models_lbl] = applied_models;
     }
 
     if(filters.size()==0 or filters.count(base_subject::prps_lbl))
@@ -222,8 +225,10 @@ namespace andromeda
 
   bool base_subject::_from_json(const nlohmann::json& item)
   {
-    hash = item.value("hash", hash);
-    applied_models = item.value("applied-models", applied_models);
+    hash = item.value(base_subject::hash_lbl, hash);
+    dloc = item.value(base_subject::dloc_lbl, dloc);
+
+    applied_models = item.value(base_subject::applied_models_lbl, applied_models);
 
     bool read_props=false, read_insts=false, read_rels=false;
 

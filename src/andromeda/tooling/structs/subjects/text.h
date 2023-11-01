@@ -342,9 +342,12 @@ namespace andromeda
 
     {
       result[base_subject::text_lbl] = text_element::text;
-      //result["text"] = text_element::text;
-      //result["text-hash"] = text_element::text_hash;
-      //result["word-tokens"] = andromeda::to_json(text_element::word_tokens, text);
+      result[base_subject::text_hash_lbl] = text_element::text_hash;
+
+      if(filters.size()==0 or filters.count(text_element::word_tokens_lbl))
+	{
+	  result[text_element::word_tokens_lbl] = andromeda::to_json(text_element::word_tokens, text);
+	}
 
       result[base_subject::prov_lbl] = base_subject::get_prov_refs(provs);
       
@@ -352,7 +355,7 @@ namespace andromeda
 	{
 	  result[base_subject::type_lbl] = provs.at(0)->get_type();
 	}
-      else
+      else // default type
 	{
 	  result[base_subject::type_lbl] = "text";
 	}      
@@ -363,41 +366,32 @@ namespace andromeda
   
   bool subject<TEXT>::from_json(const nlohmann::json& data)
   {
-    if(data.count("hash")>0 and data.count("applied-models")>0 and
-       data.count("orig")>0 and data.count("text")>0)
+    base_subject::_from_json(data);
+
+    // FIXME: implement from_json on text_element
+    if(data.count(base_subject::text_lbl)>0)// and
+      //data.count(base_subject::text_hash_lbl)>0)
       {
-        text_element::text_hash = data.value("text-hash", text_element::text_hash);
+	std::string text = "";
+	text = data.value(base_subject::text_lbl, text);
 
-        applied_models = data.value("applied-models", applied_models);
-
-        text_element::orig = data.value("orig", text_element::orig);
-        text_element::text = data.value("text", text_element::text);
+	text_element::set_text(text);
+        //text_element::text_hash = data.value(base_subject::text_hash_lbl, text_element::text_hash);
       }
     else
       {
-        LOG_S(WARNING) << "could not read `hash`, `applied-models`, `orig` and `text` labels";
+        LOG_S(WARNING) << "could not read `text` label";
         return false;
       }
 
-    if(data.count("word-tokens"))
+    if(data.count(text_element::word_tokens_lbl))
       {
-        auto& wtokens = data["word-tokens"];
+        auto& wtokens = data[text_element::word_tokens_lbl];
         andromeda::from_json(text_element::word_tokens, wtokens);
       }
     else
       {
         LOG_S(WARNING) << "could not read `word-tokens`";
-        return false;
-      }
-
-    if(data.count("properties"))
-      {
-        auto& props = data["properties"];
-        andromeda::from_json(properties, props);
-      }
-    else
-      {
-        LOG_S(WARNING) << "could not read `properties`";
         return false;
       }
 

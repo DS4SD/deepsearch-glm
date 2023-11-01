@@ -6,6 +6,7 @@ import re
 import time
 import json
 import glob
+import tqdm
 
 import random
 import argparse
@@ -30,26 +31,25 @@ examples of execution:
 
 1. end-to-end example on pdf documents:
 
-    poetry run python ./deepsearch_glm/nlp_train_semantic.py -m all --json '<root-dir-of-json-docs>'
+    poetry run python ./deepsearch_glm/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
 
 """,
         formatter_class=argparse.RawTextHelpFormatter)
         
-    parser.add_argument('-m', '--mode', required=False, default="all",
-                        help="parse: [retrieve,prepare,train,eval,all]")
+    parser.add_argument('-m', '--mode', required=True, default="all",
+                        help="mode for training semantic model",
+                        choices=["retrieve","prepare","train","eval","all"])
 
-    parser.add_argument('--output-dir', required=False,
+    parser.add_argument('--input-dir', required=False,
                         type=str, default=None,
-                        help="output root directory for trained models")
+                        help="input directory with documents")
+    
+    parser.add_argument('--output-dir', required=False,
+                        type=str, default="./semantic-models",
+                        help="output directory for trained models")
     
     args = parser.parse_args()
 
-    """
-    if args.json!=None:        
-        json_files=sorted(glob.glob(args.json))    
-    else:
-        json_files=None
-    """
     if args.output_dir==None:
         odir = create_nlp_dir()
     
@@ -60,7 +60,7 @@ examples of execution:
     else:
         odir = args.output_dir
         
-    return args.mode, odir
+    return args.mode, args.input_dir, odir
 
 def retrieve_data_pubmed(sdir):
 
@@ -95,21 +95,15 @@ def prepare_data(json_files, data_file):
 
     fw = open(data_file, "w")
     
-    for json_file in json_files:
+    for json_file in tqdm.tqdm(json_files):
 
         data=[]
-        
-        with open(json_file, "r") as fr:
-            doc = json.load(fr)
 
-        """
-        #_name = doc["_name"]
-        if ("description" not in doc) or \
-           ("languages" not in doc["description"]) or \
-           ("en" not in doc["description"]["languages"]):
-            print(f"skipping {json_file} ...")
+        try:
+            with open(json_file, "r") as fr:
+                doc = json.load(fr)
+        except:
             continue
-        """
         
         if "file-info" in doc:
             dhash = doc["file-info"]["document-hash"]
@@ -197,11 +191,11 @@ def prepare_data(json_files, data_file):
                     ref_end=i
 
             if title_ind==N or abs_beg==N or ref_beg==N:
-                print(f"skipping: {dhash}")
+                #print(f"skipping: {dhash}")
                 continue
 
-            print("ref_beg: ", ref_beg)
-            print("ref_end: ", ref_end)
+            #print("ref_beg: ", ref_beg)
+            #print("ref_end: ", ref_end)
             
             for i,item in enumerate(doc["main-text"]):
 
@@ -216,6 +210,8 @@ def prepare_data(json_files, data_file):
                     label = "meta-data"
                 elif ref_beg<i and i<ref_end:
                     label = "reference"
+                elif "title" in label:
+                    label = "header"                    
                 else:
                     label = "text"
 
@@ -234,10 +230,9 @@ def prepare_data(json_files, data_file):
                     print(tc.red(f"\t{label}, {type_}: {text[0:48]}"))
                 """
                 
-                data.append({"label":label, "text":item["text"], "document-hash":dhash})
+                data.append({"label":label, "document-hash":dhash, "text":item["text"]})
 
         for item in data:
-            print(item)
             fw.write(json.dumps(item)+"\n")
         data=[]
 
@@ -354,16 +349,17 @@ def train_fst(train_file, model_file, metrics_file, autotune=True, duration=360,
 
             model.train(config)
     
-def train_semantic(mode, root_dir, autotune=True, duration=360, modelsize="1M"):
+def train_semantic(mode, idir, odir, autotune=True, duration=360, modelsize="1M"):
     
-    sdir = os.path.join(root_dir, "documents")
+    #sdir = os.path.join(idir, "documents")
 
-    data_file = os.path.join(root_dir, "nlp-train-semantic.data.jsonl")
-    annot_file = os.path.join(root_dir, "nlp-train-semantic.annot.jsonl")
+    data_file = os.path.join(odir, "nlp-train-semantic.data.jsonl")
+    annot_file = os.path.join(odir, "nlp-train-semantic.annot.jsonl")
 
-    fst_model_file = os.path.join(root_dir, "fst_semantic")
-    fst_metrics_file = os.path.join(root_dir, "fst_semantic.metrics.txt")
-    
+    fst_model_file = os.path.join(odir, "fst_semantic")
+    fst_metrics_file = os.path.join(odir, "fst_semantic.metrics.txt")
+
+    """
     if mode=="all" or mode=="retrieve":
         
         tdir = retrieve_data_pubmed(sdir)
@@ -376,30 +372,28 @@ def train_semantic(mode, root_dir, autotune=True, duration=360, modelsize="1M"):
         json_files += sorted(glob.glob(os.path.join(tdir, "*.json")))        
         
         print(f"results saved in {sdir}: ", len(json_files))
-        
+    """
+    
     if mode=="all" or mode=="prepare":
 
-        """
-        json_files = sorted(glob.glob(os.path.join(sdir, "pubmed/*.json")))
-        json_files += sorted(glob.glob(os.path.join(sdir, "acl/*.json")))
-        json_files += sorted(glob.glob(os.path.join(sdir, "arxiv/*.json")))
-        """
-        json_files = sorted(glob.glob(os.path.join(sdir, "*.json")))
-        json_files += sorted(glob.glob(os.path.join(sdir, "*/*.json")))        
-        print("#-files: ", len(json_files))
+        json_files = sorted(glob.glob(os.path.join(idir, "*.json")))
+        json_files += sorted(glob.glob(os.path.join(idir, "*/*.json")))        
 
+        print("#-files: ", len(json_files))
         if len(json_files)==0:            
             exit(-1)
+
+        json_files = json_files[0:10]
             
         prepare_data(json_files, data_file)
         process_data(data_file, annot_file)
 
     if mode=="all" or mode=="train":
 
-        train_fst(annot_file, fst_model_file, fst_metrics_file, autotune=True, duration=360, modelsize="1M")    
+        train_fst(annot_file, fst_model_file, fst_metrics_file, autotune=True, duration=360, modelsize="100M")    
 
 if __name__ == '__main__':
 
-    mode, root_dir = parse_arguments()
+    mode, idir, odir = parse_arguments()
 
-    train_semantic(mode, root_dir)
+    train_semantic(mode, idir, odir)

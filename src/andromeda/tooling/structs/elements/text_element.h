@@ -11,6 +11,9 @@ namespace andromeda
 
     typedef std::tuple<index_type, index_type, std::string> candidate_type;
 
+    const static inline std::string char_tokens_lbl = "char-tokens"; 
+    const static inline std::string word_tokens_lbl = "word-tokens"; 
+    
   public:
 
     static std::shared_ptr<utils::char_normaliser> create_char_normaliser(bool verbose);
@@ -20,6 +23,9 @@ namespace andromeda
 
     text_element();
 
+    nlohmann::json to_json();
+    bool from_json(nlohmann::json& json_cell);
+    
     bool is_valid();
     
     void clear();
@@ -103,6 +109,30 @@ namespace andromeda
     word_tokens({})
   {}
 
+  nlohmann::json text_element::to_json()
+  {
+    nlohmann::json elem = nlohmann::json::object({});
+
+    elem["text"] = text;
+
+    return elem;
+  }
+
+  bool text_element::from_json(nlohmann::json& elem)
+  {
+    this->clear();
+
+    std::string ctext = elem.at("text").get<std::string>();
+    set_text(ctext);
+
+    if(elem.count("orig"))
+      {
+	orig = elem.at("orig").get<std::string>();
+      }
+
+    return true;
+  }
+  
   void text_element::clear()
   {
     text_valid = true;
@@ -150,8 +180,6 @@ namespace andromeda
     len = orig.size();
 
     text_valid = utf8::is_valid(orig.c_str(), orig.c_str()+len);
-
-    //text_hash = utils::to_hash(orig);
     text_hash = utils::to_reproducible_hash(orig);
     
     return text_valid;
