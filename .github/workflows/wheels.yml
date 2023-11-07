@@ -37,6 +37,11 @@ jobs:
           # Linux 64 bit manylinux2014
 
           - os: ubuntu-latest
+            python: 38
+            platform: linux
+            platform_id: manylinux_x86_64
+
+          - os: ubuntu-latest
             python: 39
             platform: linux
             platform_id: manylinux_x86_64
@@ -52,6 +57,11 @@ jobs:
             platform_id: manylinux_x86_64
 
           # MacOS x86_64
+
+          - os: macos-latest
+            python: 38
+            platform: macos
+            platform_id: macosx_x86_64
 
           - os: macos-latest
             python: 39
