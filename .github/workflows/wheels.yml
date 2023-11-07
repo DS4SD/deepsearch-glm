@@ -63,7 +63,6 @@ jobs:
             platform: macos
             platform_id: macosx_x86_64
 
-          # MacOS x86_64
           - os: macos-latest
             python: 311
             platform: macos
