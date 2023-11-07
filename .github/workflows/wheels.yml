@@ -128,7 +128,7 @@ jobs:
           CIBW_ARCHS: x86_64 arm64 
           CIBW_PLATFORM: macos
           CIBW_SKIP: "pp* *-musllinux_* *_i686* *_s390*"
-          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.10"
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           CIBW_BUILD_VERBOSITY: 3
         run: |
           /Users/runner/.local/bin/poetry run python --version
@@ -166,7 +166,7 @@ jobs:
           CIBW_ARCHS: x86_64
           CIBW_PLATFORM: linux
           CIBW_SKIP: "pp* *musllinux_* *_i686* *_s390*"
-          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.10"
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           CIBW_BUILD_VERBOSITY: 3
         run: |
           /home/runner/.local/bin/poetry run python --version
