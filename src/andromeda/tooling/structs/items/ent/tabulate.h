@@ -123,7 +123,6 @@ namespace andromeda
     std::vector<std::string> header = base_instance::short_text_headers();
     std::vector<std::vector<std::string> > data={};
 
-    //std::size_t col_width=64;
     std::size_t name_width = 32;
     std::size_t orig_width = 48;
 

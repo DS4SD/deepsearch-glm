@@ -11,6 +11,10 @@ namespace andromeda
     
     typedef uint64_t                  index_type;
     typedef std::array<index_type, 2> range_type;
+
+    typedef uint64_t                        table_index_type;
+    typedef std::array<table_index_type, 2> table_coor_type;
+    typedef std::array<table_index_type, 2> table_range_type;
     
     typedef  int16_t flvr_type;
     typedef uint64_t hash_type;

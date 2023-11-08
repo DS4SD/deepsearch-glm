@@ -23,9 +23,6 @@ namespace andromeda
 
     text_element();
 
-    nlohmann::json to_json();
-    bool from_json(nlohmann::json& json_cell);
-    
     bool is_valid();
     
     void clear();
@@ -59,6 +56,9 @@ namespace andromeda
 
     void apply_word_contractions(std::vector<candidate_type>& candidates);
 
+    nlohmann::json _to_json(const std::set<std::string>& filters);
+    bool _from_json(const nlohmann::json& json_cell);
+    
   private:
 
     void update_text(std::shared_ptr<utils::text_normaliser> text_normaliser);
@@ -109,28 +109,55 @@ namespace andromeda
     word_tokens({})
   {}
 
-  nlohmann::json text_element::to_json()
+  nlohmann::json text_element::_to_json(const std::set<std::string>& filters)
   {
     nlohmann::json elem = nlohmann::json::object({});
 
     elem["text"] = text;
+    elem["orig"] = orig;
 
+    elem["text-hash"] = text_hash;
+
+    // in the default setting, word-tokens will not be dumped
+    if(filters.count("word-tokens"))
+      {
+        elem["word-tokens"] = andromeda::to_json(word_tokens, text);	
+      }
+    
     return elem;
   }
 
-  bool text_element::from_json(nlohmann::json& elem)
+  bool text_element::_from_json(const nlohmann::json& elem)
   {
+    bool result=true;
+    
     this->clear();
-
-    std::string ctext = elem.at("text").get<std::string>();
-    set_text(ctext);
 
     if(elem.count("orig"))
       {
-	orig = elem.at("orig").get<std::string>();
+	auto ctext = elem.at("orig").get<std::string>();
+	result = set_text(ctext);
       }
+    else if(elem.count("text"))
+      {
+	auto ctext = elem.at("text").get<std::string>();
+	result = set_text(ctext);	
+      }
+    else
+      {
+	LOG_S(WARNING) << "no `orig` or `text` found in text-element: "
+		       << elem.dump(2);
 
-    return true;
+	return false;
+      }
+    
+    if(elem.count("word-tokens"))
+      {
+        const nlohmann::json& json_word_tokens = elem.at("word-tokens");
+        andromeda::from_json(word_tokens, json_word_tokens);	
+      }    
+
+    return result;
   }
   
   void text_element::clear()

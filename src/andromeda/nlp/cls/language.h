@@ -15,8 +15,6 @@ namespace andromeda
   public:
 
     nlp_model();
-    //nlp_model(std::filesystem::path resources_dir);
-    
     ~nlp_model();
 
     virtual std::set<model_name> get_dependencies() { return dependencies; }
@@ -36,7 +34,6 @@ namespace andromeda
     
   private:
 
-    //void initialise(std::filesystem::path resources_dir);
     void initialise();
     
   private:

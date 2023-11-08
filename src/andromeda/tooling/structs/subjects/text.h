@@ -24,10 +24,11 @@ namespace andromeda
     std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
     bool is_valid() { return (base_subject::valid and text_element::text_valid); }
 
-    //virtual nlohmann::json to_json();
+    virtual nlohmann::json to_json(const std::set<std::string>& filters);
 
-    virtual nlohmann::json to_json(const std::set<std::string> filters);
     virtual bool from_json(const nlohmann::json& data);
+    virtual bool from_json(const nlohmann::json& data,
+			   const std::vector<std::shared_ptr<prov_element> >& doc_provs);
     
     bool concatenate(std::shared_ptr<subject<TEXT> > other);
 
@@ -308,96 +309,45 @@ namespace andromeda
       }
   }
 
-  /*
-  nlohmann::json subject<TEXT>::to_json()
+  nlohmann::json subject<TEXT>::to_json(const std::set<std::string>& filters)
   {
-    nlohmann::json result = base_subject::_to_json();
+    nlohmann::json base = base_subject::_to_json(filters, provs);
+    nlohmann::json elem = text_element::_to_json(filters);
 
-    {
-      //result["orig"] = text_element::orig;
-      result[base_subject::text_lbl] = text_element::text;
+    nlohmann::json result = nlohmann::json::object({});
 
-      //result["text-hash"] = text_element::text_hash;
-      //result["word-tokens"] = andromeda::to_json(text_element::word_tokens, text);
-
-      result[base_subject::prov_lbl] = base_subject::get_prov_refs(provs);
-
-      if(provs.size()>0)
-	{
-	  result[base_subject::type_lbl] = provs.at(0)->get_type();
-	}
-      else
-	{
-	  result[base_subject::type_lbl] = "text";
-	}
-    }
-
-    return result;
-  }
-  */
-  
-  nlohmann::json subject<TEXT>::to_json(const std::set<std::string> filters)
-  {
-    nlohmann::json result = base_subject::_to_json(filters);
-
-    {
-      result[base_subject::text_lbl] = text_element::text;
-      result[base_subject::text_hash_lbl] = text_element::text_hash;
-
-      if(filters.size()==0 or filters.count(text_element::word_tokens_lbl))
-	{
-	  result[text_element::word_tokens_lbl] = andromeda::to_json(text_element::word_tokens, text);
-	}
-
-      result[base_subject::prov_lbl] = base_subject::get_prov_refs(provs);
-      
-      if(provs.size()>0)
-	{
-	  result[base_subject::type_lbl] = provs.at(0)->get_type();
-	}
-      else // default type
-	{
-	  result[base_subject::type_lbl] = "text";
-	}      
-    }
+    result.merge_patch(base);
+    result.merge_patch(elem);
     
     return result;
   }
   
   bool subject<TEXT>::from_json(const nlohmann::json& data)
   {
-    base_subject::_from_json(data);
+    provs.clear();
+    
+    bool init_base = base_subject::_from_json(data);
+    bool init_text = text_element::_from_json(data);
 
-    // FIXME: implement from_json on text_element
-    if(data.count(base_subject::text_lbl)>0)// and
-      //data.count(base_subject::text_hash_lbl)>0)
+    if(not (init_base and init_text))
       {
-	std::string text = "";
-	text = data.value(base_subject::text_lbl, text);
-
-	text_element::set_text(text);
-        //text_element::text_hash = data.value(base_subject::text_hash_lbl, text_element::text_hash);
+	LOG_S(WARNING) << "init_base: " << init_base << ", init_text: " << init_text;
       }
-    else
-      {
-        LOG_S(WARNING) << "could not read `text` label";
-        return false;
-      }
-
-    if(data.count(text_element::word_tokens_lbl))
-      {
-        auto& wtokens = data[text_element::word_tokens_lbl];
-        andromeda::from_json(text_element::word_tokens, wtokens);
-      }
-    else
-      {
-        LOG_S(WARNING) << "could not read `word-tokens`";
-        return false;
-      }
-
-    return true;
+    
+    return (init_base and init_text);
   }
 
+  bool subject<TEXT>::from_json(const nlohmann::json& data,
+				const std::vector<std::shared_ptr<prov_element> >& doc_provs)
+  {
+    bool init_prov = base_subject::set_prov_refs(data, doc_provs, provs);
+    
+    bool init_base = base_subject::_from_json(data);
+    bool init_text = text_element::_from_json(data);
+    
+    return (init_prov and init_base and init_text);    
+  }
+  
   void subject<TEXT>::show(bool txt, bool mdls,
                            bool ctok, bool wtok,
                            bool prps, bool insts, bool rels)

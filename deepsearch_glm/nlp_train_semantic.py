@@ -11,7 +11,9 @@ import tqdm
 import random
 import argparse
 
+from tabulate import tabulate
 import textColor as tc
+import pandas as pd
 
 from deepsearch_glm.andromeda_nlp import nlp_model
 
@@ -38,7 +40,7 @@ examples of execution:
         
     parser.add_argument('-m', '--mode', required=True, default="all",
                         help="mode for training semantic model",
-                        choices=["retrieve","prepare","train","eval","all"])
+                        choices=["retrieve","prepare","process","train","eval","refine","all"])
 
     parser.add_argument('--input-dir', required=False,
                         type=str, default=None,
@@ -91,26 +93,9 @@ def retrieve_data(sdir, index):
     
     return odir
 
-def prepare_data(json_files, data_file):
+def get_data():
 
-    fw = open(data_file, "w")
-    
-    for json_file in tqdm.tqdm(json_files):
-
-        data=[]
-
-        try:
-            with open(json_file, "r") as fr:
-                doc = json.load(fr)
-        except:
-            continue
-        
-        if "file-info" in doc:
-            dhash = doc["file-info"]["document-hash"]
-        else:
-            #print(doc)
-            dhash = -1
-
+    if False:
         """
         if "references" in doc:
             for item in doc["references"]:
@@ -156,13 +141,37 @@ def prepare_data(json_files, data_file):
                     for __ in affiliations:
                         data.append({"label":"meta-data", "text": " ".join([_, __]), "document-hash":dhash})
         """
+
+    
+def prepare_data(json_files, data_file):
+
+    num_lines=0
+    
+    fw = open(data_file, "w")
+    
+    for json_file in tqdm.tqdm(json_files):
+
+        data=[]
+
+        try:
+            with open(json_file, "r") as fr:
+                doc = json.load(fr)
+        except:
+            continue
+        
+        if "file-info" in doc:
+            dhash = doc["file-info"]["document-hash"]
+        else:
+            dhash = -1
         
         if "main-text" in doc:
 
             N = len(doc["main-text"])
 
             title_ind=len(doc["main-text"])
+
             abs_beg=len(doc["main-text"])
+            intro_beg=len(doc["main-text"])
             
             ref_beg=len(doc["main-text"])
             ref_end=len(doc["main-text"])
@@ -175,37 +184,38 @@ def prepare_data(json_files, data_file):
                 label = item["type"].lower()
                 text = item["text"].lower().strip()
 
-                if "title" == label:
+                if "title" == label and title_ind==N:
                     title_ind=i
                 
-                if ("subtitle" in label) and ("abstract" in text):
+                if ("title" in label) and ("abstract" in text) and abs_beg==N:
                     abs_beg=i
 
-                if ("subtitle" in label) and ("introduction" in text):
+                if ("title" in label) and ("introduction" in text) and intro_beg==N:
                     intro_beg=i                    
                     
-                if ("title" in label) and ("reference" in text):
+                if ("title" in label) and ("reference" in text) and ref_beg==N:
                     ref_beg=i
 
-                if ref_end==N and ref_beg<N and i>ref_beg and ("title" in label) and ("reference" not in text):
+                if ref_end==N and ref_beg<N and i>ref_beg and (("title" in label) or ("caption" in label)) and ("reference" not in text):
                     ref_end=i
 
             if title_ind==N or abs_beg==N or ref_beg==N:
-                #print(f"skipping: {dhash}")
                 continue
 
-            #print("ref_beg: ", ref_beg)
-            #print("ref_end: ", ref_end)
-            
             for i,item in enumerate(doc["main-text"]):
 
                 if "text" not in item:
                     continue
-
+                
                 type_ = item["type"]
                 label = item["type"]
                 text = item["text"]
 
+                skip = ((len(text)<=1) or (len(text.split(" "))==1)) and ("title" not in label) and (len(text)<=5)
+                if skip:
+                    #print(f"skipping: {text}")
+                    continue
+                
                 if title_ind<i and i<abs_beg:
                     label = "meta-data"
                 elif ref_beg<i and i<ref_end:
@@ -218,103 +228,47 @@ def prepare_data(json_files, data_file):
                 """
                 if "title" in label:
                     print(tc.yellow(f"{label}, {type_}: {text[0:48]}"))
-                elif "person" in label or "affi" in label:
+                elif "meta" in label:
                     print(tc.green(f"\t{label}, {type_}: {text[0:48]}"))                    
                 elif "text" in label:
                     print(f"\t{label}, {type_}: {text[0:48]}")
-                elif "caption" in label:
-                    print(tc.red(f"\t{label}, {type_}: {text[0:48]}"))
                 elif "reference" in label:
                     print(tc.blue(f"\t{label}, {type_}: {text[0:48]}"))
                 else:
                     print(tc.red(f"\t{label}, {type_}: {text[0:48]}"))
                 """
                 
-                data.append({"label":label, "document-hash":dhash, "text":item["text"]})
+                if random.random()<0.9:
+                    training_sample = True
+                else:
+                    training_sample = False
+                
+                data.append({"document-hash":dhash, "label":label, "text":item["text"], "training-sample": training_sample})
 
         for item in data:
+            num_lines += 1
             fw.write(json.dumps(item)+"\n")
         data=[]
 
     fw.close()
+
+    return num_lines
         
-def process_data(dfile, afile):
+def process_data(data_file):#, afile):
 
-    """
-    config = {
-        "mode" : "apply",
-        "order" : True,
-        "models": "numval,link,language"
-    }
-    """
+    model = init_nlp_model("semantic")
     
-    fr = open(dfile, "r")
-    fw = open(afile, "w")
-    
-    #model = andromeda_nlp.nlp_model()
-    #model.initialise(config)
+    configs = model.get_train_configs()    
+    #print(json.dumps(configs, indent=2))
 
-    model = init_nlp_model("numval,link,language")
-    
-    total=0
-    
-    while True:
+    for config in configs:
+        if config["mode"]=="train" and \
+           config["model"]=="semantic":
 
-        try:
-            line = fr.readline()
-            item = json.loads(line)
-        except:
-            #print(f"could not parse {line}")
-            break
-
-        text = item["text"]
-        label = item["label"]
-        dhash = item["document-hash"]
-
-        if len(text)<8:
-            #print(tc.yellow(f"skipping text {label}: {text}"))
-            continue
-        
-        nlpres = model.apply_on_text(item["text"])
-
-        nlpres["document-hash"] = dhash
-        
-        tind = nlpres["properties"]["headers"].index("type")
-        lind = nlpres["properties"]["headers"].index("label")
-        cind = nlpres["properties"]["headers"].index("confidence")
-
-        """
-        for i,row in enumerate(nlpres["properties"]["data"]):
-            if row[tind]=="language" and row[lind]!="en":
-                print(f"skipping text of {row[lind]}: {text[0:48]}")
-                continue
-        """
-        
-        found=False
-        for i,row in enumerate(nlpres["properties"]["data"]):
-            if row[tind]=="semantic":
-                row[lind] = label
-                row[cind] = 1.0
-                
-                found = True
-
-        if not found:
-            nlpres["properties"]["data"].append(["semantic", label, 1.0])
-            found = True
-
-        if random.random()<0.9:
-            nlpres["training-sample"] = True
-        else:
-            nlpres["training-sample"] = False
-
-        if found:                    
-            fw.write(json.dumps(nlpres)+"\n")
-            total += 1
+            config["files"]["train-file"] = data_file            
+            print(json.dumps(config))
             
-    fr.close()
-    fw.close()
-
-    print(tc.green(f"found {total} training-items"))
+            model.prepare_data_for_train(config)
     
 # To train a FST model with HPO, one can use
 # 
@@ -324,13 +278,12 @@ def process_data(dfile, afile):
 #
 # `./fasttext dump model_cooking.bin args`
 #
-def train_fst(train_file, model_file, metrics_file, autotune=True, duration=360, modelsize="1M"):
+def train_fst(data_file, model_file, metrics_file, autotune=True, duration=360, modelsize="1M"):
 
-    #model = andromeda_nlp.nlp_model()
     model = nlp_model()
                 
     configs = model.get_train_configs()    
-    print(json.dumps(configs, indent=2))
+    #print(json.dumps(configs, indent=2))
 
     for config in configs:
         if config["mode"]=="train" and \
@@ -342,19 +295,94 @@ def train_fst(train_file, model_file, metrics_file, autotune=True, duration=360,
             config["hpo"]["modelsize"] = modelsize
 
             config["args"]["n-gram"] = 0
+
+            config["files"]["train-file"] = data_file 
             
             config["files"]["model-file"] = model_file
-            config["files"]["train-file"] = train_file 
             config["files"]["metrics-file"] = metrics_file
 
             model.train(config)
+
+def evaluate_model(data_file, model_file, metrics_file):
+
+    model = nlp_model()
+                
+    configs = model.get_train_configs()    
+    #print(json.dumps(configs, indent=2))
+
+    for config in configs:
+        if config["mode"]=="train" and \
+           config["model"]=="semantic":
+
+            config["args"] = {}
+
+            config["files"]["train-file"] = data_file 
+            
+            config["files"]["model-file"] = model_file+".bin"
+            config["files"]["metrics-file"] = metrics_file
+
+            print(config)
+            model.evaluate_model(config)
+
+def refine_data(data_file):
+
+    model = init_nlp_model("semantic", filters=["properties"])
+
+    print(f"reading {data_file}")
+    
+    fr = open(data_file, "r")
+    fw = open(data_file.replace(".jsonl", ".v2.jsonl"), "w")
+
+    table=[]
+    
+    num_lines=0
+    while True:
+
+        try:
+            line = fr.readline()
+            data = json.loads(line)
+        except:
+            break
+        
+        num_lines += 1
+        
+        res = model.apply_on_text(data["text"])
+
+        pred = res["properties"]["data"][-1][-2]
+        conf = res["properties"]["data"][-1][-1]
+        
+        if "properties" in res:
+        
+            row = [data["document-hash"], data["training-sample"], data["label"],
+                   cnfg, pred, data["text"][0:48]]
+            
+            table.append(row)
+        else:
+            print(json.dumps(res, indent=2))
+
+        if conf>0.9 or data["label"]==pred:
+            fw.write(json.dumps(data)+"\n")
+            
+        if num_lines>100000:
+            break
+    
+    fr.close()
+    
+    print(f"num-lines: {num_lines}")
+    print(tabulate(table))
+
+    df = pd.DataFrame(table, columns=["document", "training", "true", "conf", "pred", "text"])
+    df.sort_values(['pred', 'training', 'conf'],
+                   ascending = [True, True, False])
+    
+    df.to_csv(f"{data_file}.csv")
     
 def train_semantic(mode, idir, odir, autotune=True, duration=360, modelsize="1M"):
     
     #sdir = os.path.join(idir, "documents")
 
     data_file = os.path.join(odir, "nlp-train-semantic.data.jsonl")
-    annot_file = os.path.join(odir, "nlp-train-semantic.annot.jsonl")
+    #annot_file = os.path.join(odir, "nlp-train-semantic.annot.jsonl")
 
     fst_model_file = os.path.join(odir, "fst_semantic")
     fst_metrics_file = os.path.join(odir, "fst_semantic.metrics.txt")
@@ -383,15 +411,26 @@ def train_semantic(mode, idir, odir, autotune=True, duration=360, modelsize="1M"
         if len(json_files)==0:            
             exit(-1)
 
-        json_files = json_files[0:10]
+        #json_files = json_files[0:1000]
             
-        prepare_data(json_files, data_file)
-        process_data(data_file, annot_file)
+        num_lines = prepare_data(json_files, data_file)
 
+    if mode=="all" or mode=="process":
+        process_data(data_file)#, annot_file)
+        
     if mode=="all" or mode=="train":
 
-        train_fst(annot_file, fst_model_file, fst_metrics_file, autotune=True, duration=360, modelsize="100M")    
+        #train_fst(annot_file, fst_model_file, fst_metrics_file, autotune=True, duration=300, modelsize="100M")
+        train_fst(data_file, fst_model_file, fst_metrics_file, autotune=True, duration=3600, modelsize="100M")    
 
+    if mode=="all" or mode=="eval":
+        
+        evaluate_model(data_file, fst_model_file, fst_metrics_file)
+
+    if mode=="all" or mode=="refine":
+        
+        refine_data(data_file)
+        
 if __name__ == '__main__':
 
     mode, idir, odir = parse_arguments()

@@ -27,10 +27,12 @@ namespace andromeda
     std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
     bool is_valid() { return (base_subject::valid); }
 
-    //virtual nlohmann::json to_json();
-    virtual nlohmann::json to_json(const std::set<std::string> filters);
-    virtual bool from_json(const nlohmann::json& data);
+    virtual nlohmann::json to_json(const std::set<std::string>& filters);
 
+    virtual bool from_json(const nlohmann::json& data);
+    virtual bool from_json(const nlohmann::json& item,
+			   const std::vector<std::shared_ptr<prov_element> >& doc_provs);
+    
     bool set_data(const nlohmann::json& data);
 
     bool set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
@@ -42,8 +44,8 @@ namespace andromeda
 
     void sort();
 
-    typename std::vector<base_instance>::iterator insts_beg(std::array<uint64_t, 2> coor);
-    typename std::vector<base_instance>::iterator insts_end(std::array<uint64_t, 2> coor);
+    typename std::vector<base_instance>::iterator insts_beg(table_coor_type coor);
+    typename std::vector<base_instance>::iterator insts_end(table_coor_type coor);
 
     void show(bool prps, bool insts, bool rels);
 
@@ -137,10 +139,9 @@ namespace andromeda
     data.clear();
   }
 
-  nlohmann::json subject<TABLE>::to_json(const std::set<std::string> filters)
+  nlohmann::json subject<TABLE>::to_json(const std::set<std::string>& filters)
   {
-    nlohmann::json result = base_subject::_to_json(filters);
-    result[base_subject::prov_lbl] = base_subject::get_prov_refs(provs);
+    nlohmann::json result = base_subject::_to_json(filters, provs);
       
     {
       result["#-rows"] = nrows;
@@ -197,13 +198,23 @@ namespace andromeda
 	}
     }
     
-    base_subject::from_json(json_table, base_subject::captions_lbl, captions);
-    base_subject::from_json(json_table, base_subject::footnotes_lbl, footnotes);
-    base_subject::from_json(json_table, base_subject::mentions_lbl, mentions);
-
     return true;
   }
 
+  bool subject<TABLE>::from_json(const nlohmann::json& json_table,
+				 const std::vector<std::shared_ptr<prov_element> >& doc_provs)
+  {
+    bool init_prov = base_subject::set_prov_refs(json_table, doc_provs, provs);
+    
+    bool init_table = this->from_json(json_table);
+    
+    base_subject::from_json(json_table, doc_provs, base_subject::captions_lbl, captions);
+    base_subject::from_json(json_table, doc_provs, base_subject::footnotes_lbl, footnotes);
+    base_subject::from_json(json_table, doc_provs, base_subject::mentions_lbl, mentions);
+
+    return (init_table and init_prov);
+  }
+  
   bool subject<TABLE>::set_data(const nlohmann::json& item)
   {
     base_subject::clear_models();
@@ -316,23 +327,31 @@ namespace andromeda
     std::sort(instances.begin(), instances.end());
   }
 
-  typename std::vector<base_instance>::iterator subject<TABLE>::insts_beg(std::array<uint64_t, 2> coor)
+  typename std::vector<base_instance>::iterator subject<TABLE>::insts_beg(table_coor_type coor)
   {
     range_type min_range = {0, 0};
-
-    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake", coor, min_range, min_range,
+    table_range_type table_min_range = {0, 0};
+    
+    base_instance fake(base_subject::hash, NULL_MODEL,
+		       "fake", "fake", "fake",
+		       coor, table_min_range, table_min_range,
                        min_range, min_range, min_range);
 
     return std::lower_bound(instances.begin(), instances.end(), fake);
   }
 
-  typename std::vector<base_instance>::iterator subject<TABLE>::insts_end(std::array<uint64_t, 2> coor)
+  typename std::vector<base_instance>::iterator subject<TABLE>::insts_end(table_coor_type coor)
   {
     range_type max_range =
-      { std::numeric_limits<uint64_t>::max(),
-        std::numeric_limits<uint64_t>::max()};
+      { std::numeric_limits<index_type>::max(),
+        std::numeric_limits<index_type>::max()};
 
-    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake", coor, max_range, max_range,
+    table_range_type table_max_range = {
+      std::numeric_limits<table_index_type>::max(),
+      std::numeric_limits<table_index_type>::max()};
+    
+    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake",
+		       coor, table_max_range, table_max_range,
                        max_range, max_range, max_range);
 
     return std::upper_bound(instances.begin(), instances.end(), fake);

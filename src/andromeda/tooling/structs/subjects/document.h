@@ -60,8 +60,11 @@ namespace andromeda
     void show();
     void clear();
 
-    virtual nlohmann::json to_json(const std::set<std::string> filters);
+    virtual nlohmann::json to_json(const std::set<std::string>& filters);
+
     virtual bool from_json(const nlohmann::json& item);
+    virtual bool from_json(const nlohmann::json& item,
+			   const std::vector<std::shared_ptr<prov_element> >& doc_provs);
 
     uint64_t get_hash() const { return doc_hash; }
     std::string get_name() const { return doc_name; }
@@ -150,13 +153,8 @@ namespace andromeda
   subject<DOCUMENT>::~subject()
   {}
 
-  nlohmann::json subject<DOCUMENT>::to_json(std::set<std::string> filters)
+  nlohmann::json subject<DOCUMENT>::to_json(const std::set<std::string>& filters)
   {
-    //for(auto filter:filters)
-    //{
-    //LOG_S(WARNING) << filter;
-    //}
-    
     nlohmann::json result = base_subject::_to_json(filters);
     
     if(orig.count("description"))
@@ -246,18 +244,24 @@ namespace andromeda
     base_subject::from_json(doc, pages_lbl, pages);
     base_subject::from_json(doc, provs_lbl, provs);
     
-    base_subject::from_json(doc, texts_lbl, texts);
-    base_subject::from_json(doc, tables_lbl, tables);
-    base_subject::from_json(doc, figures_lbl, figures);
+    base_subject::from_json(doc, provs, texts_lbl  , texts  );
+    base_subject::from_json(doc, provs, tables_lbl , tables );
+    base_subject::from_json(doc, provs, figures_lbl, figures);
 
-    base_subject::from_json(doc, page_headers_lbl, page_headers);
-    base_subject::from_json(doc, page_footers_lbl, page_footers);
-
-    base_subject::from_json(doc, other_lbl, other);        
+    base_subject::from_json(doc, provs, page_headers_lbl, page_headers);
+    base_subject::from_json(doc, provs, page_footers_lbl, page_footers);
+    
+    base_subject::from_json(doc, provs, other_lbl, other);        
     
     return true;
   }
 
+  bool subject<DOCUMENT>::from_json(const nlohmann::json& item,
+				    const std::vector<std::shared_ptr<prov_element> >& doc_provs)
+  {
+    return (this->from_json(item));
+  }
+  
   void subject<DOCUMENT>::clear()
   {
     base_subject::clear();

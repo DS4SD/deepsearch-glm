@@ -72,7 +72,7 @@ namespace andromeda
     {
       result["type"] = type;
       result["name"] = name;
-      result["confidence"] = conf;
+      result["confidence"] = round_conf(conf);
     }
     
     return result;
@@ -80,7 +80,7 @@ namespace andromeda
 
   nlohmann::json base_property::to_json_row()
   {
-    nlohmann::json row = nlohmann::json::array({ type, name, conf});
+    nlohmann::json row = nlohmann::json::array({ type, name, round_conf(conf)});
     assert(row.size()==HEADERS.size());
     
     return row;

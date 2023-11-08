@@ -20,10 +20,11 @@ namespace andromeda
 
     void clear();
 
-    //virtual nlohmann::json to_json();
-    virtual nlohmann::json to_json(const std::set<std::string> filters);
+    virtual nlohmann::json to_json(const std::set<std::string>& filters);
 
     virtual bool from_json(const nlohmann::json& data);
+    virtual bool from_json(const nlohmann::json& item,
+			   const std::vector<std::shared_ptr<prov_element> >& doc_provs);
     
     std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
     bool is_valid() { return (base_subject::valid); }
@@ -91,10 +92,9 @@ namespace andromeda
     mentions.clear();
   }
 
-  nlohmann::json subject<FIGURE>::to_json(const std::set<std::string> filters)
+  nlohmann::json subject<FIGURE>::to_json(const std::set<std::string>& filters)
   {
-    nlohmann::json result = base_subject::_to_json(filters);
-    result[base_subject::prov_lbl] = base_subject::get_prov_refs(provs);
+    nlohmann::json result = base_subject::_to_json(filters, provs);
     
     if(filters.size()==0 or filters.count(base_subject::captions_lbl))
       {
@@ -116,17 +116,25 @@ namespace andromeda
   
   bool subject<FIGURE>::from_json(const nlohmann::json& json_figure)
   {
-    {
-      base_subject::valid = true;
-    }
+    base_subject::valid = true;
 
-    base_subject::from_json(json_figure, base_subject::captions_lbl, captions);
-    base_subject::from_json(json_figure, base_subject::footnotes_lbl, footnotes);
-    base_subject::from_json(json_figure, base_subject::mentions_lbl, mentions);
-    
     return base_subject::valid;
   }
 
+  bool subject<FIGURE>::from_json(const nlohmann::json& json_figure,
+				  const std::vector<std::shared_ptr<prov_element> >& doc_provs)
+  {
+    bool init_prov = base_subject::set_prov_refs(json_figure, doc_provs, provs);
+    
+    bool init_figure = this->from_json(json_figure);
+    
+    base_subject::from_json(json_figure, doc_provs, base_subject::captions_lbl, captions);
+    base_subject::from_json(json_figure, doc_provs, base_subject::footnotes_lbl, footnotes);
+    base_subject::from_json(json_figure, doc_provs, base_subject::mentions_lbl, mentions);
+    
+    return (init_figure and init_prov);
+  }
+  
   bool subject<FIGURE>::set_data(const nlohmann::json& data)
   {
     base_subject::valid = true;

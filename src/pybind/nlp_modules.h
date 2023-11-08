@@ -18,8 +18,11 @@ PYBIND11_MODULE(andromeda_nlp, m) {
     .def("get_apply_configs", &andromeda_py::nlp_model::get_apply_configs)
     .def("get_train_configs", &andromeda_py::nlp_model::get_train_configs)
     
-    .def("apply", &andromeda_py::nlp_model::apply)
+    .def("prepare_data_for_train", &andromeda_py::nlp_model::prepare_data_for_train)
     .def("train", &andromeda_py::nlp_model::train)
+    .def("evaluate_model", &andromeda_py::nlp_model::evaluate_model)
+
+    .def("apply", &andromeda_py::nlp_model::apply)
     
     .def("apply_on_text", &andromeda_py::nlp_model::apply_on_text)
     .def("apply_on_doc", &andromeda_py::nlp_model::apply_on_doc);

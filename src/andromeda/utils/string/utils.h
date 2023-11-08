@@ -44,6 +44,19 @@ namespace andromeda
       return (text.find(word)==std::string::npos? false : true);
     }
 
+    template<typename val_type>
+    value_type round_conf(val_type conf)
+    {
+      auto v = std::ceil(100.0*conf)/100.0;
+
+      if(v>1.0)
+	{
+	  return 1.0;
+	}
+
+      return v;
+    }
+    
     std::string replace(std::string text, std::string word_0, std::string word_1)
     {
       if(word_0==word_1)

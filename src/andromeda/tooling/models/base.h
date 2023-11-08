@@ -24,7 +24,7 @@ namespace andromeda
 
     virtual std::string get_key() { return to_key(this->get_name()); }
 
-    /*   INFERENCE   */
+    /* INFERENCE */
     
     template<typename subject_type>
     bool satisfies_dependencies(subject_type& subj);
@@ -45,13 +45,19 @@ namespace andromeda
 
     static bool finalise(subject<DOCUMENT>& subj) { return false; }
 
-    /*   TRAIN   */
+    /* TRAIN */
 
     virtual bool is_trainable() { return false; }
 
     virtual nlohmann::json create_train_config() { return nlohmann::json::object({}); }
-    
+
+    virtual bool prepare_data_for_train(nlohmann::json args,
+					std::vector<std::shared_ptr<base_nlp_model> >& dep_models) { return false; }
+
     virtual bool train(nlohmann::json args) { return false; }
+
+    virtual bool evaluate_model(nlohmann::json args,
+				std::vector<std::shared_ptr<base_nlp_model> >& dep_models) { return false; }
   };
 
   template<typename subject_type>
