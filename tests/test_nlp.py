@@ -13,7 +13,7 @@ GENERATE=False
 
 def test_01_load_nlp_models():
     models = load_pretrained_nlp_models()
-    print(f"models: {models}")
+    #print(f"models: {models}")
 
     assert "language" in models
     assert "semantic" in models
