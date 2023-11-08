@@ -5,12 +5,26 @@
 
 namespace andromeda
 {
+  /*
+    The goal of this classifier is to find the semantic meaning of the
+    text in the document. To that end, we have several classes:
 
+    1. header
+    2. meta-data: mostly authors, affiliations, etc
+    3. reference
+    4. text
+
+    The goal is to use the semantic labels downstream to extract meta-data
+    items and parse the references.    
+   */
   template<>
   class nlp_model<CLS, SEMANTIC>: public fasttext_supervised_model
   {
     const static model_type type = CLS;
     const static model_name name = SEMANTIC;
+
+    const static inline std::set<std::string> known_headers
+    = {"abstract", "introduction", "references", "conclusion"};
     
   public:
 
@@ -30,8 +44,6 @@ namespace andromeda
     virtual bool preprocess(const subject<TEXT>& subj, std::string& text);
     virtual bool preprocess(const subject<TABLE>& subj, std::string& text);
 
-    //virtual bool classify(const std::string& orig, std::string& label, double& conf);
-    
     virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj);
     virtual bool apply(subject<DOCUMENT>& subj);
@@ -172,11 +184,15 @@ namespace andromeda
 
   bool nlp_model<CLS, SEMANTIC>::preprocess(const subject<TEXT>& subj, std::string& text)
   {
-    //assert(authors.size()>0);
-    //assert(author_list.size()>0);
-    //assert(caption_refs.size()>0);
-    
     auto& wtokens = subj.word_tokens;
+
+    if(wtokens.size()==0)
+      {
+	///LOG_S(WARNING) << "word-tokens have not been set";
+
+	text.clear();
+	return false;
+      }
     
     std::stringstream ss;
     
@@ -201,7 +217,8 @@ namespace andromeda
     
     text = ss.str();
     //LOG_S(INFO) << __FUNCTION__ << " orig: " << text; 
-    
+
+    /*
     for(auto& expr:author_list)
       {
 	std::vector<pcre2_item> items;
@@ -243,7 +260,8 @@ namespace andromeda
 	    text = utils::replace(text, item.text, "__caption_ref__");		    		    	    
 	  }
       }
-
+    */
+    
     text = utils::to_lower(text);
     
     return true;
@@ -267,8 +285,18 @@ namespace andromeda
   }
 
   bool nlp_model<CLS, SEMANTIC>::apply(subject<TEXT>& subj)
-  {       
-    return fasttext_supervised_model::classify(subj);
+  {    
+    auto text = utils::to_lower(subj.text);
+
+    if(known_headers.count(text))
+      {
+	subj.properties.emplace_back(get_key(), "meta-data", 1.0);
+	return true;
+      }
+    else
+      {
+	return fasttext_supervised_model::classify(subj);
+      }
   }
 
   bool nlp_model<CLS, SEMANTIC>::apply(subject<TABLE>& subj)
@@ -278,9 +306,6 @@ namespace andromeda
 
   bool nlp_model<CLS, SEMANTIC>::apply(subject<DOCUMENT>& subj)
   {
-    //LOG_S(WARNING) << __FILE__ << ":" << __LINE__ << "\t"
-    //<< __FUNCTION__ << "semantic-model on entire document";
-
     if(not satisfies_dependencies(subj))
       {
         return false;
@@ -310,18 +335,11 @@ namespace andromeda
 	  }
       }
 
-    //LOG_S(INFO) << "abstract index: " << abs_ind;
-    //LOG_S(INFO) << "introduction index: " << intro_ind;
-    //LOG_S(INFO) << "references index: " << ref_ind;
-    
     std::string text="", label="null";
     double conf=0.0;
 
-    //for(auto& para:subj.paragraphs)
     for(uint64_t ind=0; ind<subj.texts.size(); ind++)
       {
-        //this->apply(*paragraph_ptr);
-
 	auto& para = subj.texts.at(ind);
 	
 	if(not preprocess(*para, text))

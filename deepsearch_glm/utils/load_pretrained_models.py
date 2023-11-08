@@ -16,8 +16,6 @@ def load_pretrained_nlp_models(force:bool=False, verbose:bool=False):
     with open(f"{RESOURCES_DIR}/models.json") as fr:
         models = json.load(fr)
 
-    print(models)
-        
     COS_URL = models["object-store"]
     COS_PRFX = models["nlp"]["prefix"]
     COS_PATH = os.path.join(COS_URL, COS_PRFX)

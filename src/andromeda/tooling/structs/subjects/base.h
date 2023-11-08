@@ -37,6 +37,9 @@ namespace andromeda
     const static inline std::string applied_models_lbl = "applied-models";
 
     const static inline std::string text_lbl = "text"; // for text
+    const static inline std::string orig_lbl = "orig"; // for text
+    const static inline std::string text_hash_lbl = "text-hash"; // for text
+
     const static inline std::string table_data_lbl = "data"; // for tables and figures
     const static inline std::string figure_data_lbl = "data"; // for tables and figures
 
@@ -49,7 +52,11 @@ namespace andromeda
 
     virtual ~base_subject() {}
 
-    static nlohmann::json get_prov_refs(std::vector<std::shared_ptr<prov_element> >& provs);
+    static bool set_prov_refs(const nlohmann::json& data,
+			      const std::vector<std::shared_ptr<prov_element> >& doc_provs,
+			      std::vector<std::shared_ptr<prov_element> >& base_provs);
+
+    static nlohmann::json get_prov_refs(const std::vector<std::shared_ptr<prov_element> >& provs);
 
     subject_name get_name() const { return name; }
     hash_type get_hash() const { return hash; }
@@ -58,13 +65,19 @@ namespace andromeda
 
     void clear_models();
 
-    //virtual nlohmann::json to_json() = 0;
-    virtual nlohmann::json to_json(const std::set<std::string> filters={}) = 0;
-    virtual bool from_json(const nlohmann::json& item) = 0;
+    virtual nlohmann::json to_json(const std::set<std::string>& filters={}) = 0;
 
+    virtual bool from_json(const nlohmann::json& item) = 0;
+    virtual bool from_json(const nlohmann::json& item,
+			   const std::vector<std::shared_ptr<prov_element> >& doc_provs) = 0;
+    
   protected:
 
-    nlohmann::json _to_json(const std::set<std::string> filters);
+    nlohmann::json _to_json(const std::set<std::string>& filters);
+    
+    nlohmann::json _to_json(const std::set<std::string>& filters,
+			    const std::vector<std::shared_ptr<prov_element> >& provs);
+
     bool _from_json(const nlohmann::json& item);
     
     template<typename item_type>
@@ -77,9 +90,16 @@ namespace andromeda
                         filters_type filters);
 
     template<typename item_type>
-    static bool from_json(const nlohmann::json& result,
-			  std::string key, std::vector<std::shared_ptr<item_type> >& val);
+    static bool from_json(const nlohmann::json& item,
+			  std::string key,
+			  std::vector<std::shared_ptr<item_type> >& val);
 
+    template<typename item_type>
+    static bool from_json(const nlohmann::json& item,
+			  const std::vector<std::shared_ptr<prov_element> >& doc_provs,
+			  std::string key,
+			  std::vector<std::shared_ptr<item_type> >& vals);
+    
   public:
 
     bool valid;
@@ -149,7 +169,30 @@ namespace andromeda
     relations({})
   {}
 
-  nlohmann::json base_subject::get_prov_refs(std::vector<std::shared_ptr<prov_element> >& provs)
+  bool base_subject::set_prov_refs(const nlohmann::json& data,
+				   const std::vector<std::shared_ptr<prov_element> >& doc_provs,
+				   std::vector<std::shared_ptr<prov_element> >& base_provs)
+  {
+    if(data.count(prov_lbl)==0)
+      {
+	return false;
+      }
+
+    base_provs.clear();
+    for(auto& item:data.at(prov_lbl))
+      {
+	std::string path = item.at(jref_lbl).get<std::string>();
+
+	auto parts = utils::split(path, "/");
+	auto index = std::stoi(parts.back());
+	
+	base_provs.push_back(doc_provs.at(index));
+      }
+
+    return true;
+  }
+  
+  nlohmann::json base_subject::get_prov_refs(const std::vector<std::shared_ptr<prov_element> >& provs)
   {
     nlohmann::json result = nlohmann::json::array({});
     for(auto& prov:provs)
@@ -189,43 +232,72 @@ namespace andromeda
     relations.clear();
   }
 
-  nlohmann::json base_subject::_to_json(const std::set<std::string> filters)
+  nlohmann::json base_subject::_to_json(const std::set<std::string>& filters)
   {
     nlohmann::json result = nlohmann::json::object({});
 
     {
-      result[base_subject::hash_lbl] = hash;
-      result[base_subject::dloc_lbl] = dloc;
-      result["applied-models"] = applied_models;
+      result[hash_lbl] = hash;
+      result[dloc_lbl] = dloc;
     }
-
-    if(filters.size()==0 or filters.count(base_subject::prps_lbl))
+    
+    if((properties.size()>0) and (filters.size()==0 or filters.count(prps_lbl)))
       {
         nlohmann::json& props = result[prps_lbl];
         andromeda::to_json(properties, props);
       }
 
-    if(filters.size()==0 or filters.count(base_subject::insts_lbl))
+    if((instances.size()>0) and (filters.size()==0 or filters.count(insts_lbl)))
       {
         nlohmann::json& insts = result[insts_lbl];
         andromeda::to_json(instances, insts);
       }
 
-    if(filters.size()==0 or filters.count(base_subject::rels_lbl))
+    if((relations.size()>0) and (filters.size()==0 or filters.count(rels_lbl)))
       {
         nlohmann::json& rels = result[rels_lbl];
         andromeda::to_json(relations, rels);
       }
 
+    if(filters.size()==0 or filters.count(applied_models_lbl))
+      {
+	result[applied_models_lbl] = applied_models;
+      }
+    
     return result;
   }
 
+  nlohmann::json base_subject::_to_json(const std::set<std::string>& filters,
+					const std::vector<std::shared_ptr<prov_element> >& provs)
+  {
+    nlohmann::json result = _to_json(filters);
+
+    result[prov_lbl] = get_prov_refs(provs);
+      
+    if(provs.size()>0)
+      {
+	result[base_subject::type_lbl] = provs.at(0)->get_type();
+      }
+    else // default type
+      {
+	result[base_subject::type_lbl] = "text";
+      }      
+
+    return result;
+  }
+  
   bool base_subject::_from_json(const nlohmann::json& item)
   {
-    hash = item.value("hash", hash);
-    applied_models = item.value("applied-models", applied_models);
+    hash = item.value(hash_lbl, hash);
+    dloc = item.value(dloc_lbl, dloc);
 
-    bool read_props=false, read_insts=false, read_rels=false;
+    applied_models.clear();
+    if(item.count(applied_models_lbl))
+      {
+	applied_models = item.value(applied_models_lbl, applied_models);
+      }
+
+    bool read_props=true, read_insts=true, read_rels=true;
 
     properties.clear();
     if(item.count(prps_lbl))
@@ -250,10 +322,11 @@ namespace andromeda
 
     return (read_props and read_insts and read_rels);
   }
-  
+
   template<typename item_type>
   void base_subject::to_json(nlohmann::json& result,
-                             std::string key, std::vector<item_type>& vals)
+                             std::string key,
+			     std::vector<item_type>& vals)
   {
     nlohmann::json& json_vals = result[key];
     json_vals = nlohmann::json::array({});
@@ -266,7 +339,8 @@ namespace andromeda
 
   template<typename item_type, typename filters_type>
   void base_subject::to_json(nlohmann::json& result,
-                             std::string key, std::vector<item_type>& vals,
+                             std::string key,
+			     std::vector<item_type>& vals,
                              filters_type filters)
   {
     nlohmann::json& json_vals = result[key];
@@ -280,13 +354,14 @@ namespace andromeda
 
   template<typename item_type>
   bool base_subject::from_json(const nlohmann::json& result,
-			       std::string key, std::vector<std::shared_ptr<item_type> >& vals)
+			       std::string key,
+			       std::vector<std::shared_ptr<item_type> >& vals)
   {
     vals.clear();
     
     if(not result.count(key))
       {
-	LOG_S(WARNING) << "no " << key << " found in the documet ...";
+	LOG_S(WARNING) << "no " << key << " found in the document ...";
 	return false;
       }
     
@@ -302,7 +377,31 @@ namespace andromeda
     return true;
   }
   
-
+  template<typename item_type>
+  bool base_subject::from_json(const nlohmann::json& result,
+			       const std::vector<std::shared_ptr<prov_element> >& doc_provs,
+			       std::string key,
+			       std::vector<std::shared_ptr<item_type> >& vals)			       
+  {
+    vals.clear();
+    
+    if(not result.count(key))
+      {
+	LOG_S(WARNING) << "no " << key << " found in the document ...";
+	return false;
+      }
+    
+    auto& items = result.at(key);
+    for(auto& item:items)
+      {
+	std::shared_ptr<item_type> val = std::make_shared<item_type>();
+	val->from_json(item, doc_provs);
+	
+	vals.push_back(val);
+      }
+    
+    return true;
+  }
 
 }
 

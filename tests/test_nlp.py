@@ -13,7 +13,7 @@ GENERATE=False
 
 def test_01_load_nlp_models():
     models = load_pretrained_nlp_models()
-    print(f"models: {models}")
+    #print(f"models: {models}")
 
     assert "language" in models
     assert "semantic" in models
@@ -31,37 +31,73 @@ def check_dimensions(item):
 
 def test_02A_run_nlp_models_on_text():
 
-    model = init_nlp_model("sentence;language;term")
-    res = model.apply_on_text("FeSe is a material.")
+    source = "./tests/data/texts/test_02A_text_01.jsonl"
+    target = source
     
-    for label in ["text", "properties", "instances", "relations"]:
-        assert label in res
+    model = init_nlp_model("sentence;language;term")
+    sres = model.apply_on_text("FeSe is a material.")
 
-    check_dimensions(res["properties"])
-    check_dimensions(res["instances"])
-    check_dimensions(res["relations"])        
+    if GENERATE: # generate the test-data
+
+        fw = open(source, "w")
+        fw.write(json.dumps(sres)+"\n")            
+        fw.close()        
+
+        assert True
+
+    else:
+
+        with open(target) as fr:
+            tres = json.load(fr)
         
+        for label in ["properties", "instances"]:
+            check_dimensions(sres[label])
+            assert label in sres
+                      
+        for label in ["relations"]:
+            assert label not in sres
+
+        assert tres==sres
+            
 def test_02B_run_nlp_models_on_text():
 
+    source = "./tests/data/texts/test_02B_text_01.jsonl"
+    target = source
+    
     filters = ["properties"]
     
     model = init_nlp_model("sentence;language;term", filters)
-    res = model.apply_on_text("FeSe is a material.")
-    
-    for label in ["text", "properties"]:
-        assert label in res
+    sres = model.apply_on_text("FeSe is a material.")
 
-    for label in ["instances", "relations"]:
-        assert label not in res        
+    if GENERATE: # generate the test-data
+
+        fw = open(source, "w")
+        fw.write(json.dumps(sres)+"\n")            
+        fw.close()        
+
+        assert True
+
+    else:
+
+        with open(target) as fr:
+            tres = json.load(fr)    
+
+        for label in ["text", "properties"]:
+            assert label in sres
+
+        for label in ["instances", "relations"]:
+            assert label not in sres
+
+        assert tres==sres            
 
 def test_03A_run_nlp_models_on_document():
 
     with open("./tests/data/docs/1806.02284.json") as fr:
         doc = json.load(fr)
     
-    model = init_nlp_model("sentence;language;term;reference")
+    model = init_nlp_model("sentence;language;term;reference;abbreviation")
     res = model.apply_on_doc(doc)
-    print(res.keys())
+    #print(res.keys())
 
     for label in ["description", "body", "meta",
                   "page-elements", "texts", "tables", "figures",
@@ -77,11 +113,11 @@ def test_03B_run_nlp_models_on_document():
     with open("./tests/data/docs/1806.02284.json") as fr:
         doc = json.load(fr)
 
-    filters = ["properties"]
+    filters = ["applied-models", "properties"]
         
     model = init_nlp_model("sentence;language;term;reference", filters)
     res = model.apply_on_doc(doc)
-    print(res.keys())
+    #print(res.keys())
 
     for label in ["dloc", "applied-models",
                   "description", "body", "meta",
@@ -93,7 +129,6 @@ def test_03B_run_nlp_models_on_document():
         assert label not in res
                   
     check_dimensions(res["properties"])
-
 
 def test_03C_run_nlp_models_on_document():
 
@@ -128,11 +163,11 @@ def test_03C_run_nlp_models_on_document():
 
 def test_04A_terms():
 
-    model = init_nlp_model("language;semantic;sentence;term;verb;conn;geoloc")
-
     source = "./tests/data/texts/terms.jsonl"
     target = "./tests/data/texts/terms.nlp.jsonl"
     
+    model = init_nlp_model("language;semantic;sentence;term;verb;conn;geoloc")
+
     if GENERATE: # generate the test-data
         with open(source) as fr:
             lines = fr.readlines()
@@ -202,18 +237,8 @@ def test_04B_semantic():
             data = json.loads(line)
             res = model.apply_on_text(data["text"])
 
-            #print("headers: ", res["properties"]["headers"])
             for i,row_i in enumerate(res["properties"]["data"]):
                 row_j = data["properties"]["data"][i]
-                #print(i, "\t", row_i)
-                #print(i, "\t", row_j)
-                assert row_i==row_j
-
-            #print("headers: ", res["instances"]["headers"])
-            for i,row_i in enumerate(res["instances"]["data"]):
-                row_j = data["instances"]["data"][i]
-                #print(i, "\t", row_i)
-                #print(i, "\t", row_j)
                 assert row_i==row_j
 
             assert res==data

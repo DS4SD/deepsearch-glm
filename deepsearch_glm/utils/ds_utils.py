@@ -281,3 +281,169 @@ def ds_index_query(index, query, odir=None, force=False, limit=-1,
                 
     return dumpdir
 
+def resolve_item(paths, obj):
+    
+    if len(paths)==0:
+        return obj
+
+    if paths[0]=="#":
+        return resolve_item(paths[1:], obj)
+
+    try:
+        key = int(paths[0])
+    except:
+        key = paths[0]
+    
+    if len(paths)==1:
+        if isinstance(key, str) and key in obj:
+            return obj[key]
+        elif isinstance(key, int) and key<len(obj):
+            return obj[key]
+        else:
+            return None
+        
+    elif len(paths)>1:
+        if isinstance(key, str) and key in obj:
+            return resolve_item(paths[1:], obj[key])
+        elif isinstance(key, int) and key<len(obj):
+            return resolve_item(paths[1:], obj[key])
+        else:
+            return None
+        
+    else:
+        return None
+
+def to_legacy_document_format(doc_glm, doc_leg):
+
+    doc_leg["main-text"] = []
+    doc_leg["figures"] = []
+    doc_leg["tables"] = []
+    doc_leg["page-headers"] = []
+    doc_leg["page-footers"] = []
+    doc_leg["footnotes"] = []
+                
+    for pelem in doc_glm["page-elements"]:
+
+        ptype = pelem["type"]
+        span_i = pelem["span"][0]
+        span_j = pelem["span"][1]
+        
+        dref = pelem["dref"].split("/")
+        obj = resolve_item(dref, doc_glm)
+        
+        if obj==None:
+            print(f"warning: undefined {dref}")
+            continue
+        
+        if ptype=="figure":
+            
+            text = ""
+            for caption in obj["captions"]:
+                text += caption["text"]
+
+                for nprov in caption["prov"]:
+                    npaths = nprov["$ref"].split("/")
+                    nelem = resolve_item(npaths, doc_glm)
+
+                    if nelem==None:
+                        
+                        print(f"warning: undefined caption {npaths}")
+                        continue
+
+                    span_i = nelem["span"][0]
+                    span_j = nelem["span"][1]
+
+                    text = caption["text"][span_i:span_j]                    
+                    
+                    pitem = {
+                        "text": text,
+                        "name": nelem["name"],
+                        "type": nelem["type"],
+                        "prov": [{"bbox": nelem["bbox"], "page": nelem["page"], "span": [0,len(text)]}]
+                    }
+                    doc_leg["main-text"].append(pitem)                        
+                    
+            find = len(doc_leg["figures"])
+                
+            figure = {
+                "bounding-box": obj.get("bounding-box", None),
+                "confidence": obj.get("confidence", 0),
+                "created_by": obj.get("created_by", ""),
+                "cells": None,                    
+                "data": None,
+                "text": text,
+                "prov": [{"bbox": pelem["bbox"], "page": pelem["page"], "span": [0,len(text)]}]                    
+            }                
+            doc_leg["figures"].append(figure)
+            
+            pitem = {
+                "$ref": f"#/figures/{find}",
+                "name": pelem["name"],
+                "type": pelem["type"],
+            }
+            doc_leg["main-text"].append(pitem)
+                
+        elif ptype=="table":
+
+            text = ""
+            for caption in obj["captions"]:
+                text += caption["text"]
+                
+                for nprov in caption["prov"]:
+                    npaths = nprov["$ref"].split("/")
+                    nelem = resolve_item(npaths, doc_glm)
+
+                    if nelem==None:
+                        print(f"warning: undefined caption {npaths}")
+                        continue
+                    
+                    span_i = nelem["span"][0]
+                    span_j = nelem["span"][1]
+
+                    text = caption["text"][span_i:span_j]
+                    
+                    pitem = {
+                        "text": text,
+                        "name": nelem["name"],
+                        "type": nelem["type"],
+                        "prov": [{"bbox": nelem["bbox"], "page": nelem["page"], "span": [0,len(text)]}]
+                    }
+                    doc_leg["main-text"].append(pitem)                        
+                    
+            tind = len(doc_leg["tables"])
+                    
+            table = {
+                "#-cols": obj.get("#-cols", 0),
+                "#-rows": obj.get("#-rows", 0),
+                "bounding-box": obj.get("bounding-box", None),
+                "confidence": obj.get("confidence", 0),
+                "created_by": obj.get("created_by", ""),
+                "cells": None,                                        
+                "data": obj["data"],
+                "text": text,
+                "prov": [{"bbox": pelem["bbox"], "page": pelem["page"], "span": [0,0]}]                    
+            }                
+            doc_leg["tables"].append(table)
+                
+            pitem = {
+                "$ref": f"#/tables/{tind}",
+                "name": pelem["name"],
+                "type": pelem["type"],
+            }
+            doc_leg["main-text"].append(pitem)
+            
+        else:
+
+            text = obj["text"][span_i:span_j]
+
+            pitem = {
+                "text": text,
+                "name": pelem["name"],
+                "type": pelem["type"],
+                "prov": [{"bbox": pelem["bbox"], "page": pelem["page"], "span": [0, len(text)]}]
+            }
+            doc_leg["main-text"].append(pitem)
+            
+    return doc_leg    
+
+    

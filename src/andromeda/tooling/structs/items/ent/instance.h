@@ -14,8 +14,10 @@ namespace andromeda
     const static inline index_type DEFAULT_INDEX = -1;
     const static inline range_type DEFAULT_RANGE = {DEFAULT_INDEX, DEFAULT_INDEX};
 
-    const static inline range_type DEFAULT_COOR = {DEFAULT_INDEX, DEFAULT_INDEX};
-    const static inline range_type DEFAULT_SPAN = {DEFAULT_INDEX, DEFAULT_INDEX};
+    const static inline table_index_type DEFAULT_TABLE_INDEX = -1;
+
+    const static inline table_coor_type DEFAULT_COOR = {DEFAULT_TABLE_INDEX, DEFAULT_TABLE_INDEX};
+    const static inline table_range_type DEFAULT_SPAN = {DEFAULT_TABLE_INDEX, DEFAULT_TABLE_INDEX};
 
     const static inline std::vector<std::string> HEADERS =
       { "type", "subtype",
@@ -98,9 +100,9 @@ namespace andromeda
     base_instance(hash_type subj_hash,
                   model_name type, std::string subtype,
                   std::string name, std::string orig,
-                  range_type coor,
-                  range_type row_span,
-                  range_type col_span,
+                  table_range_type coor,
+                  table_range_type row_span,
+                  table_range_type col_span,
                   range_type char_range,
                   range_type ctok_range,
                   range_type wtok_range);
@@ -152,10 +154,10 @@ namespace andromeda
     hash_type ihash; // instance-hash: combination of subj-hash, ent-hash and position
 
     val_type conf;
-
-    range_type coor; // table-coors (ignore for text)
-    range_type row_span; // table-spans (ignore for text)
-    range_type col_span; // table-spans (ignore for text)
+    
+    table_range_type coor; // table-coors (ignore for text)
+    table_range_type row_span; // table-spans (ignore for text)
+    table_range_type col_span; // table-spans (ignore for text)
 
     model_name model_type;
     std::string model_subtype;
@@ -255,9 +257,9 @@ namespace andromeda
   base_instance::base_instance(hash_type subj_hash,
                                model_name type, std::string subtype,
                                std::string name, std::string orig,
-                               range_type coor,
-                               range_type row_span,
-                               range_type col_span,
+                               table_range_type coor,
+                               table_range_type row_span,
+                               table_range_type col_span,
                                range_type char_range,
                                range_type ctok_range,
                                range_type wtok_range):
@@ -371,7 +373,8 @@ namespace andromeda
   {
     auto row = nlohmann::json::array({to_key(model_type), model_subtype,
         subj_hash, to_string(subj_name), subj_path,
-        conf, ehash, ihash,
+        std::round(100.0*conf)/100.0,
+	ehash, ihash,
         coor[0], coor[1],
         char_range[0], char_range[1],
         ctok_range[0], ctok_range[1],
@@ -399,7 +402,8 @@ namespace andromeda
     subj_name = to_subject_name(row.at(3).get<std::string>());
     subj_path = row.at(4).get<std::string>();
 
-    conf = row.at(5).get<val_type>();
+    conf = (row.at(5).get<val_type>())/100.0;
+    //conf = (row.at(5).get<int>())/100.0;
 
     ehash = row.at(6).get<hash_type>();
     ihash = row.at(7).get<hash_type>();
@@ -456,7 +460,8 @@ namespace andromeda
       case TEXT:
         {
           row = nlohmann::json::array({to_key(model_type), model_subtype,
-              conf, ehash, ihash,
+              utils::round_conf(conf),
+	      ehash, ihash,
               char_range[0], char_range[1],
               ctok_range[0], ctok_range[1],
               wtok_range[0], wtok_range[1],
@@ -468,7 +473,8 @@ namespace andromeda
       case TABLE:
         {
           row = nlohmann::json::array({to_key(model_type), model_subtype,
-              conf, ehash, ihash,
+              utils::round_conf(conf),
+	      ehash, ihash,
               coor[0], coor[1],
               char_range[0], char_range[1],
               ctok_range[0], ctok_range[1],
@@ -482,7 +488,8 @@ namespace andromeda
       default:
         {
           row = nlohmann::json::array({to_key(model_type), model_subtype,
-              conf, ehash, ihash,
+              utils::round_conf(conf),
+	      ehash, ihash,
               coor[0], coor[1],
               char_range[0], char_range[1],
               ctok_range[0], ctok_range[1],
@@ -536,7 +543,7 @@ namespace andromeda
       result["ehash"] = ehash;
       result["ihash"] = ihash;
 
-      result["confidence"] = conf;
+      result["confidence"] = utils::round_conf(conf);
 
       result["model-type"] = to_key(model_type);
       result["model-subtype"] = model_subtype;
@@ -570,7 +577,7 @@ namespace andromeda
               to_key(model_type),
               model_subtype,
 
-              std::to_string(conf),
+              std::to_string(utils::round_conf(conf)),
 
               std::to_string(ehash),
               std::to_string(ihash),
@@ -595,7 +602,7 @@ namespace andromeda
               to_key(model_type),
               model_subtype,
 
-              std::to_string(conf),
+              std::to_string(utils::round_conf(conf)),
 
               std::to_string(ehash),
               std::to_string(ihash),
@@ -624,7 +631,7 @@ namespace andromeda
               to_key(model_type),
               model_subtype,
 
-              std::to_string(conf),
+              std::to_string(utils::round_conf(conf)),
 
               std::to_string(ehash),
               std::to_string(ihash),
@@ -658,7 +665,8 @@ namespace andromeda
 
     std::vector<std::string> row =
       { to_key(model_type), model_subtype,
-        std::to_string(conf), std::to_string(ehash), std::to_string(ihash),
+        std::to_string(utils::round_conf(conf)),
+	std::to_string(ehash), std::to_string(ihash),
         std::to_string(char_range[0]), std::to_string(char_range[1]),
         wtok_range_match? "true":"false",
         utils::to_fixed_size(tmp_0, name_width),

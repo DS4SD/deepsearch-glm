@@ -30,11 +30,18 @@ namespace andromeda
 
     virtual nlohmann::json create_train_config();
 
-    /*   TRAIN   */
+    /* TRAIN */
     virtual bool is_trainable() { return true; }
+
+    virtual bool prepare_data_for_train(nlohmann::json args,
+					std::vector<std::shared_ptr<base_nlp_model> >& dep_models);
+
     virtual bool train(nlohmann::json args);
 
-    /*  PREDICT  */
+    virtual bool evaluate_model(nlohmann::json args,
+				std::vector<std::shared_ptr<base_nlp_model> >& dep_models);
+    
+    /* PREDICT */
     
     virtual std::string preprocess(const std::string& orig);
     virtual bool classify(const std::string& orig, std::string& label, double& conf);
@@ -49,7 +56,9 @@ namespace andromeda
 
     bool parse_config(nlohmann::json config);
     
-    bool prepare_data();
+    bool prepare_data(std::vector<std::shared_ptr<base_nlp_model> >& dep_models);
+    bool read_samples(std::vector<std::shared_ptr<base_nlp_model> >& dep_models,
+		      bool read_train, bool read_eval);
 
     bool launch_training();
 
@@ -227,8 +236,6 @@ namespace andromeda
 
   bool fasttext_supervised_model::parse_config(nlohmann::json config)
   {
-    LOG_S(INFO) << __FUNCTION__;
-
     auto hpo_args = config["hpo"];
     auto train_args = config["args"];
 
@@ -264,6 +271,7 @@ namespace andromeda
     // files
     {
       train_file = train_files.value("train-file", "null");
+
       validate_file = train_files.value("validate-file", "null");
       test_file = train_files.value("test-file", "null");
       
@@ -283,6 +291,18 @@ namespace andromeda
 
     return true;
   }
+
+  bool fasttext_supervised_model::prepare_data_for_train(nlohmann::json config,
+							 std::vector<std::shared_ptr<base_nlp_model> >& dep_models)
+  {
+    LOG_S(INFO) << "preparing data to train FastText classifier ...";
+
+    parse_config(config);
+
+    prepare_data(dep_models);
+    
+    return true;
+  }
   
   bool fasttext_supervised_model::train(nlohmann::json config)
   {
@@ -290,20 +310,41 @@ namespace andromeda
     
     parse_config(config);
 
-    if(not prepare_data())
-      {
-	LOG_S(WARNING) << "could not prepare the data for supervised Fasttext training ...";
-      }
+    //if(not prepare_data())
+    //{
+    //LOG_S(WARNING) << "could not prepare the data for supervised Fasttext training ...";
+    //}
 
     launch_training();
+
+    save(model_file.c_str());    
+
+    /*
+    if(eval_samples.size()==0)
+      {
+	read_samples(dep_models);
+      }
     
     evaluate_training();
-    
-    save(model_file.c_str());    
+    */
     
     return true;
   }
 
+  bool fasttext_supervised_model::evaluate_model(nlohmann::json config,
+						 std::vector<std::shared_ptr<base_nlp_model> >& dep_models)
+  {
+    parse_config(config);
+
+    load(model_file.c_str());
+
+    read_samples(dep_models, false, true);
+
+    evaluate_training();
+
+    return true;
+  }
+  
   std::string fasttext_supervised_model::preprocess(const std::string& orig)
   {
     return orig;
@@ -347,8 +388,8 @@ namespace andromeda
     text = subj.get_text();
     return (text.size()>0);
   }
-  
-  bool fasttext_supervised_model::prepare_data()
+
+  bool fasttext_supervised_model::prepare_data(std::vector<std::shared_ptr<base_nlp_model> >& dep_models)
   {
     LOG_S(INFO) << __FUNCTION__;
     
@@ -376,38 +417,57 @@ namespace andromeda
     train_samples.clear();
     eval_samples.clear();    
 
-    LOG_S(INFO) << "start reading from file: " << train_file;
+    std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    std::uniform_real_distribution<> dis(0.0, 1.0);
     
-    std::string line, text="null", label="null";
+    LOG_S(INFO) << "start reading from file: " << train_file;
+
+    auto char_normaliser = text_element::create_char_normaliser(false);
+    auto text_normaliser = text_element::create_text_normaliser(false);
+    
+    std::string line, orig="null", text="null", label="null";
     while(std::getline(ifs, line))
       {
-	//LOG_S(INFO) << line;
-
 	nlohmann::json item = nlohmann::json::parse(line);
 
-        bool training_sample = item.value("training-sample", true);
-	
-	subject<TEXT> paragraph;
-	//subject<TABLE> table;
-
-	if(paragraph.from_json(item) and preprocess(paragraph, text) and
-	   paragraph.get_property_label(get_key(), label))
+	bool training_sample = bool(dis(gen)<0.9);
+	if(item.count("training-sample"))
 	  {
-	    
+	    training_sample = item.at("training-sample").get<bool>();
 	  }
-	/*
-	else if(table.from_json(item) and preprocess(table, text) and
-		table.get_property_label(get_key(), label))
+	
+	bool good = false;	
+	if(item.count("label") and item.count("text"))
 	  {
+	    label = item.at("label").get<std::string>();
+	    orig = item.at("text").get<std::string>();
 	    
-	  }	
-	*/
+	    subject<TEXT> subj;
+	    subj.set(orig, char_normaliser, text_normaliser);
+
+	    for(auto dep_model:dep_models)
+	      {
+		dep_model->apply(subj);
+	      }
+		
+	    good = this->preprocess(subj, text);
+	  }
+	else if(item.count("label") and item.count("data"))
+	  {
+
+	  }
 	else
 	  {
-	    LOG_S(WARNING) << "could not parse line ...";
-	    continue;
+	    LOG_S(WARNING) << "no `label` or `text` detected: aborting ...";
+	    return false;
 	  }
 
+	if(not good)
+	  {
+	    continue;
+	  }
+	
 	if(training_sample)
 	  {
 	    ofs_train << "__label__" << label << " " << text << "\n";
@@ -417,17 +477,112 @@ namespace andromeda
 	  {
 	    ofs_eval << "__label__" << label << " " << text << "\n";
 	    eval_samples.push_back({label, text});
-	  }	
+	  }
+
       }
 
     LOG_S(INFO) << "read successfully: #-train: " << train_samples.size() << ", #-val: " << eval_samples.size();
 
-    LOG_S(INFO) << "fasttext train-file: " << fasttext_train_file;
-    LOG_S(INFO) << "fasttext validation-file: " << fasttext_validation_file; 
+    //LOG_S(INFO) << "fasttext train-file: " << fasttext_train_file;
+    //LOG_S(INFO) << "fasttext validation-file: " << fasttext_validation_file; 
 
-    return true;
+    return true;    
   }
 
+  bool fasttext_supervised_model::read_samples(std::vector<std::shared_ptr<base_nlp_model> >& dep_models,
+					       bool read_train, bool read_eval)
+  {
+    LOG_S(INFO) << __FUNCTION__;
+    
+    std::ifstream ifs(train_file.c_str());
+    if(not ifs.good())
+      {
+	LOG_S(ERROR) << "could not read from file: " << train_file;
+	return 0;
+      }
+
+    train_samples.clear();
+    eval_samples.clear();    
+
+    std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    std::uniform_real_distribution<> dis(0.0, 1.0);
+    
+    LOG_S(INFO) << "start reading from file: " << train_file;
+
+    auto char_normaliser = text_element::create_char_normaliser(false);
+    auto text_normaliser = text_element::create_text_normaliser(false);
+
+    std::size_t cnt=0;
+    std::string line, orig="null", text="null", label="null";
+    while(std::getline(ifs, line))
+      {
+	std::cout << "\r\t#-lines: " << cnt++ << std::flush;
+	
+	nlohmann::json item = nlohmann::json::parse(line);
+
+	bool training_sample = bool(dis(gen)<0.9);
+	if(item.count("training-sample"))
+	  {
+	    training_sample = item.at("training-sample").get<bool>();
+	  }
+
+	if(training_sample and (not read_train))
+	  {
+	    continue;
+	  }
+
+	if((not training_sample) and (not read_eval))
+	  {
+	    continue;
+	  }
+	
+	bool good = false;	
+	if(item.count("label") and item.count("text"))
+	  {
+	    label = item.at("label").get<std::string>();
+	    orig = item.at("text").get<std::string>();
+	    
+	    subject<TEXT> subj;
+	    subj.set(orig, char_normaliser, text_normaliser);
+
+	    for(auto dep_model:dep_models)
+	      {
+		dep_model->apply(subj);
+	      }
+		
+	    good = this->preprocess(subj, text);
+	  }
+	else if(item.count("label") and item.count("data"))
+	  {
+
+	  }
+	else
+	  {
+	    LOG_S(WARNING) << "no `label` or `text` detected: aborting ...";
+	    return false;
+	  }
+
+	if(not good)
+	  {
+	    continue;
+	  }
+	
+	if(training_sample)
+	  {
+	    train_samples.push_back({label, text});
+	  }
+	else
+	  {
+	    eval_samples.push_back({label, text});
+	  }
+      }
+    
+    LOG_S(INFO) << "read successfully: #-train: " << train_samples.size() << ", #-val: " << eval_samples.size();
+
+    return true;        
+  }
+  
   bool fasttext_supervised_model::launch_training()
   {
     LOG_S(INFO) << __FUNCTION__;
@@ -513,7 +668,7 @@ namespace andromeda
 	  ss << _ << " ";
 	}
 
-      LOG_S(INFO) << "training with command:\n" << ss.str(); 
+      //LOG_S(INFO) << "training with command:\n" << ss.str(); 
     }
     
     ft_args_type ft_args;
@@ -521,7 +676,7 @@ namespace andromeda
     
     if(ft_args.hasAutotune())
       {
-	LOG_S(INFO) << "start HPO autotuning ... ";
+	//LOG_S(INFO) << "start HPO autotuning ... ";
 	
 	ft_autotune_type autotune(model);
 	autotune.train(ft_args);
@@ -536,10 +691,10 @@ namespace andromeda
 
  bool fasttext_supervised_model::evaluate_training()
   {
-    LOG_S(INFO) << __FUNCTION__ << ": " << eval_samples.size();
+    LOG_S(INFO) << __FUNCTION__  << "\t #-eval: " << eval_samples.size();
     
     conf_matrix.clear();
-    for(auto& sample:train_samples)
+    for(auto& sample:eval_samples)
       {
 	conf_matrix.update(sample.first);
       }
@@ -561,13 +716,13 @@ namespace andromeda
 	   if(sample.second.size()<64)
 	     {
 	       LOG_S(INFO) << "true: " << std::setw(16) << true_label << "; "
-			   << "pred: " << std::setw(16) << pred_label
+			   << "pred [" << int(100*conf) << "]: " << std::setw(16) << pred_label
 			   << " => text: " << sample.second;
 	     }
 	   else
 	     {
 	       LOG_S(INFO) << "true: " << std::setw(16) << true_label << "; "
-			   << "pred: " << std::setw(16) << pred_label
+			   << "pred [" << int(100*conf) << "]: " << std::setw(16) << pred_label
 			   << " => text: " << sample.second.substr(0,64);
 	     }
 	 }

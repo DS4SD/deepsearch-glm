@@ -25,6 +25,9 @@ namespace andromeda_py
     nlohmann::json apply_on_text(std::string& text);    
     nlohmann::json apply_on_doc(nlohmann::json& doc);
 
+    nlohmann::json prepare_data_for_train(nlohmann::json& config);
+    nlohmann::json evaluate_model(nlohmann::json& config);    
+    
   private:
 
     void apply_paragraphs(std::shared_ptr<andromeda::producer<andromeda::TEXT> > producer,
@@ -125,18 +128,18 @@ namespace andromeda_py
     for(auto name:andromeda::MODEL_NAMES)
       {
 	model = andromeda::to_trainable_model(name);
-	LOG_S(INFO) << "model: " << model;
+	//LOG_S(INFO) << "model: " << model;
 	
 	if(model!=NULL and model->is_trainable())
 	  {
-	    LOG_S(INFO) << andromeda::to_string(name) << ": trainable";
+	    //LOG_S(INFO) << andromeda::to_string(name) << ": trainable";
 	    
 	    nlohmann::json config = model->create_train_config();
 	    configs.push_back(config);
 	  }
 	else
 	  {
-	    LOG_S(WARNING) << andromeda::to_string(name) << ": not trainable";
+	    //LOG_S(WARNING) << andromeda::to_string(name) << ": not trainable";
 	  }
       }
 
@@ -250,6 +253,55 @@ namespace andromeda_py
 	producer->apply(subj);
       }
   }  
+
+  nlohmann::json nlp_model::prepare_data_for_train(nlohmann::json& config)
+  {
+    std::string model_name = "null";
+    model_name = config.value("model", model_name);
+
+    std::vector<std::shared_ptr<andromeda::base_nlp_model> > dep_models={};
+    andromeda::to_models(model_name, dep_models, true);
+
+    if(dep_models.size()>0)
+      {
+	dep_models.pop_back();
+      }
+    
+    andromeda::model_name name = andromeda::to_modelname(model_name);
+    std::shared_ptr<andromeda::base_nlp_model> model = andromeda::to_trainable_model(name);
+
+    bool success=false;
+    std::stringstream ss;    
+
+    if(model==NULL or (not (model->is_trainable())))
+      {
+	ss << "model '" << model_name << "' can not be trained";
+      }
+    else
+      {
+	success = model->prepare_data_for_train(config, dep_models);
+	
+	if(success)
+	  {
+	    ss << "data for model '" << model->get_key() << "' is prepared!";
+	  }
+	else
+	  {
+	    ss << "data for model '" << model->get_key() << "' is not prepared!";
+	  }	
+      }
+
+    nlohmann::json result = config;
+    {
+      nlohmann::json& training = result["model-training"];
+      {
+	training["success"] = success;
+	training["message"] = ss.str();
+      }
+    }
+    
+    return result;    
+  }
   
   nlohmann::json nlp_model::train(nlohmann::json& config)
   {
@@ -290,6 +342,55 @@ namespace andromeda_py
     }
     
     return result;
+  }
+
+  nlohmann::json nlp_model::evaluate_model(nlohmann::json& config)
+  {
+    std::string model_name = "null";
+    model_name = config.value("model", model_name);
+    
+    std::vector<std::shared_ptr<andromeda::base_nlp_model> > dep_models={};
+    andromeda::to_models(model_name, dep_models, true);
+
+    if(dep_models.size()>0)
+      {
+	dep_models.pop_back();
+      }
+    
+    andromeda::model_name name = andromeda::to_modelname(model_name);
+    std::shared_ptr<andromeda::base_nlp_model> model = andromeda::to_trainable_model(name);
+
+    bool success=false;
+    std::stringstream ss;    
+
+    if(model==NULL or (not (model->is_trainable())))
+      {
+	ss << "model '" << model_name << "' can not be trained";
+      }
+    else
+      {
+	success = model->evaluate_model(config, dep_models);
+	
+	if(success)
+	  {
+	    ss << "model '" << model->get_key() << "' is evaluated";
+	  }
+	else
+	  {
+	    ss << "model '" << model->get_key() << "' is not evaluated!";
+	  }	
+      }
+
+    nlohmann::json result = config;
+    {
+      nlohmann::json& training = result["model-training"];
+      {
+	training["success"] = success;
+	training["message"] = ss.str();
+      }
+    }
+    
+    return result;    
   }
   
   nlohmann::json nlp_model::apply_on_text(std::string& text)

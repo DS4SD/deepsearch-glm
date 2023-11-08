@@ -368,9 +368,9 @@ namespace andromeda
 
       std::set<hash_type> text_cnt={}, tabl_cnt={};
       
-      for(uint64_t i=0; i<subj.num_rows(); i++)
+      for(base_types::table_index_type i=0; i<subj.num_rows(); i++)
 	{
-	  for(uint64_t j=0; j<subj.num_cols(); j++)
+	  for(base_types::table_index_type j=0; j<subj.num_cols(); j++)
 	    {
 	      if(subj(i,j).skip())
 		{
