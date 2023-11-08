@@ -35,6 +35,17 @@ jobs:
         include:
 
           # Linux 64 bit manylinux2014
+
+          - os: ubuntu-latest
+            python: 38
+            platform: linux
+            platform_id: manylinux_x86_64
+
+          - os: ubuntu-latest
+            python: 39
+            platform: linux
+            platform_id: manylinux_x86_64
+
           - os: ubuntu-latest
             python: 310
             platform: linux
@@ -46,12 +57,22 @@ jobs:
             platform_id: manylinux_x86_64
 
           # MacOS x86_64
+
+          - os: macos-latest
+            python: 38
+            platform: macos
+            platform_id: macosx_x86_64
+
+          - os: macos-latest
+            python: 39
+            platform: macos
+            platform_id: macosx_x86_64
+
           - os: macos-latest
             python: 310
             platform: macos
             platform_id: macosx_x86_64
 
-          # MacOS x86_64
           - os: macos-latest
             python: 311
             platform: macos
@@ -72,6 +93,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup Python 3.8
+        if: matrix.python == '38'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'  # update once build dependencies are available
+
+      - name: Setup Python 3.9
+        if: matrix.python == '39'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'  # update once build dependencies are available
+
       - name: Setup Python 3.10
         if: matrix.python == '310'
         uses: actions/setup-python@v4
@@ -83,6 +116,12 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'  # update once build dependencies are available
+
+      - name: Setup Python 3.12
+        if: matrix.python == '312'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'  # update once build dependencies are available
 
       - name: Install poetry
         run: curl -sSL https://install.python-poetry.org | python3 -
@@ -99,7 +138,7 @@ jobs:
           CIBW_ARCHS: x86_64 arm64 
           CIBW_PLATFORM: macos
           CIBW_SKIP: "pp* *-musllinux_* *_i686* *_s390*"
-          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.10"
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           CIBW_BUILD_VERBOSITY: 3
         run: |
           /Users/runner/.local/bin/poetry run python --version
@@ -137,7 +176,7 @@ jobs:
           CIBW_ARCHS: x86_64
           CIBW_PLATFORM: linux
           CIBW_SKIP: "pp* *musllinux_* *_i686* *_s390*"
-          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.10"
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           CIBW_BUILD_VERBOSITY: 3
         run: |
           /home/runner/.local/bin/poetry run python --version
