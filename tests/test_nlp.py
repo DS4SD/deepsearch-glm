@@ -32,7 +32,7 @@ def check_dimensions(item):
 def test_02A_run_nlp_models_on_text():
 
     source = "./tests/data/texts/test_02A_text_01.jsonl"
-    target = source #"./tests/data/texts/test_02A_text_01.nlp.jsonl"
+    target = source
     
     model = init_nlp_model("sentence;language;term")
     sres = model.apply_on_text("FeSe is a material.")
@@ -61,8 +61,8 @@ def test_02A_run_nlp_models_on_text():
             
 def test_02B_run_nlp_models_on_text():
 
-    source = "./tests/data/texts/test_02B_text_02.jsonl"
-    target = source #"./tests/data/texts/test_02B_text_02.nlp.jsonl"
+    source = "./tests/data/texts/test_02B_text_01.jsonl"
+    target = source
     
     filters = ["properties"]
     
