@@ -27,6 +27,7 @@ namespace andromeda
 
     const static inline std::string page_headers_lbl = "page-headers";
     const static inline std::string page_footers_lbl = "page-footers";
+    const static inline std::string footnotes_lbl = "footnotes";
 
     const static inline std::string other_lbl = "other";
 
@@ -124,7 +125,7 @@ namespace andromeda
     std::vector<std::shared_ptr<subject<TABLE> > > tables;
     std::vector<std::shared_ptr<subject<FIGURE> > > figures;
 
-    std::vector<std::shared_ptr<subject<TEXT> > > page_headers, page_footers, other;
+    std::vector<std::shared_ptr<subject<TEXT> > > page_headers, page_footers, footnotes, other;
   };
 
   subject<DOCUMENT>::subject():
@@ -147,6 +148,8 @@ namespace andromeda
 
     page_headers(),
     page_footers(),
+    footnotes(),
+    
     other()
   {}
 
@@ -231,6 +234,7 @@ namespace andromeda
 
     base_subject::to_json(result, page_headers_lbl, page_headers, doc_filters);
     base_subject::to_json(result, page_footers_lbl, page_footers, doc_filters);
+    base_subject::to_json(result, footnotes_lbl, footnotes, doc_filters);
 
     base_subject::to_json(result, other_lbl, other, doc_filters);        
 
@@ -250,6 +254,7 @@ namespace andromeda
 
     base_subject::from_json(doc, provs, page_headers_lbl, page_headers);
     base_subject::from_json(doc, provs, page_footers_lbl, page_footers);
+    base_subject::from_json(doc, provs, footnotes_lbl, footnotes);
     
     base_subject::from_json(doc, provs, other_lbl, other);        
     
@@ -278,6 +283,7 @@ namespace andromeda
 
     page_headers.clear();
     page_footers.clear();
+    footnotes.clear();
 
     other.clear();
   }

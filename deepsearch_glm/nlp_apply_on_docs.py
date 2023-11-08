@@ -7,7 +7,7 @@ import argparse
 
 import pandas as pd
 
-from utils.ds_utils import convert_pdffiles
+from utils.ds_utils import convert_pdffiles, to_legacy_document_format
 
 from deepsearch_glm.andromeda_nlp import nlp_model
 
@@ -60,6 +60,10 @@ examples of execution:
     parser.add_argument('--force-convert', required=False,
                         type=bool, default=False,
                         help="force pdf conversion")
+
+    parser.add_argument('--legacy', required=False,
+                        type=bool, default=False,
+                        help="enforce old legacy format")    
     
     args = parser.parse_args()
 
@@ -79,7 +83,7 @@ examples of execution:
     else:
         json_files=[]
         
-    return pdf_files, json_files, args.models, args.filters, args.force_convert
+    return pdf_files, json_files, args.models, args.filters, args.force_convert, args.legacy
 
 # FIXME: to be replaced with function in nlp_utils
 def init_nlp_model(models:str, filters:list[str]=[]):
@@ -120,22 +124,24 @@ def show_doc(doc_j):
     print('tables')
     print(json.dumps(doc_j["tables"][0], indent=2))
     """        
-    
-    props = pd.DataFrame(doc_j["properties"]["data"],
-                         columns=doc_j["properties"]["headers"])
-    print("properties: \n\n", props)
 
-    inst = pd.DataFrame(doc_j["instances"]["data"], 
-                        columns=doc_j["instances"]["headers"])
-    print("instances: \n\n", inst)
+    if "properties" in doc_j:
+        props = pd.DataFrame(doc_j["properties"]["data"],
+                             columns=doc_j["properties"]["headers"])
+        print("properties: \n\n", props)
 
-    terms = inst[inst["type"]=="term"]
-    print("terms: \n\n", terms)
+    if "instances" in doc_j:
+        inst = pd.DataFrame(doc_j["instances"]["data"], 
+                            columns=doc_j["instances"]["headers"])
+        print("instances: \n\n", inst)
+        
+        terms = inst[inst["type"]=="term"]
+        print("terms: \n\n", terms)
 
-    hist = terms["hash"].value_counts()
-    for key,val in hist.items():
-        name = terms[terms["hash"]==key].iloc[0]["name"]
-        print(f"{val}\t{name}")
+        hist = terms["hash"].value_counts()
+        for key,val in hist.items():
+            name = terms[terms["hash"]==key].iloc[0]["name"]
+            print(f"{val}\t{name}")
     
     """
     ents = pd.DataFrame(doc_j["entities"]["data"], 
@@ -145,7 +151,7 @@ def show_doc(doc_j):
     
 if __name__ == '__main__':
 
-    pdf_files, json_files, model_names, force_convert = parse_arguments()
+    pdf_files, json_files, model_names, filters, force_convert, legacy = parse_arguments()
 
     if len(pdf_files)>0:
         new_json_files = convert_pdffiles(pdf_files, force=force_convert)
@@ -178,6 +184,15 @@ if __name__ == '__main__':
         
         with open(nlp_file, "w") as fw:
             fw.write(json.dumps(doc_j, indent=2))
+
+        if(legacy):
+            doc_i = to_legacy_document_format(doc_j, doc_i)
+            
+            nlp_file = json_file.replace(".json", ".leg.json")
+            print(f"writing  models {nlp_file}")
+            
+            with open(nlp_file, "w") as fw:
+                fw.write(json.dumps(doc_i, indent=2))            
 
 
     

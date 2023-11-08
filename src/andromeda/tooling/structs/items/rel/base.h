@@ -140,7 +140,7 @@ namespace andromeda
   nlohmann::json base_relation::to_json_row()
   {
     nlohmann::json row = nlohmann::json::array({flvr, to_name(flvr),
-	round_conf(conf),
+	utils::round_conf(conf),
 	hash_i, hash_j,
 	name_i, name_j});
 	  
@@ -180,7 +180,7 @@ namespace andromeda
   {
     std::vector<std::string> row =
       { std::to_string(flvr), to_name(flvr),
-	std::to_string(round_conf(conf)),
+	std::to_string(utils::round_conf(conf)),
 	std::to_string(hash_i), std::to_string(hash_j),
 	//std::to_string(ihash_i), std::to_string(ihash_j),
 	name_i, name_j};

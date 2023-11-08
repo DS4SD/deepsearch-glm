@@ -44,8 +44,8 @@ namespace andromeda
       return (text.find(word)==std::string::npos? false : true);
     }
 
-    template<typename val_type>
-    value_type round_conf(val_type conf)
+    template<typename value_type>
+    value_type round_conf(value_type conf)
     {
       auto v = std::ceil(100.0*conf)/100.0;
 

@@ -460,7 +460,7 @@ namespace andromeda
       case TEXT:
         {
           row = nlohmann::json::array({to_key(model_type), model_subtype,
-              round_conf(conf),
+              utils::round_conf(conf),
 	      ehash, ihash,
               char_range[0], char_range[1],
               ctok_range[0], ctok_range[1],
@@ -473,7 +473,7 @@ namespace andromeda
       case TABLE:
         {
           row = nlohmann::json::array({to_key(model_type), model_subtype,
-              round_conf(conf),
+              utils::round_conf(conf),
 	      ehash, ihash,
               coor[0], coor[1],
               char_range[0], char_range[1],
@@ -488,7 +488,7 @@ namespace andromeda
       default:
         {
           row = nlohmann::json::array({to_key(model_type), model_subtype,
-              round_conf(conf),
+              utils::round_conf(conf),
 	      ehash, ihash,
               coor[0], coor[1],
               char_range[0], char_range[1],
@@ -543,7 +543,7 @@ namespace andromeda
       result["ehash"] = ehash;
       result["ihash"] = ihash;
 
-      result["confidence"] = round_conf(conf);
+      result["confidence"] = utils::round_conf(conf);
 
       result["model-type"] = to_key(model_type);
       result["model-subtype"] = model_subtype;
@@ -577,7 +577,7 @@ namespace andromeda
               to_key(model_type),
               model_subtype,
 
-              std::to_string(round_conf(conf)),
+              std::to_string(utils::round_conf(conf)),
 
               std::to_string(ehash),
               std::to_string(ihash),
@@ -602,7 +602,7 @@ namespace andromeda
               to_key(model_type),
               model_subtype,
 
-              std::to_string(round_conf(conf)),
+              std::to_string(utils::round_conf(conf)),
 
               std::to_string(ehash),
               std::to_string(ihash),
@@ -631,7 +631,7 @@ namespace andromeda
               to_key(model_type),
               model_subtype,
 
-              std::to_string(round_conf(conf)),
+              std::to_string(utils::round_conf(conf)),
 
               std::to_string(ehash),
               std::to_string(ihash),
@@ -665,7 +665,7 @@ namespace andromeda
 
     std::vector<std::string> row =
       { to_key(model_type), model_subtype,
-        std::to_string(round_conf(conf)),
+        std::to_string(utils::round_conf(conf)),
 	std::to_string(ehash), std::to_string(ihash),
         std::to_string(char_range[0]), std::to_string(char_range[1]),
         wtok_range_match? "true":"false",

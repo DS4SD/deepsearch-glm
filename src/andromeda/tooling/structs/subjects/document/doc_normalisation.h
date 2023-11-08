@@ -13,7 +13,8 @@ namespace andromeda
 
     const static inline std::set<std::string> is_text = {
       "title", "subtitle-level-1", "paragraph", "list-item",
-      "footnote", "caption",
+      //"footnote",
+      "caption",
       "formula", "equation"
     };
 
@@ -22,6 +23,7 @@ namespace andromeda
 
     const static inline std::set<std::string> is_page_header = {"page-header"};
     const static inline std::set<std::string> is_page_footer = {"page-footer"};
+    const static inline std::set<std::string> is_footnote = {"footnote"};
 
   public:
 
@@ -282,6 +284,8 @@ namespace andromeda
 
     auto& page_headers = doc.page_headers;
     auto& page_footers = doc.page_footers;
+    auto& footnotes = doc.footnotes;
+
     auto& other = doc.other;
 
     {
@@ -291,6 +295,8 @@ namespace andromeda
 
       page_headers.clear();
       page_footers.clear();
+      footnotes.clear();
+
       other.clear();
     }
 
@@ -407,6 +413,25 @@ namespace andromeda
                 LOG_S(WARNING) << "found invalid text: " << item.dump();
               }
           }
+        else if(is_footnote.count(prov->get_type()))
+          {
+            std::stringstream ss;
+            ss << doc_name << "#/" << doc_type::footnotes_lbl << "/" << footnotes.size();
+
+            std::string dloc = ss.str();
+
+            auto subj = std::make_shared<subject<TEXT> >(doc.doc_hash, dloc, prov);
+            bool valid = subj->set_data(item);
+
+            if(valid)
+              {
+                footnotes.push_back(subj);
+              }
+            else
+              {
+                LOG_S(WARNING) << "found invalid text: " << item.dump();
+              }
+          }	
         else
           {
             prov->set_ignored(true);
