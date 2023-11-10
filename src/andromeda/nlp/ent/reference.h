@@ -97,8 +97,6 @@ namespace andromeda
   
   bool nlp_model<ENT, REFERENCE>::apply(subject<TEXT>& subj)
   {
-    //LOG_S(WARNING) << "reference parsing started ...";
-    
     if(not satisfies_dependencies(subj))
       {
 	return false;
@@ -107,11 +105,8 @@ namespace andromeda
     bool is_ref=false;
     for(auto& cls:subj.properties)
       {
-	//LOG_S(INFO) << cls.type << " -> " << (cls.type==to_key(SEMANTIC));
-	//LOG_S(INFO) << cls.name << " -> " << (cls.name=="reference");
-	
-	if(cls.get_type()==to_key(SEMANTIC) and
-	   cls.get_name()=="reference")
+	if((cls.get_type()==to_key(SEMANTIC)) and
+	   (cls.get_name()=="reference"))
 	  {
 	    is_ref = true;
 	  }
@@ -120,7 +115,6 @@ namespace andromeda
     // text in subject is not a reference and we do not apply the reference parser
     if(not is_ref) 
       {
-	//LOG_S(WARNING) << "is not a reference ...";
 	return true;
       }
        
@@ -226,10 +220,10 @@ namespace andromeda
     std::set<std::string> labels
       = { "citation-number",
 	  "author", "title",
-	  "publisher", "editor",
+	  //"publisher", "editor",
 	  "journal", "container-title",
 	  "location", "date",
-	  "volume", "pages",
+	  //"volume", "pages",
 	  "url", "doi"};
 
     for(const auto& label:labels)

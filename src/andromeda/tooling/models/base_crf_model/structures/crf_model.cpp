@@ -875,7 +875,7 @@ namespace andromeda_crf
     if (seq.vs.size() >= MAX_LEN) {
       LOG_S(ERROR) << "error: sequence is too long.";
       return;
-      //exit(1);
+
     }
 
     if (seq.vs.size() == 0) {
@@ -905,14 +905,22 @@ namespace andromeda_crf
 
       assert(s.label >= 0 && s.label < MAX_LABEL_TYPES);
 
-      for (std::vector<std::string>::const_iterator j = i->features.begin(); j != i->features.end(); j++) {
-        if (contain_space(*j)) {
-          LOG_S(ERROR) << "error: the name of a feature must not contain any space.";
-          exit(1);
-        }
-        s.positive_features.push_back(_featurename_bag.Put(*j));
-      }
+      for (std::vector<std::string>::const_iterator j = i->features.begin(); j != i->features.end(); j++)
+	{
+	  if(contain_space(*j))
+	    {
+	      LOG_S(ERROR) << "error: the name of a feature (" << (*j) << ") must not contain any space.";
 
+	      std::string feat = *j;
+	      feat = andromeda::utils::replace(feat, " ", "_");
+
+	      s.positive_features.push_back(_featurename_bag.Put(feat));
+	    }
+	  else	    
+	    {
+	      s.positive_features.push_back(_featurename_bag.Put(*j));
+	    }
+      }
       s1.vs.push_back(s);
     }
 
