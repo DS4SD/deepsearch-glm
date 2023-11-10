@@ -60,7 +60,7 @@ namespace andromeda
 
   std::vector<std::string> base_property::to_row()
   {
-    std::vector<std::string> row = { type, name, std::to_string(conf) };
+    std::vector<std::string> row = { type, name, std::to_string(utils::round_conf(conf)) };
     assert(row.size()==HEADERS.size());
     
     return row;

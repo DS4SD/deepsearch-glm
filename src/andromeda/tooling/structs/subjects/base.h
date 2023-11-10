@@ -28,7 +28,7 @@ namespace andromeda
     //const static inline std::string text_lbl = "text";
 
     const static inline std::string dloc_lbl = "dloc";
-    const static inline std::string dref_lbl = "dref";
+    //const static inline std::string dref_lbl = "dref";
     const static inline std::string jref_lbl = "$ref";
 
     const static inline std::string name_lbl = "name";
@@ -43,6 +43,9 @@ namespace andromeda
     const static inline std::string table_data_lbl = "data"; // for tables and figures
     const static inline std::string figure_data_lbl = "data"; // for tables and figures
 
+    const static inline std::string confidence_lbl = "confidence"; // for tables and figures
+    const static inline std::string created_by_lbl = "created_by"; // for tables and figures
+    
   public:
 
     base_subject();
@@ -200,7 +203,8 @@ namespace andromeda
         if(prov!=NULL)
           {
             nlohmann::json pref;
-            pref[base_subject::jref_lbl] = prov->get_pref();
+            //pref[base_subject::jref_lbl] = prov->get_pref();
+	    pref[base_subject::jref_lbl] = prov->get_self_ref();
 
             result.push_back(pref);
           }
