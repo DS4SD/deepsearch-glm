@@ -298,7 +298,6 @@ namespace andromeda
 	
         if(prov_i->get_type()=="table")
           {
-            //auto& table = doc.tables.at(prov_i->dref.second);
 	    auto& table = prov_to_table.at(prov_i);
 
 	    
@@ -315,13 +314,11 @@ namespace andromeda
 		//<< " to table "
 		//<< prov_j->maintext_ind;
 
-                //assert(prov_j->dref.first==TEXT);
                 table->captions.push_back(caption);
               }
           }
         else if(prov_i->get_type()=="figure")
           {
-            //auto& figure = doc.figures.at(prov_i->dref.second);
 	    auto& figure = prov_to_figure.at(prov_i);
 	    
             //LOG_S(WARNING) << "figure: "
@@ -337,7 +334,6 @@ namespace andromeda
 		//<< " to figure "
 		//<< prov_j->maintext_ind;
 
-                //assert(prov_j->dref.first==TEXT);
                 figure->captions.push_back(caption);
               }
           }

@@ -21,7 +21,7 @@ namespace andromeda
     void finalise();
     void clear();
 
-    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
+    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_item_ref()):"#"); }
     bool is_valid() { return (base_subject::valid and text_element::text_valid); }
 
     virtual nlohmann::json to_json(const std::set<std::string>& filters);
@@ -120,8 +120,6 @@ namespace andromeda
 
     if(provs.size()>0)
       {
-        //auto ind = provs.front()->dref.second;
-
         for(auto& prov:other->provs)
           {
             //prov->char_range.at(0) += offset;

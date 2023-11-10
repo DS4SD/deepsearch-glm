@@ -233,7 +233,7 @@ namespace andromeda
         auto prov = std::make_shared<prov_element>(pdforder, maintext,
                                                    path, name, type);
 
-        std::vector<std::string> parts = utils::split(prov->get_path(), "/");
+        std::vector<std::string> parts = utils::split(prov->get_item_ref(), "/");
         assert(parts.size()>=3);
 
         std::string base = parts.at(1);
@@ -308,10 +308,10 @@ namespace andromeda
         {
           std::stringstream ss;
           ss << "#/" << doc_type::provs_lbl << "/" << i;
-          prov->set_pref(ss.str());
+          prov->set_self_ref(ss.str());
         }
 
-        std::vector<std::string> parts = utils::split(prov->get_path(), "/");
+        std::vector<std::string> parts = utils::split(prov->get_item_ref(), "/");
 
         std::string base = parts.at(1);
         std::size_t index = std::stoi(parts.at(2));
@@ -490,7 +490,7 @@ namespace andromeda
             std::stringstream ss;
             ss << "#/" << doc_type::texts_lbl << "/" << l;
 
-            prov->set_path(ss.str());
+            prov->set_item_ref(ss.str());
           }
       }
 
@@ -501,7 +501,7 @@ namespace andromeda
             std::stringstream ss;
             ss << "#/" << doc_type::tables_lbl << "/" << l;
 
-            prov->set_path(ss.str());
+            prov->set_item_ref(ss.str());
           }
 
         for(index_type k=0; k<tables.at(l)->captions.size(); k++)
@@ -513,7 +513,7 @@ namespace andromeda
                    << doc_type::tables_lbl << "/" << l << "/"
                    << doc_type::captions_lbl << "/" << k;
 
-                prov->set_path(ss.str());
+                prov->set_item_ref(ss.str());
               }
           }
       }
@@ -525,7 +525,7 @@ namespace andromeda
             std::stringstream ss;
             ss << "#/" << doc_type::figures_lbl << "/" << l;
 
-            prov->set_path(ss.str());
+            prov->set_item_ref(ss.str());
           }
 
         for(index_type k=0; k<figures.at(l)->captions.size(); k++)
@@ -537,7 +537,7 @@ namespace andromeda
                    << doc_type::figures_lbl << "/" << l << "/"
                    << doc_type::captions_lbl << "/" << k;
 
-                prov->set_path(ss.str());
+                prov->set_item_ref(ss.str());
               }
           }
       }

@@ -10,17 +10,19 @@ namespace andromeda
   public:
 
     table_element(nlohmann::json& json_cell);
-    
+
+    /*
     table_element(uint64_t i,
 		  uint64_t j,
 		  std::string orig);
-
+    */
+    
     table_element(uint64_t i,
 		  uint64_t j,
 		  std::array<uint64_t,2> row_span,			       
 		  std::array<uint64_t,2> col_span,
 		  std::string orig);
-
+    
     nlohmann::json to_json();
     bool from_json(nlohmann::json& json_cell);
     
@@ -43,16 +45,22 @@ namespace andromeda
   private:
     
     uint64_t i, j;
+    std::string type;
+    
     std::array<uint64_t,2> row_span, col_span;
-
+    //std::vector< std::array<uint64_t,2> > spans;
+    
     bool row_header, col_header, numeric;
   };
 
   table_element::table_element(nlohmann::json& json_cell)
   {
     from_json(json_cell);
+    
+    text_element::set(orig, NULL, NULL);
   }
-  
+
+  /*
   table_element::table_element(uint64_t i,
 			       uint64_t j,
 			       std::string orig):
@@ -69,7 +77,8 @@ namespace andromeda
   {
     text_element::set(orig, NULL, NULL);
   }
-
+  */
+  
   table_element::table_element(uint64_t i, uint64_t j,
 			       std::array<uint64_t,2> row_span,			       
 			       std::array<uint64_t,2> col_span,
@@ -87,7 +96,7 @@ namespace andromeda
   {
     text_element::set(orig, NULL, NULL);
   }    
-
+  
   nlohmann::json table_element::to_json()
   {
     nlohmann::json cell = nlohmann::json::object({});
@@ -99,16 +108,17 @@ namespace andromeda
     cell["col-span"] = col_span;
 
     std::vector<std::vector<uint64_t> >spans={};
-    for(auto i=row_span[0]; i<row_span[1]; i++)
+    for(uint64_t ri=row_span[0]; ri<row_span[1]; ri++)
       {
-	for(auto j=col_span[0]; j<col_span[1]; j++)
+	for(uint64_t cj=col_span[0]; cj<col_span[1]; cj++)
 	  {
-	    spans.push_back({i,j});
+	    spans.push_back({ri,cj});
 	  }
       }
     cell["spans"] = spans;
     
     cell["text"] = text;
+    cell["type"] = type;
 
     cell["row-header"] = row_header;
     cell["col-header"] = col_header;
@@ -120,11 +130,12 @@ namespace andromeda
   {
     i = json_cell.at("row").get<index_type>();
     j = json_cell.at("col").get<index_type>();
-    
+
     row_span = json_cell.at("row-span").get<std::array<index_type, 2>>();
     col_span = json_cell.at("col-span").get<std::array<index_type, 2>>();
     
     text = json_cell.at("text").get<std::string>();
+    type = json_cell.at("type").get<std::string>();
     
     row_header = json_cell.at("row-header").get<bool>();
     col_header = json_cell.at("col-header").get<bool>();

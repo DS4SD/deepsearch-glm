@@ -27,7 +27,7 @@ namespace andromeda
 
     prov_element(ind_type pdforder_ind,
 		 ind_type maintext_ind,
-		 std::string path,
+		 std::string item_ref,
 		 std::string name,
 		 std::string type);
 
@@ -46,11 +46,14 @@ namespace andromeda
     ind_type get_maintext_ind() { return maintext_ind; }
     ind_type get_pdforder_ind() { return pdforder_ind; }
     
-    std::string get_path() { return path; }
-    void set_path(std::string val) { path = val; }
+    //std::string get_path() { return path; }
+    //void set_path(std::string val) { path = val; }
 
-    std::string get_pref() { return pref; }
-    void set_pref(std::string val) { pref = val; }
+    std::string get_item_ref() { return item_ref; }
+    void set_item_ref(std::string val) { item_ref = val; }
+    
+    std::string get_self_ref() { return self_ref; }
+    void set_self_ref(std::string val) { self_ref = val; }
     
     std::string get_name() { return name; }
     void set_name(std::string val) { name = val; }
@@ -102,7 +105,8 @@ namespace andromeda
     ind_type pdforder_ind, maintext_ind;
     std::string name, type;
 
-    std::string path, pref;
+    //std::string path_to_;//, pref;
+    std::string item_ref, self_ref;
 
     bool ignore;
     ind_type page;
@@ -121,7 +125,7 @@ namespace andromeda
     name("undef"),
     type("undef"),
     
-    path("#"),
+    item_ref("#"),
     
     ignore(false),
     
@@ -144,7 +148,7 @@ namespace andromeda
     name(name),
     type(type),
     
-    path("#/main-text/"+std::to_string(maintext_ind)),
+    item_ref("#/main-text/"+std::to_string(maintext_ind)),
     
     ignore(false),
     
@@ -159,7 +163,7 @@ namespace andromeda
 
   prov_element::prov_element(ind_type pdforder_ind,
 			     ind_type maintext_ind,
-			     std::string path,
+			     std::string item_ref,
 			     std::string name,
 			     std::string type):
     pdforder_ind(pdforder_ind),
@@ -168,7 +172,7 @@ namespace andromeda
     name(name),
     type(type),
     
-    path(path),
+    item_ref(item_ref),
 
     ignore(false),
     
@@ -363,17 +367,6 @@ namespace andromeda
     char_range = data.value("span", char_range);
   }
 
-  std::vector<std::string> prov_element::get_headers()
-  {
-    static std::vector<std::string> row
-      = { "maintext-ind", "pdforder-ind",
-	  "path",
-	  "name", "type",
-	  "page",
-	  "x0", "y0", "x1", "y1"};
-    return row;
-  }
-
   bool prov_element::from_json(const nlohmann::json& item)
   {
     type = item.at("type").get<std::string>();
@@ -381,16 +374,25 @@ namespace andromeda
 
     if(item.count("__ref"))
       {
-	path = item.at("__ref").get<std::string>();	
+	item_ref = item.at("__ref").get<std::string>();	
       }
     else if(item.count("$ref"))
       {
-	path = item.at("$ref").get<std::string>();	
+	item_ref = item.at("$ref").get<std::string>();	
       }
+    else if(item.count("iref"))
+      {
+	item_ref = item.at("iref").get<std::string>();	
+      } 
     else
       {
-	path = "#";
+	item_ref = "#";
       }
+
+    if(item.count("sref"))
+      {
+	self_ref = item.at("sref").get<std::string>();	
+      }    
     
     page = item.at("page").get<ind_type>();
     bbox = item.at("bbox").get<std::array<val_type, 4> >();
@@ -414,17 +416,14 @@ namespace andromeda
   {
     nlohmann::json result = nlohmann::json::object();
 
-    if(path!="" and json_ref)
+    if(item_ref!="" and json_ref)
       {
-	result["$ref"] = path;
+	result["$ref"] = item_ref;
 	return result;
       }      
-    else if(path!="")
-      {
-	result["dref"] = path;
-      }
-    else
-      {}
+
+    result["iref"] = item_ref;
+    result["sref"] = self_ref;
     
     result["type"] = type;
     result["name"] = name;
@@ -438,13 +437,27 @@ namespace andromeda
     
     return result;
   }
+
+  std::vector<std::string> prov_element::get_headers()
+  {
+    static std::vector<std::string> row
+      = { "maintext-ind", "pdforder-ind",
+	  "item-ref", "self-ref",
+	  "name", "type",
+	  "page",
+	  "x0", "y0", "x1", "y1"};
+    return row;
+  }
+
+
   
   std::vector<std::string> prov_element::to_row()
   {
     std::vector<std::string> row
       = { std::to_string(maintext_ind),
 	  std::to_string(pdforder_ind),
-	  path,
+	  item_ref,
+	  self_ref,
 	  name,
 	  type,	  
 	  std::to_string(page),
@@ -464,7 +477,9 @@ namespace andromeda
     {
       row.push_back(maintext_ind);
       row.push_back(pdforder_ind);
-      row.push_back(path);
+
+      row.push_back(item_ref);
+      row.push_back(self_ref);
 
       row.push_back(name);
       row.push_back(type);
