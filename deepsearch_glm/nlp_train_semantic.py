@@ -43,7 +43,7 @@ examples of execution:
                         choices=["retrieve","prepare","process","train","eval","refine","all"])
 
     parser.add_argument('--input-dir', required=False,
-                        type=str, default=None,
+                        type=str, default="./semantic-models/documents",
                         help="input directory with documents")
     
     parser.add_argument('--output-dir', required=False,
@@ -72,10 +72,25 @@ def retrieve_data_pubmed(sdir):
         os.mkdir(sdir)
     
     index="pubmed"
-    query="*"
+    query="description.publication_date:[2022-01-01 TO 2022-03-01]"
         
     odir = ds_index_query(index, query, tdir, sources=["_name", "file-info", "references", "description"],
                           force=True, limit=1000)        
+    
+    return odir
+
+def retrieve_data_arxiv(sdir):
+
+    tdir = os.path.join(sdir, "arxiv")
+
+    if not os.path.exists(sdir):
+        os.mkdir(sdir)
+
+    index="arxiv"
+    query="description.publication_date:[2022-01-01 TO 2022-03-01]"
+        
+    odir = ds_index_query(index, query, tdir, sources=["_name", "file-info", "description", "main-text"],
+                          force=True, limit=50000)        
     
     return odir
 
@@ -89,7 +104,7 @@ def retrieve_data(sdir, index):
     query="*"
         
     odir = ds_index_query(index, query, tdir, sources=["_name", "file-info", "description", "main-text"],
-                          force=True, limit=1000)        
+                          force=True, limit=50000)        
     
     return odir
 
@@ -101,50 +116,153 @@ def get_data():
             for item in doc["references"]:
                 data.append({"label":"reference", "text":item["text"], "document-hash":dhash})
 
-        if "description" in doc:
 
-            desc = doc["description"]
-
-            if "title" in desc:
-                #data.append({"label":"title", "text":desc["title"], "document-hash":dhash})
-                data.append({"label":"text", "text":desc["title"], "document-hash":dhash})
-            
-            if "abstract" in desc:
-                for item in desc["abstract"]:
-                    data.append({"label":"text", "text":item, "document-hash":dhash})
-
-            affiliations=[]
-            if "affiliations" in desc:                    
-                for item in desc["affiliations"]:
-                    affiliations.append(item["name"])
-                    #data.append({"label":"affiliation", "text":item["name"], "document-hash":dhash})
-                    data.append({"label":"meta-data", "text":item["name"], "document-hash":dhash})
-
-            authors=[]                    
-            if "authors" in desc:                                        
-                for item in desc["authors"]:
-                    authors.append(item["name"])
-                    #data.append({"label":"person_name", "text":item["name"], "document-hash":dhash})
-                    data.append({"label":"meta-data", "text":item["name"], "document-hash":dhash})
-
-            if len(authors)>1:
-                data.append({"label":"meta-data", "text": ", ".join(authors), "document-hash":dhash})
-                data.append({"label":"meta-data", "text": "; ".join(authors), "document-hash":dhash})
-
-            if len(affiliations)>1:
-                data.append({"label":"meta-data", "text": ", ".join(affiliations), "document-hash":dhash})
-                data.append({"label":"meta-data", "text": "; ".join(affiliations), "document-hash":dhash})                
-                
-            if len(authors)>=1 and len(affiliations)>=1:
-
-                for _ in authors:
-                    for __ in affiliations:
-                        data.append({"label":"meta-data", "text": " ".join([_, __]), "document-hash":dhash})
         """
 
-    
-def prepare_data(json_files, data_file):
+def prepare_data_from_legacy_documents(doc):
 
+    if "file-info" in doc:
+        dhash = doc["file-info"]["document-hash"]
+    else:
+        dhash = -1
+    
+    N = len(doc["main-text"])
+    
+    title_ind=len(doc["main-text"])
+    
+    abs_beg=len(doc["main-text"])
+    intro_beg=len(doc["main-text"])
+    
+    ref_beg=len(doc["main-text"])
+    ref_end=len(doc["main-text"])
+
+    data=[]
+    for i,item in enumerate(doc["main-text"]):
+        
+        if "text" not in item:
+            continue
+                
+        label = item["type"].lower()
+        text = item["text"].lower().strip()
+        
+        if "title" == label and title_ind==N:
+            title_ind=i
+            
+        if ("title" in label) and ("abstract" in text) and abs_beg==N:
+            abs_beg=i
+
+        if (text.startswith("abstract")) and abs_beg==N:
+            abs_beg=i
+            
+        if ("title" in label) and ("introduction" in text) and intro_beg==N:
+            intro_beg=i                    
+                    
+        if ("title" in label) and ("references" in text) and ref_beg==N:
+            ref_beg=i
+
+        #(("title" in label) or ("caption" in label)) and ("reference" not in text):
+        if (ref_end==N and ref_beg<N and i>ref_beg and
+            (("title" in label)) and ("reference" not in text)):
+            ref_end=i
+
+    if title_ind==N or abs_beg==N or ref_beg==N:
+        return data
+    
+    print(dhash)
+    for i,item in enumerate(doc["main-text"]):
+
+        if "text" not in item:
+            continue
+        
+        type_ = item["type"]
+        label = item["type"]
+        text = item["text"]
+        
+        skip = ((len(text)<=1) or (len(text.split(" "))==1)) and ("title" not in label) and (len(text)<=5)
+        if skip:
+            #print(f"skipping: {text}")
+            continue
+                
+        if title_ind<i and (i<min(abs_beg, intro_beg)):
+            label = "meta-data"
+        elif ref_beg<i and i<ref_end:
+            label = "reference"
+        elif "title" in label:
+            label = "header"                    
+        else:
+            label = "text"
+
+        if "title" in label:
+            print(tc.yellow(f"{label}, {type_}: {text[0:48]}"))
+        elif "meta" in label:
+            print(tc.green(f"\t{label}, {type_}: {text[0:48]}"))                    
+        elif "text" in label:
+            print(f"\t{label}, {type_}: {text[0:48]}")
+        elif "reference" in label:
+            print(tc.blue(f"\t{label}, {type_}: {text[0:48]}"))
+        else:
+            print(tc.red(f"\t{label}, {type_}: {text[0:48]}"))
+                
+        if random.random()<0.9:
+            training_sample = True
+        else:
+            training_sample = False
+                
+        data.append({"document-hash":dhash, "label":label, "text":item["text"], "training-sample": training_sample})    
+
+    return data
+
+def prepare_data_from_description(doc):
+
+    if "file-info" in doc:
+        dhash = doc["file-info"]["document-hash"]
+    else:
+        dhash = -1
+
+    data=[]
+        
+    if "references" in doc:
+        for item in doc["references"]:
+            data.append({"label":"reference", "text":item["text"], "document-hash":dhash})
+    
+    if "description" in doc:
+                
+        desc = doc["description"]
+
+        if "title" in desc:
+            data.append({"label":"text", "text":desc["title"], "document-hash":dhash})
+            
+        if "abstract" in desc:
+            for item in desc["abstract"]:
+                data.append({"label":"text", "text":item, "document-hash":dhash})
+
+        affiliations=[]
+        if "affiliations" in desc:                    
+            for item in desc["affiliations"]:
+                affiliations.append(item["name"])
+                data.append({"label":"meta-data", "text":item["name"], "document-hash":dhash})
+
+        authors=[]
+        if "authors" in desc:                                        
+            for item in desc["authors"]:
+                authors.append(item["name"])
+                data.append({"label":"meta-data", "text":item["name"], "document-hash":dhash})
+
+        if len(authors)>1:
+            data.append({"label":"meta-data", "text": ", ".join(authors), "document-hash":dhash})
+
+        if len(affiliations)>1:
+            data.append({"label":"meta-data", "text": ", ".join(affiliations), "document-hash":dhash})
+                
+        if len(authors)>=1 and len(affiliations)>=1:
+            for _ in authors:
+                for __ in affiliations:
+                    data.append({"label":"meta-data", "text": " ".join([_, __]), "document-hash":dhash})
+                        
+    return data
+
+def prepare_data(json_files, data_file):
+    
     num_lines=0
     
     fw = open(data_file, "w")
@@ -159,92 +277,12 @@ def prepare_data(json_files, data_file):
         except:
             continue
         
-        if "file-info" in doc:
-            dhash = doc["file-info"]["document-hash"]
-        else:
-            dhash = -1
-        
         if "main-text" in doc:
-
-            N = len(doc["main-text"])
-
-            title_ind=len(doc["main-text"])
-
-            abs_beg=len(doc["main-text"])
-            intro_beg=len(doc["main-text"])
+            data = prepare_data_from_legacy_documents(doc)
+            #continue
+        else:
+            data = prepare_data_from_description(doc)
             
-            ref_beg=len(doc["main-text"])
-            ref_end=len(doc["main-text"])
-            
-            for i,item in enumerate(doc["main-text"]):
-
-                if "text" not in item:
-                    continue
-                
-                label = item["type"].lower()
-                text = item["text"].lower().strip()
-
-                if "title" == label and title_ind==N:
-                    title_ind=i
-                
-                if ("title" in label) and ("abstract" in text) and abs_beg==N:
-                    abs_beg=i
-
-                if ("title" in label) and ("introduction" in text) and intro_beg==N:
-                    intro_beg=i                    
-                    
-                if ("title" in label) and ("reference" in text) and ref_beg==N:
-                    ref_beg=i
-
-                if ref_end==N and ref_beg<N and i>ref_beg and (("title" in label) or ("caption" in label)) and ("reference" not in text):
-                    ref_end=i
-
-            if title_ind==N or abs_beg==N or ref_beg==N:
-                continue
-
-            for i,item in enumerate(doc["main-text"]):
-
-                if "text" not in item:
-                    continue
-                
-                type_ = item["type"]
-                label = item["type"]
-                text = item["text"]
-
-                skip = ((len(text)<=1) or (len(text.split(" "))==1)) and ("title" not in label) and (len(text)<=5)
-                if skip:
-                    #print(f"skipping: {text}")
-                    continue
-                
-                if title_ind<i and i<abs_beg:
-                    label = "meta-data"
-                elif ref_beg<i and i<ref_end:
-                    label = "reference"
-                elif "title" in label:
-                    label = "header"                    
-                else:
-                    label = "text"
-
-                """
-                if "title" in label:
-                    print(tc.yellow(f"{label}, {type_}: {text[0:48]}"))
-                elif "meta" in label:
-                    print(tc.green(f"\t{label}, {type_}: {text[0:48]}"))                    
-                elif "text" in label:
-                    print(f"\t{label}, {type_}: {text[0:48]}")
-                elif "reference" in label:
-                    print(tc.blue(f"\t{label}, {type_}: {text[0:48]}"))
-                else:
-                    print(tc.red(f"\t{label}, {type_}: {text[0:48]}"))
-                """
-                
-                if random.random()<0.9:
-                    training_sample = True
-                else:
-                    training_sample = False
-                
-                data.append({"document-hash":dhash, "label":label, "text":item["text"], "training-sample": training_sample})
-
         for item in data:
             num_lines += 1
             fw.write(json.dumps(item)+"\n")
@@ -379,7 +417,7 @@ def refine_data(data_file):
     
 def train_semantic(mode, idir, odir, autotune=True, duration=360, modelsize="1M"):
     
-    #sdir = os.path.join(idir, "documents")
+    tdir = os.path.join(odir, "documents")
 
     data_file = os.path.join(odir, "nlp-train-semantic.data.jsonl")
     #annot_file = os.path.join(odir, "nlp-train-semantic.annot.jsonl")
@@ -387,21 +425,14 @@ def train_semantic(mode, idir, odir, autotune=True, duration=360, modelsize="1M"
     fst_model_file = os.path.join(odir, "fst_semantic")
     fst_metrics_file = os.path.join(odir, "fst_semantic.metrics.txt")
 
-    """
     if mode=="all" or mode=="retrieve":
         
-        tdir = retrieve_data_pubmed(sdir)
+        retrieve_data_pubmed(tdir)
         json_files = sorted(glob.glob(os.path.join(tdir, "*.json")))
-                
-        tdir = retrieve_data(sdir, "acl")
-        json_files += sorted(glob.glob(os.path.join(tdir, "*.json")))
 
-        tdir = retrieve_data(sdir, "arxiv")
+        retrieve_data_arxiv(tdir)
         json_files += sorted(glob.glob(os.path.join(tdir, "*.json")))        
         
-        print(f"results saved in {sdir}: ", len(json_files))
-    """
-    
     if mode=="all" or mode=="prepare":
 
         json_files = sorted(glob.glob(os.path.join(idir, "*.json")))
@@ -421,7 +452,7 @@ def train_semantic(mode, idir, odir, autotune=True, duration=360, modelsize="1M"
     if mode=="all" or mode=="train":
 
         #train_fst(annot_file, fst_model_file, fst_metrics_file, autotune=True, duration=300, modelsize="100M")
-        train_fst(data_file, fst_model_file, fst_metrics_file, autotune=True, duration=3600, modelsize="100M")    
+        train_fst(data_file, fst_model_file, fst_metrics_file, autotune=True, duration=600, modelsize="100M")    
 
     if mode=="all" or mode=="eval":
         
