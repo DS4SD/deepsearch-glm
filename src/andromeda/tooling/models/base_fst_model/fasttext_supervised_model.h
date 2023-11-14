@@ -790,10 +790,10 @@ namespace andromeda
 
     if(preprocess(subj, text) and classify(text, label, conf))
       {
-	std::string key = get_key();	
+	//std::string key = get_key();	
 
-	subj.properties.emplace_back(key, label, conf);
-	subj.applied_models.insert(key);
+	subj.properties.emplace_back(subj.get_hash(), TEXT, "#", get_name(), label, conf);
+	subj.applied_models.insert(get_key());
       }
     
     return update_applied_models(subj);    
@@ -813,13 +813,10 @@ namespace andromeda
 
     if(preprocess(subj, text) and classify(text, label, conf))
       {
-	std::string key = get_key();	
+	//std::string key = get_key();	
 
-	subj.properties.emplace_back(key, label, conf);
-	subj.applied_models.insert(key);
-
-	//LOG_S(INFO) << "text: " << text;
-	//LOG_S(INFO) << key << " (" << label << "): " << conf;
+	subj.properties.emplace_back(subj.get_hash(), TABLE, "#", get_name(), label, conf);
+	subj.applied_models.insert(get_key());
       }
     
     return update_applied_models(subj);    

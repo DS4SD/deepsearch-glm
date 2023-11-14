@@ -6,18 +6,14 @@
 namespace andromeda
 {
   enum subject_name { UNDEF,
-		      //TEXT,
 		      PROMPT,
-		      //PARAGRAPH, TABLE, FIGURE,
 		      TEXT, TABLE, FIGURE,
 		      DOCUMENT};
 
   const static std::vector<subject_name> SUBJECT_NAMES =
     {
      UNDEF,
-     //TEXT,
      PROMPT,
-     //PARAGRAPH, TABLE, FIGURE,
      TEXT, TABLE, FIGURE,
      DOCUMENT
     }; 
@@ -30,7 +26,6 @@ namespace andromeda
 	
       case PROMPT: return "PROMPT";
 	
-	//case PARAGRAPH: return "PARAGRAPH";
       case TEXT: return "TEXT";
       case TABLE: return "TABLE";
       case FIGURE: return "FIGURE";

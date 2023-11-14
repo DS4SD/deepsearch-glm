@@ -79,13 +79,13 @@ namespace andromeda
 
     hash_type get_hash() const { return hash; }
     
-    range_type get_rng() { return rng; };
-    index_type get_rng(index_type l) { return rng[l]; };
+    range_type get_rng() const { return rng; };
+    index_type get_rng(index_type l) const { return rng[l]; };
 
     std::string get_word() const { return word; }
-    std::string get_orig(const std::string& text) { return text.substr(rng[0], rng[1]-rng[0]); }
+    std::string get_orig(const std::string& text) const { return text.substr(rng[0], rng[1]-rng[0]); }
 
-    std::string get_pos() { return pos; } // part-of-speech
+    std::string get_pos() const { return pos; } // part-of-speech
     std::set<std::string> get_tags() const { return tags; } // tags
 
     void set_word(std::string word);    
@@ -93,7 +93,7 @@ namespace andromeda
     void set_tag(std::string tag);
     void set_known(bool known);
 
-    bool has_tag(std::string tag);
+    bool has_tag(std::string tag) const;
     bool is_known();
       
     word_token get_word_token();
@@ -252,7 +252,7 @@ namespace andromeda
     this->tags.insert(tag);
   }
 
-  bool word_token::has_tag(std::string tag)
+  bool word_token::has_tag(std::string tag) const
   {
     return ((this->tags.count(tag))>0);
   }

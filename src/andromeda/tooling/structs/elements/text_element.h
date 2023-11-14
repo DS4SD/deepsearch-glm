@@ -24,6 +24,9 @@ namespace andromeda
     text_element();
 
     bool is_valid();
+
+    std::size_t get_len() const { return len; } // number-of-chars
+    std::size_t get_dst() const { return dst; } // number-of-utf8-tokens
     
     void clear();
 

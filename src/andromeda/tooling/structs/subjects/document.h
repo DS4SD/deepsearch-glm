@@ -174,9 +174,9 @@ namespace andromeda
       auto& desc = result.at("description");
       for(auto& prop:properties)
         {
-          if(prop.get_type()=="language")
+          if(prop.is_type("language"))
             {
-              std::vector<std::string> langs = {prop.get_name()};
+              std::vector<std::string> langs = { prop.get_label() };
               desc["languages"] = langs;
             }
         }
@@ -453,15 +453,19 @@ namespace andromeda
 
   bool subject<DOCUMENT>::finalise_properties()
   {
-    std::map<std::string, val_type>                         property_total;
-    std::map<std::pair<std::string, std::string>, val_type> property_label_mapping;
+    /*
+    std::map<model_name, val_type>                         property_total;
+    std::map<std::pair<model_name, std::string>, val_type> property_label_mapping;
 
     for(auto& text:texts)
       {
         for(auto& prop:text->properties)
           {
-            std::string mdl = prop.get_type();
-            std::string lbl = prop.get_name();
+	    properties.push_back(prop);
+	    
+            //std::string mdl = prop.get_type();
+	    model_name mdl = prop.get_model();
+            std::string lbl = prop.get_label();
 
             val_type conf = prop.get_conf();
             val_type dst = text->dst;
@@ -475,7 +479,7 @@ namespace andromeda
                 property_total[mdl] = dst;
               }
 
-            std::pair<std::string, std::string> key={mdl,lbl};
+            std::pair<model_name, std::string> key={mdl,lbl};
             if(property_label_mapping.count(key)==1)
               {
                 property_label_mapping[key] += dst*conf;
@@ -490,10 +494,11 @@ namespace andromeda
     properties.clear();
     for(auto itr=property_label_mapping.begin(); itr!=property_label_mapping.end(); itr++)
       {
-        std::string mdl = (itr->first).first;
+        model_name mdl = (itr->first).first;
         itr->second /= (property_total.at(mdl));
 
-        base_property prop((itr->first).first, (itr->first).second, itr->second);
+        base_property prop(this->get_hash(), TEXT, "#/texts",
+			   (itr->first).first, (itr->first).second, itr->second);
         properties.push_back(prop);
       }
 
@@ -521,7 +526,8 @@ namespace andromeda
             itr++;
           }
       }
-
+    */
+     
     return true;
   }
 

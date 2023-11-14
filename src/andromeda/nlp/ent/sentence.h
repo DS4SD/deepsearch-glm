@@ -67,15 +67,15 @@ namespace andromeda
     
     for(auto& ent:subj.instances)
       {
-	if(dependencies.count(ent.model_type)==1)
+	if(dependencies.count(ent.get_model())==1)
 	  {
-	    if(ent.model_type==NAME or
-	       ent.model_type==EXPRESSION or
-	       ent.model_type==QUOTE)
+	    if(ent.is_model(NAME) or
+	       ent.is_model(EXPRESSION) or
+	       ent.is_model(QUOTE))
 	      {
-		for(std::size_t i=ent.char_range[0]; i<ent.char_range[1]; i++)
+		for(std::size_t i=ent.get_char_range(0); i<ent.get_char_range(1); i++)
 		  {
-		    if(i==ent.char_range[0])
+		    if(i==ent.get_char_range(0))
 		      {
 			text[i]='A';
 		      }
@@ -87,7 +87,7 @@ namespace andromeda
 	      }
 	    else
 	      {
-		utils::mask(text, ent.char_range);
+		utils::mask(text, ent.get_char_range());
 	      }
 	  }
       }

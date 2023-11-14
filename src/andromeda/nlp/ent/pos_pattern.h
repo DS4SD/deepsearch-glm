@@ -67,45 +67,19 @@ namespace andromeda
   {
     for(auto& ent_i:subj.instances)
       {
-        if((ent_i.model_type==PARENTHESIS and ent_i.model_subtype=="reference") or
-           (ent_i.model_type==LINK))
+        if((ent_i.is_model(PARENTHESIS) and ent_i.is_subtype("reference")) or
+           (ent_i.is_model(LINK)))
           {
-            ranges_01.push_back(ent_i.char_range);
+            ranges_01.push_back(ent_i.get_char_range());
           }
-        else if(ent_i.model_type==NAME or
-                ent_i.model_type==NUMVAL)
+        else if(ent_i.is_model(NAME) or
+                ent_i.is_model(NUMVAL))
           {
-            ranges_02.push_back(ent_i.char_range);
-          }
-      }
-  }
-
-  /*
-  void base_pos_pattern::get_chunks(subject<TEXT>& subj,
-				    std::vector<pcre2_expr>& exprs,
-                                    std::vector<pcre2_item>& chunks)
-  {
-    chunks.clear();
-
-    std::stringstream ss;
-    for(std::size_t l=0; l<subj.word_tokens.size(); l++)
-      {
-        ss << subj.word_tokens.at(l).get_pos() << R"({)" << l << R"(})";
-      }
-
-    std::string encoding = ss.str();
-    for(auto& expr:exprs)
-      {
-        expr.find_all(encoding, chunks);
-
-        for(auto& chunk:chunks)
-          {
-            utils::mask(encoding, chunk.rng);
+            ranges_02.push_back(ent_i.get_char_range());
           }
       }
   }
-  */
-  
+
   void base_pos_pattern::get_chunks(text_element& subj,
 				    std::vector<pcre2_expr>& exprs,
                                     std::vector<pcre2_item>& chunks)

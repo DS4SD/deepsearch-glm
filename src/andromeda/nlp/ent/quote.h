@@ -87,9 +87,9 @@ namespace andromeda
     std::string text = subj.text;
     for(auto& inst:subj.instances)
       {
-	if(dependencies.count(inst.model_type)==1)
+	if(dependencies.count(inst.get_model())==1)
 	  {
-	    utils::mask(text, inst.char_range);
+	    utils::mask(text, inst.get_char_range());
 	  }
       }
     

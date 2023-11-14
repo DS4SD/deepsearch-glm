@@ -393,16 +393,16 @@ namespace andromeda
       
 	      for(auto itr=subj.insts_beg({i,j}); itr!=subj.insts_end({i,j}); itr++)
 		{
-		  assert(i==(itr->coor)[0]);
-		  assert(j==(itr->coor)[1]);
+		  assert(i==itr->get_coor(0));
+		  assert(j==itr->get_coor(1));
 		  
 		  const base_instance& inst = *itr;
 		  //LOG_S(INFO) << "inst: " << inst.to_json().dump();
 		  
-		  auto rng = inst.wtok_range;
+		  auto rng = inst.get_wtok_range();
 
-		  if(inst.model_type==andromeda::TERM and
-		     inst.model_subtype=="single-term")
+		  if(inst.is_model(TERM) and
+		     inst.is_subtype("single-term"))
 		    {
 		      std::vector<hash_type> term_hashes={};
 		      for(std::size_t i=rng[0]; i<rng[1]; i++)
@@ -503,23 +503,23 @@ namespace andromeda
     {
       for(auto& inst:instances)
         {
-          auto rng = inst.wtok_range;
+          auto rng = inst.get_wtok_range();
 
-          std::string subtype = inst.model_subtype;
+          std::string subtype = inst.get_subtype();
 
-          if(inst.model_type==andromeda::NUMVAL and (rng[1]-rng[0])==1)
+          if(inst.is_model(NUMVAL) and (rng[1]-rng[0])==1)
             {
               tokens.at(rng[0]).set_word("__"+subtype+"__");
             }
-          else if(inst.model_type==andromeda::LINK and (rng[1]-rng[0])==1)
+          else if(inst.is_model(LINK) and (rng[1]-rng[0])==1)
             {
               tokens.at(rng[0]).set_word("__"+subtype+"__");
             }
-          else if(inst.model_type==andromeda::CITE and (rng[1]-rng[0])==1)
+          else if(inst.is_model(CITE) and (rng[1]-rng[0])==1)
             {
               tokens.at(rng[0]).set_word("__"+subtype+"__");
             }
-          else if(inst.model_type==andromeda::PARENTHESIS)
+          else if(inst.is_model(PARENTHESIS))
             {
               /*
                 auto rng = inst.word_range;
@@ -571,9 +571,10 @@ namespace andromeda
 	{
 	  for(auto& inst:instances)
 	    {
-	      if(inst.model_type==andromeda::SENTENCE)
+	      if(inst.is_model(SENTENCE))
 		{
-		  auto rng = inst.wtok_range;
+		  auto rng = inst.get_wtok_range();
+
 		  sent_beg.insert(rng[0]);
 		  sent_beg.insert(rng[1]);
 		}
@@ -638,9 +639,9 @@ namespace andromeda
       std::set<range_type> sent_rngs={};
       for(auto& inst:instances)
         {
-          if(inst.model_type==andromeda::SENTENCE)
+          if(inst.is_model(SENTENCE))
             {
-              auto rng = inst.wtok_range;
+              auto rng = inst.get_wtok_range();
               sent_rngs.insert(rng);
             }
         }
@@ -725,12 +726,12 @@ namespace andromeda
     {
       for(auto& inst:instances)
         {
-          if(inst.model_type==andromeda::TERM)
+          if(inst.is_model(TERM))
             {
               nodes.get(beg_term_hash).incr_word_cnt();// += 1;
               nodes.get(end_term_hash).incr_word_cnt();// += 1;
 
-              auto rng = inst.wtok_range;
+              auto rng = inst.get_wtok_range();
 
               edges.insert(edge_names::to_label, tok_hashes.at(rng[0]  ), beg_term_hash, false);
               edges.insert(edge_names::to_label, tok_hashes.at(rng[1]-1), end_term_hash, false);
@@ -741,12 +742,12 @@ namespace andromeda
               edges.insert(edge_names::tax_up, end_term_hash, tok_hashes.at(rng[1]-1), false);
             }
 
-          if(inst.model_type==andromeda::SENTENCE)
+          if(inst.is_model(SENTENCE))
             {
               nodes.get(beg_sent_hash).incr_word_cnt();// += 1;
               nodes.get(end_sent_hash).incr_word_cnt();// += 1;
 
-              auto rng = inst.wtok_range;
+              auto rng = inst.get_wtok_range();
 
               edges.insert(edge_names::to_label, tok_hashes.at(rng[0]  ), beg_sent_hash, false);
               edges.insert(edge_names::to_label, tok_hashes.at(rng[1]-1), end_sent_hash, false);
@@ -779,15 +780,15 @@ namespace andromeda
     {
       for(auto& inst:instances)
         {
-          if(inst.model_type==andromeda::EXPRESSION and
-             (inst.model_subtype=="name-concatenation" or
-              inst.model_subtype=="word-concatenation" or
-              inst.model_subtype=="latex-concatenation") and
-             inst.name.find("-")!=std::string::npos and
-             inst.name.find(" ")==std::string::npos and
-             (inst.wtok_range[1]-inst.wtok_range[0])==1)
+          if(inst.is_model(EXPRESSION) and
+             (inst.is_subtype("name-concatenation") or
+              inst.is_subtype("word-concatenation") or
+              inst.is_subtype("latex-concatenation")) and
+             inst.get_name().find("-")!=std::string::npos and
+             inst.get_name().find(" ")==std::string::npos and
+             (inst.get_wtok_range(1)-inst.get_wtok_range(0))==1)
             {
-              auto rng = inst.wtok_range;
+              auto rng = inst.get_wtok_range();
 
               hash_type hash = tok_hashes.at(rng[0]);
               auto& node = nodes.get(hash);
@@ -808,7 +809,7 @@ namespace andromeda
                   base_node path(node_names::CONT, cont_hashes);
                   nodes.insert(path, false);
 
-                  rng_to_hash.emplace(inst.wtok_range, path.get_hash());
+                  rng_to_hash.emplace(inst.get_wtok_range(), path.get_hash());
 
                   for(std::size_t i=0; i<cont_hashes.size()-1; i++)
                     {
@@ -839,9 +840,9 @@ namespace andromeda
     {
       for(auto& inst:instances)
         {
-          if(inst.model_type==andromeda::CONN)
+          if(inst.is_model(CONN))
             {
-              auto rng = inst.wtok_range;
+              auto rng = inst.get_wtok_range();
 
               std::vector<hash_type> hashes={};
               for(std::size_t i=rng[0]; i<rng[1]; i++)
@@ -852,7 +853,7 @@ namespace andromeda
               base_node path(node_names::CONN, hashes);
               nodes.insert(path, false);
 
-              rng_to_conn.emplace(inst.wtok_range, path.get_hash());
+              rng_to_conn.emplace(inst.get_wtok_range(), path.get_hash());
             }
         }
     }
@@ -868,10 +869,10 @@ namespace andromeda
     {
       for(auto& inst:instances)
         {
-          if(inst.model_type==andromeda::TERM and
-             inst.model_subtype=="single-term")
+          if(inst.is_model(TERM) and
+             inst.is_subtype("single-term"))
             {
-              auto rng = inst.wtok_range;
+              auto rng = inst.get_wtok_range();
 
               std::vector<hash_type> term_hashes={};
               for(std::size_t i=rng[0]; i<rng[1]; i++)
@@ -900,7 +901,7 @@ namespace andromeda
               base_node term_i(node_names::TERM, term_hashes);
               nodes.insert(term_i, false);
 
-              rng_to_term.emplace(inst.wtok_range, term_i.get_hash());
+              rng_to_term.emplace(inst.get_wtok_range(), term_i.get_hash());
 
 	      if(term_hashes.size()==1)
 		{
@@ -976,9 +977,9 @@ namespace andromeda
     {
       for(auto& inst:instances)
         {
-          if(inst.model_type==andromeda::VERB)
+          if(inst.is_model(VERB))
             {
-              auto rng = inst.wtok_range;
+              auto rng = inst.get_wtok_range();
 
               std::vector<hash_type> verb_hashes={};
               std::vector<std::string> pos={};
@@ -994,7 +995,7 @@ namespace andromeda
                   base_node path(node_names::VERB, verb_hashes);
                   nodes.insert(path, false);
 
-                  rng_to_verb.emplace(inst.wtok_range, path.get_hash());
+                  rng_to_verb.emplace(inst.get_wtok_range(), path.get_hash());
 
                   for(std::size_t i=0; i<verb_hashes.size(); i++)
                     {
@@ -1218,11 +1219,11 @@ namespace andromeda
 
       for(auto& inst:instances)
         {
-          if(inst.model_type==andromeda::SENTENCE)
+          if(inst.is_model(SENTENCE))
             {
               std::vector<hash_type> path_hashes={};
 
-              auto rng = inst.wtok_range;
+              auto rng = inst.get_wtok_range();
               for(index_type l=rng[0]; l<rng[1]; l++)
                 {
                   if(path_hashes.size()==0)

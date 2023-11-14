@@ -127,14 +127,14 @@ namespace andromeda
     flvr(to_flvr(name)),    
     conf(conf),
 
-    hash_i(inst_i.ehash),
+    hash_i(inst_i.get_ehash()),
     //ihash_i(inst_i.ihash),
 
-    hash_j(inst_j.ehash),
+    hash_j(inst_j.get_ehash()),
     //ihash_j(inst_j.ihash),
 
-    name_i(inst_i.name),
-    name_j(inst_j.name)
+    name_i(inst_i.get_name()),
+    name_j(inst_j.get_name())
   {}
   
   nlohmann::json base_relation::to_json_row()

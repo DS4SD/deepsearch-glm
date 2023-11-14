@@ -94,9 +94,7 @@ namespace andromeda
       {
         return false;
       }
-
-    //LOG_S(INFO) << "apply " << get_key() << " on document: " << subj.doc_name;
-
+    
     for(auto& text_ptr:subj.texts)
       {
         this->apply(*text_ptr);

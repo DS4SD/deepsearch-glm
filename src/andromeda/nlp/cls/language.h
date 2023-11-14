@@ -117,6 +117,7 @@ namespace andromeda
     return classified;        
   }
   
+  /*
   bool nlp_model<CLS, LANGUAGE>::apply(subject<DOCUMENT>& subj)
   {
     if(not satisfies_dependencies(subj))
@@ -141,10 +142,12 @@ namespace andromeda
       {
 	this->apply(*para);
 
-	base_property prop("null", "null", 0.0);
+	base_property prop(para->get_hash(), TEXT, para->get_sref(),
+			   "null", "null", 0.0);
+	
 	if(get(*para, prop))
 	  {
-	    std::string key = prop.get_name();
+	    std::string key = prop.get_label();
 	    std::size_t dst = para->dst;
 
 	    if(lang_mapping.count(key)==1)
@@ -160,19 +163,20 @@ namespace andromeda
 	  }
       }
 
-    base_property prop(this->get_key(), "null", 0.0);
+    base_property prop(subj.get_hash(), DOCUMENT, "#",
+		       this->get_key(), "null", 0.0);
     for(auto itr=lang_mapping.begin(); itr!=lang_mapping.end(); itr++)
       {
 	double confidence = std::round(1000*(itr->second)/(0.0+total))/1000.0;
 	
 	if(itr==lang_mapping.begin())
 	  {
-	    prop.set_name(itr->first);
+	    prop.set_label(itr->first);
 	    prop.set_conf(confidence);
 	  }
 	else if(prop.get_conf()<confidence)
 	  {
-	    prop.set_name(itr->first);
+	    prop.set_label(itr->first);
 	    prop.set_conf(confidence);	    
 	  }
 	else
@@ -182,6 +186,80 @@ namespace andromeda
     subj.properties.push_back(prop);
     
     return update_applied_models(subj);
+  }
+  */
+
+  bool nlp_model<CLS, LANGUAGE>::apply(subject<DOCUMENT>& subj)
+  {
+    if(not satisfies_dependencies(subj))
+      {
+	return false;
+      }
+    
+    std::string text="", label="null";
+    double conf=0.0;
+
+    std::map<std::string, std::size_t> lang_mapping;
+    std::size_t total=0;
+    
+    for(uint64_t ind=0; ind<subj.texts.size(); ind++)
+      {
+	auto& para = subj.texts.at(ind);
+	
+	if(not preprocess(*para, text))
+	  {
+	    continue; // skip
+	  }
+	
+	if(not classify(text, label, conf))
+	  {
+	    continue; // skip
+	  }
+
+	{
+	  if(lang_mapping.count(label)==1)
+	    {
+	      lang_mapping[label] += para->get_len();
+	      total += para->get_len();
+	    }
+	  else
+	    {
+	      lang_mapping[label] = para->get_len();
+	      total += para->get_len();
+	    }
+	}
+	
+	para->properties.emplace_back(para->get_hash(), TEXT, "#/texts/"+std::to_string(ind),
+				      get_name(), label, conf);
+	para->applied_models.insert(get_key());
+
+	subj.properties.emplace_back(para->get_hash(), TEXT, "#/texts/"+std::to_string(ind),
+				     get_name(), label, conf);
+	subj.applied_models.insert(get_key());	
+      }
+
+    base_property prop(subj.get_hash(), DOCUMENT, "#",
+		       get_name(), "null", 0.0);
+    for(auto itr=lang_mapping.begin(); itr!=lang_mapping.end(); itr++)
+      {
+	double confidence = std::round(1000*(itr->second)/(0.0+total))/1000.0;
+	
+	if(itr==lang_mapping.begin())
+	  {
+	    prop.set_label(itr->first);
+	    prop.set_conf(confidence);
+	  }
+	else if(prop.get_conf()<confidence)
+	  {
+	    prop.set_label(itr->first);
+	    prop.set_conf(confidence);	    
+	  }
+	else
+	  {}
+      }
+    subj.properties.push_back(prop);
+    
+    return update_applied_models(subj);    
   }
   
 }

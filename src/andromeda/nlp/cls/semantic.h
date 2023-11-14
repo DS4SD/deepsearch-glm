@@ -290,7 +290,8 @@ namespace andromeda
 
     if(known_headers.count(text))
       {
-	subj.properties.emplace_back(get_key(), "meta-data", 1.0);
+	subj.properties.emplace_back(subj.get_hash(), TEXT, "#",
+				     get_name(), "meta-data", 1.0);
 	return true;
       }
     else
@@ -361,10 +362,15 @@ namespace andromeda
 	    label = "text";
 	  }
 	
-	std::string key = get_key();	
+	//std::string key = get_key();	
 	    
-	para->properties.emplace_back(key, label, conf);
-	para->applied_models.insert(key);
+	para->properties.emplace_back(para->get_hash(), TEXT, "#/texts/"+std::to_string(ind),
+				      get_name(), label, conf);
+	para->applied_models.insert(get_key());
+
+	subj.properties.emplace_back(para->get_hash(), TEXT, "#/texts/"+std::to_string(ind),
+				     get_name(), label, conf);
+	subj.applied_models.insert(get_key());	
       }
     
     return update_applied_models(subj);

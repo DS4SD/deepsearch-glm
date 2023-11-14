@@ -39,8 +39,8 @@ namespace andromeda
 
     bool contract_word_tokens(subject<TEXT>& subj);
 
-    void pre_process(std::vector<word_token>& wtokens,
-		     range_type& rng,
+    void pre_process(const std::vector<word_token>& wtokens,
+		     const range_type rng,
                      std::vector<pos_token_type>& pos_tokens,
                      std::map<index_type, index_type>& ptid_to_wtid);
     
@@ -134,9 +134,9 @@ namespace andromeda
     for(auto& prop:subj.properties)
       {
         if(prop.get_type()==to_key(LANGUAGE) and
-           pos_models.count(prop.get_name())==1)
+           pos_models.count(prop.get_label())==1)
           {
-            lang = prop.get_name();
+            lang = prop.get_label();
             dyn_dependency=true;
           }
       }
@@ -177,12 +177,12 @@ namespace andromeda
     // iterate over the sentences ...
     for(auto& inst:instances)
       {
-        if(inst.model_type!=SENTENCE)
+        if(inst.is_model(SENTENCE))
           {
             continue;
           }
 
-        pre_process(wtokens, inst.wtok_range, pos_tokens, ptid_to_wtid);
+        pre_process(wtokens, inst.get_wtok_range(), pos_tokens, ptid_to_wtid);
 
         pos_model->predict(pos_tokens);
 
@@ -235,8 +235,8 @@ namespace andromeda
   }
 
 
-  void nlp_model<POS, LAPOS>::pre_process(std::vector<word_token>& wtokens,
-					  range_type& rng,
+  void nlp_model<POS, LAPOS>::pre_process(const std::vector<word_token>& wtokens,
+					  const range_type rng,
                                           std::vector<pos_token_type>& pos_tokens,
                                           std::map<index_type, index_type>& ptid_to_wtid)  
   {

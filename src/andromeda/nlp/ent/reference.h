@@ -106,7 +106,7 @@ namespace andromeda
     for(auto& cls:subj.properties)
       {
 	if((cls.get_type()==to_key(SEMANTIC)) and
-	   (cls.get_name()=="reference"))
+	   (cls.is_label("reference")))
 	  {
 	    is_ref = true;
 	  }
@@ -273,7 +273,7 @@ namespace andromeda
       auto itr=subj.instances.begin();
       while(itr!=subj.instances.end())
 	{
-	  if(itr->model_type!=REFERENCE)
+	  if(not (itr->is_model(REFERENCE)))
 	    {
 	      itr = subj.instances.erase(itr);
 	    }

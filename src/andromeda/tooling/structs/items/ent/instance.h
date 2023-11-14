@@ -119,8 +119,36 @@ namespace andromeda
     std::size_t ctoken_len() { return (ctok_range[1]-ctok_range[0]);}
     std::size_t wtoken_len() { return (wtok_range[1]-wtok_range[0]);}
 
-    std::string get_name() const;
+    hash_type get_ehash() const { return ehash; } // entity-hash
+    hash_type get_ihash() const { return ihash; }  // instance-hash: combination of subj-hash, ent-hash and position
+    
+    std::string get_name() const { return name; }
+    std::string get_orig() const { return orig; }
 
+    model_name get_model() const { return model_type; }
+    
+    std::string get_type() const { return to_string(model_type); }
+    std::string get_subtype() const { return model_subtype; }
+    
+    bool is_in(subject_name sn) const { return (sn==subj_name);}
+    bool is_model(model_name mt) const { return (mt==model_type);}
+    bool is_subtype(std::string st) const { return (st==model_subtype);}
+
+    range_type get_char_range() const { return char_range; }
+    index_type get_char_range(index_type i) const { return char_range.at(i); }
+
+    range_type get_ctok_range() const { return ctok_range; }
+    index_type get_ctok_range(index_type i) const { return ctok_range.at(i); }
+
+    range_type get_wtok_range() const { return wtok_range; }
+    index_type get_wtok_range(index_type i) const { return wtok_range.at(i); }    
+
+    range_type get_coor() const { return coor; }
+    index_type get_coor(index_type i) const { return coor.at(i); }
+    
+    void set_ctok_range(range_type cr) { ctok_range = cr; }
+    void set_wtok_range(range_type wr) { wtok_range = wr; }
+    
     std::string get_reference() const;
 
     nlohmann::json to_json() const;
@@ -143,7 +171,7 @@ namespace andromeda
 
     void initialise_hashes();
 
-  public:
+  protected:
 
     hash_type subj_hash; // hash of the subject from which the entity comes
 
@@ -517,11 +545,13 @@ namespace andromeda
     return SHORT_TABLE_HEADERS;
   }
 
+  /*
   std::string base_instance::get_name() const
   {
     return name;
   }
-
+  */
+  
   std::string base_instance::get_reference() const
   {
     std::string ref = subj_path;

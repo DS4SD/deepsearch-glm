@@ -223,13 +223,14 @@ namespace andromeda
     return std::upper_bound(instances.begin(), instances.end(), fake);
   }
 
-  bool subject<TEXT>::get_property_label(const std::string name, std::string& label)
+  bool subject<TEXT>::get_property_label(const std::string model_name, std::string& label)
   {
     for(auto& prop:properties)
       {
-        if(name==prop.get_type())
+        //if(name==prop.get_type())
+	if(prop.is_type(model_name))
           {
-            label = prop.get_name();
+            label = prop.get_label();
             return true;
           }
       }
@@ -248,25 +249,25 @@ namespace andromeda
 
     for(auto& inst:instances)
       {
-        inst.ctok_range = text_element::get_char_token_range(inst.char_range);
-        inst.wtok_range = text_element::get_word_token_range(inst.char_range);
+        inst.set_ctok_range(text_element::get_char_token_range(inst.get_char_range()));
+        inst.set_wtok_range(text_element::get_word_token_range(inst.get_char_range()));
 
         inst.verify_wtok_range_match(word_tokens);
       }
   }
 
-  void subject<TEXT>::contract_wtokens_from_instances(model_name name)
+  void subject<TEXT>::contract_wtokens_from_instances(model_name model)
   {
     std::vector<candidate_type> candidates={};
 
     for(auto& inst:instances)
       {
-        if(inst.model_type==name and
-           inst.wtok_range[0]<inst.wtok_range[1])
+        if(inst.is_model(model) and
+           inst.get_wtok_range(0)<inst.get_wtok_range(1))
           {
-            candidates.emplace_back(inst.wtok_range[0],
-                                    inst.wtok_range[1],
-                                    inst.name);
+            candidates.emplace_back(inst.get_wtok_range(0),
+                                    inst.get_wtok_range(1),
+                                    inst.get_name());
           }
       }
 
@@ -274,10 +275,10 @@ namespace andromeda
 
     for(auto& inst:instances)
       {
-        if(inst.model_type==name and
-           inst.wtok_range[0]<inst.wtok_range[1])
+        if(inst.is_model(model) and
+           inst.get_wtok_range(0)<inst.get_wtok_range(1))
           {
-            word_tokens.at(inst.wtok_range[0]).set_tag(inst.model_subtype);
+            word_tokens.at(inst.get_wtok_range(0)).set_tag(inst.get_subtype());
           }
       }
   }
@@ -288,12 +289,12 @@ namespace andromeda
 
     for(auto& inst:instances)
       {
-        if(inst.model_type==name and
-           inst.model_subtype==subtype)
+        if(inst.is_model(name) and
+           inst.is_subtype(subtype))
           {
-            candidates.emplace_back(inst.wtok_range[0],
-                                    inst.wtok_range[1],
-                                    inst.name);
+            candidates.emplace_back(inst.get_wtok_range(0),
+                                    inst.get_wtok_range(1),
+                                    inst.get_name());
           }
       }
 
@@ -301,10 +302,10 @@ namespace andromeda
 
     for(auto& inst:instances)
       {
-        if(inst.model_type==name and
-           inst.model_subtype==subtype)
+        if(inst.is_model(name) and
+           inst.is_subtype(subtype))
           {
-            word_tokens.at(inst.wtok_range[0]).set_tag(inst.model_subtype);
+            word_tokens.at(inst.get_wtok_range(0)).set_tag(inst.get_subtype());
           }
       }
   }

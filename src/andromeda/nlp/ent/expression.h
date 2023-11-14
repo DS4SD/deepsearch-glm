@@ -359,13 +359,13 @@ namespace andromeda
 
     for(auto& ent:subj.instances)
       {
-        if(ent.model_type==EXPRESSION and ent.model_subtype=="common" and ent.wtoken_len()==1)
+        if(ent.is_model(EXPRESSION) and ent.is_subtype("common") and ent.wtoken_len()==1)
           {
-            subj.word_tokens.at(ent.wtok_range[0]).set_word(ent.name);
+            subj.word_tokens.at(ent.get_wtok_range(0)).set_word(ent.get_name());
           }
-        else if(ent.model_type==EXPRESSION and ent.model_subtype=="apostrophe" and ent.wtoken_len()==1)
+        else if(ent.is_model(EXPRESSION) and ent.is_subtype("apostrophe") and ent.wtoken_len()==1)
           {
-            subj.word_tokens.at(ent.wtok_range[0]).set_word(ent.name);
+            subj.word_tokens.at(ent.get_wtok_range(0)).set_word(ent.get_name());
           }
         else
           {}
@@ -660,13 +660,11 @@ namespace andromeda
 
     for(auto& ent:subj.instances)
       {
-        if(ent.model_type==CITE)
+        if(ent.is_model(CITE))
           {
-            utils::mask(text, ent.char_range);
+            utils::mask(text, ent.get_char_range());
           }
       }
-
-    //std::size_t max_id = subj.get_max_ent_hash();
 
     // find all latex expressions
     bool found_new = true;
@@ -716,9 +714,9 @@ namespace andromeda
     std::set<std::size_t> forbidden_inds={};
     for(auto& ent:subj.instances)
       {
-        if(ent.model_type==CITE)
+        if(ent.is_model(CITE))
           {
-            for(std::size_t ind=ent.wtok_range[0]; ind<ent.wtok_range[1]; ind++)
+            for(std::size_t ind=ent.get_wtok_range(0); ind<ent.get_wtok_range(1); ind++)
               {
                 forbidden_inds.insert(ind);
               }
@@ -850,13 +848,13 @@ namespace andromeda
       {
         auto& ent = *itr;
 
-        if(ent.model_type==EXPRESSION and ent.model_subtype=="common")
+        if(ent.is_model(EXPRESSION) and ent.is_subtype("common"))
           {
             itr++;
           }
-        else if(ent.model_type==EXPRESSION)
+        else if(ent.is_model(EXPRESSION))
           {
-            std::string orig = ent.orig;
+            std::string orig = ent.get_orig();
 
             int cnt_$       = utils::count(orig, '$');
             int diff_cnt_rb = utils::count_imbalance(orig, '(', ')');
@@ -864,7 +862,7 @@ namespace andromeda
             int diff_cnt_sb = utils::count_imbalance(orig, '[', ']');
 
             std::vector<pcre2_item> words;
-            std::string text = ent.orig;
+            std::string text = ent.get_orig();
 
             {
               while(true)
@@ -938,14 +936,14 @@ namespace andromeda
           {
             for(auto itr_j=insts.begin(); itr_j!=insts.end(); itr_j++)
               {
-                auto cr_i = itr_i->char_range;
-                auto cr_j = itr_j->char_range;
+                auto cr_i = itr_i->get_char_range();
+                auto cr_j = itr_j->get_char_range();
 
                 if(itr_i!=itr_j and
-                   itr_i->model_type==EXPRESSION and
-                   itr_j->model_type==EXPRESSION and
+                   itr_i->is_model(EXPRESSION) and
+                   itr_j->is_model(EXPRESSION) and
                    cr_i==cr_j and
-                   (itr_i->model_subtype)=="wtoken-concatenation")
+		   itr_i->is_subtype("wtoken-concatenation"))
                   {
                     //LOG_S(INFO) << "removing: " << itr_i->orig << "; " << itr_i->name;
 
@@ -953,8 +951,8 @@ namespace andromeda
                     erasing=true;
                   }
                 if(itr_i!=itr_j and
-                   itr_i->model_type==EXPRESSION and
-                   itr_j->model_type==EXPRESSION and
+                   itr_i->is_model(EXPRESSION) and
+                   itr_j->is_model(EXPRESSION) and
                    ((cr_j[0]<=cr_i[0] and cr_i[1]<cr_j[1]) or
                     (cr_j[0]<cr_i[0] and cr_i[1]<=cr_j[1]) ) )
                   {
@@ -963,8 +961,8 @@ namespace andromeda
                     itr_i = insts.erase(itr_i);
                     erasing=true;
                   }
-                else if(itr_i->model_type==EXPRESSION and
-                        (itr_j->model_type==NUMVAL or itr_j->model_type==NAME) and
+                else if(itr_i->is_model(EXPRESSION) and
+                        (itr_j->is_model(NUMVAL) or itr_j->is_model(NAME)) and
                         cr_i==cr_j)
                   {
                     //LOG_S(INFO) << "removing: " << itr_i->orig << "; " << itr_i->name;

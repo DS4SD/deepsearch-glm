@@ -50,7 +50,7 @@ namespace andromeda
     hash_to_name.clear();
     for(const auto& ent:instances)
       {
-        hash_to_name.insert({ent.ehash, ent.name});
+        hash_to_name.insert({ent.get_ehash(), ent.get_name()});
       }
   }
 
@@ -70,11 +70,11 @@ namespace andromeda
         ss << "\ninstances: " << instances.size() << "\n";
         return ss.str();
       }
-    else if(instances.at(0).subj_name==TEXT)
+    else if(instances.at(0).is_in(TEXT))
       {
         headers = base_instance::short_text_headers();
       }
-    else if(instances.at(0).subj_name==TABLE)
+    else if(instances.at(0).is_in(TABLE))
       {
         headers = base_instance::short_table_headers();
       }
@@ -112,12 +112,20 @@ namespace andromeda
     std::sort(instances.begin(), instances.end(),
               [](const base_instance& lhs, const base_instance& rhs)
               {
+		/*
                 if(lhs.char_range[0]==rhs.char_range[0])
                   {
                     return lhs.char_range[1]>rhs.char_range[1];
                   }
 
                 return lhs.char_range[0]<rhs.char_range[0];
+		*/
+		
+                if(lhs.get_char_range(0)==rhs.get_char_range(0))
+                  {
+                    return lhs.get_char_range(1)>rhs.get_char_range(1);
+                  }
+                return lhs.get_char_range(0)<rhs.get_char_range(0);
               });
 
     std::vector<std::string> header = base_instance::short_text_headers();
