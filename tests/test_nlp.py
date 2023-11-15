@@ -9,7 +9,7 @@ from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_mode
 
 from deepsearch_glm.nlp_train_semantic import train_semantic
 
-GENERATE=False
+GENERATE=True
 
 def round_floats(o):
     if isinstance(o, float): return round(o, 2)
