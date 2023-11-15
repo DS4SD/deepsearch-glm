@@ -6,6 +6,7 @@ import json
 from deepsearch_glm.nlp_utils import list_nlp_model_configs, init_nlp_model, \
     extract_references_from_doc
 from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
+from deepsearch_glm.utils.ds_utils import to_legacy_document_format
 
 from deepsearch_glm.nlp_train_semantic import train_semantic
 
@@ -276,6 +277,44 @@ def test_04C_references():
 
             assert res==data
 
+def test_05_to_legacy():
+
+    model = init_nlp_model("reference")
+    
+    source = "./tests/data/docs/doc_01.old.json"
+
+    target_leg = "./tests/data/docs/doc_01.leg.json"    
+    target_nlp = "./tests/data/docs/doc_01.nlp.json"    
+
+    print(f"reading {source} ... ", end="")
+    with open(source, "r") as fr:
+        doc_i = json.load(fr)
+        
+    if GENERATE:
+        doc_j = model.apply_on_doc(doc_i)
+
+        with open(target_nlp, "w") as fw:
+            fw.write(json.dumps(doc_j, indent=2))
+
+        doc_i = to_legacy_document_format(doc_j, doc_i)
+
+        with open(target_leg, "w") as fw:
+            fw.write(json.dumps(doc_i, indent=2))
+    else:
+        with open(target_nlp, "r") as fr:
+            doc_nlp = json.load(fr)
+
+        with open(target_leg, "r") as fr:
+            doc_leg = json.load(fr)                        
+
+        doc_j = model.apply_on_doc(doc_i)
+
+        assert doc_j==doc_nlp
+
+        doc_i = to_legacy_document_format(doc_j, doc_i)        
+        
+        assert doc_i==doc_leg
+    
 """
 def test_05A_train_semantic():
 
