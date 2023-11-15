@@ -93,7 +93,6 @@ namespace andromeda
   
   std::vector<std::string> base_property::to_row()
   {
-    //std::vector<std::string> row = { type, name, std::to_string(conf) };
     std::vector<std::string> row = { to_key(model),
 				     std::to_string(subj_hash), to_string(subj_name), subj_path,
 				     label, std::to_string(utils::round_conf(conf)) };

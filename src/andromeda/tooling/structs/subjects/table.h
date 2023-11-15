@@ -24,7 +24,7 @@ namespace andromeda
 
     void clear();
 
-    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
+    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_item_ref()):"#"); }
     bool is_valid() { return (base_subject::valid); }
 
     virtual nlohmann::json to_json(const std::set<std::string>& filters);
@@ -62,8 +62,13 @@ namespace andromeda
 
     void set_hash();
 
+    bool is_legacy(const nlohmann::json& grid);
+    
   public:
 
+    sval_type conf;
+    std::string created_by;
+    
     std::vector<std::shared_ptr<prov_element> > provs;
 
     std::vector<std::shared_ptr<subject<TEXT> > > captions;
@@ -77,6 +82,9 @@ namespace andromeda
   subject<TABLE>::subject():
     base_subject(TABLE),
 
+    conf(0.0),
+    created_by("unknown"),
+    
     provs({}),
 
     captions({}),
@@ -92,6 +100,9 @@ namespace andromeda
   subject<TABLE>::subject(uint64_t dhash, std::string dloc):
     base_subject(dhash, dloc, TABLE),
 
+    conf(0.0),
+    created_by("unknown"),
+    
     provs({}),
 
     captions({}),
@@ -108,6 +119,9 @@ namespace andromeda
                           std::shared_ptr<prov_element> prov):
     base_subject(dhash, dloc, TABLE),
 
+    conf(0.0),
+    created_by("unknown"),
+    
     provs({prov}),
 
     captions({}),
@@ -142,7 +156,14 @@ namespace andromeda
   nlohmann::json subject<TABLE>::to_json(const std::set<std::string>& filters)
   {
     nlohmann::json result = base_subject::_to_json(filters, provs);
+
+    {
+      result[base_subject::type_lbl] = "table";
       
+      result[base_subject::confidence_lbl] = utils::round_conf(conf);
+      result[base_subject::created_by_lbl] = created_by;      	  
+    }
+    
     {
       result["#-rows"] = nrows;
       result["#-cols"] = ncols;
@@ -161,9 +182,10 @@ namespace andromeda
           json_table.push_back(row);
         }
 
+
       result[base_subject::table_data_lbl] = json_table;
     }
-
+    
     if(filters.size()==0 or filters.count(base_subject::captions_lbl))
       {
         base_subject::to_json(result, base_subject::captions_lbl, captions, filters);
@@ -184,6 +206,11 @@ namespace andromeda
 
   bool subject<TABLE>::from_json(const nlohmann::json& json_table)
   {
+    {
+      conf = json_table.value(base_subject::confidence_lbl, conf);
+      created_by = json_table.value(base_subject::created_by_lbl, created_by);
+    }
+    
     {
       nlohmann::json grid = json_table.at("data");
       
@@ -220,7 +247,12 @@ namespace andromeda
     base_subject::clear_models();
     data.clear();
 
-    if(item.count("data"))
+    {
+      conf = item.value(base_subject::confidence_lbl, conf);
+      created_by = item.value(base_subject::created_by_lbl, created_by);
+    }
+    
+    if(item.count("data") and is_legacy(item.at("data")))
       {
         nlohmann::json grid = item.at("data");
 
@@ -249,10 +281,10 @@ namespace andromeda
                         uint64_t sj = span[1].get<uint64_t>();
 
                         row_span[0] = std::min(row_span[0], si);
-                        row_span[1] = std::max(row_span[1], si);
+                        row_span[1] = std::max(row_span[1], si+1);
 
                         col_span[0] = std::min(col_span[0], sj);
-                        col_span[1] = std::max(col_span[1], sj);
+                        col_span[1] = std::max(col_span[1], sj+1);
                       }
                   }
 
@@ -260,7 +292,25 @@ namespace andromeda
               }
           }
       }
-
+    else if(item.count("data"))
+      {
+	nlohmann::json grid = item.at("data");
+	
+	for(ind_type i=0; i<grid.size(); i++)
+	  {
+	    data.push_back({});
+	    for(ind_type j=0; j<grid.at(i).size(); j++)
+	      {
+		table_element cell(grid.at(i).at(j));
+		data.back().push_back(cell);
+	      }
+	  }
+      }
+    else
+      {
+	LOG_S(WARNING) << "table without `data`: " << item.dump(2);
+      }
+    
     if(data.size()>0)
       {
         nrows = data.size();
@@ -282,6 +332,24 @@ namespace andromeda
     return base_subject::valid;
   }
 
+  bool subject<TABLE>::is_legacy(const nlohmann::json& grid)
+  {
+    bool legacy=false;
+    for(ind_type i=0; i<grid.size(); i++)
+      {
+	for(ind_type j=0; j<grid.at(i).size(); j++)
+	  {
+	    if(grid.at(i).at(j).count("row")==0 or
+	       grid.at(i).at(j).count("col")==0)
+	      {
+		legacy = true;
+	      }
+	  }
+      }
+
+    return true;
+  }
+  
   void subject<TABLE>::set_hash()
   {
     std::vector<uint64_t> hashes={dhash};

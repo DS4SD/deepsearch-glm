@@ -213,7 +213,7 @@ namespace andromeda
 	  std::string doc_path = "";
 	  for(const auto& prov:subj.provs)
 	    {
-	      doc_path += prov->get_path();
+	      doc_path += prov->get_item_ref();
 	      doc_path += ";";	  
 	    }
 	  

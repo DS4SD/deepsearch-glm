@@ -26,7 +26,7 @@ namespace andromeda
     virtual bool from_json(const nlohmann::json& item,
 			   const std::vector<std::shared_ptr<prov_element> >& doc_provs);
     
-    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_path()):"#"); }
+    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_item_ref()):"#"); }
     bool is_valid() { return (base_subject::valid); }
     
     bool set_data(const nlohmann::json& data);
@@ -40,6 +40,9 @@ namespace andromeda
     
   public:
 
+    sval_type conf;
+    std::string created_by;
+    
     std::vector<std::shared_ptr<prov_element> > provs;
     
     std::vector<std::shared_ptr<subject<TEXT> > > captions;
@@ -50,6 +53,9 @@ namespace andromeda
   subject<FIGURE>::subject():
     base_subject(FIGURE),
 
+    conf(0.0),
+    created_by("unknown"),
+    
     provs({}),
     
     captions({}),
@@ -60,6 +66,9 @@ namespace andromeda
   subject<FIGURE>::subject(uint64_t dhash, std::string dloc):
     base_subject(dhash, dloc, FIGURE),
 
+    conf(0.0),
+    created_by("unknown"),
+    
     provs({}),
     
     captions({}),
@@ -71,6 +80,9 @@ namespace andromeda
 			   std::shared_ptr<prov_element> prov):
     base_subject(dhash, dloc, FIGURE),
 
+    conf(0.0),
+    created_by("unknown"),
+    
     provs({prov}),
     
     captions({}),
@@ -95,6 +107,13 @@ namespace andromeda
   nlohmann::json subject<FIGURE>::to_json(const std::set<std::string>& filters)
   {
     nlohmann::json result = base_subject::_to_json(filters, provs);
+
+    {
+      result[base_subject::type_lbl] = "figure";
+
+      result[base_subject::confidence_lbl] = utils::round_conf(conf);
+      result[base_subject::created_by_lbl] = created_by;      
+    }
     
     if(filters.size()==0 or filters.count(base_subject::captions_lbl))
       {
@@ -118,6 +137,11 @@ namespace andromeda
   {
     base_subject::valid = true;
 
+    {
+      conf = json_figure.value(base_subject::confidence_lbl, conf);
+      created_by = json_figure.value(base_subject::created_by_lbl, created_by);
+    }
+    
     return base_subject::valid;
   }
 

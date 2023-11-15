@@ -321,6 +321,7 @@ def to_legacy_document_format(doc_glm, doc_leg):
     doc_leg["page-headers"] = []
     doc_leg["page-footers"] = []
     doc_leg["footnotes"] = []
+    doc_leg["equations"] = []
                 
     for pelem in doc_glm["page-elements"]:
 
@@ -328,8 +329,8 @@ def to_legacy_document_format(doc_glm, doc_leg):
         span_i = pelem["span"][0]
         span_j = pelem["span"][1]
         
-        dref = pelem["dref"].split("/")
-        obj = resolve_item(dref, doc_glm)
+        iref = pelem["iref"].split("/")
+        obj = resolve_item(iref, doc_glm)
         
         if obj==None:
             print(f"warning: undefined {dref}")
@@ -366,9 +367,10 @@ def to_legacy_document_format(doc_glm, doc_leg):
             find = len(doc_leg["figures"])
                 
             figure = {
-                "bounding-box": obj.get("bounding-box", None),
+                "bounding-box": obj.get("bounding-box", pelem["bbox"]),
                 "confidence": obj.get("confidence", 0),
                 "created_by": obj.get("created_by", ""),
+                "type": obj.get("type", "figure"),                
                 "cells": None,                    
                 "data": None,
                 "text": text,
@@ -415,9 +417,10 @@ def to_legacy_document_format(doc_glm, doc_leg):
             table = {
                 "#-cols": obj.get("#-cols", 0),
                 "#-rows": obj.get("#-rows", 0),
-                "bounding-box": obj.get("bounding-box", None),
+                "bounding-box": obj.get("bounding-box", pelem["bbox"]),
                 "confidence": obj.get("confidence", 0),
                 "created_by": obj.get("created_by", ""),
+                "type": obj.get("type", "figure"),                
                 "cells": None,                                        
                 "data": obj["data"],
                 "text": text,
@@ -432,7 +435,7 @@ def to_legacy_document_format(doc_glm, doc_leg):
             }
             doc_leg["main-text"].append(pitem)
             
-        else:
+        elif "text" in obj:
 
             text = obj["text"][span_i:span_j]
 
@@ -443,6 +446,14 @@ def to_legacy_document_format(doc_glm, doc_leg):
                 "prov": [{"bbox": pelem["bbox"], "page": pelem["page"], "span": [0, len(text)]}]
             }
             doc_leg["main-text"].append(pitem)
+
+        else:
+            pitem = {
+                "name": pelem["name"],
+                "type": pelem["type"],
+                "prov": [{"bbox": pelem["bbox"], "page": pelem["page"], "span": [0, 0]}]
+            }
+            doc_leg["main-text"].append(pitem)            
             
     return doc_leg    
 

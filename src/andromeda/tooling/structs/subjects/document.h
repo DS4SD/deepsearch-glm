@@ -203,7 +203,7 @@ namespace andromeda
 
       for(auto& prov:provs)
         {
-          std::string path = prov->get_path();
+          std::string path = prov->get_item_ref();
 
           if(paths.count(path)==1) // skip items that have already been included
             {
