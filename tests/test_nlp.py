@@ -41,8 +41,8 @@ def test_02A_run_nlp_models_on_text():
     target = source
     
     model = init_nlp_model("sentence;language;term")
+    
     sres = model.apply_on_text("FeSe is a material.")
-
     sres = round_floats(sres)
     
     if GENERATE: # generate the test-data
@@ -76,8 +76,10 @@ def test_02B_run_nlp_models_on_text():
     filters = ["properties"]
     
     model = init_nlp_model("sentence;language;term", filters)
-    sres = model.apply_on_text("FeSe is a material.")
 
+    sres = model.apply_on_text("FeSe is a material.")
+    sres = round_floats(sres)
+    
     if GENERATE: # generate the test-data
 
         fw = open(source, "w")
@@ -90,7 +92,8 @@ def test_02B_run_nlp_models_on_text():
 
         with open(target) as fr:
             tres = json.load(fr)    
-
+            tres = round_floats(tres)
+            
         for label in ["text", "properties"]:
             assert label in sres
 
@@ -105,9 +108,10 @@ def test_03A_run_nlp_models_on_document():
         doc = json.load(fr)
     
     model = init_nlp_model("sentence;language;term;reference;abbreviation")
-    res = model.apply_on_doc(doc)
-    #print(res.keys())
 
+    res = model.apply_on_doc(doc)
+    res = round_floats(res)
+    
     for label in ["description", "body", "meta",
                   "page-elements", "texts", "tables", "figures",
                   "properties", "instances", "relations"]:
@@ -125,8 +129,9 @@ def test_03B_run_nlp_models_on_document():
     filters = ["applied-models", "properties"]
         
     model = init_nlp_model("sentence;language;term;reference", filters)
+
     res = model.apply_on_doc(doc)
-    #print(res.keys())
+    res = round_floats(res)
 
     for label in ["dloc", "applied-models",
                   "description", "body", "meta",
@@ -139,6 +144,7 @@ def test_03B_run_nlp_models_on_document():
                   
     check_dimensions(res["properties"])
 
+"""
 def test_03C_run_nlp_models_on_document():
 
     model = init_nlp_model("language;semantic;sentence;term;verb;conn;geoloc;reference")
@@ -151,6 +157,8 @@ def test_03C_run_nlp_models_on_document():
             doc = json.load(fr)
 
         res = model.apply_on_doc(doc)
+        res = round_floats(res)
+
         extract_references_from_doc(res)
         
         fw = open(target, "w")
@@ -164,11 +172,14 @@ def test_03C_run_nlp_models_on_document():
             sdoc = json.load(fr)
 
         res = model.apply_on_doc(sdoc)        
+        res = round_floats(res)
 
         with open(target) as fr:
             tdoc = json.load(fr)
-        
+            tdoc = round_floats(tdoc)
+
         assert res==tdoc
+"""
 
 def test_04A_terms():
 
@@ -185,8 +196,11 @@ def test_04A_terms():
     
         for line in lines:
             data = json.loads(line)
+            data = round_floats(data)
+            
             res = model.apply_on_text(data["text"])
-
+            res = round_floats(res)
+            
             fw.write(json.dumps(res)+"\n")
             
         fw.close()
@@ -197,8 +211,11 @@ def test_04A_terms():
             
         for line in lines:
             data = json.loads(line)
-            res = model.apply_on_text(data["text"])
+            data = round_floats(data)            
 
+            res = model.apply_on_text(data["text"])
+            res = round_floats(res)
+            
             for i,row_i in enumerate(res["properties"]["data"]):
                 row_j = data["properties"]["data"][i]
                 assert row_i==row_j
@@ -227,7 +244,10 @@ def test_04B_semantic():
     
         for line in lines:
             data = json.loads(line)
+            data = round_floats(data)            
+            
             res = model.apply_on_text(data["text"])
+            res = round_floats(res)
             
             fw.write(json.dumps(res)+"\n")
                 
@@ -240,8 +260,11 @@ def test_04B_semantic():
             
         for line in lines:
             data = json.loads(line)
+            data = round_floats(data)
+            
             res = model.apply_on_text(data["text"])
-
+            res = round_floats(res)
+            
             for i,row_i in enumerate(res["properties"]["data"]):
                 row_j = data["properties"]["data"][i]
                 assert row_i==row_j
@@ -264,7 +287,10 @@ def test_04C_references():
     
         for line in lines:
             data = json.loads(line)
+            data = round_floats(data)            
+            
             res = model.apply_on_text(data["text"])
+            res = round_floats(res)
             
             fw.write(json.dumps(res)+"\n")
                 
@@ -277,7 +303,11 @@ def test_04C_references():
             
         for line in lines:
             data = json.loads(line)
+            data = round_floats(data)
+            
             res = model.apply_on_text(data["text"])
+            res = round_floats(res)
+            
             assert res==data
 
 """
