@@ -126,7 +126,9 @@ namespace andromeda
   template<typename subject_type>
   bool nlp_model<POS, LAPOS>::check_dependency(const std::set<model_name>& deps,
 					       subject_type& subj, std::string& lang)
-  {    
+  {
+    //LOG_S(INFO) << __FUNCTION__;
+    
     bool static_dependency = satisfies_dependencies(subj, deps);
 
     bool dyn_dependency=false;
@@ -155,6 +157,7 @@ namespace andromeda
     std::string lang="null";
     if(not check_dependency(text_dependencies, subj, lang))
       {
+	//LOG_S(WARNING) << "skipping POS ...";
         return false;
       }
 
@@ -174,11 +177,17 @@ namespace andromeda
     auto& wtokens = subj.word_tokens;
     auto& instances = subj.instances;
 
+    /*
     // iterate over the sentences ...
     for(auto& inst:instances)
       {
-        if(inst.is_model(SENTENCE))
+	//LOG_S(INFO) << "inst: " << to_key(inst.get_model())
+	//<< "\t" << SENTENCE << "\t" << inst.get_model()
+	//<< "\t" << inst.is_model(SENTENCE);
+	
+        if(not inst.is_model(SENTENCE))
           {
+	    //LOG_S(WARNING) << " --> skipping inst ...";
             continue;
           }
 
@@ -188,6 +197,59 @@ namespace andromeda
 
         post_process(wtokens, pos_tokens, ptid_to_wtid);
       }
+    */
+
+    std::vector<range_type> sent_ranges={};
+    for(auto& inst:instances)
+      {
+        if(inst.is_model(SENTENCE))
+          {
+	    sent_ranges.push_back(inst.get_wtok_range());
+
+	    //LOG_S(INFO) << "sentence: "
+	    //<< sent_ranges.back().at(0) << ", "
+	    //<< sent_ranges.back().at(1);
+          }
+      }
+
+    std::vector<range_type> ranges={};
+    for(auto& rng:sent_ranges)
+      {
+        if(ranges.size()==0 and rng.at(0)==0)
+          {
+	    ranges.push_back(rng);
+          }
+	else if(ranges.size()==0 and rng.at(0)>0)
+          {
+	    ranges.push_back({0, rng.at(0)});
+	    ranges.push_back(rng);
+          }
+	else if(ranges.back().at(1)==rng.at(0))
+          {
+	    ranges.push_back(rng);
+          }
+	else if(ranges.back().at(1)<rng.at(0))
+          {
+	    ranges.push_back({ranges.back().at(1), rng.at(0)});
+	    ranges.push_back(rng);
+          }	
+      }
+
+    if(ranges.size()>0 and ranges.back().at(1)<wtokens.size())
+      {
+	ranges.push_back({ranges.back().at(1), wtokens.size()});
+      }
+    
+    for(auto& rng:ranges)
+      {
+	//LOG_S(INFO) << "range: " << rng.at(0) << ", " << rng.at(1);
+	
+        pre_process(wtokens, rng, pos_tokens, ptid_to_wtid);
+
+        pos_model->predict(pos_tokens);
+
+        post_process(wtokens, pos_tokens, ptid_to_wtid);
+      }    
   }
   
   bool nlp_model<POS, LAPOS>::apply(subject<TABLE>& subj)

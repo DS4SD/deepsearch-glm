@@ -32,13 +32,13 @@ namespace andromeda
     subject_name get_subj_name() const { return subj_name; }
     std::string get_subj_path() const { return subj_path; }    
 
-    bool is_type(const std::string name) const { return (name==to_string(model)); }
+    bool is_type(const std::string name) const { return (name==to_key(model)); }
     bool is_label(const std::string label) const { return (label==this->label); }
 
     bool is_model(const model_name name) const { return (name==model); }
     
     model_name get_model() const { return this->model; }
-    std::string get_type() const { return to_string(this->model); }
+    std::string get_type() const { return to_key(this->model); }
     
     std::string get_label() const { return this->label; }
     float get_conf() const { return this->conf; }
@@ -94,7 +94,7 @@ namespace andromeda
   std::vector<std::string> base_property::to_row()
   {
     //std::vector<std::string> row = { type, name, std::to_string(conf) };
-    std::vector<std::string> row = { to_string(model),
+    std::vector<std::string> row = { to_key(model),
 				     std::to_string(subj_hash), to_string(subj_name), subj_path,
 				     label, std::to_string(utils::round_conf(conf)) };
     assert(row.size()==HEADERS.size());
@@ -106,7 +106,7 @@ namespace andromeda
   {
     nlohmann::json result = nlohmann::json::object();
     {
-      result["type"] = to_string(model);
+      result["type"] = to_key(model);
 
       result["subj_hash"] = subj_hash;
       result["subj_name"] = to_string(subj_name);
@@ -122,7 +122,7 @@ namespace andromeda
   nlohmann::json base_property::to_json_row()
   {
     nlohmann::json row = nlohmann::json::array({
-	to_string(model),
+	to_key(model),
 	subj_hash, to_string(subj_name), subj_path,
 	label, utils::round_conf(conf)});
     assert(row.size()==HEADERS.size());

@@ -124,6 +124,7 @@ namespace andromeda
   {
     if(not satisfies_dependencies(subj, text_dependencies))
       {
+	//LOG_S(WARNING) << "skipping term ...";
 	return false;
       }
     

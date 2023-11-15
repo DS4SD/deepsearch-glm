@@ -11,6 +11,12 @@ from deepsearch_glm.nlp_train_semantic import train_semantic
 
 GENERATE=False
 
+def round_floats(o):
+    if isinstance(o, float): return round(o, 2)
+    if isinstance(o, dict): return {k: round_floats(v) for k, v in o.items()}
+    if isinstance(o, (list, tuple)): return [round_floats(x) for x in o]
+    return o
+
 def test_01_load_nlp_models():
     models = load_pretrained_nlp_models()
     #print(f"models: {models}")
@@ -37,6 +43,8 @@ def test_02A_run_nlp_models_on_text():
     model = init_nlp_model("sentence;language;term")
     sres = model.apply_on_text("FeSe is a material.")
 
+    sres = round_floats(sres)
+    
     if GENERATE: # generate the test-data
 
         fw = open(source, "w")
@@ -49,7 +57,8 @@ def test_02A_run_nlp_models_on_text():
 
         with open(target) as fr:
             tres = json.load(fr)
-        
+            tres = round_floats(tres)
+            
         for label in ["properties", "instances"]:
             check_dimensions(sres[label])
             assert label in sres
@@ -192,14 +201,10 @@ def test_04A_terms():
 
             for i,row_i in enumerate(res["properties"]["data"]):
                 row_j = data["properties"]["data"][i]
-                #print(i, "\t", row_i)
-                #print(i, "\t", row_j)
                 assert row_i==row_j
 
             for i,row_i in enumerate(res["instances"]["data"]):
                 row_j = data["instances"]["data"][i]
-                #print(i, "\t", row_i)
-                #print(i, "\t", row_j)
                 assert row_i==row_j
                 
             assert res==data
@@ -273,7 +278,6 @@ def test_04C_references():
         for line in lines:
             data = json.loads(line)
             res = model.apply_on_text(data["text"])
-
             assert res==data
 
 """

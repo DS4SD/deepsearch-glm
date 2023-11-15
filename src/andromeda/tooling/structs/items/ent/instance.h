@@ -127,7 +127,8 @@ namespace andromeda
 
     model_name get_model() const { return model_type; }
     
-    std::string get_type() const { return to_string(model_type); }
+    //std::string get_type() const { return to_string(model_type); }
+    std::string get_type() const { return to_key(model_type); }
     std::string get_subtype() const { return model_subtype; }
     
     bool is_in(subject_name sn) const { return (sn==subj_name);}
