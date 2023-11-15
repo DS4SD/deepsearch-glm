@@ -1,5 +1,5 @@
-
 import os
+import re
 
 import json
 import copy
@@ -328,9 +328,23 @@ def to_legacy_document_format(doc_glm, doc_leg):
         ptype = pelem["type"]
         span_i = pelem["span"][0]
         span_j = pelem["span"][1]
+
+        if "iref" not in pelem:
+            print(json.dumps(pelem, indent=2))
+            continue
+
+        iref = pelem["iref"]
         
-        iref = pelem["iref"].split("/")
-        obj = resolve_item(iref, doc_glm)
+        if re.match("#/figures/(\d+)/captions/(.+)", iref):
+            #print(f"skip {iref}")
+            continue
+
+        if re.match("#/tables/(\d+)/captions/(.+)", iref):
+            #print(f"skip {iref}")
+            continue        
+
+        path = iref.split("/")
+        obj = resolve_item(path, doc_glm)
         
         if obj==None:
             print(f"warning: undefined {dref}")
