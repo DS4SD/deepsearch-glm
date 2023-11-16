@@ -21,6 +21,8 @@ namespace andromeda
 		  uint64_t j,
 		  std::array<uint64_t,2> row_span,			       
 		  std::array<uint64_t,2> col_span,
+		  std::array<float, 4> bbox,
+		  //nlohmann::json bbox,
 		  std::string orig);
     
     nlohmann::json to_json();
@@ -48,7 +50,8 @@ namespace andromeda
     std::string type;
     
     std::array<uint64_t,2> row_span, col_span;
-    //std::vector< std::array<uint64_t,2> > spans;
+    std::array<float, 4> bbox;
+    //nlohmann::json bbox;
     
     bool row_header, col_header, numeric;
   };
@@ -82,6 +85,7 @@ namespace andromeda
   table_element::table_element(uint64_t i, uint64_t j,
 			       std::array<uint64_t,2> row_span,			       
 			       std::array<uint64_t,2> col_span,
+			       std::array<float, 4> bbox,
 			       std::string orig):
     text_element(),
     i(i), j(j),
@@ -89,6 +93,8 @@ namespace andromeda
     row_span(row_span),
     col_span(col_span),
 
+    bbox(bbox),
+    
     row_header(false),
     col_header(false),
 
@@ -120,6 +126,18 @@ namespace andromeda
     cell["text"] = text;
     cell["type"] = type;
 
+    if(std::abs(bbox[0])<1.e-3 and
+       std::abs(bbox[1])<1.e-3 and
+       std::abs(bbox[2])<1.e-3 and
+       std::abs(bbox[3])<1.e-3)
+      {
+	cell["bbox"] = nlohmann::json::value_t::null;
+      }
+    else
+      {
+	cell["bbox"] = bbox;
+      }
+    
     cell["row-header"] = row_header;
     cell["col-header"] = col_header;
 
@@ -136,6 +154,7 @@ namespace andromeda
     
     text = json_cell.at("text").get<std::string>();
     type = json_cell.at("type").get<std::string>();
+    bbox = json_cell.at("bbox").get<std::array<float, 4> >();
     
     row_header = json_cell.at("row-header").get<bool>();
     col_header = json_cell.at("col-header").get<bool>();
