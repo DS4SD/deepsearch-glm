@@ -146,7 +146,7 @@ def test_03C_run_nlp_models_on_document():
         extract_references_from_doc(res)
         
         fw = open(target, "w")
-        fw.write(json.dumps(res)+"\n")            
+        fw.write(json.dumps(res, indent=2)+"\n")            
         fw.close()
         
         assert True

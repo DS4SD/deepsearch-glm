@@ -330,16 +330,16 @@ def to_legacy_document_format(doc_glm, doc_leg):
         span_j = pelem["span"][1]
 
         if "iref" not in pelem:
-            print(json.dumps(pelem, indent=2))
+            #print(json.dumps(pelem, indent=2))
             continue
 
         iref = pelem["iref"]
         
-        if re.match("#/figures/(\d+)/captions/(.+)", iref):
+        if re.match("#/figures/(\\d+)/captions/(.+)", iref):
             #print(f"skip {iref}")
             continue
 
-        if re.match("#/tables/(\d+)/captions/(.+)", iref):
+        if re.match("#/tables/(\\d+)/captions/(.+)", iref):
             #print(f"skip {iref}")
             continue        
 
