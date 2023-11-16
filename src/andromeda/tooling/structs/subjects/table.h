@@ -262,16 +262,34 @@ namespace andromeda
             data.push_back({});
             for(ind_type j=0; j<grid.at(i).size(); j++)
               {
+		//LOG_S(INFO) << "grid_"<<i<<","<<j<<grid.at(i).at(j).dump();
+
                 std::string text = "";
-                if(grid.at(i).at(j).count("text"))
+                if(grid.at(i).at(j).count("text")==1)
                   {
                     text = grid.at(i).at(j).at("text");
                   }
 
+		std::array<float, 4> bbox = {0.0, 0.0, 0.0, 0.0};
+		if(grid.at(i).at(j).count("bbox")==1 and grid.at(i).at(j).at("bbox").is_array())
+                  {
+		    auto& coor = grid.at(i).at(j).at("bbox");
+		    
+                    bbox[0] = coor.at(0).get<float>();		    
+		    bbox[1] = coor.at(1).get<float>();
+		    bbox[2] = coor.at(2).get<float>();
+		    bbox[3] = coor.at(3).get<float>();
+
+		    //LOG_S(INFO) << bbox[0] << ", "
+		    //<< bbox[1] << ", "
+		    //<< bbox[2] << ", "
+		    //<< bbox[3];
+                  }
+		
                 std::array<uint64_t,2> row_span={i,i+1};
                 std::array<uint64_t,2> col_span={j,j+1};
 
-                if(grid.at(i).at(j).count("spans"))
+                if(grid.at(i).at(j).count("spans")==1)
                   {
                     auto& spans = grid.at(i).at(j).at("spans");
 
@@ -288,7 +306,7 @@ namespace andromeda
                       }
                   }
 
-                data.back().emplace_back(i,j,row_span,col_span,text);
+                data.back().emplace_back(i, j, row_span, col_span, bbox, text);
               }
           }
       }

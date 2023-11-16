@@ -1,0 +1,6639 @@
+{
+  "_name": "Applied AI Letters - 2020 - Staar.pdf",
+  "_type": "pdf-document",
+  "bitmaps": [],
+  "description": {
+    "logs": [
+      {
+        "agent": "CCS",
+        "type": "parsing",
+        "comment": "CCS v0.0.0-dev parsing of documents",
+        "date": "2023-08-23T10:35:12.830027+00:00"
+      }
+    ]
+  },
+  "equations": [],
+  "figures": [
+    {
+      "bounding-box": [
+        78.5494384765625,
+        102.71893310546875,
+        512.3916625976562,
+        284.9899597167969
+      ],
+      "confidence": 0.0,
+      "created_by": "unknown",
+      "type": "figure",
+      "cells": null,
+      "data": null,
+      "text": "FIGURE1 Schematic of a data flow for the creation of a Knowledge Graph. The data flow consists of three main task types: extraction of document elements (abstracts, paragraphs, tables, figures, etc.), annotation of these elements to detect entities and their relationships and finally aggregation of these entities and their relationships. For every task, we keep complete provenance, such that we can always trace back to a specific document or element that embeds a certain entity or relationship",
+      "prov": [
+        {
+          "bbox": [
+            78.5494384765625,
+            102.71893310546875,
+            512.3916625976562,
+            284.9899597167969
+          ],
+          "page": 3,
+          "span": [
+            0,
+            498
+          ]
+        }
+      ]
+    },
+    {
+      "bounding-box": [
+        454.1357421875,
+        745.7154541015625,
+        550.62109375,
+        761.0070190429688
+      ],
+      "confidence": 0.0,
+      "created_by": "unknown",
+      "type": "figure",
+      "cells": null,
+      "data": null,
+      "text": "",
+      "prov": [
+        {
+          "bbox": [
+            454.1357421875,
+            745.7154541015625,
+            550.62109375,
+            761.0070190429688
+          ],
+          "page": 5,
+          "span": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "bounding-box": [
+        96.34707641601562,
+        537.8071899414062,
+        496.8702697753906,
+        731.7752075195312
+      ],
+      "confidence": 0.0,
+      "created_by": "unknown",
+      "type": "figure",
+      "cells": null,
+      "data": null,
+      "text": "FIGURE 3 The time-to-solution for k-hop graph traversal for Neo4J and our new graph engine. The results were obtained for the graph500 and twitter benchmark graphs. The 10th and 90th percentiles are represented by the shaded regions; the median is shown by the markers",
+      "prov": [
+        {
+          "bbox": [
+            96.34707641601562,
+            537.8071899414062,
+            496.8702697753906,
+            731.7752075195312
+          ],
+          "page": 8,
+          "span": [
+            0,
+            268
+          ]
+        }
+      ]
+    },
+    {
+      "bounding-box": [
+        116.26325988769531,
+        507.8388977050781,
+        473.644775390625,
+        731.2719116210938
+      ],
+      "confidence": 0.0,
+      "created_by": "unknown",
+      "type": "figure",
+      "cells": null,
+      "data": null,
+      "text": "FIGURE 4 Visual workflow editor for deep queries in the CPS platform. The interface exhibits a left toolbar to pick specific graph operations, a main drawing area for the workflow DAG and a right panel to inspect and define parameters of each graph operation. Colors indicate different operation types such as input node-retrieval (blue), traversal (red), logical operators (green) and transform functions (yellow). Valid workflows can be executed using the ' play ' button",
+      "prov": [
+        {
+          "bbox": [
+            116.26325988769531,
+            507.8388977050781,
+            473.644775390625,
+            731.2719116210938
+          ],
+          "page": 9,
+          "span": [
+            0,
+            473
+          ]
+        }
+      ]
+    },
+    {
+      "bounding-box": [
+        45.890689849853516,
+        743.98095703125,
+        143.1890869140625,
+        761.30615234375
+      ],
+      "confidence": 0.0,
+      "created_by": "unknown",
+      "type": "figure",
+      "cells": null,
+      "data": null,
+      "text": "",
+      "prov": [
+        {
+          "bbox": [
+            45.890689849853516,
+            743.98095703125,
+            143.1890869140625,
+            761.30615234375
+          ],
+          "page": 10,
+          "span": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "bounding-box": [
+        48.36570739746094,
+        477.8360900878906,
+        548.3624267578125,
+        732.3331298828125
+      ],
+      "confidence": 0.0,
+      "created_by": "unknown",
+      "type": "figure",
+      "cells": null,
+      "data": null,
+      "text": "FIGURE5 The architectural design of the CPS platform. On the left, we show the data flow processing architecture orchestrated through an asynchronous REST API. On the right, we sketch the multitenant KG serving facility which provides a dedicated environment for each project",
+      "prov": [
+        {
+          "bbox": [
+            48.36570739746094,
+            477.8360900878906,
+            548.3624267578125,
+            732.3331298828125
+          ],
+          "page": 11,
+          "span": [
+            0,
+            275
+          ]
+        }
+      ]
+    },
+    {
+      "bounding-box": [
+        55.876461029052734,
+        606.848876953125,
+        541.853759765625,
+        729.6771850585938
+      ],
+      "confidence": 0.0,
+      "created_by": "unknown",
+      "type": "figure",
+      "cells": null,
+      "data": null,
+      "text": "FIGURE 6 Sketch of the entire pipeline to perform deep data exploration on large corpora",
+      "prov": [
+        {
+          "bbox": [
+            55.876461029052734,
+            606.848876953125,
+            541.853759765625,
+            729.6771850585938
+          ],
+          "page": 12,
+          "span": [
+            0,
+            88
+          ]
+        }
+      ]
+    },
+    {
+      "bounding-box": [
+        45.15538024902344,
+        607.3761596679688,
+        548.95361328125,
+        731.4898681640625
+      ],
+      "confidence": 0.0,
+      "created_by": "unknown",
+      "type": "figure",
+      "cells": null,
+      "data": null,
+      "text": "FIGURE 7 The evaluation workflow to identify the petroleum system elements (PSE) in an article and infer its properties. It starts by searching for all petroleum system elements of a certain type (eg, source, reservoir or seal) and a particular report (worktasks 1 and 2). By successive graph traversals (worktasks 3-5, 7-9, 11, 12) along specific edges and logical operations (worktasks 6, 10, 13, 14), we are able to obtain a list of candidate formations (worktask 15), ages (worktask 16) and rocks (worktask 17), ranked by their accumulated weight. Execution of this query takes less than 18 ms on average",
+      "prov": [
+        {
+          "bbox": [
+            45.15538024902344,
+            607.3761596679688,
+            548.95361328125,
+            731.4898681640625
+          ],
+          "page": 13,
+          "span": [
+            0,
+            608
+          ]
+        }
+      ]
+    },
+    {
+      "bounding-box": [
+        454.5641784667969,
+        745.4571533203125,
+        549.099365234375,
+        761.863037109375
+      ],
+      "confidence": 0.0,
+      "created_by": "unknown",
+      "type": "figure",
+      "cells": null,
+      "data": null,
+      "text": "",
+      "prov": [
+        {
+          "bbox": [
+            454.5641784667969,
+            745.4571533203125,
+            549.099365234375,
+            761.863037109375
+          ],
+          "page": 15,
+          "span": [
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "file-info": {
+    "#-pages": 15,
+    "document-hash": "457bcbb2d189b4719daa30d94d946d913f1a6bddaabd1c12793b143a30e1115d",
+    "filename": "Applied AI Letters - 2020 - Staar.pdf",
+    "page-hashes": [
+      {
+        "hash": "365f2c5695b6aa22d2096bc88ab18f76b2c7f3eed6359d68af14a6aa7916ce70",
+        "model": "model",
+        "page": 1
+      },
+      {
+        "hash": "4fe5aedd95efb3beca7a5b39c9d9883838b8f5ac746d167c3fbfb4e9848d4a7e",
+        "model": "model",
+        "page": 2
+      },
+      {
+        "hash": "f3d1a1b3bad4dce4ab96bdf3e3fe105a7814009d24bacbfe5b90737979503e01",
+        "model": "model",
+        "page": 3
+      },
+      {
+        "hash": "dd8ebce06c6e2bec4a188b005eab757b6a222b7ae632eeec943767dbac6573b8",
+        "model": "model",
+        "page": 4
+      },
+      {
+        "hash": "0ebc61b0f17fd0a49cb6fd809500169f2fb13a27f15dfd345e8099c7e45491ed",
+        "model": "model",
+        "page": 5
+      },
+      {
+        "hash": "39a00bc2dd440023ebc606e26683a79bf9f6806f61af143cb1edfd03eba28a14",
+        "model": "model",
+        "page": 6
+      },
+      {
+        "hash": "5cfb4312275e9ed166e878f8b557709d831899591c7414facbf8d0fdd732d4ce",
+        "model": "model",
+        "page": 7
+      },
+      {
+        "hash": "71916575c81d0609e6862ac97c00dad85d1ec468262ea3934db42b8f13f0e7e7",
+        "model": "model",
+        "page": 8
+      },
+      {
+        "hash": "df3fce65445de0d07ebfda8634f70566417a0fcdd249c0120056aa082f1b1733",
+        "model": "model",
+        "page": 9
+      },
+      {
+        "hash": "03a8792b4ca1b1e832dec33cd23345c446d214f94b29e174946e062d890555e0",
+        "model": "model",
+        "page": 10
+      },
+      {
+        "hash": "b69f19266a3247e8e43ce2fdefba2018e63d827c38c8758ee70c51426a78c651",
+        "model": "model",
+        "page": 11
+      },
+      {
+        "hash": "53eb4a9c44cc911454a0a1bc45ffc8261737cdb47f43e2d97cc477ff1912c2a5",
+        "model": "model",
+        "page": 12
+      },
+      {
+        "hash": "56679ab44cd3f3e11de5886ccf872fb064cee7916809fa78e02a87cfab71a8e1",
+        "model": "model",
+        "page": 13
+      },
+      {
+        "hash": "6888730ff9f5a52a88ec198c50365f020fc78bca19bbdd1482bd5059172da68c",
+        "model": "model",
+        "page": 14
+      },
+      {
+        "hash": "0ff9d40eaca3f08f5b36c3644bf466c37a0644bd71a71066425200792dcff82d",
+        "model": "model",
+        "page": 15
+      }
+    ]
+  },
+  "footnotes": [],
+  "main-text": [
+    {
+      "text": "Received: 15 September 2020",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            743.57568359375,
+            131.78494262695312,
+            750.7937622070312
+          ],
+          "page": 1,
+          "span": [
+            0,
+            27
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Revised: 23 November 2020",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            146.3265380859375,
+            744.093017578125,
+            229.3131561279297,
+            751.4437866210938
+          ],
+          "page": 1,
+          "span": [
+            0,
+            25
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Accepted: 25 November 2020",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            243.7840576171875,
+            743.953369140625,
+            332.99346923828125,
+            751.3480224609375
+          ],
+          "page": 1,
+          "span": [
+            0,
+            26
+          ]
+        }
+      ]
+    },
+    {
+      "text": "DOI: 10.1002/ail2.20",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            44.6877326965332,
+            730.7138671875,
+            106.1191635131836,
+            737.30078125
+          ],
+          "page": 1,
+          "span": [
+            0,
+            20
+          ]
+        }
+      ]
+    },
+    {
+      "text": "LETTER",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            43.95979690551758,
+            702.3956298828125,
+            91.94560241699219,
+            712.1011962890625
+          ],
+          "page": 1,
+          "span": [
+            0,
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Corpus processing service: A Knowledge Graph platform to perform deep data exploration on corpora",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            44.709346771240234,
+            631.2674560546875,
+            520.7667236328125,
+            672.0067749023438
+          ],
+          "page": 1,
+          "span": [
+            0,
+            97
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Peter W. J. Staar",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            593.6065673828125,
+            146.4720458984375,
+            606.4735717773438
+          ],
+          "page": 1,
+          "span": [
+            0,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "text": "|",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            160.10069274902344,
+            593.7201538085938,
+            163.59266662597656,
+            605.1080322265625
+          ],
+          "page": 1,
+          "span": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Michele Dolfi",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            170.39439392089844,
+            593.4388427734375,
+            265.1170959472656,
+            607.2059326171875
+          ],
+          "page": 1,
+          "span": [
+            0,
+            13
+          ]
+        }
+      ]
+    },
+    {
+      "text": "|",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            274.5636901855469,
+            593.7201538085938,
+            278.0556640625,
+            605.1080322265625
+          ],
+          "page": 1,
+          "span": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Christoph Auer",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            290.0411682128906,
+            593.2594604492188,
+            387.6253967285156,
+            606.9615478515625
+          ],
+          "page": 1,
+          "span": [
+            0,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "text": "IBM Research, Rueschlikon, Switzerland",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            559.602294921875,
+            182.68014526367188,
+            567.3045654296875
+          ],
+          "page": 1,
+          "span": [
+            0,
+            38
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Correspondence Peter W. J. Staar, IBM Research, Saumerstrasse 4, 8820 Rueschlikon, Switzerland. Email: taa@zurich.ibm.com",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            493.4922180175781,
+            164.66183471679688,
+            545.3080444335938
+          ],
+          "page": 1,
+          "span": [
+            0,
+            121
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Abstract",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            209.1903839111328,
+            552.2532348632812,
+            249.1348114013672,
+            561.7433471679688
+          ],
+          "page": 1,
+          "span": [
+            0,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Knowledge Graphs have been fast emerging as the de facto standard to model and explore knowledge in weakly structured data. Large corpora of documents constitute a source of weakly structured data of particular interest for both the academic and business world. Key examples include scientific publications, technical reports, manuals, patents, regulations, etc. Such corpora embed many facts that are elementary to critical decision making or enabling new discoveries. In this paper, we present a scalable cloud platform to create and serve Knowledge Graphs, which we named corpus processing service (CPS). Its purpose is to process large document corpora, extract the content and embedded facts, and ultimately represent these in a consistent knowledge graph that can be intuitively queried. To accomplish this, we use state-of-the-art natural language understanding models to extract entities and relationships from documents converted with our previously presented corpus conversion service platform. This pipeline is complemented with a newly developed graph engine which ensures extremely performant graph queries and provides powerful graph analytics capabilities. Both components are tightly integrated and can be easily consumed through REST APIs. Additionally, we provide user interfaces to control the data ingestion flow and formulate queries using a visual programming approach. The CPS platform is designed as a modular microservice system operating on Kubernetes clusters. Finally, we validate the quality of queries on our endto-end knowledge pipeline in a real-world application in the oil and gas industry.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            208.6128387451172,
+            251.58563232421875,
+            543.8583984375,
+            547.040771484375
+          ],
+          "page": 1,
+          "span": [
+            0,
+            1624
+          ]
+        }
+      ]
+    },
+    {
+      "text": "KEYWORDS",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            209.21104431152344,
+            228.2025146484375,
+            269.01025390625,
+            237.28173828125
+          ],
+          "page": 1,
+          "span": [
+            0,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "text": "document processing, knowledge graph, semantic search",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            208.79600524902344,
+            214.08453369140625,
+            401.0297546386719,
+            222.97467041015625
+          ],
+          "page": 1,
+          "span": [
+            0,
+            53
+          ]
+        }
+      ]
+    },
+    {
+      "text": "1 | INTRODUCTION",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            44.27853012084961,
+            187.51553344726562,
+            189.71961975097656,
+            199.65557861328125
+          ],
+          "page": 1,
+          "span": [
+            0,
+            16
+          ]
+        }
+      ]
+    },
+    {
+      "text": "As of 2015, Adobe estimated that there were 2.7 trillion PDF documents in circulation globally. It is self-evident that this number has increased ever since. The explosive growth of documents one can observe since digital publishing became mainstream is posing a serious challenge to both the academic and corporate world. The increased publication rate of scientific articles makes it harder and harder for academics to keep aware of all the latest findings. Similarly, the ever-growing number of internal reports, documentation, patents, contracts, regulations, court filings, etc., is for most corporations becoming simply unmanageable.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            96.98406982421875,
+            552.6513061523438,
+            172.33074951171875
+          ],
+          "page": 1,
+          "span": [
+            0,
+            639
+          ]
+        }
+      ]
+    },
+    {
+      "text": "This is an open access article under the terms of the Creative Commons Attribution License, which permits use, distribution and reproduction in any medium, provided the original work is properly cited.",
+      "name": "footnote",
+      "type": "footnote",
+      "prov": [
+        {
+          "bbox": [
+            44.787384033203125,
+            52.49696731567383,
+            540.7015991210938,
+            70.33258056640625
+          ],
+          "page": 1,
+          "span": [
+            0,
+            201
+          ]
+        }
+      ]
+    },
+    {
+      "text": "\u00a9 2020 The Authors. Applied AI Letters published by John Wiley & Sons Ltd.",
+      "name": "footnote",
+      "type": "footnote",
+      "prov": [
+        {
+          "bbox": [
+            44.787384033203125,
+            42.44549560546875,
+            272.1662902832031,
+            50.207763671875
+          ],
+          "page": 1,
+          "span": [
+            0,
+            74
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Applied AI Letters. 2020;1:e20. https://doi.org/10.1002/ail2.20",
+      "name": "page-footer",
+      "type": "page-footer",
+      "prov": [
+        {
+          "bbox": [
+            44.38350296020508,
+            12.301444053649902,
+            135.58876037597656,
+            30.8690185546875
+          ],
+          "page": 1,
+          "span": [
+            0,
+            63
+          ]
+        }
+      ]
+    },
+    {
+      "text": "wileyonlinelibrary.com/journal/ail2 1of15",
+      "name": "page-footer",
+      "type": "page-footer",
+      "prov": [
+        {
+          "bbox": [
+            400.53094482421875,
+            22.279802322387695,
+            550.6204223632812,
+            29.6954345703125
+          ],
+          "page": 1,
+          "span": [
+            0,
+            41
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2of15",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            751.4075317382812,
+            68.55958557128906,
+            758.0504760742188
+          ],
+          "page": 2,
+          "span": [
+            0,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "text": "STAAR ET AL.",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            510.634765625,
+            751.4635620117188,
+            550.9636840820312,
+            758.332763671875
+          ],
+          "page": 2,
+          "span": [
+            0,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In a previous publication, we presented the corpus conversion service (CCS). 1 The CCS is a scalable cloud service, which leverages state-of-the-art machine learning to convert complex formats (eg, PDF, Word, and Bitmap) into a richly structured JSON representation of their content. As such, the CCS solves the first problem when confronted with a large corpus of documents, that is, make the content of the documents programmatically accessible. Examples of the latter would be ' List all images with their caption from the corpus or list all titles with their publication date. ' The second problem is to obviously search or explore the content of the documents in a large corpus. For this problem, we have developed the corpus processing service (CPS), which we present in this paper. The CPS is intended to create knowledge bases (KBs) from the converted JSON corpus and serve these KBs through in-memory knowledge graph stores. As such, the CPS is the natural extension of the CCS and has as an express purpose to make corpora of documents available for deep data exploration.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.97464370727539,
+            604.0350952148438,
+            554.3433227539062,
+            732.5863037109375
+          ],
+          "page": 2,
+          "span": [
+            0,
+            1082
+          ]
+        }
+      ]
+    },
+    {
+      "text": "The purpose of CPS is to enable deep data exploration directly on large corpora. Here, we define deep data exploration as the capability to ingest large corpora of documents into a scalable service and detect, extract and combine facts contained in these corpora in order to make new discoveries or support critical decision making. It is key to understand that our goal of creating and querying Knowledge Graphs to enable deep data exploration goes beyond search in the spirit of rank and retrieve. Although search is by no means trivial, many state-of-the art solutions exist for this purpose. * We argue, however, that one needs query capabilities which allow for a combination of extracted facts and a fast, onthe-fly creation of new datasets to enable actual deep data exploration. Those datasets can then be used for further anal-",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.485626220703125,
+            513.0453491210938,
+            553.2366943359375,
+            601.0419921875
+          ],
+          "page": 2,
+          "span": [
+            0,
+            836
+          ]
+        }
+      ]
+    },
+    {
+      "text": "ysis, which might lead to new discoveries or support decision making.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            500.0622253417969,
+            340.59906005859375,
+            509.4723205566406
+          ],
+          "page": 2,
+          "span": [
+            0,
+            69
+          ]
+        }
+      ]
+    },
+    {
+      "text": "To better distinguish this approach from conventional search, let us consider some example questions:",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            57.86075973510742,
+            487.0791015625,
+            492.157958984375,
+            496.63543701171875
+          ],
+          "page": 2,
+          "span": [
+            0,
+            101
+          ]
+        }
+      ]
+    },
+    {
+      "text": "a. Definition of high temperature superconductor.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            461.0568542480469,
+            262.5708312988281,
+            470.5727233886719
+          ],
+          "page": 2,
+          "span": [
+            0,
+            49
+          ]
+        }
+      ]
+    },
+    {
+      "text": "b. Publications of <person> before year 2010.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.779930114746094,
+            448.07373046875,
+            241.75213623046875,
+            457.51177978515625
+          ],
+          "page": 2,
+          "span": [
+            0,
+            45
+          ]
+        }
+      ]
+    },
+    {
+      "text": "c. Maps of the Permian basin.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            435.03460693359375,
+            174.95623779296875,
+            444.5535583496094
+          ],
+          "page": 2,
+          "span": [
+            0,
+            29
+          ]
+        }
+      ]
+    },
+    {
+      "text": "d. Geological formations from the Miocene age with their depth, thickness, geographic location, and composition.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            422.0514831542969,
+            528.8121948242188,
+            431.5508728027344
+          ],
+          "page": 2,
+          "span": [
+            0,
+            112
+          ]
+        }
+      ]
+    },
+    {
+      "text": "e. List all high-Tc superconductors with their known crystallographic and material properties?",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.387489318847656,
+            409.068359375,
+            446.47918701171875,
+            418.8954772949219
+          ],
+          "page": 2,
+          "span": [
+            0,
+            94
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Question (a) undoubtedly fits the classic search paradigm, since here one can expect a search engine to find a number sources with exact answers (ie, definitions). Likewise, question (b) can be easily answered through metadata based filter rules on a literature database. Question (c) already requires some extent of domain knowledge to be encoded in a model to accurately classify the relevance of all known maps to the query, at least assuming no manual curation effort has been done. Questions (d) and (e) ultimately impose query capabilities which are clearly infeasible to support through manual curation, and are very unlikely to be answered in any single data source. These questions require the system to return a more complex data structure (eg, a table in which the rows list the formations or materials while the columns contain their respective properties).",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.996150970458984,
+            292.05224609375,
+            553.0557861328125,
+            392.69879150390625
+          ],
+          "page": 2,
+          "span": [
+            0,
+            869
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Concluding from the above examples, we define the following qualifying criteria for a system that supports deep data exploration on corpora:",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            265.89093017578125,
+            551.4827270507812,
+            288.8219299316406
+          ],
+          "page": 2,
+          "span": [
+            0,
+            140
+          ]
+        }
+      ]
+    },
+    {
+      "text": "1. It can answer queries by combining different data elements from different sources into a new data structure.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.371070861816406,
+            240.06375122070312,
+            515.491943359375,
+            249.5263671875
+          ],
+          "page": 2,
+          "span": [
+            0,
+            111
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2. It supports (1) by creating a knowledge model from a controlled, unstructured corpus in a mostly unsupervised way. It may profit from, but not require any manually curated data.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            214.04150390625,
+            551.0504760742188,
+            236.58538818359375
+          ],
+          "page": 2,
+          "span": [
+            0,
+            180
+          ]
+        }
+      ]
+    },
+    {
+      "text": "3. It may restrict supported queries to a specific domain (eg, a technical field).",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.20487594604492,
+            201.05838012695312,
+            376.7724914550781,
+            210.76416015625
+          ],
+          "page": 2,
+          "span": [
+            0,
+            82
+          ]
+        }
+      ]
+    },
+    {
+      "text": "To meet the objectives defined earlier, CPS implements and tightly integrates two essential components. The first component is a scalable Knowledge Graph creation pipeline, which is used to automatically process text, tables and images through state-of-the-art segmentation and natural language understanding (NLU) models and extract entities and relationships from them. The second component serves the created KG, enabling users to perform deep queries and advanced graph analytics in real time. 2 This is supported through an underlying, highly optimized graph engine we developed to specifically address requirements for deep data exploration.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.2375373840332,
+            110.07154846191406,
+            553.1372680664062,
+            184.7841796875
+          ],
+          "page": 2,
+          "span": [
+            0,
+            647
+          ]
+        }
+      ]
+    },
+    {
+      "text": "It is worth noting that the CPS platform is a fully functioning cloud application that has been successfully deployed in multiple real-world scenarios in material science 3 and oil and gas industries. 4",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.487701416015625,
+            84.04928588867188,
+            550.5083618164062,
+            107.71282958984375
+          ],
+          "page": 2,
+          "span": [
+            0,
+            202
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In the remainder of this paper, we discuss in detail the technical aspects and implementation details of the two main components of the CPS. In section 2, we present in depth how the platform extracts facts from corpora at a massive scale. In section 3, we go into detail of designing deep queries and show how we compute them in a very efficient",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.976261138916016,
+            45.04500961303711,
+            551.8382568359375,
+            81.24627685546875
+          ],
+          "page": 2,
+          "span": [
+            0,
+            346
+          ]
+        }
+      ]
+    },
+    {
+      "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            578.368896484375,
+            15.450490951538086,
+            583.4779663085938,
+            766.7100219726562
+          ],
+          "page": 2,
+          "span": [
+            0,
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "text": "STAAR ET AL.",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            44.50688552856445,
+            751.4635620117188,
+            85.01602935791016,
+            758.0504760742188
+          ],
+          "page": 3,
+          "span": [
+            0,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "text": "3of15",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            528.5497436523438,
+            751.4075317382812,
+            550.62109375,
+            758.0504760742188
+          ],
+          "page": 3,
+          "span": [
+            0,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "text": "way with our high-performance graph engine. Later, in section 4, we will discuss in detail how both components are deployed and interacting on the cloud. Finally, in section 5, we present the complete system in a real world case study and benchmark its accuracy.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            695.0468139648438,
+            549.4096069335938,
+            730.4614868164062
+          ],
+          "page": 3,
+          "span": [
+            0,
+            262
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2 | SCALABLE KNOWLEDGE GRAPH CREATION",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            655.5153198242188,
+            378.15191650390625,
+            666.9031982421875
+          ],
+          "page": 3,
+          "span": [
+            0,
+            37
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In CPS, a Knowledge Graph is defined as a collection of entities and their relationships forming the graphs nodes and edges. Entities can have a wide variety of types. A basic scenario includes types such as documents, document components, keywords, and authors. In addition, there can be more specific types tied to domain verticals, such as materials and properties in material science, or geological ages, formations, rocks, minerals, structures, etc., for oil and gas exploration. Relationships in the KG are strictly defined between the entities. Similar to the entities, the relationships are typed (' has-material-property ' or ' has-geological-age '). Also, relationships in the KG can be weighted, for example, to represent the trustworthiness of a fact that the relationship represents.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.785400390625,
+            552.0484008789062,
+            549.7849731445312,
+            639.5802001953125
+          ],
+          "page": 3,
+          "span": [
+            0,
+            796
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In typical cases, we start from a collection of documents in different formats. Sometimes, documents are available in semistructured, machine-interpretable formatssuchasJSON,XML,orHTML.However,inthevastmajority of cases this does not apply, especially for proprietary documents of companies and organizations. The latter are very often scanned or programmatic PDF documents. Using the CCS, 1 these types of documents are converted into structured JSON files. Those provide easy access to the meta-data (eg, title, abstract, references, authors) and the document body. The latter is structured by subtitles (of various levels), paragraphs, lists, tables (with internal row and column structures), figures, and linked captions. O n c et h ec o r p u si sp r e s n ti nas t r u c t u r e d,m a c h i n e processableformat,theKGiscreatedbyapplyingthreedistincttasks,namely extraction, annotation,and aggregation. The inherent dependencies between these three tasks are defined through a directed acyclic graph (DAG). We willrefertothisDAGoftasksasadataflow(DF).Inthenextsections,weestablishtheconceptofDFsanddiscuss the details for each DF task.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.785430908203125,
+            409.068603515625,
+            554.4052124023438,
+            548.475341796875
+          ],
+          "page": 3,
+          "span": [
+            0,
+            1141
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2.1 | DF tasks",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            369.4996032714844,
+            134.88641357421875,
+            380.88751220703125
+          ],
+          "page": 3,
+          "span": [
+            0,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In Figure 1, we sketch a minimal DF, in which each of the three tasks is used consecutively in order to generate entities and relationships for a generic KG. We will use Figure1toillustratethepurposeandimplementationof each DF task.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.524391174316406,
+            317.6519470214844,
+            552.3914184570312,
+            353.5248107910156
+          ],
+          "page": 3,
+          "span": [
+            0,
+            232
+          ]
+        }
+      ]
+    },
+    {
+      "text": "FIGURE1 Schematic of a data flow for the creation of a Knowledge Graph. The data flow consists of three main task types: extraction of document elements (abstracts, paragraphs, tables, figures, etc.), annotation of these elements to detect entities and their relationships and finally aggregation of these entities and their relationships. For every task, we keep complete provenance, such that we can always trace back to a specific document or element that embeds a certain entity or relationship",
+      "name": "caption",
+      "type": "caption",
+      "prov": [
+        {
+          "bbox": [
+            44.78328323364258,
+            45.39774703979492,
+            545.7940673828125,
+            89.4708251953125
+          ],
+          "page": 3,
+          "span": [
+            0,
+            498
+          ]
+        }
+      ]
+    },
+    {
+      "$ref": "#/figures/0",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            578.368896484375,
+            15.450490951538086,
+            583.4779663085938,
+            766.7100219726562
+          ],
+          "page": 3,
+          "span": [
+            0,
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "text": "4of15",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            751.4075317382812,
+            68.55958557128906,
+            758.0504760742188
+          ],
+          "page": 4,
+          "span": [
+            0,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "text": "STAAR ET AL.",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            510.634765625,
+            751.4635620117188,
+            550.9420166015625,
+            758.4869384765625
+          ],
+          "page": 4,
+          "span": [
+            0,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2.1.1 | Extraction",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            45.14111328125,
+            720.4854736328125,
+            157.7607421875,
+            732.3443603515625
+          ],
+          "page": 4,
+          "span": [
+            0,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In an extraction task, we generate new data entities (eg, document components) from an original set of source entities (eg, documents). During this process, new links are created which connect these newly generated data entities to their original source entity. Typical examples of such extraction tasks are the extraction of abstracts, paragraphs, tables, or figures from the structured document files.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            656.0805053710938,
+            553.5469360351562,
+            704.7728881835938
+          ],
+          "page": 4,
+          "span": [
+            0,
+            403
+          ]
+        }
+      ]
+    },
+    {
+      "text": "From a scalability point of view, this task is embarrassingly parallel, which makes it extremely easy to implement on loosely interconnected environments such as a cloud. We simply iterate in parallel over all source entities in the backend database, extract the desired components and then insert those components as new data entities back into the database. Extraction tasks have no internal synchronization points.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.56229019165039,
+            604.0359497070312,
+            553.0910034179688,
+            652.8948974609375
+          ],
+          "page": 4,
+          "span": [
+            0,
+            417
+          ]
+        }
+      ]
+    },
+    {
+      "text": "One particular benefit of this task is to make the query capability on the Knowledge Graph more fine grained by being able to provide provenance information on the result. For example, this would let the user explore all the paragraphs, tables, or figures that embed a certain fact.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.6591796875,
+            565.0864868164062,
+            552.8568115234375,
+            600.9397583007812
+          ],
+          "page": 4,
+          "span": [
+            0,
+            282
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2.1.2 | Annotation",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            45.497798919677734,
+            525.5185546875,
+            161.91403198242188,
+            536.9064331054688
+          ],
+          "page": 4,
+          "span": [
+            0,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In the annotation task, we apply NLU methods to detect language entities and their relationships within a single data entity. Here, data entities can be as simple as a snippet of text (eg, a paragraph) or more complex structures such as tables or figures. The main goal of the annotation task is to obtain all relevant information from the data entity with regard to the domain of the corpus. Since different technical fields require different annotations, our annotation task is modular, allowing language entities to be annotated for material science, oil and gas, or more basic entities (eg, noun phrases, abbreviations, unit and values, etc.).",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.28074645996094,
+            435.03485107421875,
+            552.7772827148438,
+            509.80706787109375
+          ],
+          "page": 4,
+          "span": [
+            0,
+            647
+          ]
+        }
+      ]
+    },
+    {
+      "text": "From a technical perspective, the language entities are detected and annotated using multiple NLU methods, ranging from complex regular expressions \u2020 to LSTM networks. 5,6 We employ state-of-the-art NLU toolkits such as Spacy 7 or NLTK \u2021 to train and apply custom named entity recognition models. A detailed investigation of these NLU annotators unfortunately goes beyond of the scope of this paper. However, in Figure 2, we show the different types of named (geological) entities found in a paragraph by our oil and gas annotation model.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.999271392822266,
+            370.0654296875,
+            551.750244140625,
+            431.6009521484375
+          ],
+          "page": 4,
+          "span": [
+            0,
+            538
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In Listing 1, we also show an excerpt of how the annotations (both language entities and relationships) are stored in the backend. It is noteworthy here that relationships are stored as (weighted) links between two entity references. \u00a7 The usage of references reduces data duplication and more importantly ensures that the relationships are always defined between two known entities in the KG. The latter simplifies the aggregation of the relationships significantly, since no new entities need to be created in the KG in order to aggregate the relationships (see section 2.1.4).",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.37678527832031,
+            304.9195251464844,
+            551.427001953125,
+            366.6332092285156
+          ],
+          "page": 4,
+          "span": [
+            0,
+            579
+          ]
+        }
+      ]
+    },
+    {
+      "text": "FIGURE 2 Illustration of various detected language entities in a particularly rich snippet of an AAPG abstract. 8 The language entities here are all related to geological concepts in the domain of oil and gas exploration",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48663330078125,
+            45.39759826660156,
+            540.3204956054688,
+            67.21272277832031
+          ],
+          "page": 4,
+          "span": [
+            0,
+            220
+          ]
+        }
+      ]
+    },
+    {
+      "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            578.368896484375,
+            15.450490951538086,
+            583.4779663085938,
+            766.7100219726562
+          ],
+          "page": 4,
+          "span": [
+            0,
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "text": "STAAR ET AL.",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            44.041500091552734,
+            751.3096313476562,
+            85.72028350830078,
+            759.7291870117188
+          ],
+          "page": 5,
+          "span": [
+            0,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "$ref": "#/figures/1",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "text": "LISTING 1 Excerpt of the annotated abstract from an AAPG paper 8 with its original text and the detected entities and relationships. Note that relationships are typed (encoded in the field name) and weighted. The weight reflects the confidence of the language annotation model during extraction. Relationships are always defined on detected entities, and will therefore use references defining a link between two entities",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78594970703125,
+            483.39947509765625,
+            548.2582397460938,
+            529.3165283203125
+          ],
+          "page": 5,
+          "span": [
+            0,
+            421
+          ]
+        }
+      ]
+    },
+    {
+      "text": "From a scaling perspective, this task is again embarrassingly parallel. Unlike the extraction task, the annotation task is not creating new data entities, but rather appending new data associated with an existing data entity. We simply apply the desired entity and relationship annotators on all document components (paragraphs, tables, etc.) in parallel by distributing the operations on all available compute resources. Annotation tasks have no internal synchronization points. From a corpus of about 100 000 documents, we typically extract about 3 million paragraphs. Assuming unlimited resources, the annotation task could be distributed to potentially 3 million independent workers.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78684997558594,
+            370.0640563964844,
+            549.865478515625,
+            444.5719299316406
+          ],
+          "page": 5,
+          "span": [
+            0,
+            687
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2.1.3 | Aggregation of entities",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            44.206939697265625,
+            330.4949035644531,
+            223.93128967285156,
+            341.8828125
+          ],
+          "page": 5,
+          "span": [
+            0,
+            31
+          ]
+        }
+      ]
+    },
+    {
+      "text": "The aggregation task for entities is similar to an extraction task, in the sense that we create new entities and link them each to the source they were mentioned in. In addition to extraction, the entity aggregation task also applies a similarity metric \u00b6 between the entities during extraction. This similarity metric will define if two entities refer to the same language concept and thus need to be represented by a single entity in the KG, rather than remaining separated. In Figure 1, we have illustrated the aggregation task for two types of entities across many different document components. These entity types could be for example materials and properties or geological formations and geological ages. The links connecting the new entities to their source entity are weighted according to the frequency of the match, that is, we set a higher weight if the language entity has been found multiple times. From an implementation point of view, the aggregation task for entities is nontrivial. In distributed computing, it corresponds to a reduction operation. Our implementation distributes the iteration of the source elements among all available computational resources. The aggregation is first performed in a local buffer, which is then synchronized with the backend database only when it reaches a maximum size. The synchronization step is a simple atomic update into an existing (or a newly created) database object. The synchronization for updates from each worker task does not collide with the others.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78684616088867,
+            149.07435607910156,
+            549.819091796875,
+            314.53570556640625
+          ],
+          "page": 5,
+          "span": [
+            0,
+            1516
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2.1.4 | Aggregation of relationships",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            43.94790267944336,
+            109.50601959228516,
+            254.47779846191406,
+            120.89392852783203
+          ],
+          "page": 5,
+          "span": [
+            0,
+            36
+          ]
+        }
+      ]
+    },
+    {
+      "text": "The aggregation of relationships introduces new links between the entities that were aggregated in the previous aggregation operation. In Figure 1, this task is depicted as the last operation, where entities with an annotated relationship are explicitly linked together. For example, we create an edge between the Egret-Hibernia Petroleum System and Jeanne D'Arc Basin from Listing 1.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            45.00958251953125,
+            549.1444091796875,
+            93.61456298828125
+          ],
+          "page": 5,
+          "span": [
+            0,
+            384
+          ]
+        }
+      ]
+    },
+    {
+      "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            578.368896484375,
+            15.450490951538086,
+            583.4779663085938,
+            766.7100219726562
+          ],
+          "page": 5,
+          "span": [
+            0,
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "text": "6of15",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            751.4075317382812,
+            68.55958557128906,
+            758.0504760742188
+          ],
+          "page": 6,
+          "span": [
+            0,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "text": "STAAR ET AL.",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            510.634765625,
+            751.4635620117188,
+            550.9879150390625,
+            758.9756469726562
+          ],
+          "page": 6,
+          "span": [
+            0,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Similar to the aggregation of entities, the aggregation task for relationships is a reduction operation. Two independent document components could describe the same relationship between two entities. To minimize the synchronization lookup operation with the backend database, this task also utilizes a local buffer which accumulates the changes to be committed to the KG until the maximum size is reached. This approach allows to distribute the computation among all the source document components and performs very few blocking operations in the backend database.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.78483581542969,
+            669.0628051757812,
+            554.4027709960938,
+            730.823486328125
+          ],
+          "page": 6,
+          "span": [
+            0,
+            564
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2.2 | Data flows",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            45.753639221191406,
+            629.4933471679688,
+            148.00445556640625,
+            641.5734252929688
+          ],
+          "page": 6,
+          "span": [
+            0,
+            16
+          ]
+        }
+      ]
+    },
+    {
+      "text": "The purpose of a DF is to provide an execution plan for the task types detailed above in a meaningful order to generate or update a specific KG. When instantiating a DF, one has the possibility to define in a declarative way:",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            591.0541381835938,
+            552.9049682617188,
+            613.8143310546875
+          ],
+          "page": 6,
+          "span": [
+            0,
+            225
+          ]
+        }
+      ]
+    },
+    {
+      "text": "1. Which document components should be extracted from a converted corpus to form source entities (eg, extract all paragraphs, tables, figures and captions from the AAPG articles)?",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.445133209228516,
+            552.0497436523438,
+            553.362548828125,
+            575.2869873046875
+          ],
+          "page": 6,
+          "span": [
+            0,
+            179
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2. Which annotator model(s) to use on which type of source entity (eg, run the geology or material science annotators on paragraphs)?",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.744380950927734,
+            526.0834350585938,
+            553.5414428710938,
+            548.8994140625
+          ],
+          "page": 6,
+          "span": [
+            0,
+            133
+          ]
+        }
+      ]
+    },
+    {
+      "text": "3. Which entity and relationship aggregations to perform on which set of annotated language entities?",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.8809700012207,
+            513.0443115234375,
+            481.36083984375,
+            523.5081787109375
+          ],
+          "page": 6,
+          "span": [
+            0,
+            101
+          ]
+        }
+      ]
+    },
+    {
+      "text": "The DFs can thus be seen as blueprints for processing the corpus into a defined graph topology. Notably, our implementation of DFs and their tasks retains the flexibility of processing not only source documents of a well-known data schema such as from CCS, but virtually any structure that can be transformed to a JSON representation, including data entities from precurated databases. We designed the CPS platform to support export and import of DFs on entirely new datasets without the burden of recreating it from scratch.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.38796615600586,
+            435.0345458984375,
+            553.393310546875,
+            497.0226135253906
+          ],
+          "page": 6,
+          "span": [
+            0,
+            525
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Our backend engine can exploit the DAG defined through the DF to massively distribute the individual tasks on all compute resources, because independent branches of the DAG each containing a chain of tasks can execute in parallel. The achievable level of parallelism changes throughout the execution. A practical example is a DF which extracts paragraphs and abstracts from all documents in the corpus, then annotates them and finally aggregates all entities. Here, the extraction tasks are distributed only over all documents; then, in the annotation tasks, we increase the parallelism to all document components. Any synchronization points thus can be pushed back into the aggregation tasks.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.54835891723633,
+            344.0406799316406,
+            555.0050048828125,
+            432.1236877441406
+          ],
+          "page": 6,
+          "span": [
+            0,
+            693
+          ]
+        }
+      ]
+    },
+    {
+      "text": "3 | DEEP DATA EXPLORATION USING KNOWLEDGE GRAPHS",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            46.25617980957031,
+            304.472900390625,
+            469.55108642578125,
+            315.8608093261719
+          ],
+          "page": 6,
+          "span": [
+            0,
+            48
+          ]
+        }
+      ]
+    },
+    {
+      "text": "We will now look into the requirements to perform deep data exploration on a populated Knowledge Graph. A deep data exploration requires two fundamental capabilities:",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            265.92974853515625,
+            552.6448364257812,
+            288.6134338378906
+          ],
+          "page": 6,
+          "span": [
+            0,
+            166
+          ]
+        }
+      ]
+    },
+    {
+      "text": "1. perform deep queries on the graph, that is, queries that require multi-hop traversals and",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.377140045166016,
+            240.049560546875,
+            429.5157165527344,
+            249.76214599609375
+          ],
+          "page": 6,
+          "span": [
+            0,
+            92
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2. perform graph analytics on the full graph or subsets of it on-the-fly.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.62164306640625,
+            227.0850830078125,
+            346.3638916015625,
+            237.665283203125
+          ],
+          "page": 6,
+          "span": [
+            0,
+            73
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Deep queries are essential to dynamically combine independent facts together in the given query context. This would apply for example to explorational queries aimed to characterize petroleum system elements, as detailed in our case study (see section 5). Graph analytics can further reveal hidden structure in the KG topology. Examples of advanced graphanalytical operations are page rank, node centralities, 9,10 node clustering, spectral analysis, and label propagation.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.322208404541016,
+            162.0574493408203,
+            553.8873901367188,
+            210.65191650390625
+          ],
+          "page": 6,
+          "span": [
+            0,
+            472
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Both deep queries and graph analytics have in common that they are inherently expensive to compute on conventional graph databases, due to a rapid expansion of the number of visited nodes as a function of the graph-traversal depth. This is a major obstacle in providing reasonable time-to-solution in the aforementioned cases. Virtually all established graph database products on the market today ** fall victim to this, as was also reported in multiple sources. 11,12 Due to the poor performance we observed with available graph databases, we developed a new graph engine for the CPS platform. This graph engine is able to execute advanced graph-analytics 2 as well as evaluate deep queries with multi-hop traversals on large graphs (>1B edges) extremely fast.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.762847900390625,
+            71.06684875488281,
+            554.2275390625,
+            158.80230712890625
+          ],
+          "page": 6,
+          "span": [
+            0,
+            761
+          ]
+        }
+      ]
+    },
+    {
+      "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            578.368896484375,
+            15.450490951538086,
+            583.4779663085938,
+            766.7100219726562
+          ],
+          "page": 6,
+          "span": [
+            0,
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "text": "STAAR ET AL.",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            44.35243225097656,
+            751.4635620117188,
+            85.42164611816406,
+            758.9300537109375
+          ],
+          "page": 7,
+          "span": [
+            0,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "text": "7of15",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            528.5497436523438,
+            751.4075317382812,
+            550.62109375,
+            758.0504760742188
+          ],
+          "page": 7,
+          "span": [
+            0,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In the remaining part of this section, we elaborate on our newly developed graph engine. In section 3.1, we discuss the implementation design. In section 3.2, we discuss performance results and compare it to Neo4J. Later, in section 3.3, we will explain how the deep queries are formulated and evaluated in the graph engine.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78684997558594,
+            695.0850830078125,
+            549.5508422851562,
+            730.6725463867188
+          ],
+          "page": 7,
+          "span": [
+            0,
+            324
+          ]
+        }
+      ]
+    },
+    {
+      "text": "3.1 | Design of the graph engine",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            44.71910095214844,
+            655.5153198242188,
+            236.7943572998047,
+            666.9031982421875
+          ],
+          "page": 7,
+          "span": [
+            0,
+            32
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In computer science, two prevalent implementation schemes for graphs have emerged, one using adjacency lists and one relying on adjacency matrices. 13,14 In the adjacency list format, every node is essentially an object which contains a set of indices representing its neighbors. \u2020\u2020 The edges are therefore stored as a property of the node. In the adjacency matrix approach, all nodes obtain an identifier (typically an unsigned integer) and the edges are stored as a list of nodeidentifier tuples.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78636169433594,
+            578.0709838867188,
+            549.254638671875,
+            640.1705932617188
+          ],
+          "page": 7,
+          "span": [
+            0,
+            498
+          ]
+        }
+      ]
+    },
+    {
+      "text": "It is commonly known that most graph operations can be translated into matrix-operations using linear algebra. 13 For example, consider the graph-traversal V ! A W, in which we start from a set of nodes V and traverse the edge A in order to obtain a new set of nodes W. This can be directly translated into linear algebra as",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.733577728271484,
+            539.0667114257812,
+            548.8603515625,
+            576.5675048828125
+          ],
+          "page": 7,
+          "span": [
+            0,
+            324
+          ]
+        }
+      ]
+    },
+    {
+      "text": "w $^{!}$= Av ! with v $^{!}$$_{i}$= 1 if node i \\b V 0 if node i = 2 V , GLYPH<C26> \u00f0 1 \u00de",
+      "name": "formula",
+      "type": "equation",
+      "prov": [
+        {
+          "bbox": [
+            214.75270080566406,
+            498.5877685546875,
+            548.7813110351562,
+            529.3681030273438
+          ],
+          "page": 7,
+          "span": [
+            0,
+            89
+          ]
+        }
+      ]
+    },
+    {
+      "text": "and with A being the adjacency matrix representation of the edge A. Translating single graph-traversals into linear algebra operations significantly simplifies the job of deeper graph traversals. For example, to obtain the k-order neighborhood of node set V, one simply needs to evaluate Equation (1) k times recursively, as in",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.784271240234375,
+            435.0351257324219,
+            548.7523193359375,
+            470.5306396484375
+          ],
+          "page": 7,
+          "span": [
+            0,
+            327
+          ]
+        }
+      ]
+    },
+    {
+      "text": "w $^{!}$= A$^{k}$v $^{!}$= AA \u2026 Av ! GLYPH<C16>GLYPH<C17> GLYPH<C16> GLYPH<C17> GLYPH<C16> GLYPH<C17> : \u00f0 2 \u00de",
+      "name": "formula",
+      "type": "equation",
+      "prov": [
+        {
+          "bbox": [
+            234.89254760742188,
+            399.494873046875,
+            549.147216796875,
+            425.90399169921875
+          ],
+          "page": 7,
+          "span": [
+            0,
+            109
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Therefore, deep queries can be implemented efficiently as long as Equation (1) can be evaluated efficiently. Over the past decades, lots of research has been conducted in the High Performance Computing community on the acceleration and parallelization of Equation (1) in the context of graphs. In this context, the matrix A is sparse and the linear operation of Equation (1) is referred to as a sparse matrix vector multiplication (SpMV), for which highly optimized implementations have been developed. 15,16 Notably, most advanced graph-analytical operations can be formulated using SpMV operations. The most trivial case is page-rank, in which one recursively executes Equation (1) in combination with a renormalization until w ! is equal to v $^{!}$. In our previous work, 2 we have also shown in detail that advanced graph-analytical operations such as node centralities and spectral analysis of the graph can be done effectively with only SpMV operations.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.786224365234375,
+            279.0730285644531,
+            549.0149536132812,
+            379.8307189941406
+          ],
+          "page": 7,
+          "span": [
+            0,
+            960
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Since both deep queries and advanced graph analytics hugely benefit from a fast SpMV kernel, we have opted to design the graph engine in the CPS platform to work entirely with the adjacency matrix format.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.786224365234375,
+            253.05079650878906,
+            549.2977294921875,
+            275.7553405761719
+          ],
+          "page": 7,
+          "span": [
+            0,
+            204
+          ]
+        }
+      ]
+    },
+    {
+      "text": "3.2 | Memory architecture and performance optimization",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            43.776466369628906,
+            213.4808349609375,
+            380.18682861328125,
+            224.8687286376953
+          ],
+          "page": 7,
+          "span": [
+            0,
+            54
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Both adjacency lists and adjacency matrices-based graph implementations have specific advantages and disadvantages. The adjacency list format is very well suited for node-centric operations since it exploits data-locality for local graph operations, such as first order traversals. However, it proves suboptimal for global scale graph operations, which are required for deep queries and the advanced graph analytics. Here, one typically has to perform graph-traversals starting from many (or even all) nodes and accumulating the weight in the resulting nodes. In an adjacency list format, this often leads to many cache misses during execution, resulting in low performance. Furthermore, parallelizing global graph-traversals in the adjacency list format suffers significantly from concurrent write conflicts between threads during execution. In the adjacency matrix format, these problems are not encountered. The graph-traversals can be directly translated into a SpMV or even a sparse-matrix sparse-vector multiplication (SpMSpV). It has also been well established how to execute the SpMV effectively in a multithreaded fashion, and how to minimize cache-misses by applying a clever sorting of the tuples list. 17",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            58.08219528198242,
+            550.3234252929688,
+            197.4915771484375
+          ],
+          "page": 7,
+          "span": [
+            0,
+            1216
+          ]
+        }
+      ]
+    },
+    {
+      "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            578.368896484375,
+            15.450490951538086,
+            583.4779663085938,
+            766.7100219726562
+          ],
+          "page": 7,
+          "span": [
+            0,
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "text": "8of15",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            45.74378967285156,
+            751.4075317382812,
+            68.55958557128906,
+            758.9868774414062
+          ],
+          "page": 8,
+          "span": [
+            0,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "text": "STAAR ET AL.",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            510.634765625,
+            751.4635620117188,
+            550.921142578125,
+            758.3907470703125
+          ],
+          "page": 8,
+          "span": [
+            0,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "text": "FIGURE 3 The time-to-solution for k-hop graph traversal for Neo4J and our new graph engine. The results were obtained for the graph500 and twitter benchmark graphs. The 10th and 90th percentiles are represented by the shaded regions; the median is shown by the markers",
+      "name": "caption",
+      "type": "caption",
+      "prov": [
+        {
+          "bbox": [
+            46.00423812866211,
+            491.7976379394531,
+            543.2025756835938,
+            523.7771606445312
+          ],
+          "page": 8,
+          "span": [
+            0,
+            268
+          ]
+        }
+      ]
+    },
+    {
+      "$ref": "#/figures/2",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "text": "To illustrate the advantages of the adjacency matrix format for our needs, we show the time-to-solution (TTS) for queries with increasing order of traversals for Neo4J \u2021\u2021 and our graph engine in Figure 3. We computed a k-hop traversal query on the graph500 \u00a7\u00a7 (64M edges) and twitter-graph \u00b6\u00b6 (1.5B edges). Two important observations can be made. Firstly, our graph engine is able to run easily third, fourth, and even higher-order graph traversals. With Neo4J, this proves very difficult, as the TTS grows upwards of 1 hour. Secondly, our graph engine shows minimal variance in the TTS between all runs of the k-order graph-traversals. This is in stark contrast to Neo4J, where the TTS strongly depends on which node(s) one starts from.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.486663818359375,
+            370.0644836425781,
+            551.9771728515625,
+            457.6360168457031
+          ],
+          "page": 8,
+          "span": [
+            0,
+            737
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Another big advantage of using the adjacency matrix format is that we can exploit advanced compression methods 18 such as CSR or blocked COO. This reduces significantly the memory footprint of the graph and allows bigger graphs to be hosted entirely in-memory. In our case, we have opted to represent the edges by blocked matrices of a fixed size, in which each block matrix is of type COO. We chose the size of the block-matrix to be 2 16 = 65 536, allowing a pair of indices to be compactly represented by two unsigned short integers. Consequently, an edge has a memory footprint of only 4 bytes (equivalent to a single 32-bit integer), while a weighted edge a footprint of 8 bytes. *** This is a significant reduction in memory footprint compared to Neo4J graph databases, which use 33 bytes for unweighted edges $^{\u2020\u2020\u2020}$). Consequently, we can host graphs of close to 8 billion edges on a virtual machine with 32 GB of free memory, and even close to one trillion edges on a bare-metal POWER9 node with 4 TB of memory.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.486663818359375,
+            239.97216796875,
+            551.4871215820312,
+            366.491455078125
+          ],
+          "page": 8,
+          "span": [
+            0,
+            1021
+          ]
+        }
+      ]
+    },
+    {
+      "text": "3.3 | Formulation and evaluation of deep queries",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            45.14011764526367,
+            200.4981231689453,
+            333.7398986816406,
+            211.88601684570312
+          ],
+          "page": 8,
+          "span": [
+            0,
+            48
+          ]
+        }
+      ]
+    },
+    {
+      "text": "The goal of querying a KG is to answer complex questions. As such, users need to be provided with a functionality to formulate complex queries on the KG and quickly evaluate them.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.9116325378418,
+            162.0589599609375,
+            551.3727416992188,
+            184.45217895507812
+          ],
+          "page": 8,
+          "span": [
+            0,
+            179
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In order to avoid imposing a complex query language onto users, we have devised a way to define complex graph queries in a declarative format, which we call a workflow. Workflows are represented as a DAG of operations and are conceptually related to DFs. Unlike the former, the nodes of workflow DAGs do not represent data-transformation tasks, but specific graph operations which mutate an input (or intermediate) set of nodes into another set. We call these operations worktasks. For further convenience, we have developed a graphical user interface (UI) which allows to define such workflows in a visual programming approach (see Figure 4).",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.21662902832031,
+            84.04818725585938,
+            550.9126586914062,
+            158.48593139648438
+          ],
+          "page": 8,
+          "span": [
+            0,
+            643
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Currently, we support four fundamental types of worktasks: node-retrieval, traversal, logical operators and transform functions. In the following sections, we will discuss in detail how the worktasks are implemented in the context of our adjacency matrix design.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.992271423339844,
+            45.01641845703125,
+            552.1865844726562,
+            80.5264892578125
+          ],
+          "page": 8,
+          "span": [
+            0,
+            262
+          ]
+        }
+      ]
+    },
+    {
+      "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            578.368896484375,
+            15.450490951538086,
+            583.4779663085938,
+            766.7100219726562
+          ],
+          "page": 8,
+          "span": [
+            0,
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "text": "STAAR ET AL.",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            44.34560012817383,
+            751.4635620117188,
+            84.67137145996094,
+            758.0504760742188
+          ],
+          "page": 9,
+          "span": [
+            0,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "text": "9of15",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            528.5497436523438,
+            751.4075317382812,
+            550.62109375,
+            758.0504760742188
+          ],
+          "page": 9,
+          "span": [
+            0,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "text": "FIGURE 4 Visual workflow editor for deep queries in the CPS platform. The interface exhibits a left toolbar to pick specific graph operations, a main drawing area for the workflow DAG and a right panel to inspect and define parameters of each graph operation. Colors indicate different operation types such as input node-retrieval (blue), traversal (red), logical operators (green) and transform functions (yellow). Valid workflows can be executed using the ' play ' button",
+      "name": "caption",
+      "type": "caption",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            447.43023681640625,
+            541.6075439453125,
+            491.6891174316406
+          ],
+          "page": 9,
+          "span": [
+            0,
+            473
+          ]
+        }
+      ]
+    },
+    {
+      "$ref": "#/figures/3",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "text": "3.3.1 | Node retrieval",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            44.418067932128906,
+            395.521728515625,
+            176.333251953125,
+            406.9096374511719
+          ],
+          "page": 9,
+          "span": [
+            0,
+            22
+          ]
+        }
+      ]
+    },
+    {
+      "text": "This task finds a set of nodes which satisfy certain search criteria. This can range from finding a single node by its (approximate) name or exact node identifier, to finding nodes that satisfy a particular property. The task constructs a node vector v $^{!}$, such that",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            343.8106384277344,
+            548.7684326171875,
+            379.5713806152344
+          ],
+          "page": 9,
+          "span": [
+            0,
+            270
+          ]
+        }
+      ]
+    },
+    {
+      "text": "v $^{!}$$_{i}$= 1 if node i \\b S 0 if node i = 2 S , GLYPH<C26> \u00f0 3 \u00de",
+      "name": "formula",
+      "type": "equation",
+      "prov": [
+        {
+          "bbox": [
+            245.61886596679688,
+            303.5643005371094,
+            549.354736328125,
+            334.3446350097656
+          ],
+          "page": 9,
+          "span": [
+            0,
+            69
+          ]
+        }
+      ]
+    },
+    {
+      "text": "where S represents the set of nodes that satisfy the search criteria.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.27131652832031,
+            266.0909118652344,
+            323.5520935058594,
+            275.5295104980469
+          ],
+          "page": 9,
+          "span": [
+            0,
+            69
+          ]
+        }
+      ]
+    },
+    {
+      "text": "3.3.2 | Graph traversal",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            44.087921142578125,
+            226.52023315429688,
+            183.25424194335938,
+            237.9081268310547
+          ],
+          "page": 9,
+          "span": [
+            0,
+            23
+          ]
+        }
+      ]
+    },
+    {
+      "text": "The simplest type of graph-traversal is the direct graph-traversal. As explained in detail in section 3.1, these can be implemented as a straightforward SpMV operation w $^{!}$= Av $^{!}$. In more advanced types of graph-traversals, we evaluate all paths of different depth. Since the number of paths connecting two nodes might increase exponentially with the pathlength, one typically reduces the contribution of each path by weighting it with the inverse factorial of the path-length. For example, consider the case in which we want to explore deeper, indirect paths as follows,",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.12942886352539,
+            149.07611083984375,
+            549.1555786132812,
+            210.865478515625
+          ],
+          "page": 9,
+          "span": [
+            0,
+            580
+          ]
+        }
+      ]
+    },
+    {
+      "text": "w $^{!}$= A + A 2 2 ! + A 3 3 ! + GLYPH<C1> GLYPH<C1> GLYPH<C1> GLYPH<C18> GLYPH<C19> v $^{!}$= e$^{A}$- 1 GLYPH<C0> GLYPH<C1> v $^{!}$: \u00f0 4 \u00de",
+      "name": "formula",
+      "type": "equation",
+      "prov": [
+        {
+          "bbox": [
+            213.45111083984375,
+            107.99786376953125,
+            548.7833251953125,
+            139.26446533203125
+          ],
+          "page": 9,
+          "span": [
+            0,
+            142
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In its most generic case, a graph-traversal can therefore be written down as a matrix-function applied on an edge, that is, w $^{!}$= fA \u00f0 \u00de v $^{!}$. As discussed in detail in previous work, 2 this type of operation can be evaluated extremely efficiently using a recursive Chebyshev polynomial expansion.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78630447387695,
+            45.0455436706543,
+            548.7993774414062,
+            80.76483154296875
+          ],
+          "page": 9,
+          "span": [
+            0,
+            305
+          ]
+        }
+      ]
+    },
+    {
+      "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            578.368896484375,
+            15.450490951538086,
+            583.4779663085938,
+            766.7100219726562
+          ],
+          "page": 9,
+          "span": [
+            0,
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "$ref": "#/figures/4",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "text": "STAAR ET AL.",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            510.634765625,
+            751.4635620117188,
+            550.8926391601562,
+            758.5383911132812
+          ],
+          "page": 10,
+          "span": [
+            0,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "text": "3.3.3 | Logical operations",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            44.981788635253906,
+            720.4783935546875,
+            201.29905700683594,
+            731.9963989257812
+          ],
+          "page": 10,
+          "span": [
+            0,
+            26
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In logical operations, two sets of nodes are merged into one resulting set, each represented through a node vector. There are three common logical operations, AND, OR, and NOT. In the AND and OR operations, we compute the geometric or the arithmetic mean respectively for each pairwise elements in the vectors. In the NOT operation, we inverse the sign for each element of the input vector.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.0963020324707,
+            656.0805053710938,
+            554.1248779296875,
+            705.2210693359375
+          ],
+          "page": 10,
+          "span": [
+            0,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "text": "3.3.4 | Transform functions",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            45.49040985107422,
+            616.5106201171875,
+            214.94256591796875,
+            627.93359375
+          ],
+          "page": 10,
+          "span": [
+            0,
+            27
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Lastly, we implement operations which transform the weights associated with nodes. One such operation renormalizes and ultimately ranks the nodes according to their weight.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.356536865234375,
+            578.0712890625,
+            552.450927734375,
+            600.5599365234375
+          ],
+          "page": 10,
+          "span": [
+            0,
+            172
+          ]
+        }
+      ]
+    },
+    {
+      "text": "With these four types of operations, we can express rich queries to answer complex questions, which can have multiple inputs and outputs. Let us now discuss how a workflow is evaluated within the graph engine. Once a workflow has been submitted, each worktask is initially assigned a vector. These vectors are all initialized to zero (v $^{!}$$_{i}$= 0). Next, the graph will analyze the DAG of worktasks and identify which tasks can be run in parallel. This is achieved by performing a topological sort using depth-first traversal, which yields a list in which each item is a set of tasks that can be executed in parallel. The graph engine then proceeds with the parallel task computations.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.00928497314453,
+            500.0617370605469,
+            551.898193359375,
+            574.4982299804688
+          ],
+          "page": 10,
+          "span": [
+            0,
+            691
+          ]
+        }
+      ]
+    },
+    {
+      "text": "For each task, we obtain a set of nodes with corresponding weights by identifying the nonzero elements in the associated node vector. After executing the full workflow, we therefore obtain for each task a list of nodes which can be sorted according to their weights. The higher the weight of the node, the more relevant this node is. As such, we can also retrace which nodes were important in each stage of the workflow.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.801177978515625,
+            448.0732421875,
+            552.126953125,
+            496.556396484375
+          ],
+          "page": 10,
+          "span": [
+            0,
+            420
+          ]
+        }
+      ]
+    },
+    {
+      "text": "4 | CLOUD DESIGN AND DEPLOYMENT",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            46.02473449707031,
+            408.5044250488281,
+            321.5076904296875,
+            419.892333984375
+          ],
+          "page": 10,
+          "span": [
+            0,
+            31
+          ]
+        }
+      ]
+    },
+    {
+      "text": "The primary deployment target for the CPS is a cloud environment orchestrated via Kubernetes. We package the full platform assets with a Helm chart for quick deployment on multiple setups. For example we can easily deploy the platform on the IBM Cloud or on-premise in an IBM Cloud Private instance, both on x86-and POWER-based nodes.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.301429748535156,
+            357.0820007324219,
+            550.6118774414062,
+            392.4583435058594
+          ],
+          "page": 10,
+          "span": [
+            0,
+            334
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In Figure 5, we show the high-level cloud design of the CPS. The platform allows to manage and instrument the corpus processing in a multitenant fashion, that is, it handles multiple knowledge ingestion pipelines and it serves multiple knowledge graphs. We call each unit a Knowledge Graph Space (KGS), which consists of a dedicated instance of the graph engine, a dedicated MongoDB database and a bucket on a cloud object store (COS). A dashboard allows each project owner to manage the access and the usage of resources. The KGS can be launched into multiple flavors to optimally balance the utilization of the cluster. These flavors range from a virtual machine with small amount of memory to a full dedicated node including hardware acceleration with GPUs. Once a KGS is created, it can be paused and rescaled without loss of data or downtime.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.488189697265625,
+            253.0490264892578,
+            551.0360107421875,
+            353.4529724121094
+          ],
+          "page": 10,
+          "span": [
+            0,
+            847
+          ]
+        }
+      ]
+    },
+    {
+      "text": "For the KG creation pipeline, we implemented an asynchronous compute scheme we already use in our CCS solution. 1 The system is exposed to the user via an API frontend which communicates to the compute workers through a message broker and a result backend. The workers operate on the data, which is hosted on a NoSQL database and a cloud object store for data blobs. These workers are dynamically scaled by the cloud orchestrator to best match the current load of the platform.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.440311431884766,
+            188.080810546875,
+            551.396484375,
+            249.4759979248047
+          ],
+          "page": 10,
+          "span": [
+            0,
+            477
+          ]
+        }
+      ]
+    },
+    {
+      "text": "The processing of the KG creation typically starts with the user submitting the DF to the frontend API. The DAG of operations is then interpreted as described in the previous section and fine-grained tasks are submitted to the broker, for example, the whole corpus is split in many independent chunks. The user receives an overall status from the API and is notified when the DF processing has completed.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.27632141113281,
+            136.03631591796875,
+            550.9563598632812,
+            184.4517822265625
+          ],
+          "page": 10,
+          "span": [
+            0,
+            404
+          ]
+        }
+      ]
+    },
+    {
+      "text": "The KG data are distributed between three storage solutions: a NoSQL database, a cloud object storage (COS) and the KGS. Each node is represented as a document in a NoSQL database which contains all the properties attached to the node, for example, the text of a paragraph. If there is a binary object attached to the node, for example, the PDF document or an image, this is stored on the COS. The KGS contains only the minimal information needed to execute the queries, that is, the connectivity of the graph and the properties which are indexed for filtering and search.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.42215347290039,
+            58.08152389526367,
+            551.0359497070312,
+            132.46327209472656
+          ],
+          "page": 10,
+          "span": [
+            0,
+            572
+          ]
+        }
+      ]
+    },
+    {
+      "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            578.368896484375,
+            15.450490951538086,
+            583.4779663085938,
+            766.7100219726562
+          ],
+          "page": 10,
+          "span": [
+            0,
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "text": "STAAR ET AL.",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            43.98883056640625,
+            751.4635620117188,
+            84.67137145996094,
+            758.0504760742188
+          ],
+          "page": 11,
+          "span": [
+            0,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "text": "11of15",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            525.1477661132812,
+            751.4075317382812,
+            548.775146484375,
+            758.0504760742188
+          ],
+          "page": 11,
+          "span": [
+            0,
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "text": "FIGURE5 The architectural design of the CPS platform. On the left, we show the data flow processing architecture orchestrated through an asynchronous REST API. On the right, we sketch the multitenant KG serving facility which provides a dedicated environment for each project",
+      "name": "caption",
+      "type": "caption",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            428.34173583984375,
+            541.0477905273438,
+            460.564697265625
+          ],
+          "page": 11,
+          "span": [
+            0,
+            275
+          ]
+        }
+      ]
+    },
+    {
+      "$ref": "#/figures/5",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "text": "The KGS is exposed to the user via a REST API which is able to aggregate results collected from the different storage sources. To ensure decent performance when serving queries of multiple users, the graph engine can be dynamically scaled horizontally. Most workflow queries execute fast enough such that they can be responded from a synchronous request. Others, especially the graph analytics computations, are more expensive and return large amounts of data. Thus, these queries are executed through an asynchronous API and the results are paginated and streamed back to the user on completion.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78684997558594,
+            331.06005859375,
+            550.6510620117188,
+            405.4977722167969
+          ],
+          "page": 11,
+          "span": [
+            0,
+            596
+          ]
+        }
+      ]
+    },
+    {
+      "text": "5 | CASE STUDY: OIL AND GAS EXPLORATION",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            44.489322662353516,
+            291.4902038574219,
+            365.9893798828125,
+            302.87811279296875
+          ],
+          "page": 11,
+          "span": [
+            0,
+            39
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Oil and gas exploration is a complex, technical field of expertise. Unfortunately, the data of many geological processes and entities is scattered across databases (public and proprietary) and corpora of documents, where it is often deeply embedded in text, tables, and figures. This is a serious impediment for efficient exploration of new oil and gas opportunities. For example, geographic information of geological structures can be found in NaturalEarthData, \u2021\u2021\u2021 while their history, evolution, and components (eg, formations with their age, rock-composition, and depth) are discussed in reports (governmental and proprietary) and scientific articles. As such, experts in oil and gas exploration often need to read many documents in order to find all the information of a certain geographic area and get a good understanding of its underlying geology.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.785736083984375,
+            175.04168701171875,
+            549.7868041992188,
+            275.5009460449219
+          ],
+          "page": 11,
+          "span": [
+            0,
+            855
+          ]
+        }
+      ]
+    },
+    {
+      "text": "The main tasks of the experts working in oil and gas exploration are to identify potential new exploration sites. This is typically done by describing a basin or one of its sub-regions. In practice, ' describing a basin ' boils down to identifying all geological formations with their properties in the basin and investigating if these formations constitute a petroleum system. 19 In its most minimalistic form, a petroleum system is defined by three components: source, reservoir, and seal. The source is the rock formation in which the oil or gas was created. Once created, the oil or gas typically migrates to a porous reservoir rock, which holds the oil and gas. In order for the oil and gas not to escape, the reservoir needs to be covered by an impermeable rock formation which is called the seal. Each one of these components is comprised of one or more formations, with a certain age and rock composition. To identify a petroleum system in a certain geographical area, one has to find a candidate formation for each component (ie, reservoir, seal, and source) and observe that the properties of these components satisfy some well-established constraints. For example, the reservoir",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.785736083984375,
+            45.043888092041016,
+            549.4429931640625,
+            171.5908203125
+          ],
+          "page": 11,
+          "span": [
+            0,
+            1189
+          ]
+        }
+      ]
+    },
+    {
+      "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            578.368896484375,
+            15.450490951538086,
+            583.4779663085938,
+            766.7100219726562
+          ],
+          "page": 11,
+          "span": [
+            0,
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "text": "12",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            751.4075317382812,
+            51.251686096191406,
+            758.0504760742188
+          ],
+          "page": 12,
+          "span": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "text": "of 15",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            56.12232208251953,
+            751.4075317382812,
+            70.11566162109375,
+            758.0504760742188
+          ],
+          "page": 12,
+          "span": [
+            0,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "text": "STAAR ET AL.",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            510.634765625,
+            751.4635620117188,
+            550.7427368164062,
+            758.252197265625
+          ],
+          "page": 12,
+          "span": [
+            0,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "text": "FIGURE 6 Sketch of the entire pipeline to perform deep data exploration on large corpora",
+      "name": "caption",
+      "type": "caption",
+      "prov": [
+        {
+          "bbox": [
+            44.766658782958984,
+            585.4602661132812,
+            387.12310791015625,
+            593.5936279296875
+          ],
+          "page": 12,
+          "span": [
+            0,
+            88
+          ]
+        }
+      ]
+    },
+    {
+      "$ref": "#/figures/6",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "text": "formation has to have a lower depth than the seal formation. Another example of such constraints is that the age of the seal and reservoir has to be older than the source.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.36357116699219,
+            526.083984375,
+            552.5618286132812,
+            548.4772338867188
+          ],
+          "page": 12,
+          "span": [
+            0,
+            171
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In order for the CPS platform to help the oil and gas explorationalists in their day-to-day job effectively, it needs to meet two objectives. On the one hand, it needs to create a consistent Knowledge Graph from a document corpus. This Knowledge Graph has to contain all geological formations with their respective properties (eg, geographical locations, depth, age, and rock composition). On the other hand, CPS needs to provide fast query responses, such that one can automatically retrieve potential components of petroleum systems and apply the constraints to filter out promising candidates.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            448.0732421875,
+            552.16748046875,
+            522.4549560546875
+          ],
+          "page": 12,
+          "span": [
+            0,
+            596
+          ]
+        }
+      ]
+    },
+    {
+      "text": "During the development and implementation of custom NLU annotators in CPS for oil and gas exploration, the client team worked hand in hand with the IBM Research team to set up a controlled accuracy benchmark in which the key capabilities of the CPS can be quantified. The goal of the benchmark was to test the entire pipeline depicted in Figure 6, that is, from PDF document ingestion to a final, queryable KG. The key components of this specific pipeline are,",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.228458404541016,
+            382.8196716308594,
+            552.1286010742188,
+            444.5987854003906
+          ],
+          "page": 12,
+          "span": [
+            0,
+            460
+          ]
+        }
+      ]
+    },
+    {
+      "text": "1. the conversion of PDF documents into JSON through CCS,",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            357.0803527832031,
+            309.6529846191406,
+            366.4904479980469
+          ],
+          "page": 12,
+          "span": [
+            0,
+            57
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2. the creation of the KG in the CPS from the JSON documents, and",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            344.0412292480469,
+            336.8304748535156,
+            353.6436767578125
+          ],
+          "page": 12,
+          "span": [
+            0,
+            65
+          ]
+        }
+      ]
+    },
+    {
+      "text": "3. the querying of the KG served by CPS to identify petroleum systems elements with their properties.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.47064971923828,
+            331.05810546875,
+            478.3088684082031,
+            340.54962158203125
+          ],
+          "page": 12,
+          "span": [
+            0,
+            101
+          ]
+        }
+      ]
+    },
+    {
+      "text": "On the suggestion of the experts in the client team, the entire pipeline was run on the 1051 Field Evaluation Reports from the C&C Reservoirs \u00a7\u00a7\u00a7 dataset. The advantage of using this dataset for an accuracy benchmark is that each report includes two parts. One part is verbose text describing the history, evolution, and composition of the fields. The language used is of similar complexity to standard geological publications and thus a realistic challenge for our KG creation pipeline. The second part at the end of each report is comprised of tables which summarize the text and provide us the elements of the petroleum systems with their properties. Therefore, we ingest these reports into CCS and extract both text and tables. Then, by generating a KG only from the text and keeping the tables as ground-truth to compare answers of the KG queries against, we obtain a well-controlled, end-to-end accuracy benchmark.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.16604232788086,
+            214.04542541503906,
+            551.7832641601562,
+            314.4459533691406
+          ],
+          "page": 12,
+          "span": [
+            0,
+            920
+          ]
+        }
+      ]
+    },
+    {
+      "text": "For step (1) of the pipeline, we ingested all 1051 PDFs into CCS and visually annotated the document structure on 300 (out of 46 019) pages. This yielded a page model which accurately converted all documents to JSON format with a 99.7% recall and 99.3% precision in the converted structure. These numbers are in line with those reported in our previous works. 1 Importantly, very accurate conversion results are key to the resulting quality, since otherwise the language annotators will process incomplete data and eventually the relevance of query results will suffer.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.26358413696289,
+            149.0762481689453,
+            551.3743896484375,
+            210.68536376953125
+          ],
+          "page": 12,
+          "span": [
+            0,
+            569
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In step (2), we create the Knowledge Graph by executing a DF that will generate all the entities and relationships relevant to the geology domain. Our language annotator models trained for geology extract geographic areas, geological structures (eg, basins), formations, ages, rocks, petroleum systems, and their elements (PSE) (eg, seal, source, and reservoir). Overall, we extracted a total of 4597 PSEs, 8811 formations, 471 geological ages, and 64 rock types (relevant to the PSEs). The full processing performed at an average rate of 130 ms per page per worker core, on a system with three worker nodes each using four cores. Eventually, the KG included 679 296 edges connecting 116 662 nodes.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.70681381225586,
+            71.06546783447266,
+            551.875732421875,
+            145.5064697265625
+          ],
+          "page": 12,
+          "span": [
+            0,
+            698
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In step (3), we query the Knowledge Graph using a tailored evaluation workflow. This workflow allows us to identify PSEs and their connected properties in the Knowledge Graph, for example, their age, formation and rock",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.488380432128906,
+            45.0432014465332,
+            551.8381958007812,
+            67.6728515625
+          ],
+          "page": 12,
+          "span": [
+            0,
+            218
+          ]
+        }
+      ]
+    },
+    {
+      "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            578.368896484375,
+            15.450490951538086,
+            583.4779663085938,
+            766.7100219726562
+          ],
+          "page": 12,
+          "span": [
+            0,
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "text": "STAAR ET AL.",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            44.31840515136719,
+            751.4635620117188,
+            84.67137145996094,
+            758.0541381835938
+          ],
+          "page": 13,
+          "span": [
+            0,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "text": "13",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            525.1477661132812,
+            751.4075317382812,
+            529.9112548828125,
+            758.0504760742188
+          ],
+          "page": 13,
+          "span": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "text": "of 15",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            534.7818603515625,
+            751.4075317382812,
+            548.775146484375,
+            758.0504760742188
+          ],
+          "page": 13,
+          "span": [
+            0,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "text": "FIGURE 7 The evaluation workflow to identify the petroleum system elements (PSE) in an article and infer its properties. It starts by searching for all petroleum system elements of a certain type (eg, source, reservoir or seal) and a particular report (worktasks 1 and 2). By successive graph traversals (worktasks 3-5, 7-9, 11, 12) along specific edges and logical operations (worktasks 6, 10, 13, 14), we are able to obtain a list of candidate formations (worktask 15), ages (worktask 16) and rocks (worktask 17), ranked by their accumulated weight. Execution of this query takes less than 18 ms on average",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.35472869873047,
+            537.0355224609375,
+            539.2632446289062,
+            593.7362670898438
+          ],
+          "page": 13,
+          "span": [
+            0,
+            608
+          ]
+        }
+      ]
+    },
+    {
+      "$ref": "#/figures/7",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "text": "TABLE 1 Top-k accuracies validation of KG query results. Numbers represent the fraction in which any of the k highest ranked answers matches the expected answer",
+      "name": "caption",
+      "type": "caption",
+      "prov": [
+        {
+          "bbox": [
+            44.49153518676758,
+            441.90771484375,
+            181.1155242919922,
+            498.2774658203125
+          ],
+          "page": 13,
+          "span": [
+            0,
+            160
+          ]
+        }
+      ]
+    },
+    {
+      "$ref": "#/tables/0",
+      "name": "table",
+      "type": "table"
+    },
+    {
+      "text": "composition. In Figure 7, we visualize the DAG of this workflow. The final node weights are accumulated throughout the branches on the workflow and represent the relevance score of each node.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            292.05572509765625,
+            549.0201416015625,
+            314.4489440917969
+          ],
+          "page": 13,
+          "span": [
+            0,
+            191
+          ]
+        }
+      ]
+    },
+    {
+      "text": "To evaluate the correctness of the predicted PSE properties, we follow the standard practice of reporting the top-k accuracy. This is computed as the percentage in which any of the k highest ranked answers matches the expected answer, over all documents. In Table 1, we show the top-1, top-2, top-3, and top-5 accuracy for all properties of each petroleum system element. One can make two distinct observations. First, the top-1 numbers are in the range of 0.75-0.9, meaning that for 3 in 4 cases, the most relevant result predicted by the KG was correct (precision). Secondly, we observe that the top-5 numbers are very high (\u2265 0.97), showing that the system was able detect and aggregate most of the PSEs and their properties (recall). Thus, the recall of the language annotators in the KG creation pipeline was very satisfactory.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.786376953125,
+            188.07875061035156,
+            550.8748779296875,
+            288.5342712402344
+          ],
+          "page": 13,
+          "span": [
+            0,
+            832
+          ]
+        }
+      ]
+    },
+    {
+      "text": "6 | CONCLUSIONS",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            44.73537826538086,
+            148.51072692871094,
+            178.22747802734375,
+            159.89862060546875
+          ],
+          "page": 13,
+          "span": [
+            0,
+            15
+          ]
+        }
+      ]
+    },
+    {
+      "text": "With the introduction of the CPS platform, we demonstrate substantial benefit for domain experts and data scientists in exercising deep exploration of published knowledge in a fully integrated, yet modular cloud solution. CPS seamlessly connects to the CSS, complementing it with a highly scalable, automated pipeline to build consistent domain knowledge models and an intuitive, powerful approach to explorational queries and graph-scale analytics. This is accomplished through three fundamental design considerations: (1) We do not require manual data curation or annotation; (2) We built a scalable, efficient architecture to support the ingestion, processing and query workloads, all embedded in",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78739929199219,
+            58.0830192565918,
+            549.515625,
+            132.5465087890625
+          ],
+          "page": 13,
+          "span": [
+            0,
+            699
+          ]
+        }
+      ]
+    },
+    {
+      "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            578.368896484375,
+            15.450490951538086,
+            583.4779663085938,
+            766.7100219726562
+          ],
+          "page": 13,
+          "span": [
+            0,
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "text": "14of15",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            751.4075317382812,
+            70.11566162109375,
+            758.0504760742188
+          ],
+          "page": 14,
+          "span": [
+            0,
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "text": "STAAR ET AL.",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            510.634765625,
+            751.3934326171875,
+            551.0859985351562,
+            759.209228515625
+          ],
+          "page": 14,
+          "span": [
+            0,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "text": "a single platform; and (3) We expose the capabilities through an intuitively consumable API and complementary UI tools.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.38566589355469,
+            708.0682373046875,
+            552.190673828125,
+            731.0924072265625
+          ],
+          "page": 14,
+          "span": [
+            0,
+            119
+          ]
+        }
+      ]
+    },
+    {
+      "text": "In our oil and gas case study, we successfully verified our solution for a real-world application with the help of subject matter experts from a client team. Currently, CCS and CPS are actively used in more than five client engagements, most notably in the oil and gas industry as well as in the material science industry.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.289154052734375,
+            669.0628051757812,
+            553.278076171875,
+            705.6804809570312
+          ],
+          "page": 14,
+          "span": [
+            0,
+            322
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Future work will focus on processing public repositories such as the arXiv.org library, USPTO, and PubMed in order to make their content available to deep data exploration.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.96582794189453,
+            643.04052734375,
+            553.867431640625,
+            666.6377563476562
+          ],
+          "page": 14,
+          "span": [
+            0,
+            172
+          ]
+        }
+      ]
+    },
+    {
+      "text": "DATA AVAILABILITY STATEMENT",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            616.512939453125,
+            242.9811553955078,
+            628.0685424804688
+          ],
+          "page": 14,
+          "span": [
+            0,
+            27
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Data subject to third party restrictions.",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            603.7968139648438,
+            209.16476440429688,
+            615.1295166015625
+          ],
+          "page": 14,
+          "span": [
+            0,
+            41
+          ]
+        }
+      ]
+    },
+    {
+      "text": "ORCID",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            45.64805603027344,
+            577.8392333984375,
+            84.40357971191406,
+            589.0214233398438
+          ],
+          "page": 14,
+          "span": [
+            0,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Peter W. J. Staar https://orcid.org/0000-0002-8088-0823 Michele Dolfi https://orcid.org/0000-0001-7216-8505 Christoph Auer https://orcid.org/0000-0001-5761-0422",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.716941833496094,
+            539.067138671875,
+            288.83966064453125,
+            575.9967041015625
+          ],
+          "page": 14,
+          "span": [
+            0,
+            160
+          ]
+        }
+      ]
+    },
+    {
+      "text": "ENDNOTES",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            45.982421875,
+            512.6180419921875,
+            110.57768249511719,
+            524.0657958984375
+          ],
+          "page": 14,
+          "span": [
+            0,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "text": "* For example, ElasticSearch (https://www.elastic.co) and ApacheLucene (https://lucene.apache.org).",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48820114135742,
+            498.1862487792969,
+            411.1214904785156,
+            507.86468505859375
+          ],
+          "page": 14,
+          "span": [
+            0,
+            99
+          ]
+        }
+      ]
+    },
+    {
+      "text": "\u2020 Most language entities from a technical field are typically represented in a very specific, rigorous way that can be easily captured by regular expressions. We found that in practice, regular expressions often outperform DL models, since we can simply encode these representations.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.17177200317383,
+            472.4082946777344,
+            552.9000854492188,
+            493.8719482421875
+          ],
+          "page": 14,
+          "span": [
+            0,
+            283
+          ]
+        }
+      ]
+    },
+    {
+      "text": "\u2021 https://www.nltk.org",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.39039993286133,
+            457.71929931640625,
+            129.30548095703125,
+            468.0890197753906
+          ],
+          "page": 14,
+          "span": [
+            0,
+            22
+          ]
+        }
+      ]
+    },
+    {
+      "text": "\u00a7 We follow the standard JSON-schema for references.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.71389389038086,
+            443.1494140625,
+            242.0704345703125,
+            453.0476989746094
+          ],
+          "page": 14,
+          "span": [
+            0,
+            52
+          ]
+        }
+      ]
+    },
+    {
+      "text": "\u00b6 A rather simple similarity metric is to perform a fuzzy comparison of the names of the newly found entities (ie, the name field found in Listing 1). A more sophisticated approach is to use word embeddings to identify if two concepts are similar.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.020606994628906,
+            417.41619873046875,
+            554.6400756835938,
+            438.90777587890625
+          ],
+          "page": 14,
+          "span": [
+            0,
+            247
+          ]
+        }
+      ]
+    },
+    {
+      "text": "** For example Neo4J, Titan, JanusGraph, Amazon Neptune, and Arangodb.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.48814010620117,
+            402.9024353027344,
+            321.26422119140625,
+            412.63861083984375
+          ],
+          "page": 14,
+          "span": [
+            0,
+            70
+          ]
+        }
+      ]
+    },
+    {
+      "text": "\u2020\u2020 This memory architecture is clearly documented for Titan (http://s3.thinkaurelius.com/docs/titan/current/data-model.html) and Neo4J (http://key-value-stories.blogspot.com/2015/02/neo4j-architecture.html).",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.00100326538086,
+            376.937744140625,
+            554.378662109375,
+            398.0555114746094
+          ],
+          "page": 14,
+          "span": [
+            0,
+            207
+          ]
+        }
+      ]
+    },
+    {
+      "text": "\u2021\u2021 We chose Neo4J as a reference since it is currently the most popular graph database solution, see https://db-engines.com/en/ranking_ trend/graph+dbms",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.0579719543457,
+            350.9154052734375,
+            553.2630004882812,
+            372.03350830078125
+          ],
+          "page": 14,
+          "span": [
+            0,
+            152
+          ]
+        }
+      ]
+    },
+    {
+      "text": "\u00a7\u00a7 http://graph500.org/",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.94832229614258,
+            335.78765869140625,
+            129.86572265625,
+            346.3191833496094
+          ],
+          "page": 14,
+          "span": [
+            0,
+            23
+          ]
+        }
+      ]
+    },
+    {
+      "text": "\u00b6\u00b6 https://snap.stanford.edu/data/higgs-twitter.html",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            45.82542419433594,
+            321.9457092285156,
+            234.11181640625,
+            331.8630065917969
+          ],
+          "page": 14,
+          "span": [
+            0,
+            52
+          ]
+        }
+      ]
+    },
+    {
+      "text": "*** We assume the weight can be represented by a float value.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.478782653808594,
+            307.19293212890625,
+            269.6688537597656,
+            316.9698486328125
+          ],
+          "page": 14,
+          "span": [
+            0,
+            61
+          ]
+        }
+      ]
+    },
+    {
+      "text": "\u2020\u2020\u2020 https://neo4j.com/developer/guide-sizing-and-hardware-calculator/",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.01924514770508,
+            292.9189147949219,
+            301.0096130371094,
+            302.8531799316406
+          ],
+          "page": 14,
+          "span": [
+            0,
+            69
+          ]
+        }
+      ]
+    },
+    {
+      "text": "\u2021\u2021\u2021 https://www.naturalearthdata.com/",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.444217681884766,
+            278.1666564941406,
+            187.92904663085938,
+            288.1064453125
+          ],
+          "page": 14,
+          "span": [
+            0,
+            37
+          ]
+        }
+      ]
+    },
+    {
+      "text": "\u00a7\u00a7\u00a7 https://www.ccreservoirs.com/",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.00947952270508,
+            263.8026123046875,
+            169.3743896484375,
+            274.1329345703125
+          ],
+          "page": 14,
+          "span": [
+            0,
+            33
+          ]
+        }
+      ]
+    },
+    {
+      "text": "REFERENCES",
+      "name": "subtitle-level-1",
+      "type": "subtitle-level-1",
+      "prov": [
+        {
+          "bbox": [
+            46.049869537353516,
+            231.931396484375,
+            123.2709732055664,
+            244.548095703125
+          ],
+          "page": 14,
+          "span": [
+            0,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "text": "1. Staar Peter WJ, Michele D, Christoph A, Costas B. Corpus conversion service: a machine learning platform to ingest documents at scale. KDD '18. New York, NY: ACM; 2018:774-782.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            50.6671142578125,
+            207.4257049560547,
+            552.3800659179688,
+            228.917724609375
+          ],
+          "page": 14,
+          "span": [
+            0,
+            179
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2. Staar Peter WJ, Kl BP, Roxana I, et al. Stochastic Matrix-Function Estimators: Scalable Big-Data Kernels with High Performance. Chicago, IL: IEEE; 2016:812-821.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            50.74010467529297,
+            184.40769958496094,
+            552.61669921875,
+            205.76568603515625
+          ],
+          "page": 14,
+          "span": [
+            0,
+            163
+          ]
+        }
+      ]
+    },
+    {
+      "text": "3. Matteo M, Christoph A, Val'ery W, et al. An information extraction and knowledge graph platform for accelerating biochemical discoveries. ArXiv.abs/1907.08400; 2019.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            50.74015808105469,
+            161.3896942138672,
+            552.6810302734375,
+            182.65234375
+          ],
+          "page": 14,
+          "span": [
+            0,
+            168
+          ]
+        }
+      ]
+    },
+    {
+      "text": "4. Paolo R, Marco P, Floriana B, Peter S, Costas B. Application of Geocognitive Technologies to Basin & Petroleum System Analyses, Texas: Society of Petroleum Engineers; 2019). Abu Dhabi International Petroleum Exhibition & Conference, Abu Dhabi, UAE, :10. https://doi. org/10.2118/197610-MS.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            50.16819763183594,
+            126.91963195800781,
+            552.5728759765625,
+            159.62261962890625
+          ],
+          "page": 14,
+          "span": [
+            0,
+            292
+          ]
+        }
+      ]
+    },
+    {
+      "text": "5. Guillaume L, Miguel B, Sandeep S, Kazuya K, Chris D. Neural Architectures for Named Entity Recognition, Stroudsburg PA: Association for Computational Linguistics; 2016.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            50.49177551269531,
+            103.90162658691406,
+            553.5820922851562,
+            124.90191650390625
+          ],
+          "page": 14,
+          "span": [
+            0,
+            171
+          ]
+        }
+      ]
+    },
+    {
+      "text": "6. Chiu Jason PC, Eric N. Named entity recognition with bidirectional LSTM-CNNs. TACL. 2016;4:357-370.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            50.74018859863281,
+            92.39262390136719,
+            436.9924011230469,
+            101.68670654296875
+          ],
+          "page": 14,
+          "span": [
+            0,
+            102
+          ]
+        }
+      ]
+    },
+    {
+      "text": "7. Matthew H, Ines M. spaCy 2: natural language understanding with bloom embeddings, convolutional neural networks and incremental parsing. To appear. 2017.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            50.74017333984375,
+            69.43157196044922,
+            552.4933471679688,
+            90.58172607421875
+          ],
+          "page": 14,
+          "span": [
+            0,
+            156
+          ]
+        }
+      ]
+    },
+    {
+      "text": "8. Magoon LB, Hudson TL, Peters KE. Egret-Hibernia(!), a significant petroleum system, northern Grand Banks area, offshore eastern Canada. Am Assoc Pet Geol Bull. 2005;89(9):1203-1237.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            50.37576675415039,
+            46.413570404052734,
+            553.1749267578125,
+            67.59844970703125
+          ],
+          "page": 14,
+          "span": [
+            0,
+            184
+          ]
+        }
+      ]
+    },
+    {
+      "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            578.368896484375,
+            15.450490951538086,
+            583.4779663085938,
+            766.7100219726562
+          ],
+          "page": 14,
+          "span": [
+            0,
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "text": "STAAR ET AL.",
+      "name": "page-header",
+      "type": "page-header",
+      "prov": [
+        {
+          "bbox": [
+            44.473201751708984,
+            751.4635620117188,
+            84.89160919189453,
+            758.80615234375
+          ],
+          "page": 15,
+          "span": [
+            0,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "$ref": "#/figures/8",
+      "name": "picture",
+      "type": "figure"
+    },
+    {
+      "text": "9. Estrada E. Subgraph centrality in complex networks. Phys Rev E. 2005;71(5):056103.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            46.63217544555664,
+            722.4282836914062,
+            362.7469787597656,
+            731.7239990234375
+          ],
+          "page": 15,
+          "span": [
+            0,
+            85
+          ]
+        }
+      ]
+    },
+    {
+      "text": "10. Estrada Ernesto, Higham Desmond J. (2010). Network Properties Revealed through Matrix Functions. SIAM Review, 52, (4), 696-714. http://dx.doi.org/10.1137/090761070.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78684997558594,
+            699.5198364257812,
+            549.7481689453125,
+            720.4119262695312
+          ],
+          "page": 15,
+          "span": [
+            0,
+            168
+          ]
+        }
+      ]
+    },
+    {
+      "text": "11. Labs Redis. Benchmarking RedisGraph 1.0. 2019.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.7877197265625,
+            688.0108642578125,
+            238.66644287109375,
+            697.144287109375
+          ],
+          "page": 15,
+          "span": [
+            0,
+            50
+          ]
+        }
+      ]
+    },
+    {
+      "text": "12. TigerGraph. Real-Time Deep Link Analytics. 2018.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.54977798461914,
+            676.5018920898438,
+            243.0414581298828,
+            685.6976318359375
+          ],
+          "page": 15,
+          "span": [
+            0,
+            52
+          ]
+        }
+      ]
+    },
+    {
+      "text": "13. Jeremy K, John G. Graph Algorithms in the Language of Linear Algebra. Philadelphia, PA: Society for Industrial and Applied Mathematics; 2011.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.7877197265625,
+            653.5408935546875,
+            548.7638549804688,
+            674.378662109375
+          ],
+          "page": 15,
+          "span": [
+            0,
+            145
+          ]
+        }
+      ]
+    },
+    {
+      "text": "14. Kepner Jeremy, Bader David, Bulu\u00e7 Ayd \u0131 n, Gilbert John, Mattson Timothy, Meyerhenke Henning (2015). Graphs, Matrices, and the GraphBLAS: Seven Good Reasons. Procedia Computer Science, 51, 2453-2462. http://dx.doi.org/10.1016/j.procs.2015.05.353.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.7877197265625,
+            630.52294921875,
+            548.82861328125,
+            651.5768432617188
+          ],
+          "page": 15,
+          "span": [
+            0,
+            250
+          ]
+        }
+      ]
+    },
+    {
+      "text": "15. Aydin B, Gilbert John R. The combinatorial BLAS: design, implementation, and applications. Int J High Perform Comput Appl. 2011;25 (4):496-509.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.787750244140625,
+            607.5050048828125,
+            550.8438720703125,
+            628.0836181640625
+          ],
+          "page": 15,
+          "span": [
+            0,
+            147
+          ]
+        }
+      ]
+    },
+    {
+      "text": "16. Jeremy K, Peter A, Bader David A, et al. Mathematical foundations of the GraphBLAS. 2016 IEEE HPEC. 2016; 1-9.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.787750244140625,
+            595.9960327148438,
+            474.9829406738281,
+            604.6593627929688
+          ],
+          "page": 15,
+          "span": [
+            0,
+            114
+          ]
+        }
+      ]
+    },
+    {
+      "text": "17. Ariful A, Mathias J, Aydin B, Ng Esmond G. The reverse Cuthill-McKee algorithm in distributed-memory. 2017 IEEE International Parallel and Distributed Processing Symposium (IPDPS). 2017: 22-31.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.786895751953125,
+            573.0350341796875,
+            548.8020629882812,
+            592.54248046875
+          ],
+          "page": 15,
+          "span": [
+            0,
+            197
+          ]
+        }
+      ]
+    },
+    {
+      "text": "18. Rukhsana S, Anila U, Chughtai IR. Review of storage techniques for sparse matrices. 2005 Pakistan Section Multitopic Conference. 2005 1-7.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.786865234375,
+            550.01708984375,
+            548.7230834960938,
+            569.8275146484375
+          ],
+          "page": 15,
+          "span": [
+            0,
+            142
+          ]
+        }
+      ]
+    },
+    {
+      "text": "19. Welte DH, Horsfield B, Baker DR. Petroleum and Basin Evolution: Insights from Petroleum Geochemistry, Geology, and Basin Modeling, Berlin Heidelberg: Springer-Verlag; 1997.",
+      "name": "list-item",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            44.78601837158203,
+            526.9991455078125,
+            550.565185546875,
+            546.7464599609375
+          ],
+          "page": 15,
+          "span": [
+            0,
+            176
+          ]
+        }
+      ]
+    },
+    {
+      "text": "How to cite this article: Staar PWJ, Dolfi M, Auer C. Corpus processing service: A Knowledge Graph platform to perform deep data exploration on corpora. Applied AI Letters. 2020;1:e20. https://doi.org/10.1002/ail2.20",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            57.16337966918945,
+            468.5407409667969,
+            529.73583984375,
+            491.138916015625
+          ],
+          "page": 15,
+          "span": [
+            0,
+            216
+          ]
+        }
+      ]
+    },
+    {
+      "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
+      "name": "text",
+      "type": "paragraph",
+      "prov": [
+        {
+          "bbox": [
+            578.368896484375,
+            15.450490951538086,
+            583.4779663085938,
+            766.7100219726562
+          ],
+          "page": 15,
+          "span": [
+            0,
+            319
+          ]
+        }
+      ]
+    }
+  ],
+  "page-dimensions": [
+    {
+      "height": 782.362,
+      "page": 1,
+      "width": 595.276
+    },
+    {
+      "height": 782.362,
+      "page": 2,
+      "width": 595.276
+    },
+    {
+      "height": 782.362,
+      "page": 3,
+      "width": 595.276
+    },
+    {
+      "height": 782.362,
+      "page": 4,
+      "width": 595.276
+    },
+    {
+      "height": 782.362,
+      "page": 5,
+      "width": 595.276
+    },
+    {
+      "height": 782.362,
+      "page": 6,
+      "width": 595.276
+    },
+    {
+      "height": 782.362,
+      "page": 7,
+      "width": 595.276
+    },
+    {
+      "height": 782.362,
+      "page": 8,
+      "width": 595.276
+    },
+    {
+      "height": 782.362,
+      "page": 9,
+      "width": 595.276
+    },
+    {
+      "height": 782.362,
+      "page": 10,
+      "width": 595.276
+    },
+    {
+      "height": 782.362,
+      "page": 11,
+      "width": 595.276
+    },
+    {
+      "height": 782.362,
+      "page": 12,
+      "width": 595.276
+    },
+    {
+      "height": 782.362,
+      "page": 13,
+      "width": 595.276
+    },
+    {
+      "height": 782.362,
+      "page": 14,
+      "width": 595.276
+    },
+    {
+      "height": 782.362,
+      "page": 15,
+      "width": 595.276
+    }
+  ],
+  "page-footers": [],
+  "page-headers": [],
+  "references": [],
+  "tables": [
+    {
+      "#-cols": 6,
+      "#-rows": 10,
+      "bounding-box": [
+        210.0027313232422,
+        346.577880859375,
+        549.0220336914062,
+        499.1263427734375
+      ],
+      "confidence": 0.9599999785423279,
+      "created_by": "high_conf_pred",
+      "type": "table",
+      "cells": null,
+      "data": [
+        [
+          {
+            "bbox": [
+              212.76950073242188,
+              485.32318115234375,
+              228.2480010986328,
+              493.3896789550781
+            ],
+            "col": 0,
+            "col-header": false,
+            "col-span": [
+              0,
+              1
+            ],
+            "row": 0,
+            "row-header": false,
+            "row-span": [
+              0,
+              1
+            ],
+            "spans": [
+              [
+                0,
+                0
+              ]
+            ],
+            "text": "PSE",
+            "type": ""
+          },
+          {
+            "bbox": [
+              280.4609375,
+              485.32318115234375,
+              315.0389404296875,
+              493.3896789550781
+            ],
+            "col": 1,
+            "col-header": false,
+            "col-span": [
+              1,
+              2
+            ],
+            "row": 0,
+            "row-header": false,
+            "row-span": [
+              0,
+              1
+            ],
+            "spans": [
+              [
+                0,
+                1
+              ]
+            ],
+            "text": "Property",
+            "type": ""
+          },
+          {
+            "bbox": [
+              352.3488464355469,
+              485.32318115234375,
+              374.287353515625,
+              493.3896789550781
+            ],
+            "col": 2,
+            "col-header": false,
+            "col-span": [
+              2,
+              3
+            ],
+            "row": 0,
+            "row-header": false,
+            "row-span": [
+              0,
+              1
+            ],
+            "spans": [
+              [
+                0,
+                2
+              ]
+            ],
+            "text": "Top-1",
+            "type": ""
+          },
+          {
+            "bbox": [
+              408.192138671875,
+              485.32318115234375,
+              430.1306457519531,
+              493.3896789550781
+            ],
+            "col": 3,
+            "col-header": false,
+            "col-span": [
+              3,
+              4
+            ],
+            "row": 0,
+            "row-header": false,
+            "row-span": [
+              0,
+              1
+            ],
+            "spans": [
+              [
+                0,
+                3
+              ]
+            ],
+            "text": "Top-2",
+            "type": ""
+          },
+          {
+            "bbox": [
+              464.03546142578125,
+              485.32318115234375,
+              485.9739685058594,
+              493.3896789550781
+            ],
+            "col": 4,
+            "col-header": false,
+            "col-span": [
+              4,
+              5
+            ],
+            "row": 0,
+            "row-header": false,
+            "row-span": [
+              0,
+              1
+            ],
+            "spans": [
+              [
+                0,
+                4
+              ]
+            ],
+            "text": "Top-3",
+            "type": ""
+          },
+          {
+            "bbox": [
+              519.8218383789062,
+              485.32318115234375,
+              541.7603149414062,
+              493.3896789550781
+            ],
+            "col": 5,
+            "col-header": false,
+            "col-span": [
+              5,
+              6
+            ],
+            "row": 0,
+            "row-header": false,
+            "row-span": [
+              0,
+              1
+            ],
+            "spans": [
+              [
+                0,
+                5
+              ]
+            ],
+            "text": "Top-5",
+            "type": ""
+          }
+        ],
+        [
+          {
+            "bbox": [
+              212.76950073242188,
+              469.68743896484375,
+              246.57400512695312,
+              477.6859436035156
+            ],
+            "col": 0,
+            "col-header": false,
+            "col-span": [
+              0,
+              1
+            ],
+            "row": 1,
+            "row-header": false,
+            "row-span": [
+              1,
+              2
+            ],
+            "spans": [
+              [
+                1,
+                0
+              ]
+            ],
+            "text": "Reservoir",
+            "type": ""
+          },
+          {
+            "bbox": [
+              280.4617919921875,
+              469.68743896484375,
+              294.4443054199219,
+              477.6859436035156
+            ],
+            "col": 1,
+            "col-header": false,
+            "col-span": [
+              1,
+              2
+            ],
+            "row": 1,
+            "row-header": false,
+            "row-span": [
+              1,
+              2
+            ],
+            "spans": [
+              [
+                1,
+                1
+              ]
+            ],
+            "text": "Age",
+            "type": ""
+          },
+          {
+            "bbox": [
+              352.3488464355469,
+              469.68743896484375,
+              366.849853515625,
+              477.6859436035156
+            ],
+            "col": 2,
+            "col-header": false,
+            "col-span": [
+              2,
+              3
+            ],
+            "row": 1,
+            "row-header": false,
+            "row-span": [
+              1,
+              2
+            ],
+            "spans": [
+              [
+                1,
+                2
+              ]
+            ],
+            "text": "0.82",
+            "type": ""
+          },
+          {
+            "bbox": [
+              408.192138671875,
+              469.68743896484375,
+              422.6931457519531,
+              477.6859436035156
+            ],
+            "col": 3,
+            "col-header": false,
+            "col-span": [
+              3,
+              4
+            ],
+            "row": 1,
+            "row-header": false,
+            "row-span": [
+              1,
+              2
+            ],
+            "spans": [
+              [
+                1,
+                3
+              ]
+            ],
+            "text": "0.96",
+            "type": ""
+          },
+          {
+            "bbox": [
+              464.0354309082031,
+              469.68743896484375,
+              478.53643798828125,
+              477.6859436035156
+            ],
+            "col": 4,
+            "col-header": false,
+            "col-span": [
+              4,
+              5
+            ],
+            "row": 1,
+            "row-header": false,
+            "row-span": [
+              1,
+              2
+            ],
+            "spans": [
+              [
+                1,
+                4
+              ]
+            ],
+            "text": "0.98",
+            "type": ""
+          },
+          {
+            "bbox": [
+              519.82177734375,
+              469.68743896484375,
+              534.32275390625,
+              477.6859436035156
+            ],
+            "col": 5,
+            "col-header": false,
+            "col-span": [
+              5,
+              6
+            ],
+            "row": 1,
+            "row-header": false,
+            "row-span": [
+              1,
+              2
+            ],
+            "spans": [
+              [
+                1,
+                5
+              ]
+            ],
+            "text": "1.00",
+            "type": ""
+          }
+        ],
+        [
+          {
+            "bbox": null,
+            "col": 0,
+            "col-header": false,
+            "col-span": [
+              0,
+              1
+            ],
+            "row": 2,
+            "row-header": false,
+            "row-span": [
+              2,
+              3
+            ],
+            "spans": [
+              [
+                2,
+                0
+              ]
+            ],
+            "text": "",
+            "type": ""
+          },
+          {
+            "bbox": [
+              280.4609375,
+              454.6636962890625,
+              318.4134521484375,
+              462.6622009277344
+            ],
+            "col": 1,
+            "col-header": false,
+            "col-span": [
+              1,
+              2
+            ],
+            "row": 2,
+            "row-header": false,
+            "row-span": [
+              2,
+              3
+            ],
+            "spans": [
+              [
+                2,
+                1
+              ]
+            ],
+            "text": "Formation",
+            "type": ""
+          },
+          {
+            "bbox": [
+              352.3488464355469,
+              454.6636962890625,
+              366.849853515625,
+              462.6622009277344
+            ],
+            "col": 2,
+            "col-header": false,
+            "col-span": [
+              2,
+              3
+            ],
+            "row": 2,
+            "row-header": false,
+            "row-span": [
+              2,
+              3
+            ],
+            "spans": [
+              [
+                2,
+                2
+              ]
+            ],
+            "text": "0.93",
+            "type": ""
+          },
+          {
+            "bbox": [
+              408.192138671875,
+              454.6636962890625,
+              422.6931457519531,
+              462.6622009277344
+            ],
+            "col": 3,
+            "col-header": false,
+            "col-span": [
+              3,
+              4
+            ],
+            "row": 2,
+            "row-header": false,
+            "row-span": [
+              2,
+              3
+            ],
+            "spans": [
+              [
+                2,
+                3
+              ]
+            ],
+            "text": "0.98",
+            "type": ""
+          },
+          {
+            "bbox": [
+              464.0354309082031,
+              454.6636962890625,
+              478.53643798828125,
+              462.6622009277344
+            ],
+            "col": 4,
+            "col-header": false,
+            "col-span": [
+              4,
+              5
+            ],
+            "row": 2,
+            "row-header": false,
+            "row-span": [
+              2,
+              3
+            ],
+            "spans": [
+              [
+                2,
+                4
+              ]
+            ],
+            "text": "1.00",
+            "type": ""
+          },
+          {
+            "bbox": [
+              519.82177734375,
+              454.6636962890625,
+              534.32275390625,
+              462.6622009277344
+            ],
+            "col": 5,
+            "col-header": false,
+            "col-span": [
+              5,
+              6
+            ],
+            "row": 2,
+            "row-header": false,
+            "row-span": [
+              2,
+              3
+            ],
+            "spans": [
+              [
+                2,
+                5
+              ]
+            ],
+            "text": "1.00",
+            "type": ""
+          }
+        ],
+        [
+          {
+            "bbox": null,
+            "col": 0,
+            "col-header": false,
+            "col-span": [
+              0,
+              1
+            ],
+            "row": 3,
+            "row-header": false,
+            "row-span": [
+              3,
+              4
+            ],
+            "spans": [
+              [
+                3,
+                0
+              ]
+            ],
+            "text": "",
+            "type": ""
+          },
+          {
+            "bbox": [
+              280.4609375,
+              439.63995361328125,
+              298.6849365234375,
+              447.6384582519531
+            ],
+            "col": 1,
+            "col-header": false,
+            "col-span": [
+              1,
+              2
+            ],
+            "row": 3,
+            "row-header": false,
+            "row-span": [
+              3,
+              4
+            ],
+            "spans": [
+              [
+                3,
+                1
+              ]
+            ],
+            "text": "Rock",
+            "type": ""
+          },
+          {
+            "bbox": [
+              352.3479919433594,
+              439.63995361328125,
+              366.8489990234375,
+              447.6384582519531
+            ],
+            "col": 2,
+            "col-header": false,
+            "col-span": [
+              2,
+              3
+            ],
+            "row": 3,
+            "row-header": false,
+            "row-span": [
+              3,
+              4
+            ],
+            "spans": [
+              [
+                3,
+                2
+              ]
+            ],
+            "text": "0.62",
+            "type": ""
+          },
+          {
+            "bbox": [
+              408.1912841796875,
+              439.63995361328125,
+              422.6922912597656,
+              447.6384582519531
+            ],
+            "col": 3,
+            "col-header": false,
+            "col-span": [
+              3,
+              4
+            ],
+            "row": 3,
+            "row-header": false,
+            "row-span": [
+              3,
+              4
+            ],
+            "spans": [
+              [
+                3,
+                3
+              ]
+            ],
+            "text": "0.80",
+            "type": ""
+          },
+          {
+            "bbox": [
+              464.0345764160156,
+              439.63995361328125,
+              478.53558349609375,
+              447.6384582519531
+            ],
+            "col": 4,
+            "col-header": false,
+            "col-span": [
+              4,
+              5
+            ],
+            "row": 3,
+            "row-header": false,
+            "row-span": [
+              3,
+              4
+            ],
+            "spans": [
+              [
+                3,
+                4
+              ]
+            ],
+            "text": "0.87",
+            "type": ""
+          },
+          {
+            "bbox": [
+              519.8209228515625,
+              439.63995361328125,
+              534.3218994140625,
+              447.6384582519531
+            ],
+            "col": 5,
+            "col-header": false,
+            "col-span": [
+              5,
+              6
+            ],
+            "row": 3,
+            "row-header": false,
+            "row-span": [
+              3,
+              4
+            ],
+            "spans": [
+              [
+                3,
+                5
+              ]
+            ],
+            "text": "0.94",
+            "type": ""
+          }
+        ],
+        [
+          {
+            "bbox": [
+              212.7694854736328,
+              424.67315673828125,
+              227.3724822998047,
+              432.6716613769531
+            ],
+            "col": 0,
+            "col-header": false,
+            "col-span": [
+              0,
+              1
+            ],
+            "row": 4,
+            "row-header": false,
+            "row-span": [
+              4,
+              5
+            ],
+            "spans": [
+              [
+                4,
+                0
+              ]
+            ],
+            "text": "Seal",
+            "type": ""
+          },
+          {
+            "bbox": [
+              280.4617919921875,
+              424.67315673828125,
+              294.4443054199219,
+              432.6716613769531
+            ],
+            "col": 1,
+            "col-header": false,
+            "col-span": [
+              1,
+              2
+            ],
+            "row": 4,
+            "row-header": false,
+            "row-span": [
+              4,
+              5
+            ],
+            "spans": [
+              [
+                4,
+                1
+              ]
+            ],
+            "text": "Age",
+            "type": ""
+          },
+          {
+            "bbox": [
+              352.3488464355469,
+              424.67315673828125,
+              366.849853515625,
+              432.6716613769531
+            ],
+            "col": 2,
+            "col-header": false,
+            "col-span": [
+              2,
+              3
+            ],
+            "row": 4,
+            "row-header": false,
+            "row-span": [
+              4,
+              5
+            ],
+            "spans": [
+              [
+                4,
+                2
+              ]
+            ],
+            "text": "0.73",
+            "type": ""
+          },
+          {
+            "bbox": [
+              408.192138671875,
+              424.67315673828125,
+              422.6931457519531,
+              432.6716613769531
+            ],
+            "col": 3,
+            "col-header": false,
+            "col-span": [
+              3,
+              4
+            ],
+            "row": 4,
+            "row-header": false,
+            "row-span": [
+              4,
+              5
+            ],
+            "spans": [
+              [
+                4,
+                3
+              ]
+            ],
+            "text": "0.91",
+            "type": ""
+          },
+          {
+            "bbox": [
+              464.0354309082031,
+              424.67315673828125,
+              478.53643798828125,
+              432.6716613769531
+            ],
+            "col": 4,
+            "col-header": false,
+            "col-span": [
+              4,
+              5
+            ],
+            "row": 4,
+            "row-header": false,
+            "row-span": [
+              4,
+              5
+            ],
+            "spans": [
+              [
+                4,
+                4
+              ]
+            ],
+            "text": "0.94",
+            "type": ""
+          },
+          {
+            "bbox": [
+              519.82177734375,
+              424.67315673828125,
+              534.32275390625,
+              432.6716613769531
+            ],
+            "col": 5,
+            "col-header": false,
+            "col-span": [
+              5,
+              6
+            ],
+            "row": 4,
+            "row-header": false,
+            "row-span": [
+              4,
+              5
+            ],
+            "spans": [
+              [
+                4,
+                5
+              ]
+            ],
+            "text": "0.97",
+            "type": ""
+          }
+        ],
+        [
+          {
+            "bbox": null,
+            "col": 0,
+            "col-header": false,
+            "col-span": [
+              0,
+              1
+            ],
+            "row": 5,
+            "row-header": false,
+            "row-span": [
+              5,
+              6
+            ],
+            "spans": [
+              [
+                5,
+                0
+              ]
+            ],
+            "text": "",
+            "type": ""
+          },
+          {
+            "bbox": [
+              280.4609375,
+              409.6494140625,
+              318.4134521484375,
+              417.6479187011719
+            ],
+            "col": 1,
+            "col-header": false,
+            "col-span": [
+              1,
+              2
+            ],
+            "row": 5,
+            "row-header": false,
+            "row-span": [
+              5,
+              6
+            ],
+            "spans": [
+              [
+                5,
+                1
+              ]
+            ],
+            "text": "Formation",
+            "type": ""
+          },
+          {
+            "bbox": [
+              352.3488464355469,
+              409.6494140625,
+              366.849853515625,
+              417.6479187011719
+            ],
+            "col": 2,
+            "col-header": false,
+            "col-span": [
+              2,
+              3
+            ],
+            "row": 5,
+            "row-header": false,
+            "row-span": [
+              5,
+              6
+            ],
+            "spans": [
+              [
+                5,
+                2
+              ]
+            ],
+            "text": "0.82",
+            "type": ""
+          },
+          {
+            "bbox": [
+              408.192138671875,
+              409.6494140625,
+              422.6931457519531,
+              417.6479187011719
+            ],
+            "col": 3,
+            "col-header": false,
+            "col-span": [
+              3,
+              4
+            ],
+            "row": 5,
+            "row-header": false,
+            "row-span": [
+              5,
+              6
+            ],
+            "spans": [
+              [
+                5,
+                3
+              ]
+            ],
+            "text": "0.94",
+            "type": ""
+          },
+          {
+            "bbox": [
+              464.0354309082031,
+              409.6494140625,
+              478.53643798828125,
+              417.6479187011719
+            ],
+            "col": 4,
+            "col-header": false,
+            "col-span": [
+              4,
+              5
+            ],
+            "row": 5,
+            "row-header": false,
+            "row-span": [
+              5,
+              6
+            ],
+            "spans": [
+              [
+                5,
+                4
+              ]
+            ],
+            "text": "0.97",
+            "type": ""
+          },
+          {
+            "bbox": [
+              519.82177734375,
+              409.6494140625,
+              534.32275390625,
+              417.6479187011719
+            ],
+            "col": 5,
+            "col-header": false,
+            "col-span": [
+              5,
+              6
+            ],
+            "row": 5,
+            "row-header": false,
+            "row-span": [
+              5,
+              6
+            ],
+            "spans": [
+              [
+                5,
+                5
+              ]
+            ],
+            "text": "0.98",
+            "type": ""
+          }
+        ],
+        [
+          {
+            "bbox": null,
+            "col": 0,
+            "col-header": false,
+            "col-span": [
+              0,
+              1
+            ],
+            "row": 6,
+            "row-header": false,
+            "row-span": [
+              6,
+              7
+            ],
+            "spans": [
+              [
+                6,
+                0
+              ]
+            ],
+            "text": "",
+            "type": ""
+          },
+          {
+            "bbox": [
+              280.4609375,
+              394.6826171875,
+              298.6849365234375,
+              402.6811218261719
+            ],
+            "col": 1,
+            "col-header": false,
+            "col-span": [
+              1,
+              2
+            ],
+            "row": 6,
+            "row-header": false,
+            "row-span": [
+              6,
+              7
+            ],
+            "spans": [
+              [
+                6,
+                1
+              ]
+            ],
+            "text": "Rock",
+            "type": ""
+          },
+          {
+            "bbox": [
+              352.3479919433594,
+              394.6826171875,
+              366.8489990234375,
+              402.6811218261719
+            ],
+            "col": 2,
+            "col-header": false,
+            "col-span": [
+              2,
+              3
+            ],
+            "row": 6,
+            "row-header": false,
+            "row-span": [
+              6,
+              7
+            ],
+            "spans": [
+              [
+                6,
+                2
+              ]
+            ],
+            "text": "0.82",
+            "type": ""
+          },
+          {
+            "bbox": [
+              408.1912841796875,
+              394.6826171875,
+              422.6922912597656,
+              402.6811218261719
+            ],
+            "col": 3,
+            "col-header": false,
+            "col-span": [
+              3,
+              4
+            ],
+            "row": 6,
+            "row-header": false,
+            "row-span": [
+              6,
+              7
+            ],
+            "spans": [
+              [
+                6,
+                3
+              ]
+            ],
+            "text": "0.92",
+            "type": ""
+          },
+          {
+            "bbox": [
+              464.0345764160156,
+              394.6826171875,
+              478.53558349609375,
+              402.6811218261719
+            ],
+            "col": 4,
+            "col-header": false,
+            "col-span": [
+              4,
+              5
+            ],
+            "row": 6,
+            "row-header": false,
+            "row-span": [
+              6,
+              7
+            ],
+            "spans": [
+              [
+                6,
+                4
+              ]
+            ],
+            "text": "0.95",
+            "type": ""
+          },
+          {
+            "bbox": [
+              519.8209228515625,
+              394.6826171875,
+              534.3218994140625,
+              402.6811218261719
+            ],
+            "col": 5,
+            "col-header": false,
+            "col-span": [
+              5,
+              6
+            ],
+            "row": 6,
+            "row-header": false,
+            "row-span": [
+              6,
+              7
+            ],
+            "spans": [
+              [
+                6,
+                5
+              ]
+            ],
+            "text": "0.97",
+            "type": ""
+          }
+        ],
+        [
+          {
+            "bbox": [
+              212.7694854736328,
+              379.65887451171875,
+              236.92648315429688,
+              387.6573791503906
+            ],
+            "col": 0,
+            "col-header": false,
+            "col-span": [
+              0,
+              1
+            ],
+            "row": 7,
+            "row-header": false,
+            "row-span": [
+              7,
+              8
+            ],
+            "spans": [
+              [
+                7,
+                0
+              ]
+            ],
+            "text": "Source",
+            "type": ""
+          },
+          {
+            "bbox": [
+              280.4617919921875,
+              379.65887451171875,
+              294.4443054199219,
+              387.6573791503906
+            ],
+            "col": 1,
+            "col-header": false,
+            "col-span": [
+              1,
+              2
+            ],
+            "row": 7,
+            "row-header": false,
+            "row-span": [
+              7,
+              8
+            ],
+            "spans": [
+              [
+                7,
+                1
+              ]
+            ],
+            "text": "Age",
+            "type": ""
+          },
+          {
+            "bbox": [
+              352.3488464355469,
+              379.65887451171875,
+              366.849853515625,
+              387.6573791503906
+            ],
+            "col": 2,
+            "col-header": false,
+            "col-span": [
+              2,
+              3
+            ],
+            "row": 7,
+            "row-header": false,
+            "row-span": [
+              7,
+              8
+            ],
+            "spans": [
+              [
+                7,
+                2
+              ]
+            ],
+            "text": "0.75",
+            "type": ""
+          },
+          {
+            "bbox": [
+              408.192138671875,
+              379.65887451171875,
+              422.6931457519531,
+              387.6573791503906
+            ],
+            "col": 3,
+            "col-header": false,
+            "col-span": [
+              3,
+              4
+            ],
+            "row": 7,
+            "row-header": false,
+            "row-span": [
+              7,
+              8
+            ],
+            "spans": [
+              [
+                7,
+                3
+              ]
+            ],
+            "text": "0.92",
+            "type": ""
+          },
+          {
+            "bbox": [
+              464.0354309082031,
+              379.65887451171875,
+              478.53643798828125,
+              387.6573791503906
+            ],
+            "col": 4,
+            "col-header": false,
+            "col-span": [
+              4,
+              5
+            ],
+            "row": 7,
+            "row-header": false,
+            "row-span": [
+              7,
+              8
+            ],
+            "spans": [
+              [
+                7,
+                4
+              ]
+            ],
+            "text": "0.96",
+            "type": ""
+          },
+          {
+            "bbox": [
+              519.82177734375,
+              379.65887451171875,
+              534.32275390625,
+              387.6573791503906
+            ],
+            "col": 5,
+            "col-header": false,
+            "col-span": [
+              5,
+              6
+            ],
+            "row": 7,
+            "row-header": false,
+            "row-span": [
+              7,
+              8
+            ],
+            "spans": [
+              [
+                7,
+                5
+              ]
+            ],
+            "text": "0.97",
+            "type": ""
+          }
+        ],
+        [
+          {
+            "bbox": null,
+            "col": 0,
+            "col-header": false,
+            "col-span": [
+              0,
+              1
+            ],
+            "row": 8,
+            "row-header": false,
+            "row-span": [
+              8,
+              9
+            ],
+            "spans": [
+              [
+                8,
+                0
+              ]
+            ],
+            "text": "",
+            "type": ""
+          },
+          {
+            "bbox": [
+              280.4609375,
+              364.69207763671875,
+              318.4134521484375,
+              372.6905822753906
+            ],
+            "col": 1,
+            "col-header": false,
+            "col-span": [
+              1,
+              2
+            ],
+            "row": 8,
+            "row-header": false,
+            "row-span": [
+              8,
+              9
+            ],
+            "spans": [
+              [
+                8,
+                1
+              ]
+            ],
+            "text": "Formation",
+            "type": ""
+          },
+          {
+            "bbox": [
+              352.3488464355469,
+              364.69207763671875,
+              366.849853515625,
+              372.6905822753906
+            ],
+            "col": 2,
+            "col-header": false,
+            "col-span": [
+              2,
+              3
+            ],
+            "row": 8,
+            "row-header": false,
+            "row-span": [
+              8,
+              9
+            ],
+            "spans": [
+              [
+                8,
+                2
+              ]
+            ],
+            "text": "0.89",
+            "type": ""
+          },
+          {
+            "bbox": [
+              408.192138671875,
+              364.69207763671875,
+              422.6931457519531,
+              372.6905822753906
+            ],
+            "col": 3,
+            "col-header": false,
+            "col-span": [
+              3,
+              4
+            ],
+            "row": 8,
+            "row-header": false,
+            "row-span": [
+              8,
+              9
+            ],
+            "spans": [
+              [
+                8,
+                3
+              ]
+            ],
+            "text": "0.96",
+            "type": ""
+          },
+          {
+            "bbox": [
+              464.0354309082031,
+              364.69207763671875,
+              478.53643798828125,
+              372.6905822753906
+            ],
+            "col": 4,
+            "col-header": false,
+            "col-span": [
+              4,
+              5
+            ],
+            "row": 8,
+            "row-header": false,
+            "row-span": [
+              8,
+              9
+            ],
+            "spans": [
+              [
+                8,
+                4
+              ]
+            ],
+            "text": "0.97",
+            "type": ""
+          },
+          {
+            "bbox": [
+              519.82177734375,
+              364.69207763671875,
+              534.32275390625,
+              372.6905822753906
+            ],
+            "col": 5,
+            "col-header": false,
+            "col-span": [
+              5,
+              6
+            ],
+            "row": 8,
+            "row-header": false,
+            "row-span": [
+              8,
+              9
+            ],
+            "spans": [
+              [
+                8,
+                5
+              ]
+            ],
+            "text": "0.98",
+            "type": ""
+          }
+        ],
+        [
+          {
+            "bbox": null,
+            "col": 0,
+            "col-header": false,
+            "col-span": [
+              0,
+              1
+            ],
+            "row": 9,
+            "row-header": false,
+            "row-span": [
+              9,
+              10
+            ],
+            "spans": [
+              [
+                9,
+                0
+              ]
+            ],
+            "text": "",
+            "type": ""
+          },
+          {
+            "bbox": [
+              280.4609375,
+              349.6683349609375,
+              298.6849365234375,
+              357.6668395996094
+            ],
+            "col": 1,
+            "col-header": false,
+            "col-span": [
+              1,
+              2
+            ],
+            "row": 9,
+            "row-header": false,
+            "row-span": [
+              9,
+              10
+            ],
+            "spans": [
+              [
+                9,
+                1
+              ]
+            ],
+            "text": "Rock",
+            "type": ""
+          },
+          {
+            "bbox": [
+              352.3479919433594,
+              349.6683349609375,
+              366.8489990234375,
+              357.6668395996094
+            ],
+            "col": 2,
+            "col-header": false,
+            "col-span": [
+              2,
+              3
+            ],
+            "row": 9,
+            "row-header": false,
+            "row-span": [
+              9,
+              10
+            ],
+            "spans": [
+              [
+                9,
+                2
+              ]
+            ],
+            "text": "0.83",
+            "type": ""
+          },
+          {
+            "bbox": [
+              408.1912841796875,
+              349.6683349609375,
+              422.6922912597656,
+              357.6668395996094
+            ],
+            "col": 3,
+            "col-header": false,
+            "col-span": [
+              3,
+              4
+            ],
+            "row": 9,
+            "row-header": false,
+            "row-span": [
+              9,
+              10
+            ],
+            "spans": [
+              [
+                9,
+                3
+              ]
+            ],
+            "text": "0.92",
+            "type": ""
+          },
+          {
+            "bbox": [
+              464.0345764160156,
+              349.6683349609375,
+              478.53558349609375,
+              357.6668395996094
+            ],
+            "col": 4,
+            "col-header": false,
+            "col-span": [
+              4,
+              5
+            ],
+            "row": 9,
+            "row-header": false,
+            "row-span": [
+              9,
+              10
+            ],
+            "spans": [
+              [
+                9,
+                4
+              ]
+            ],
+            "text": "0.95",
+            "type": ""
+          },
+          {
+            "bbox": [
+              519.8209228515625,
+              349.6683349609375,
+              534.3218994140625,
+              357.6668395996094
+            ],
+            "col": 5,
+            "col-header": false,
+            "col-span": [
+              5,
+              6
+            ],
+            "row": 9,
+            "row-header": false,
+            "row-span": [
+              9,
+              10
+            ],
+            "spans": [
+              [
+                9,
+                5
+              ]
+            ],
+            "text": "0.96",
+            "type": ""
+          }
+        ]
+      ],
+      "text": "TABLE 1 Top-k accuracies validation of KG query results. Numbers represent the fraction in which any of the k highest ranked answers matches the expected answer",
+      "prov": [
+        {
+          "bbox": [
+            210.0027313232422,
+            346.577880859375,
+            549.0220336914062,
+            499.1263427734375
+          ],
+          "page": 13,
+          "span": [
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "conversion_settings": {
+    "model_pipeline": {
+      "clusters": [
+        {
+          "type": "LayoutSegmentationModel",
+          "name": "LayoutSegmentationModel",
+          "version": "NA"
+        }
+      ],
+      "page": [],
+      "normalization": [],
+      "tables": [
+        {
+          "type": "TableStructureModel",
+          "name": "TableStructureModel",
+          "version": "NA"
+        }
+      ]
+    }
+  },
+  "version": 2
+}
