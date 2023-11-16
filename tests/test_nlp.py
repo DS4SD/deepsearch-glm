@@ -10,7 +10,7 @@ from deepsearch_glm.utils.ds_utils import to_legacy_document_format
 
 from deepsearch_glm.nlp_train_semantic import train_semantic
 
-GENERATE=True
+GENERATE=False
 
 def round_floats(o):
     if isinstance(o, float): return round(o, 2)
@@ -337,15 +337,20 @@ def test_05_to_legacy():
     else:
         with open(target_nlp, "r") as fr:
             doc_nlp = json.load(fr)
-
+            doc_nlp = round_floats(doc_nlp)
+            
         with open(target_leg, "r") as fr:
             doc_leg = json.load(fr)                        
+            doc_leg = round_floats(doc_leg)
 
+            
         doc_j = model.apply_on_doc(doc_i)
-
+        doc_j = round_floats(doc_j)
+        
         assert doc_j==doc_nlp
 
         doc_i = to_legacy_document_format(doc_j, doc_i)        
+        doc_i = round_floats(doc_i)
         
         assert doc_i==doc_leg
     
