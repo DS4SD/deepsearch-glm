@@ -329,7 +329,8 @@ def test_05_to_legacy():
         
     if GENERATE:
         doc_j = model.apply_on_doc(doc_i)
-
+        doc_j = round_floats(doc_j)
+        
         with open(target_nlp, "w") as fw:
             fw.write(json.dumps(doc_j, indent=2))
 

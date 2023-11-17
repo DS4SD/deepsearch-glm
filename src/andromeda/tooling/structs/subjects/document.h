@@ -522,7 +522,8 @@ namespace andromeda
           {
             instances.emplace_back(subj->get_hash(),
                                    subj->get_name(),
-                                   subj->get_path(),
+                                   //subj->get_path(),
+				   subj->get_self_ref(),
                                    ent);
           }
       }
@@ -534,7 +535,8 @@ namespace andromeda
           {
             instances.emplace_back(subj->get_hash(),
                                    subj->get_name(),
-                                   subj->get_path(),
+                                   //subj->get_path(),
+				   subj->get_self_ref(),
                                    ent);
           }
 
@@ -544,7 +546,8 @@ namespace andromeda
               {
                 instances.emplace_back(capt->get_hash(),
                                        capt->get_name(),
-                                       capt->get_path(),
+                                       //capt->get_path(),
+				       capt->get_self_ref(),
                                        ent);
               }
           }
@@ -556,7 +559,8 @@ namespace andromeda
           {
             instances.emplace_back(subj->get_hash(),
                                    subj->get_name(),
-                                   subj->get_path(),
+                                   //subj->get_path(),
+				   subj->get_self_ref(),
                                    ent);
           }
 
@@ -566,7 +570,8 @@ namespace andromeda
               {
                 instances.emplace_back(capt->get_hash(),
                                        capt->get_name(),
-                                       capt->get_path(),
+                                       //capt->get_path(),
+				       capt->get_self_ref(),
                                        ent);
               }
           }

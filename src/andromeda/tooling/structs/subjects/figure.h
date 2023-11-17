@@ -26,7 +26,8 @@ namespace andromeda
     virtual bool from_json(const nlohmann::json& item,
 			   const std::vector<std::shared_ptr<prov_element> >& doc_provs);
     
-    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_item_ref()):"#"); }
+    //std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_item_ref()):"#"); }
+
     bool is_valid() { return (base_subject::valid); }
     
     bool set_data(const nlohmann::json& data);
@@ -38,10 +39,12 @@ namespace andromeda
 
     void set_hash();
     
-  public:
+  private:
 
     sval_type conf;
     std::string created_by;
+
+  public:
     
     std::vector<std::shared_ptr<prov_element> > provs;
     

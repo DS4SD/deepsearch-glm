@@ -117,8 +117,6 @@ namespace andromeda
 
     hash_type hash; // hash of the item
     hash_type dhash; // hash of the document of the item
-
-  protected:
     
     std::string dloc; // location of item in the document <doc-hash>#<JSON-path-in-doc>
     std::string sref;
