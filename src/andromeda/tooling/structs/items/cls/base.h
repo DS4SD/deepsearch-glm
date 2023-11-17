@@ -23,7 +23,6 @@ namespace andromeda
     base_property(hash_type subj_hash, // hash of the subject from which the entity comes
 		  subject_name subj_name,
 		  std::string subj_path,
-		  //std::string type,
 		  model_name model,
 		  std::string label,
 		  val_type conf);

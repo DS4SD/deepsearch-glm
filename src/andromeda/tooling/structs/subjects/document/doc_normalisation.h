@@ -480,27 +480,89 @@ namespace andromeda
   void doc_normalisation<doc_type>::resolve_paths()
   {
     auto& texts = doc.texts;
+
+    auto& footnotes = doc.footnotes;
+    auto& page_headers = doc.page_headers;
+    auto& page_footers = doc.page_footers;
+    auto& other = doc.other;
+    
     auto& tables = doc.tables;
     auto& figures = doc.figures;
 
     for(index_type l=0; l<texts.size(); l++)
       {
+	std::stringstream ss;
+	ss << "#/" << doc_type::texts_lbl << "/" << l;
+
+	texts.at(l)->set_self_ref(ss.str());
+	
         for(auto& prov:texts.at(l)->provs)
           {
-            std::stringstream ss;
-            ss << "#/" << doc_type::texts_lbl << "/" << l;
-
             prov->set_item_ref(ss.str());
           }
       }
 
+    for(index_type l=0; l<footnotes.size(); l++)
+      {
+	std::stringstream ss;
+	ss << "#/" << doc_type::footnotes_lbl << "/" << l;
+
+	footnotes.at(l)->set_self_ref(ss.str());
+	
+        for(auto& prov:footnotes.at(l)->provs)
+          {
+            prov->set_item_ref(ss.str());
+          }
+      }
+
+    for(index_type l=0; l<page_headers.size(); l++)
+      {
+	std::stringstream ss;
+	ss << "#/" << doc_type::page_headers_lbl << "/" << l;
+
+	page_headers.at(l)->set_self_ref(ss.str());
+	
+        for(auto& prov:page_headers.at(l)->provs)
+          {
+            prov->set_item_ref(ss.str());
+          }
+      }
+
+    for(index_type l=0; l<page_footers.size(); l++)
+      {
+	std::stringstream ss;
+	ss << "#/" << doc_type::page_footers_lbl << "/" << l;
+
+	page_footers.at(l)->set_self_ref(ss.str());
+	
+        for(auto& prov:page_footers.at(l)->provs)
+          {
+            prov->set_item_ref(ss.str());
+          }
+      }
+
+    for(index_type l=0; l<other.size(); l++)
+      {
+	std::stringstream ss;
+	ss << "#/" << doc_type::other_lbl << "/" << l;
+
+	other.at(l)->set_self_ref(ss.str());
+	
+        for(auto& prov:other.at(l)->provs)
+          {
+            prov->set_item_ref(ss.str());
+          }
+      }
+    
     for(index_type l=0; l<tables.size(); l++)
       {
+	std::stringstream ss;
+	ss << "#/" << doc_type::tables_lbl << "/" << l;
+
+	tables.at(l)->set_self_ref(ss.str());
+	
         for(auto& prov:tables.at(l)->provs)
           {
-            std::stringstream ss;
-            ss << "#/" << doc_type::tables_lbl << "/" << l;
-
             prov->set_item_ref(ss.str());
           }
 
@@ -514,17 +576,21 @@ namespace andromeda
                    << doc_type::captions_lbl << "/" << k;
 
                 prov->set_item_ref(ss.str());
+
+		tables.at(l)->captions.at(k)->set_self_ref(ss.str());
               }
           }
       }
 
     for(index_type l=0; l<figures.size(); l++)
       {
+	std::stringstream ss;
+	ss << "#/" << doc_type::figures_lbl << "/" << l;
+
+	figures.at(l)->set_self_ref(ss.str());
+	
         for(auto& prov:figures.at(l)->provs)
           {
-            std::stringstream ss;
-            ss << "#/" << doc_type::figures_lbl << "/" << l;
-
             prov->set_item_ref(ss.str());
           }
 
@@ -538,6 +604,8 @@ namespace andromeda
                    << doc_type::captions_lbl << "/" << k;
 
                 prov->set_item_ref(ss.str());
+
+		figures.at(l)->captions.at(k)->set_self_ref(ss.str());
               }
           }
       }

@@ -87,6 +87,12 @@ namespace andromeda
     void init_provs();
     void show_provs();
 
+    void clear_properties_from_texts();
+    void clear_properties_from_tables();
+    
+    void join_properties_with_texts();
+    void join_properties_with_tables();
+    
   private:
 
     void set_dscr(nlohmann::json& data);
@@ -260,7 +266,7 @@ namespace andromeda
     
     return true;
   }
-
+  
   bool subject<DOCUMENT>::from_json(const nlohmann::json& item,
 				    const std::vector<std::shared_ptr<prov_element> >& doc_provs)
   {
@@ -450,83 +456,56 @@ namespace andromeda
 
     return (valid_props and valid_insts and valid_rels);
   }
-
+  
   bool subject<DOCUMENT>::finalise_properties()
   {
-    /*
-    std::map<model_name, val_type>                         property_total;
-    std::map<std::pair<model_name, std::string>, val_type> property_label_mapping;
+    // only keep document global properties
 
+    std::set<std::pair<hash_type, model_name> > doc_properties={};
+
+    for(auto& prop:properties)
+      {
+	doc_properties.insert({prop.get_subj_hash(), prop.get_model()});
+      }
+    
     for(auto& text:texts)
       {
         for(auto& prop:text->properties)
           {
-	    properties.push_back(prop);
-	    
-            //std::string mdl = prop.get_type();
-	    model_name mdl = prop.get_model();
-            std::string lbl = prop.get_label();
-
-            val_type conf = prop.get_conf();
-            val_type dst = text->dst;
-
-            if(property_total.count(mdl)==1)
-              {
-                property_total[mdl] += dst;
-              }
-            else
-              {
-                property_total[mdl] = dst;
-              }
-
-            std::pair<model_name, std::string> key={mdl,lbl};
-            if(property_label_mapping.count(key)==1)
-              {
-                property_label_mapping[key] += dst*conf;
-              }
-            else
-              {
-                property_label_mapping[key] = dst*conf;
-              }
-          }
+	    std::pair<hash_type, model_name> key({prop.get_subj_hash(), prop.get_model()});
+	    if(doc_properties.count(key)==0)
+	      {
+		properties.push_back(prop);
+	      }
+	  }
+	text->properties.clear();
       }
 
-    properties.clear();
-    for(auto itr=property_label_mapping.begin(); itr!=property_label_mapping.end(); itr++)
+    for(auto& table:tables)
       {
-        model_name mdl = (itr->first).first;
-        itr->second /= (property_total.at(mdl));
+        for(auto& prop:table->properties)
+          {
+	    std::pair<hash_type, model_name> key({prop.get_subj_hash(), prop.get_model()});
+	    if(doc_properties.count(key)==0)
+	      {
+		properties.push_back(prop);
+	      }	    
+	  }
+	table->properties.clear();
+      }    
 
-        base_property prop(this->get_hash(), TEXT, "#/texts",
-			   (itr->first).first, (itr->first).second, itr->second);
-        properties.push_back(prop);
-      }
-
-    //LOG_S(INFO) << "properties: \n\n" << tabulate(properties);
-
-    std::sort(properties.begin(), properties.end());
-
-    //LOG_S(INFO) << "properties: \n\n" << tabulate(properties);
-
-    for(auto itr=properties.begin(); itr!=properties.end(); )
+    for(auto& figure:figures)
       {
-        auto next = itr;
-        next++;
-
-        if(itr==properties.end() or next==properties.end())
+        for(auto& prop:figure->properties)
           {
-            break;
-          }
-        else if(itr->get_type()==next->get_type())
-          {
-            properties.erase(next);
-          }
-        else
-          {
-            itr++;
-          }
-      }
-    */
+	    std::pair<hash_type, model_name> key({prop.get_subj_hash(), prop.get_model()});
+	    if(doc_properties.count(key)==0)
+	      {
+		properties.push_back(prop);
+	      }
+	  }
+	figure->properties.clear();
+      }    
      
     return true;
   }
@@ -619,6 +598,82 @@ namespace andromeda
     return true;
   }
 
+  void subject<DOCUMENT>::clear_properties_from_texts()
+  {
+    for(auto& text:texts)    
+      {
+	text->properties.clear();
+      }
+  }
+  
+  void subject<DOCUMENT>::join_properties_with_texts()
+  {
+    clear_properties_from_texts();
+    
+    for(auto& prop:this->properties)
+      {
+	std::string path = prop.get_subj_path();
+	LOG_S(INFO) << path;
+	
+	auto parts = utils::split(path, "/");
+
+	if(parts.size()<3)
+	  {
+	    continue;
+	  }
+	
+	int ind = std::stoi(parts.at(2));
+	LOG_S(INFO) << " -> " << ind;
+	
+	if(parts.at(1)==texts_lbl and ind<texts.size())
+	  {
+	    assert(texts.at(ind)->get_hash()==prop.get_subj_hash());
+	    texts.at(ind)->properties.push_back(prop);
+	  }
+	else
+	  {}
+      }
+  }
+
+  void subject<DOCUMENT>::clear_properties_from_tables()
+  {
+    for(auto& table:tables)    
+      {
+	table->properties.clear();
+      }
+  }
+  
+  void subject<DOCUMENT>::join_properties_with_tables()
+  {
+    for(auto& table:tables)    
+      {
+	table->properties.clear();
+      }
+    
+    for(auto& prop:this->properties)
+      {
+	std::string path = prop.get_subj_path();
+	LOG_S(INFO) << path;
+
+	auto parts = utils::split(path, "/");
+	if(parts.size()<3)
+	  {
+	    continue;
+	  }
+	
+	int ind = std::stoi(parts.at(2));
+	LOG_S(INFO) << " -> " << ind;
+	
+	if(parts.at(1)==tables_lbl and ind<tables.size())
+	  {
+	    assert(tables.at(ind)->get_hash()==prop.get_subj_hash());
+	    tables.at(ind)->properties.push_back(prop);
+	  }
+	else
+	  {}
+      }
+  }
+  
 }
 
 #endif

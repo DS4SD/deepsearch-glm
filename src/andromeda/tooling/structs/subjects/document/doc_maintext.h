@@ -105,7 +105,7 @@ namespace andromeda
 	       (jump_col or jump_page))
 	      {
 		curr->concatenate(next);
-		next->valid=false;
+		next->set_valid(false);
 	      }
 	  }
 	
@@ -113,7 +113,7 @@ namespace andromeda
 	  auto itr=texts.begin();
 	  while(itr!=texts.end())
 	    {
-	      if((*itr)->valid)
+	      if((*itr)->is_valid())
 		{
 		  itr++;
 		}

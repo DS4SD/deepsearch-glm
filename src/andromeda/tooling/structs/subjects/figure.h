@@ -169,6 +169,18 @@ namespace andromeda
   bool subject<FIGURE>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
 				   std::shared_ptr<utils::text_normaliser> text_normaliser)
   {
+    valid = true;
+    
+    for(auto& caption:captions)
+      {
+	caption->set_tokens(char_normaliser, text_normaliser);
+      }
+
+    for(auto& footnote:footnotes)
+      {
+	footnote->set_tokens(char_normaliser, text_normaliser);
+      }
+
     return true;
   }
   

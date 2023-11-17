@@ -387,6 +387,16 @@ namespace andromeda
   {
     valid = true;
 
+    for(auto& caption:captions)
+      {
+	caption->set_tokens(char_normaliser, text_normaliser);
+      }
+
+    for(auto& footnote:footnotes)
+      {
+	footnote->set_tokens(char_normaliser, text_normaliser);
+      }
+    
     for(auto& row:data)
       {
         for(auto& cell:row)

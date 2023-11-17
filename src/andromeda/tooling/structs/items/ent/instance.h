@@ -119,6 +119,10 @@ namespace andromeda
     std::size_t ctoken_len() { return (ctok_range[1]-ctok_range[0]);}
     std::size_t wtoken_len() { return (wtok_range[1]-wtok_range[0]);}
 
+    hash_type get_subj_hash() const { return subj_hash; }
+    subject_name get_subj_name() const { return subj_name; } 
+    std::string get_subj_path() const { return subj_path; } 
+    
     hash_type get_ehash() const { return ehash; } // entity-hash
     hash_type get_ihash() const { return ihash; }  // instance-hash: combination of subj-hash, ent-hash and position
     
@@ -175,7 +179,6 @@ namespace andromeda
   protected:
 
     hash_type subj_hash; // hash of the subject from which the entity comes
-
     subject_name subj_name;
     std::string subj_path;
 

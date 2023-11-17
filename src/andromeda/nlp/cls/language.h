@@ -229,13 +229,13 @@ namespace andromeda
 	    }
 	}
 	
-	para->properties.emplace_back(para->get_hash(), TEXT, "#/texts/"+std::to_string(ind),
+	para->properties.emplace_back(para->get_hash(), TEXT, para->get_self_ref(), //"#/texts/"+std::to_string(ind),
 				      get_name(), label, conf);
 	para->applied_models.insert(get_key());
 
-	subj.properties.emplace_back(para->get_hash(), TEXT, "#/texts/"+std::to_string(ind),
-				     get_name(), label, conf);
-	subj.applied_models.insert(get_key());	
+	//subj.properties.emplace_back(para->get_hash(), TEXT, "#/texts/"+std::to_string(ind),
+	//get_name(), label, conf);
+	//subj.applied_models.insert(get_key());	
       }
 
     base_property prop(subj.get_hash(), DOCUMENT, "#",

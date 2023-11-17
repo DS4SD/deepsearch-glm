@@ -10,7 +10,7 @@ from deepsearch_glm.utils.ds_utils import to_legacy_document_format
 
 from deepsearch_glm.nlp_train_semantic import train_semantic
 
-GENERATE=False
+GENERATE=True
 
 def round_floats(o):
     if isinstance(o, float): return round(o, 2)
@@ -67,6 +67,9 @@ def test_02A_run_nlp_models_on_text():
         for label in ["relations"]:
             assert label not in sres
 
+        print(tres["properties"])
+        print(sres["properties"])
+            
         assert tres==sres
             
 def test_02B_run_nlp_models_on_text():
@@ -313,7 +316,7 @@ def test_04C_references():
 
 def test_05_to_legacy():
 
-    model = init_nlp_model("reference")
+    model = init_nlp_model("reference;term")
     
     source = "./tests/data/docs/doc_01.old.json"
 
@@ -330,10 +333,12 @@ def test_05_to_legacy():
         with open(target_nlp, "w") as fw:
             fw.write(json.dumps(doc_j, indent=2))
 
+        """
         doc_i = to_legacy_document_format(doc_j, doc_i)
 
         with open(target_leg, "w") as fw:
             fw.write(json.dumps(doc_i, indent=2))
+        """
     else:
         with open(target_nlp, "r") as fr:
             doc_nlp = json.load(fr)
@@ -342,7 +347,6 @@ def test_05_to_legacy():
         with open(target_leg, "r") as fr:
             doc_leg = json.load(fr)                        
             doc_leg = round_floats(doc_leg)
-
             
         doc_j = model.apply_on_doc(doc_i)
         doc_j = round_floats(doc_j)

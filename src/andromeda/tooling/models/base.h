@@ -39,8 +39,12 @@ namespace andromeda
     virtual bool apply(std::string& text, nlohmann::json& annots) { return false; }
 
     virtual bool apply(subject<TEXT>& subj) = 0;// { return false; }
-    virtual bool apply(subject<TABLE>& subj) = 0;//{ return false; }
+    //virtual bool apply(subject<TABLE>& subj) = 0;//{ return false; }
 
+    virtual bool apply(subject<TABLE>& subj); //{ return false; }
+    virtual bool apply_on_table_data(subject<TABLE>& subj) { return false; }
+    
+    virtual bool apply(subject<FIGURE>& subj);
     virtual bool apply(subject<DOCUMENT>& subj);
 
     static bool finalise(subject<DOCUMENT>& subj) { return false; }
@@ -88,6 +92,44 @@ namespace andromeda
     return true;
   }
 
+  bool base_nlp_model::apply(subject<TABLE>& subj)
+  {
+    //LOG_S(INFO) << __FUNCTION__ << " (apply on table)";
+    
+    if(not satisfies_dependencies(subj))
+      {
+        return false;
+      }
+
+    for(auto& caption:subj.captions)
+      {
+	//LOG_S(INFO) << __FUNCTION__ << " (apply on table-caption)";
+        this->apply(*caption);
+      }
+
+    this->apply_on_table_data(subj);
+
+    return true;
+  }
+  
+  bool base_nlp_model::apply(subject<FIGURE>& subj)
+  {
+    //LOG_S(INFO) << __FUNCTION__ << " (apply on figure)";
+    
+    if(not satisfies_dependencies(subj))
+      {
+        return false;
+      }
+
+    for(auto& caption:subj.captions)
+      {
+	//LOG_S(INFO) << __FUNCTION__ << " (apply on figure-caption)";
+        this->apply(*caption);
+      }
+
+    return true;
+  }
+  
   bool base_nlp_model::apply(subject<DOCUMENT>& subj)
   {
     if(not satisfies_dependencies(subj))
@@ -95,16 +137,27 @@ namespace andromeda
         return false;
       }
     
+    //subj.join_properties_with_texts();
     for(auto& text_ptr:subj.texts)
       {
         this->apply(*text_ptr);
       }
-    
+    //subj.clear_properties_from_texts();
+
+    //subj.join_properties_with_tables();
     for(auto& table_ptr:subj.tables)
       {
         this->apply(*table_ptr);
       }
+    //subj.clear_properties_from_tables();
 
+    //subj.join_properties_with_tables();
+    for(auto& figure_ptr:subj.figures)
+      {
+        this->apply(*figure_ptr);
+      }
+    //subj.clear_properties_from_tables();
+    
     return update_applied_models(subj);
   }  
 

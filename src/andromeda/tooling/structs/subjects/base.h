@@ -27,9 +27,9 @@ namespace andromeda
     const static inline std::string hash_lbl = "hash";
     //const static inline std::string text_lbl = "text";
 
-    const static inline std::string dloc_lbl = "dloc";
-    //const static inline std::string dref_lbl = "dref";
-    const static inline std::string jref_lbl = "$ref";
+    const static inline std::string dloc_lbl = "dloc"; // location in the document
+    const static inline std::string sref_lbl = "sref"; // self-reference via path
+    const static inline std::string jref_lbl = "$ref"; // json-ref convention
 
     const static inline std::string name_lbl = "name";
     const static inline std::string type_lbl = "type";
@@ -55,6 +55,12 @@ namespace andromeda
 
     virtual ~base_subject() {}
 
+    std::string get_self_ref();
+    void set_self_ref(std::string sref);
+    
+    bool is_valid() const { return valid; }
+    void set_valid(bool val) { this->valid=val; }
+    
     static bool set_prov_refs(const nlohmann::json& data,
 			      const std::vector<std::shared_ptr<prov_element> >& doc_provs,
 			      std::vector<std::shared_ptr<prov_element> >& base_provs);
@@ -103,22 +109,28 @@ namespace andromeda
 			  std::string key,
 			  std::vector<std::shared_ptr<item_type> >& vals);
     
-  public:
-
+    //public:
+  protected:
+    
     bool valid;
     subject_name name;
 
     hash_type hash; // hash of the item
     hash_type dhash; // hash of the document of the item
 
+  protected:
+    
     std::string dloc; // location of item in the document <doc-hash>#<JSON-path-in-doc>
-
+    std::string sref;
+    
+  public:
+    
     std::set<std::string> applied_models;
 
     std::vector<base_property> properties;
     std::vector<base_instance> instances;
     std::vector<base_relation> relations;
-
+    
     //std::vector<base_entity> entities;
   };
 
@@ -129,8 +141,9 @@ namespace andromeda
     hash(-1),
     dhash(-1),
 
-    dloc(""),
-
+    dloc("#"),
+    sref("#"),
+    
     applied_models({}),
 
     properties({}),
@@ -145,8 +158,9 @@ namespace andromeda
     hash(-1),
     dhash(-1),
 
-    dloc(""),
-
+    dloc("#"),
+    sref("#"),
+    
     applied_models({}),
 
     properties({}),
@@ -156,7 +170,7 @@ namespace andromeda
 
   base_subject::base_subject(uint64_t dhash,
                              std::string dloc,
-                             subject_name name)://, prov_element& prov):
+                             subject_name name):
     valid(true),
     name(name),
 
@@ -164,14 +178,46 @@ namespace andromeda
     dhash(dhash),
 
     dloc(dloc),
-
+    sref("#"),
+    
     applied_models({}),
 
     properties({}),
     instances({}),
     relations({})
-  {}
+  {
+    auto parts = utils::split(dloc, "#");
+    if(parts.size()==2)
+      {
+	sref += parts.at(1);
+      }
+    else
+      {
+	LOG_S(WARNING) << "could not derive sref from dloc: " << dloc;
+      }
+  }
 
+  void base_subject::set_self_ref(std::string sref)
+  {
+    this->sref = sref;
+  }
+  
+  std::string base_subject::get_self_ref()
+  {
+    return sref;
+    /*
+    if(dloc=="#")
+      {
+	return dloc;
+      }
+
+    auto parts = utils::split(dloc, "#");
+    assert(parts.size()==2);
+
+    return ("#"+parts.at(1));
+    */
+  }
+  
   bool base_subject::set_prov_refs(const nlohmann::json& data,
 				   const std::vector<std::shared_ptr<prov_element> >& doc_provs,
 				   std::vector<std::shared_ptr<prov_element> >& base_provs)
@@ -203,7 +249,6 @@ namespace andromeda
         if(prov!=NULL)
           {
             nlohmann::json pref;
-            //pref[base_subject::jref_lbl] = prov->get_pref();
 	    pref[base_subject::jref_lbl] = prov->get_self_ref();
 
             result.push_back(pref);
@@ -243,6 +288,7 @@ namespace andromeda
     {
       result[hash_lbl] = hash;
       result[dloc_lbl] = dloc;
+      result[sref_lbl] = sref;
     }
     
     if((properties.size()>0) and (filters.size()==0 or filters.count(prps_lbl)))
@@ -294,6 +340,7 @@ namespace andromeda
   {
     hash = item.value(hash_lbl, hash);
     dloc = item.value(dloc_lbl, dloc);
+    sref = item.value(sref_lbl, sref);
 
     applied_models.clear();
     if(item.count(applied_models_lbl))

@@ -46,9 +46,6 @@ namespace andromeda
     ind_type get_maintext_ind() { return maintext_ind; }
     ind_type get_pdforder_ind() { return pdforder_ind; }
     
-    //std::string get_path() { return path; }
-    //void set_path(std::string val) { path = val; }
-
     std::string get_item_ref() { return item_ref; }
     void set_item_ref(std::string val) { item_ref = val; }
     
