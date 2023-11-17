@@ -431,8 +431,8 @@ namespace andromeda
     range_type min_range = {0, 0};
     table_range_type table_min_range = {0, 0};
     
-    base_instance fake(base_subject::hash, NULL_MODEL,
-		       "fake", "fake", "fake",
+    base_instance fake(base_subject::hash, TABLE, get_self_ref(),
+		       NULL_MODEL, "fake", "fake", "fake",
 		       coor, table_min_range, table_min_range,
                        min_range, min_range, min_range);
 
@@ -449,7 +449,8 @@ namespace andromeda
       std::numeric_limits<table_index_type>::max(),
       std::numeric_limits<table_index_type>::max()};
     
-    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake",
+    base_instance fake(base_subject::hash, TABLE, get_self_ref(),
+		       NULL_MODEL, "fake", "fake", "fake",
 		       coor, table_max_range, table_max_range,
                        max_range, max_range, max_range);
 

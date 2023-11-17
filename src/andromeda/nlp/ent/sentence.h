@@ -108,7 +108,7 @@ namespace andromeda
 
 	    std::string sent = orig.substr(char_range[0], char_range[1]-char_range[0]); 
 	    
-	    subj.instances.emplace_back(subj.get_hash(),
+	    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
 				       SENTENCE, "",
 				       sent, sent,
 				       char_range, ctok_range, wtok_range);

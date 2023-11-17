@@ -189,7 +189,7 @@ namespace andromeda
 
 		    if(keep)
 		      {
-			subj.instances.emplace_back(subj.get_hash(),
+			subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
 						   NAME, expr.get_subtype(),
 						   name, orig, 
 						   char_range, ctok_range, wtok_range);

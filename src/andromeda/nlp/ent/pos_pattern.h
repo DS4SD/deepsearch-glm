@@ -199,7 +199,7 @@ namespace andromeda
 	   not contains(char_range, ranges_02) and
 	   (char_range[1]-char_range[0])>1)
 	  {
-	    subj.instances.emplace_back(subj.get_hash(),
+	    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
 				       name, subtype,
 				       text, orig,
 				       char_range, ctok_range, wtok_range);
@@ -255,11 +255,11 @@ namespace andromeda
 	   not contains(char_range, ranges_02) and
 	   (char_range[1]-char_range[0])>1)
 	  {
-	    subj.instances.emplace_back(subj.get_hash(),
-				       name, subtype,
-				       text, orig,
+	    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
+					name, subtype,
+					text, orig,
 					coor, row_span, col_span,
-				       char_range, ctok_range, wtok_range);
+					char_range, ctok_range, wtok_range);
 	  }
       }    
   }

@@ -520,11 +520,14 @@ namespace andromeda
 
         for(auto& ent:subj->instances)
           {
+	    /*
             instances.emplace_back(subj->get_hash(),
                                    subj->get_name(),
                                    //subj->get_path(),
 				   subj->get_self_ref(),
                                    ent);
+	    */
+	    instances.push_back(ent);	    
           }
       }
     //LOG_S(INFO) << "total #-insts: " << instances.size();
@@ -533,22 +536,28 @@ namespace andromeda
       {
         for(auto& ent:subj->instances)
           {
+	    /*
             instances.emplace_back(subj->get_hash(),
                                    subj->get_name(),
                                    //subj->get_path(),
 				   subj->get_self_ref(),
                                    ent);
+	    */
+	    instances.push_back(ent);	    
           }
 
         for(auto& capt:subj->captions)
           {
             for(auto& ent:capt->instances)
               {
+		/*
                 instances.emplace_back(capt->get_hash(),
                                        capt->get_name(),
                                        //capt->get_path(),
 				       capt->get_self_ref(),
                                        ent);
+		*/
+		instances.push_back(ent);	    
               }
           }
       }
@@ -557,22 +566,28 @@ namespace andromeda
       {
         for(auto& ent:subj->instances)
           {
+	    /*
             instances.emplace_back(subj->get_hash(),
                                    subj->get_name(),
                                    //subj->get_path(),
 				   subj->get_self_ref(),
                                    ent);
+	    */
+	    instances.push_back(ent);	    
           }
 
         for(auto& capt:subj->captions)
           {
             for(auto& ent:capt->instances)
               {
+		/*
                 instances.emplace_back(capt->get_hash(),
                                        capt->get_name(),
                                        //capt->get_path(),
 				       capt->get_self_ref(),
                                        ent);
+		*/
+		instances.push_back(ent);	    
               }
           }
       }

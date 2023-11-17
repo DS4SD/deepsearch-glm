@@ -138,7 +138,7 @@ namespace andromeda
 	    // remove spaces
 	    name = utils::replace(name, " ", "");
 	    
-	    subj.instances.emplace_back(subj.get_hash(),
+	    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
 				       LINK, expr.get_subtype(),
 				       name, orig,
 				       char_range, ctok_range, wtok_range);

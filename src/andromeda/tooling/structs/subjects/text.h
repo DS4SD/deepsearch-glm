@@ -208,7 +208,8 @@ namespace andromeda
 
   typename std::vector<base_instance>::iterator subject<TEXT>::insts_beg(std::array<uint64_t, 2> char_rng)
   {
-    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake",
+    base_instance fake(base_subject::hash, TEXT, get_self_ref(),
+		       NULL_MODEL, "fake", "fake", "fake",
                        char_rng, {0,0}, {0,0});
 
     return std::lower_bound(instances.begin(), instances.end(), fake);
@@ -216,7 +217,8 @@ namespace andromeda
 
   typename std::vector<base_instance>::iterator subject<TEXT>::insts_end(std::array<uint64_t, 2> char_rng)
   {
-    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake",
+    base_instance fake(base_subject::hash, TEXT, get_self_ref(),
+		       NULL_MODEL, "fake", "fake", "fake",
                        char_rng, {0,0}, {0,0});
 
     return std::upper_bound(instances.begin(), instances.end(), fake);

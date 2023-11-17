@@ -96,7 +96,7 @@ namespace andromeda
 	   (not filter_01.match(orig)) and  // no all lower-case words
 	   (not filter_02.match(orig))) // no numbers
 	  {
-	    subj.instances.emplace_back(subj.get_hash(),
+	    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
 					ABBREVIATION, ent_j.get_subtype(),
 					//ent_j.get_name(), ent_j.get_orig(),
 					name, orig, crng, ctok_rng, wtok_rng);

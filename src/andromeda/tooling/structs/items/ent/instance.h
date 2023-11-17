@@ -82,14 +82,14 @@ namespace andromeda
 
     base_instance();
 
-    base_instance(hash_type subj_hash,
+    base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
                   model_name type,
                   range_type char_range,
                   range_type ctok_range,
                   range_type wtok_range);
 
     // Paragraph entity
-    base_instance(hash_type subj_hash,
+    base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
                   model_name type, std::string subtype,
                   std::string name, std::string orig,
                   range_type char_range,
@@ -97,7 +97,7 @@ namespace andromeda
                   range_type wtok_range);
 
     // Table entity
-    base_instance(hash_type subj_hash,
+    base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
                   model_name type, std::string subtype,
                   std::string name, std::string orig,
                   table_range_type coor,
@@ -107,10 +107,12 @@ namespace andromeda
                   range_type ctok_range,
                   range_type wtok_range);
 
+    /*
     // Document entity
     base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
                   const base_instance& other);
-
+    */
+    
     bool is_wtok_range_match() { return wtok_range_match; }
 
     bool verify_wtok_range_match(std::vector<word_token>& wtokens);
@@ -206,14 +208,14 @@ namespace andromeda
   base_instance::base_instance()
   {}
 
-  base_instance::base_instance(hash_type subj_hash,
+  base_instance::base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
                                model_name type,
                                range_type char_range,
                                range_type ctok_range,
                                range_type wtok_range):
     subj_hash(subj_hash),
-    subj_name(TEXT),
-    subj_path("#"),
+    subj_name(subj_name),
+    subj_path(subj_path),
 
     ehash(DEFAULT_HASH),
     ihash(DEFAULT_HASH),
@@ -245,16 +247,15 @@ namespace andromeda
     wtok_range_match = (wtok_range[0]<wtok_range[1]);
   }
 
-  base_instance::base_instance(hash_type subj_hash,
+  base_instance::base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
                                model_name type, std::string subtype,
                                std::string name, std::string orig,
                                range_type char_range,
                                range_type ctok_range,
                                range_type wtok_range):
-
     subj_hash(subj_hash),
-    subj_name(TEXT),
-    subj_path("#"),
+    subj_name(subj_name),
+    subj_path(subj_path),
 
     ehash(DEFAULT_HASH),
     ihash(DEFAULT_HASH),
@@ -286,7 +287,7 @@ namespace andromeda
     wtok_range_match = (wtok_range[0]<wtok_range[1]);
   }
 
-  base_instance::base_instance(hash_type subj_hash,
+  base_instance::base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
                                model_name type, std::string subtype,
                                std::string name, std::string orig,
                                table_range_type coor,
@@ -297,8 +298,8 @@ namespace andromeda
                                range_type wtok_range):
 
     subj_hash(subj_hash),
-    subj_name(TABLE),
-    subj_path("#"),
+    subj_name(subj_name),
+    subj_path(subj_path),
 
     ehash(DEFAULT_HASH),
     ihash(DEFAULT_HASH),
@@ -321,6 +322,8 @@ namespace andromeda
 
     wtok_range_match(true)
   {
+    assert(subj_name==TABLE);
+    
     assert(char_range[0]<=char_range[1]);
     assert(ctok_range[0]<=ctok_range[1]);
     assert(wtok_range[0]<=wtok_range[1]);
@@ -330,6 +333,7 @@ namespace andromeda
     wtok_range_match = (wtok_range[0]<wtok_range[1]);
   }
 
+  /*
   base_instance::base_instance(hash_type subj_hash,
 			       subject_name subj_name,
 			       std::string subj_path,
@@ -359,7 +363,8 @@ namespace andromeda
 
     wtok_range_match(other.wtok_range_match)
   {}
-
+  */
+  
   void base_instance::initialise_hashes()
   {
     //ehash = utils::to_hash(name);
