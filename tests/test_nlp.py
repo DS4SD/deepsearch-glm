@@ -10,7 +10,7 @@ from deepsearch_glm.utils.ds_utils import to_legacy_document_format
 
 from deepsearch_glm.nlp_train_semantic import train_semantic
 
-GENERATE=True
+GENERATE=False
 
 def round_floats(o):
     if isinstance(o, float): return round(o, 2)
