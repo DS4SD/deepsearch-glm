@@ -381,7 +381,6 @@ def to_legacy_document_format(doc_glm, doc_leg):
             find = len(doc_leg["figures"])
                 
             figure = {
-                "bounding-box": obj.get("bounding-box", pelem["bbox"]),
                 "confidence": obj.get("confidence", 0),
                 "created_by": obj.get("created_by", ""),
                 "type": obj.get("type", "figure"),                
@@ -431,7 +430,6 @@ def to_legacy_document_format(doc_glm, doc_leg):
             table = {
                 "#-cols": obj.get("#-cols", 0),
                 "#-rows": obj.get("#-rows", 0),
-                "bounding-box": obj.get("bounding-box", pelem["bbox"]),
                 "confidence": obj.get("confidence", 0),
                 "created_by": obj.get("created_by", ""),
                 "type": obj.get("type", "figure"),                
