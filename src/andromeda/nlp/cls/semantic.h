@@ -312,6 +312,7 @@ namespace andromeda
         return false;
       }
 
+    /*
     uint64_t abs_ind=-1, intro_ind=-1, ref_ind=-1;
     for(uint64_t ind=0; ind<subj.texts.size(); ind++)
       {
@@ -335,7 +336,8 @@ namespace andromeda
 	    ref_ind = ind;
 	  }
       }
-
+    */
+    
     std::string text="", label="null";
     double conf=0.0;
 
@@ -353,6 +355,7 @@ namespace andromeda
 	    continue; // skip
 	  }
 
+	/*
 	if(abs_ind!=-1 and ind<abs_ind and label=="reference")
 	  {
 	    label = "meta-data";
@@ -361,6 +364,7 @@ namespace andromeda
 	  {
 	    label = "text";
 	  }
+	*/
 	
 	//std::string key = get_key();	
 	    

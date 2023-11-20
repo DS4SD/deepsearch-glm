@@ -149,13 +149,37 @@ namespace andromeda
 
   bool operator<(const base_property& lhs, const base_property& rhs)
   {
-    if(lhs.model==rhs.model)
+    if(lhs.subj_path==rhs.subj_path)
       {
-	return lhs.conf>rhs.conf;
+	if(lhs.model==rhs.model)
+	  {
+	    return lhs.conf>rhs.conf;
+	  }
+	else
+	  {
+	    return (lhs.model<rhs.model);
+	  }
       }
     else
       {
-	return (lhs.model<rhs.model);
+	auto lhs_parts = utils::split(lhs.subj_path, "/");
+	auto rhs_parts = utils::split(rhs.subj_path, "/");
+
+	if(lhs_parts.size()==rhs_parts.size())
+	  {
+	    if(lhs_parts.size()==3)
+	      {
+		return std::stoi(lhs_parts.at(2))<std::stoi(rhs_parts.at(2));
+	      }
+	    else
+	      {
+		return (lhs.subj_path<rhs.subj_path);
+	      }
+	  }
+	else
+	  {
+	    return lhs_parts.size()<rhs_parts.size();
+	  }
       }
   }
   

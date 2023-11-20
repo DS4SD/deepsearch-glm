@@ -198,17 +198,21 @@ namespace andromeda
   bool text_element::set_text(const std::string& ctext)
   {
     clear();
-
+    
+    //LOG_S(INFO) << ctext << " -> " << orig << " -> " << text;
+    
     orig = utils::strip(ctext);
     text = orig;
+    
+    //LOG_S(INFO) << ctext << " -> " << orig << " -> " << text;
     
     if(orig.size()==0)
       {
         return false;
       }
-
+    
     len = orig.size();
-
+    
     text_valid = utf8::is_valid(orig.c_str(), orig.c_str()+len);
     text_hash = utils::to_reproducible_hash(orig);
     

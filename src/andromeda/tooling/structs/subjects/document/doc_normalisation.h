@@ -13,7 +13,6 @@ namespace andromeda
 
     const static inline std::set<std::string> is_text = {
       "title", "subtitle-level-1", "paragraph", "list-item",
-      //"footnote",
       "caption",
       "formula", "equation"
     };
@@ -84,7 +83,7 @@ namespace andromeda
   template<typename doc_type>
   void doc_normalisation<doc_type>::set_pdforder()
   {
-    auto& orig = doc.orig;
+    auto& orig = doc.get_orig();
 
     if(orig.count(doc_type::maintext_lbl)==0)
       {
@@ -102,9 +101,9 @@ namespace andromeda
   template<typename doc_type>
   void doc_normalisation<doc_type>::init_pages()
   {
-    auto& orig = doc.orig;
-
-    auto& pages = doc.pages;
+    auto& orig = doc.get_orig();
+    
+    auto& pages = doc.get_pages();
     pages.clear();
 
     for(ind_type l=0; l<orig.at(doc_type::pages_lbl).size(); l++)
@@ -123,7 +122,7 @@ namespace andromeda
   template<typename doc_type>
   void doc_normalisation<doc_type>::unroll_provs()
   {
-    auto& orig = doc.orig;
+    auto& orig = doc.get_orig();
 
     nlohmann::json& old_maintext = orig.at(doc_type::maintext_lbl);
     nlohmann::json new_maintext = nlohmann::json::array({});
@@ -191,10 +190,11 @@ namespace andromeda
   template<typename doc_type>
   void doc_normalisation<doc_type>::init_provs()
   {
-    std::string doc_name = doc.doc_name;
+    //std::string doc_name = doc.doc_name;
+    std::string doc_name = doc.get_name();
 
-    auto& orig = doc.orig;
-    auto& provs = doc.provs;
+    auto& orig = doc.get_orig();
+    auto& provs = doc.get_provs();
 
     provs.clear();
 
@@ -273,10 +273,11 @@ namespace andromeda
   template<typename doc_type>
   void doc_normalisation<doc_type>::init_items()
   {
-    std::string doc_name = doc.doc_name;
+    //std::string doc_name = doc.doc_name;
+    std::string doc_name = doc.get_name();
 
-    auto& orig = doc.orig;
-    auto& provs = doc.provs;
+    auto& orig = doc.get_orig();
+    auto& provs = doc.get_provs();
 
     auto& texts = doc.texts;
     auto& tables = doc.tables;
@@ -325,7 +326,7 @@ namespace andromeda
 
             std::string dloc = ss.str();
 
-            auto subj = std::make_shared<subject<TEXT> >(doc.doc_hash, dloc, prov);
+            auto subj = std::make_shared<subject<TEXT> >(doc.get_hash(), dloc, prov);
             bool valid = subj->set_data(item);
 
             if(valid)
@@ -344,7 +345,7 @@ namespace andromeda
 
             std::string dloc = ss.str();
 
-            auto subj = std::make_shared<subject<TABLE> >(doc.doc_hash, dloc, prov);
+            auto subj = std::make_shared<subject<TABLE> >(doc.get_hash(), dloc, prov);
             bool valid = subj->set_data(item);
 
             tables.push_back(subj);
@@ -365,7 +366,7 @@ namespace andromeda
 
             std::string dloc = ss.str();
 
-            auto subj = std::make_shared<subject<FIGURE> >(doc.doc_hash, dloc, prov);
+            auto subj = std::make_shared<subject<FIGURE> >(doc.get_hash(), dloc, prov);
             bool valid = subj->set_data(item);
 
             figures.push_back(subj);
@@ -382,7 +383,7 @@ namespace andromeda
 
             std::string dloc = ss.str();
 
-            auto subj = std::make_shared<subject<TEXT> >(doc.doc_hash, dloc, prov);
+            auto subj = std::make_shared<subject<TEXT> >(doc.get_hash(), dloc, prov);
             bool valid = subj->set_data(item);
 
             if(valid)
@@ -401,7 +402,7 @@ namespace andromeda
 
             std::string dloc = ss.str();
 
-            auto subj = std::make_shared<subject<TEXT> >(doc.doc_hash, dloc, prov);
+            auto subj = std::make_shared<subject<TEXT> >(doc.get_hash(), dloc, prov);
             bool valid = subj->set_data(item);
 
             if(valid)
@@ -420,7 +421,7 @@ namespace andromeda
 
             std::string dloc = ss.str();
 
-            auto subj = std::make_shared<subject<TEXT> >(doc.doc_hash, dloc, prov);
+            auto subj = std::make_shared<subject<TEXT> >(doc.get_hash(), dloc, prov);
             bool valid = subj->set_data(item);
 
             if(valid)
@@ -445,7 +446,7 @@ namespace andromeda
 
             std::string dloc = ss.str();
 
-            auto subj = std::make_shared<subject<TEXT> >(doc.doc_hash, dloc, prov);
+            auto subj = std::make_shared<subject<TEXT> >(doc.get_hash(), dloc, prov);
             bool valid = subj->set_data(item);
 
             if(valid)

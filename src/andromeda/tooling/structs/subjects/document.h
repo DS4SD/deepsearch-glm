@@ -34,10 +34,6 @@ namespace andromeda
     // element-labels
     const static inline std::string pdforder_lbl = "pdf-order";
 
-    //const static inline std::string prov_lbl = "prov";
-    //const static inline std::string text_lbl = "text";
-    //const static inline std::string data_lbl = "data";
-
     const static inline std::string maintext_name_lbl = name_lbl;
     const static inline std::string maintext_type_lbl = type_lbl;
 
@@ -70,6 +66,15 @@ namespace andromeda
     uint64_t get_hash() const { return doc_hash; }
     std::string get_name() const { return doc_name; }
 
+    std::filesystem::path get_filepath() { return filepath; }
+    
+    nlohmann::json& get_orig() { return orig; }    
+
+    std::vector<std::shared_ptr<page_element> >& get_pages() { return pages; }
+    std::vector<std::shared_ptr<prov_element> >& get_provs() { return provs; }
+
+
+    
     void show(bool txt=true, bool mdls=false,
               bool ctokens=false, bool wtokens=true,
               bool prps=true, bool insts=true, bool rels=true);
@@ -87,11 +92,8 @@ namespace andromeda
     void init_provs();
     void show_provs();
 
-    void clear_properties_from_texts();
-    void clear_properties_from_tables();
-    
-    void join_properties_with_texts();
-    void join_properties_with_tables();
+    void join_properties();
+    void join_instances();
     
   private:
 
@@ -112,14 +114,14 @@ namespace andromeda
     bool finalise_instances();
     bool finalise_relations();
 
-  public:
+  private:
 
     std::filesystem::path filepath;
 
     uint64_t doc_hash;
     std::string doc_name;
 
-    nlohmann::json orig, dscr;
+    nlohmann::json orig, dscr, info;
 
     std::vector<std::shared_ptr<page_element> > pages;
     std::vector<std::shared_ptr<prov_element> > provs;
@@ -127,6 +129,8 @@ namespace andromeda
     std::vector<std::shared_ptr<base_subject> > body;
     std::vector<std::shared_ptr<base_subject> > meta;
 
+  public:
+    
     std::vector<std::shared_ptr<subject<TEXT> > > texts;
     std::vector<std::shared_ptr<subject<TABLE> > > tables;
     std::vector<std::shared_ptr<subject<FIGURE> > > figures;
@@ -142,6 +146,10 @@ namespace andromeda
     doc_hash(-1),
     doc_name(""),
 
+    orig(nlohmann::json::value_t::null),
+    dscr(nlohmann::json::value_t::null),
+    info(nlohmann::json::value_t::null),
+    
     pages(),
     provs(),
 
@@ -165,16 +173,30 @@ namespace andromeda
   nlohmann::json subject<DOCUMENT>::to_json(const std::set<std::string>& filters)
   {
     nlohmann::json result = base_subject::_to_json(filters);
-    
-    if(orig.count("description"))
+
+    result["description"] = nlohmann::json::object({});
+    if(dscr!=nlohmann::json::value_t::null)
       {
-        result["description"] = orig["description"];
-      }
-    else
-      {
-        result["description"] = nlohmann::json::object({});
+	result["description"] = dscr;
       }
 
+    result["file-info"] = nlohmann::json::object({});
+    if(info!=nlohmann::json::value_t::null)
+      {
+	result["file-info"] = info;
+      }    
+    
+    /*
+      if(orig.count("description"))
+      {
+      result["description"] = orig["description"];
+      }
+      else
+      {
+      result["description"] = nlohmann::json::object({});
+      }
+    */
+    
     // updated the description with predefined labels in schema
     {
       auto& desc = result.at("description");
@@ -231,8 +253,7 @@ namespace andromeda
 
     std::set<std::string> doc_filters
         = { "hash", "dloc", "prov", "text", "data",
-            "captions", "footnotes", "mentions",
-            "properties"};
+            "captions", "footnotes", "mentions"};
 
     base_subject::to_json(result, texts_lbl, texts, doc_filters);
     base_subject::to_json(result, tables_lbl, tables, doc_filters);
@@ -250,19 +271,22 @@ namespace andromeda
   bool subject<DOCUMENT>::from_json(const nlohmann::json& doc)
   {
     base_subject::_from_json(doc);
-
+    
     base_subject::from_json(doc, pages_lbl, pages);
     base_subject::from_json(doc, provs_lbl, provs);
     
-    base_subject::from_json(doc, provs, texts_lbl  , texts  );
-    base_subject::from_json(doc, provs, tables_lbl , tables );
+    base_subject::from_json(doc, provs, texts_lbl, texts);
+    base_subject::from_json(doc, provs, tables_lbl, tables);
     base_subject::from_json(doc, provs, figures_lbl, figures);
-
+    
     base_subject::from_json(doc, provs, page_headers_lbl, page_headers);
     base_subject::from_json(doc, provs, page_footers_lbl, page_footers);
     base_subject::from_json(doc, provs, footnotes_lbl, footnotes);
     
     base_subject::from_json(doc, provs, other_lbl, other);        
+
+    join_properties();
+    join_instances();
     
     return true;
   }
@@ -277,9 +301,10 @@ namespace andromeda
   {
     base_subject::clear();
 
-    dscr = nlohmann::json::object({});
-    orig = nlohmann::json::object({});
-
+    orig = nlohmann::json::value_t::null;
+    dscr = nlohmann::json::value_t::null;
+    info = nlohmann::json::value_t::null;
+      
     body.clear();
     meta.clear();
 
@@ -361,6 +386,11 @@ namespace andromeda
       {
         dscr = data.at("description");
       }
+
+    if(data.count("file-info"))
+      {
+        info = data.at("file-info");
+      }    
 
     base_subject::dloc = doc_name + "#";
   }
@@ -460,7 +490,6 @@ namespace andromeda
   bool subject<DOCUMENT>::finalise_properties()
   {
     // only keep document global properties
-
     std::set<std::pair<hash_type, model_name> > doc_properties={};
 
     for(auto& prop:properties)
@@ -506,7 +535,9 @@ namespace andromeda
 	  }
 	figure->properties.clear();
       }    
-     
+
+    std::sort(properties.begin(), properties.end());
+    
     return true;
   }
 
@@ -516,33 +547,16 @@ namespace andromeda
 
     for(auto& subj:texts)
       {
-        //LOG_S(INFO) << __FUNCTION__ << ": " << subj.instances.size();
-
         for(auto& ent:subj->instances)
           {
-	    /*
-            instances.emplace_back(subj->get_hash(),
-                                   subj->get_name(),
-                                   //subj->get_path(),
-				   subj->get_self_ref(),
-                                   ent);
-	    */
 	    instances.push_back(ent);	    
           }
       }
-    //LOG_S(INFO) << "total #-insts: " << instances.size();
 
     for(auto& subj:tables)
       {
         for(auto& ent:subj->instances)
           {
-	    /*
-            instances.emplace_back(subj->get_hash(),
-                                   subj->get_name(),
-                                   //subj->get_path(),
-				   subj->get_self_ref(),
-                                   ent);
-	    */
 	    instances.push_back(ent);	    
           }
 
@@ -550,13 +564,6 @@ namespace andromeda
           {
             for(auto& ent:capt->instances)
               {
-		/*
-                instances.emplace_back(capt->get_hash(),
-                                       capt->get_name(),
-                                       //capt->get_path(),
-				       capt->get_self_ref(),
-                                       ent);
-		*/
 		instances.push_back(ent);	    
               }
           }
@@ -566,13 +573,6 @@ namespace andromeda
       {
         for(auto& ent:subj->instances)
           {
-	    /*
-            instances.emplace_back(subj->get_hash(),
-                                   subj->get_name(),
-                                   //subj->get_path(),
-				   subj->get_self_ref(),
-                                   ent);
-	    */
 	    instances.push_back(ent);	    
           }
 
@@ -580,18 +580,13 @@ namespace andromeda
           {
             for(auto& ent:capt->instances)
               {
-		/*
-                instances.emplace_back(capt->get_hash(),
-                                       capt->get_name(),
-                                       //capt->get_path(),
-				       capt->get_self_ref(),
-                                       ent);
-		*/
 		instances.push_back(ent);	    
               }
           }
       }
 
+    std::sort(instances.begin(), instances.end());
+    
     return true;
   }
 
@@ -613,86 +608,170 @@ namespace andromeda
           {
             relations.push_back(rel);
           }
+
+        for(auto& capt:table->captions)
+          {
+            for(auto& rel:capt->relations)
+              {
+		relations.push_back(rel);	    
+              }
+          }		
       }
 
+    for(auto& figure:figures)
+      {
+        for(auto& rel:figure->relations)
+          {
+            relations.push_back(rel);
+          }
+
+        for(auto& capt:figure->captions)
+          {
+            for(auto& rel:capt->relations)
+              {
+		relations.push_back(rel);	    
+              }
+          }	
+      }    
+
+    std::sort(relations.begin(), relations.end());
+    
     return true;
   }
 
-  void subject<DOCUMENT>::clear_properties_from_texts()
+  void subject<DOCUMENT>::join_properties()
   {
-    for(auto& text:texts)    
-      {
-	text->properties.clear();
-      }
-  }
-  
-  void subject<DOCUMENT>::join_properties_with_texts()
-  {
-    clear_properties_from_texts();
+    for(auto& text:texts) { text->properties.clear(); }
+    for(auto& table:tables) { table->properties.clear(); }
+    for(auto& figure:figures) { figure->properties.clear(); }
     
     for(auto& prop:this->properties)
       {
 	std::string path = prop.get_subj_path();
-	LOG_S(INFO) << path;
-	
+
 	auto parts = utils::split(path, "/");
 
-	if(parts.size()<3)
+	if(parts.size()==1) // document properties, nothing to be done ...
+	  {}
+	else if(parts.size()==3 and parts.at(1)==texts_lbl)
 	  {
-	    continue;
-	  }
-	
-	int ind = std::stoi(parts.at(2));
-	LOG_S(INFO) << " -> " << ind;
-	
-	if(parts.at(1)==texts_lbl and ind<texts.size())
-	  {
+	    int ind = std::stoi(parts.at(2));
+
 	    assert(texts.at(ind)->get_hash()==prop.get_subj_hash());
 	    texts.at(ind)->properties.push_back(prop);
-	  }
-	else
-	  {}
-      }
-  }
-
-  void subject<DOCUMENT>::clear_properties_from_tables()
-  {
-    for(auto& table:tables)    
-      {
-	table->properties.clear();
-      }
-  }
-  
-  void subject<DOCUMENT>::join_properties_with_tables()
-  {
-    for(auto& table:tables)    
-      {
-	table->properties.clear();
-      }
-    
-    for(auto& prop:this->properties)
-      {
-	std::string path = prop.get_subj_path();
-	LOG_S(INFO) << path;
-
-	auto parts = utils::split(path, "/");
-	if(parts.size()<3)
+	  }	
+	else if(parts.size()==3 and parts.at(1)==tables_lbl)
 	  {
-	    continue;
-	  }
-	
-	int ind = std::stoi(parts.at(2));
-	LOG_S(INFO) << " -> " << ind;
-	
-	if(parts.at(1)==tables_lbl and ind<tables.size())
-	  {
+	    int ind = std::stoi(parts.at(2));
+
 	    assert(tables.at(ind)->get_hash()==prop.get_subj_hash());
 	    tables.at(ind)->properties.push_back(prop);
 	  }
+	else if(parts.size()==3 and parts.at(1)==figures_lbl)
+	  {	    
+	    int ind = std::stoi(parts.at(2));
+	    
+	    assert(figures.at(ind)->get_hash()==prop.get_subj_hash());
+	    figures.at(ind)->properties.push_back(prop);	    
+	  }
+	else if(parts.size()==5 and parts.at(1)==tables_lbl and parts.at(3)==captions_lbl)
+	  {
+	    int ti = std::stoi(parts.at(2));
+	    int ci = std::stoi(parts.at(4));
+
+	    assert(tables.at(ti)->get_hash()==prop.get_subj_hash());
+	    tables.at(ti)->captions.at(ci)->properties.push_back(prop);
+	  }
+	else if(parts.size()==5 and parts.at(1)==figures_lbl and parts.at(3)==captions_lbl)
+	  {	    
+	    int fi = std::stoi(parts.at(2));
+	    int ci = std::stoi(parts.at(4));
+
+	    assert(figures.at(fi)->get_hash()==prop.get_subj_hash());
+	    figures.at(fi)->captions.at(ci)->properties.push_back(prop);
+	  }	
 	else
-	  {}
+	  {
+	    LOG_S(WARNING) << "ignoring properties with subj-path: " << path; 
+	  }
       }
   }
+
+  void subject<DOCUMENT>::join_instances()
+  {
+    for(auto& text:texts) { text->instances.clear(); }
+    for(auto& table:tables) { table->instances.clear(); }
+    for(auto& figure:figures) { figure->instances.clear(); }
+    
+    for(auto& inst:this->instances)
+      {
+	std::string path = inst.get_subj_path();
+
+	auto parts = utils::split(path, "/");
+
+	if(parts.size()==1) // document instances, nothing to be done ...
+	  {}
+	else if(parts.size()==3 and parts.at(1)==texts_lbl)
+	  {
+	    int ind = std::stoi(parts.at(2));
+
+	    assert(texts.at(ind)->get_hash()==inst.get_subj_hash());
+	    texts.at(ind)->instances.push_back(inst);
+	  }	
+	else if(parts.size()==3 and parts.at(1)==tables_lbl)
+	  {
+	    int ind = std::stoi(parts.at(2));
+
+	    //assert(tables.at(ind)->get_hash()==inst.get_subj_hash());
+	    if(tables.at(ind)->get_hash()==inst.get_subj_hash())
+	      {
+		tables.at(ind)->instances.push_back(inst);
+	      }
+	    else
+	      {
+		LOG_S(INFO) << tables.at(ind)->get_hash() << "\t" << inst.get_subj_hash();
+		LOG_S(INFO) << inst.to_json().dump(2);
+	      }
+	  }
+	else if(parts.size()==3 and parts.at(1)==figures_lbl)
+	  {	    
+	    int ind = std::stoi(parts.at(2));
+	    
+	    //assert(figures.at(ind)->get_hash()==inst.get_subj_hash());
+	    //figures.at(ind)->instances.push_back(inst);
+
+	    if(figures.at(ind)->get_hash()==inst.get_subj_hash())
+	      {
+		figures.at(ind)->instances.push_back(inst);
+	      }
+	    else
+	      {
+		LOG_S(INFO) << figures.at(ind)->get_hash() << "\t" << inst.get_subj_hash();
+		LOG_S(INFO) << inst.to_json().dump(2);
+	      }	    
+	  }
+	else if(parts.size()==5 and parts.at(1)==tables_lbl and parts.at(3)==captions_lbl)
+	  {
+	    int ti = std::stoi(parts.at(2));
+	    int ci = std::stoi(parts.at(4));
+
+	    assert(tables.at(ti)->captions.at(ci)->get_hash()==inst.get_subj_hash());
+	    tables.at(ti)->captions.at(ci)->instances.push_back(inst);
+	  }
+	else if(parts.size()==5 and parts.at(1)==figures_lbl and parts.at(3)==captions_lbl)
+	  {	    
+	    int fi = std::stoi(parts.at(2));
+	    int ci = std::stoi(parts.at(4));
+
+	    assert(figures.at(fi)->captions.at(ci)->get_hash()==inst.get_subj_hash());
+	    figures.at(fi)->captions.at(ci)->instances.push_back(inst);
+	  }	
+	else
+	  {
+	    LOG_S(WARNING) << "ignoring instances with subj-path: " << path; 
+	  }
+      }
+  }  
   
 }
 

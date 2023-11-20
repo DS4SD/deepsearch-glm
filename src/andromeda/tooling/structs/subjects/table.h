@@ -185,7 +185,6 @@ namespace andromeda
           json_table.push_back(row);
         }
 
-
       result[base_subject::table_data_lbl] = json_table;
     }
     
@@ -209,12 +208,22 @@ namespace andromeda
 
   bool subject<TABLE>::from_json(const nlohmann::json& json_table)
   {
+    //LOG_S(INFO) << __FUNCTION__;
+
+    {
+      base_subject::valid = true;
+      base_subject::_from_json(json_table);
+    }
+    
     {
       conf = json_table.value(base_subject::confidence_lbl, conf);
       created_by = json_table.value(base_subject::created_by_lbl, created_by);
     }
     
-    {
+    {      
+      nrows = json_table.at("#-rows");
+      ncols = json_table.at("#-cols");
+      
       nlohmann::json grid = json_table.at("data");
       
       for(ind_type i=0; i<grid.size(); i++)
@@ -247,7 +256,10 @@ namespace andromeda
   
   bool subject<TABLE>::set_data(const nlohmann::json& item)
   {
+    LOG_S(INFO) << __FUNCTION__;
+    
     base_subject::clear_models();
+
     data.clear();
 
     {
@@ -407,7 +419,7 @@ namespace andromeda
             valid = (valid and cell.set_tokens(char_normaliser, text_normaliser));
           }
       }
-
+    
     return valid;
   }
 

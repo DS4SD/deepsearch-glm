@@ -439,8 +439,7 @@ namespace andromeda
     subj_name = to_subject_name(row.at(3).get<std::string>());
     subj_path = row.at(4).get<std::string>();
 
-    conf = (row.at(5).get<val_type>())/100.0;
-    //conf = (row.at(5).get<int>())/100.0;
+    conf = (row.at(5).get<val_type>());
 
     ehash = row.at(6).get<hash_type>();
     ihash = row.at(7).get<hash_type>();
@@ -554,13 +553,6 @@ namespace andromeda
     return SHORT_TABLE_HEADERS;
   }
 
-  /*
-  std::string base_instance::get_name() const
-  {
-    return name;
-  }
-  */
-  
   std::string base_instance::get_reference() const
   {
     std::string ref = subj_path;
@@ -579,6 +571,10 @@ namespace andromeda
   {
     nlohmann::json result = nlohmann::json::object();
     {
+      result["subj_hash"] = subj_hash;
+      result["subj_name"] = to_string(subj_name);
+      result["subj_path"] = subj_path;
+      
       result["ehash"] = ehash;
       result["ihash"] = ihash;
 

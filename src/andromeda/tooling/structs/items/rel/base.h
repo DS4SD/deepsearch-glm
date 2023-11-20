@@ -32,6 +32,8 @@ namespace andromeda
 		  const base_instance& inst_i,
 		  const base_instance& inst_j);
 
+    friend bool operator<(const base_relation& lhs, const base_relation& rhs);
+    
     nlohmann::json to_json_row();
     bool from_json_row(const nlohmann::json& row);
     
@@ -41,9 +43,6 @@ namespace andromeda
 
     hash_type get_hash_i() { return hash_i; }
     hash_type get_hash_j() { return hash_j; }
-
-    //hash_type get_ihash_i() { return ihash_i; }
-    //hash_type get_ihash_j() { return ihash_j; }
     
   private:
 
@@ -51,9 +50,6 @@ namespace andromeda
     val_type  conf;
 
     hash_type hash_i, hash_j;
-    //hash_type hash_i, ihash_i;
-    //hash_type hash_j, ihash_j;
-
     std::string name_i, name_j;
   };
 
@@ -127,15 +123,34 @@ namespace andromeda
     flvr(to_flvr(name)),    
     conf(conf),
 
-    hash_i(inst_i.get_ehash()),
-    //ihash_i(inst_i.ihash),
+    //hash_i(inst_i.get_ehash()),
+    hash_i(inst_i.get_ihash()),
 
-    hash_j(inst_j.get_ehash()),
-    //ihash_j(inst_j.ihash),
+    //hash_j(inst_j.get_ehash()),
+    hash_j(inst_j.get_ihash()),
 
     name_i(inst_i.get_name()),
     name_j(inst_j.get_name())
   {}
+
+  bool operator<(const base_relation& lhs, const base_relation& rhs)
+  {
+    if(lhs.flvr==rhs.flvr)
+      {
+	if(lhs.hash_i==rhs.hash_i)
+	  {
+	    return (rhs.hash_i<rhs.hash_j);
+	  }
+	else
+	  {
+	    return (lhs.hash_i<rhs.hash_i);
+	  }
+      }
+    else
+      {
+	return (lhs.flvr<rhs.flvr);
+      }
+  }
   
   nlohmann::json base_relation::to_json_row()
   {
