@@ -89,8 +89,8 @@ namespace andromeda
 
   private:
 
-    void set_dscr(nlohmann::json& data);
-    void set_orig(nlohmann::json& data);
+    void set_kept(const nlohmann::json& data);
+    void set_orig(const nlohmann::json& data);
 
     bool is_preprocessed();
     bool originates_from_pdf();
@@ -113,8 +113,13 @@ namespace andromeda
     uint64_t doc_hash;
     std::string doc_name;
 
-    nlohmann::json orig, dscr;
+    nlohmann::json orig;
 
+    std::vector<std::string> kept_keys;
+    nlohmann::json kept;
+
+  public:
+    
     std::vector<std::shared_ptr<page_element> > pages;
     std::vector<std::shared_ptr<prov_element> > provs;
 
@@ -136,6 +141,11 @@ namespace andromeda
     doc_hash(-1),
     doc_name(""),
 
+    orig(nlohmann::json::value_t::null),
+
+    kept_keys({"description", "file-info", "_s3_data", "conversion_settings"}),
+    kept(nlohmann::json::object({})),
+    
     pages(),
     provs(),
 
@@ -159,16 +169,17 @@ namespace andromeda
   nlohmann::json subject<DOCUMENT>::to_json(const std::set<std::string>& filters)
   {
     nlohmann::json result = base_subject::_to_json(filters);
-    
-    if(orig.count("description"))
-      {
-        result["description"] = orig["description"];
-      }
-    else
-      {
-        result["description"] = nlohmann::json::object({});
-      }
 
+    for(auto key:kept_keys)
+      {
+	result[key] = nlohmann::json::object({});
+	
+	if(kept.count(key))
+	  {
+	    result[key] = kept[key];
+	  }
+      }
+    
     // updated the description with predefined labels in schema
     {
       auto& desc = result.at("description");
@@ -245,6 +256,8 @@ namespace andromeda
   {
     base_subject::_from_json(doc);
 
+    set_kept(doc);
+    
     base_subject::from_json(doc, pages_lbl, pages);
     base_subject::from_json(doc, provs_lbl, provs);
     
@@ -271,8 +284,8 @@ namespace andromeda
   {
     base_subject::clear();
 
-    dscr = nlohmann::json::object({});
     orig = nlohmann::json::object({});
+    kept = nlohmann::json::object({});
 
     body.clear();
     meta.clear();
@@ -313,7 +326,7 @@ namespace andromeda
     clear();
 
     {
-      set_dscr(data);
+      set_kept(data);
       set_orig(data);
     }
 
@@ -335,8 +348,20 @@ namespace andromeda
     return true;
   }
 
-  void subject<DOCUMENT>::set_dscr(nlohmann::json& data)
+  void subject<DOCUMENT>::set_kept(const nlohmann::json& data)
   {
+    for(auto key:kept_keys)
+      {
+	if(data.count(key))
+	  {
+	    kept[key] = data.at(key);
+	  }
+	else
+	  {
+	    kept[key] = nlohmann::json::object({});
+	  }
+      }
+    
     if(data.count("file-info") and
        data["file-info"].count("document-hash"))
       {
@@ -351,15 +376,10 @@ namespace andromeda
         doc_hash = utils::to_reproducible_hash(doc_name);
       }
 
-    if(data.count("description"))
-      {
-        dscr = data.at("description");
-      }
-
     base_subject::dloc = doc_name + "#";
   }
 
-  void subject<DOCUMENT>::set_orig(nlohmann::json& data)
+  void subject<DOCUMENT>::set_orig(const nlohmann::json& data)
   {
     orig = data;
   }

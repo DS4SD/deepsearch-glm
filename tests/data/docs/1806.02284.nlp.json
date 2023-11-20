@@ -1,4 +1,5 @@
 {
+  "_s3_data": {},
   "applied-models": [
     "cite",
     "conn",
@@ -393,6 +394,26 @@
       "$ref": "#/texts/110"
     }
   ],
+  "conversion_settings": {
+    "model_pipeline": {
+      "clusters": [
+        {
+          "name": "LayoutSegmentationModel",
+          "type": "LayoutSegmentationModel",
+          "version": "NA"
+        }
+      ],
+      "normalization": [],
+      "page": [],
+      "tables": [
+        {
+          "name": "TableStructureModel",
+          "type": "TableStructureModel",
+          "version": "NA"
+        }
+      ]
+    }
+  },
   "description": {
     "languages": [
       "en"
@@ -642,6 +663,58 @@
       "type": "figure"
     }
   ],
+  "file-info": {
+    "#-pages": 9,
+    "document-hash": "9fd2a4018bf2111bf11dd2cad4d2767dff877692694aa68126a00543f810a5be",
+    "filename": "1806.02284.pdf",
+    "page-hashes": [
+      {
+        "hash": "5b2d0ee2a817876778b0007469f94e45d2d9ea591f45711215455a5f2fbec39a",
+        "model": "model",
+        "page": 1
+      },
+      {
+        "hash": "8d72db8e5854862f5472de9385457c1e4251d9a3e8a4797a687e102d96a701ba",
+        "model": "model",
+        "page": 2
+      },
+      {
+        "hash": "a1f460f273f25e1dd9e42ad2cd76faf0345f690c06c6686557a9fd2accd556d5",
+        "model": "model",
+        "page": 3
+      },
+      {
+        "hash": "1f93b41e4044e9957387fe7193c99331da63feec2437996a935c5935c5f20e7d",
+        "model": "model",
+        "page": 4
+      },
+      {
+        "hash": "80b62c8452fc364b0ccfc8afb5bb48742f6702588fdb478ee2f440f2e822183d",
+        "model": "model",
+        "page": 5
+      },
+      {
+        "hash": "d8bd307e4430a810bd71d2bb7dfb4eac41e34a4debbde60c08d446e78fe2d804",
+        "model": "model",
+        "page": 6
+      },
+      {
+        "hash": "da962246354e6f35eb1d4a837c0e9959a341947ec04653caa1f80d0214623653",
+        "model": "model",
+        "page": 7
+      },
+      {
+        "hash": "69be4180ff9be035e1123a026f3e6b8b00a99461a66ceecf8ec048285d3127e0",
+        "model": "model",
+        "page": 8
+      },
+      {
+        "hash": "78f72b9373b3bde393eaf09aae4d5b080f33d062ada168d51747278edf72acc7",
+        "model": "model",
+        "page": 9
+      }
+    ]
+  },
   "footnotes": [
     {
       "dloc": "9fd2a4018bf2111bf11dd2cad4d2767dff877692694aa68126a00543f810a5be#/footnotes/0",
