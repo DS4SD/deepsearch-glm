@@ -1,4 +1,5 @@
 {
+  "_s3_data": {},
   "applied-models": [
     "link",
     "numval",
@@ -612,6 +613,26 @@
       "$ref": "#/texts/190"
     }
   ],
+  "conversion_settings": {
+    "model_pipeline": {
+      "clusters": [
+        {
+          "name": "LayoutSegmentationModel",
+          "type": "LayoutSegmentationModel",
+          "version": "NA"
+        }
+      ],
+      "normalization": [],
+      "page": [],
+      "tables": [
+        {
+          "name": "TableStructureModel",
+          "type": "TableStructureModel",
+          "version": "NA"
+        }
+      ]
+    }
+  },
   "description": {
     "logs": [
       {
@@ -844,6 +865,88 @@
       "type": "figure"
     }
   ],
+  "file-info": {
+    "#-pages": 15,
+    "document-hash": "457bcbb2d189b4719daa30d94d946d913f1a6bddaabd1c12793b143a30e1115d",
+    "filename": "Applied AI Letters - 2020 - Staar.pdf",
+    "page-hashes": [
+      {
+        "hash": "365f2c5695b6aa22d2096bc88ab18f76b2c7f3eed6359d68af14a6aa7916ce70",
+        "model": "model",
+        "page": 1
+      },
+      {
+        "hash": "4fe5aedd95efb3beca7a5b39c9d9883838b8f5ac746d167c3fbfb4e9848d4a7e",
+        "model": "model",
+        "page": 2
+      },
+      {
+        "hash": "f3d1a1b3bad4dce4ab96bdf3e3fe105a7814009d24bacbfe5b90737979503e01",
+        "model": "model",
+        "page": 3
+      },
+      {
+        "hash": "dd8ebce06c6e2bec4a188b005eab757b6a222b7ae632eeec943767dbac6573b8",
+        "model": "model",
+        "page": 4
+      },
+      {
+        "hash": "0ebc61b0f17fd0a49cb6fd809500169f2fb13a27f15dfd345e8099c7e45491ed",
+        "model": "model",
+        "page": 5
+      },
+      {
+        "hash": "39a00bc2dd440023ebc606e26683a79bf9f6806f61af143cb1edfd03eba28a14",
+        "model": "model",
+        "page": 6
+      },
+      {
+        "hash": "5cfb4312275e9ed166e878f8b557709d831899591c7414facbf8d0fdd732d4ce",
+        "model": "model",
+        "page": 7
+      },
+      {
+        "hash": "71916575c81d0609e6862ac97c00dad85d1ec468262ea3934db42b8f13f0e7e7",
+        "model": "model",
+        "page": 8
+      },
+      {
+        "hash": "df3fce65445de0d07ebfda8634f70566417a0fcdd249c0120056aa082f1b1733",
+        "model": "model",
+        "page": 9
+      },
+      {
+        "hash": "03a8792b4ca1b1e832dec33cd23345c446d214f94b29e174946e062d890555e0",
+        "model": "model",
+        "page": 10
+      },
+      {
+        "hash": "b69f19266a3247e8e43ce2fdefba2018e63d827c38c8758ee70c51426a78c651",
+        "model": "model",
+        "page": 11
+      },
+      {
+        "hash": "53eb4a9c44cc911454a0a1bc45ffc8261737cdb47f43e2d97cc477ff1912c2a5",
+        "model": "model",
+        "page": 12
+      },
+      {
+        "hash": "56679ab44cd3f3e11de5886ccf872fb064cee7916809fa78e02a87cfab71a8e1",
+        "model": "model",
+        "page": 13
+      },
+      {
+        "hash": "6888730ff9f5a52a88ec198c50365f020fc78bca19bbdd1482bd5059172da68c",
+        "model": "model",
+        "page": 14
+      },
+      {
+        "hash": "0ff9d40eaca3f08f5b36c3644bf466c37a0644bd71a71066425200792dcff82d",
+        "model": "model",
+        "page": 15
+      }
+    ]
+  },
   "footnotes": [
     {
       "dloc": "457bcbb2d189b4719daa30d94d946d913f1a6bddaabd1c12793b143a30e1115d#/footnotes/0",
