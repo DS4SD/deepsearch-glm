@@ -47,7 +47,8 @@ namespace andromeda
     template<typename value_type>
     value_type round_conf(value_type conf)
     {
-      auto v = std::ceil(100.0*conf)/100.0;
+      //auto v = std::ceil(100.0*conf)/100.0;
+      auto v = std::round(100.0*conf)/100.0;
 
       if(v>1.0)
 	{
@@ -56,6 +57,7 @@ namespace andromeda
 
       return v;
     }
+
     
     std::string replace(std::string text, std::string word_0, std::string word_1)
     {
@@ -394,6 +396,123 @@ namespace andromeda
 	}
 
       return (itr-headers.begin());
+    }
+
+    template<typename ind_type>
+    std::string create_path(std::string path_0, ind_type ind_0)
+    {
+      std::stringstream ss_0;
+      ss_0 << std::setw(6) << std::setfill('0') << ind_0;
+
+      std::stringstream ss;
+      ss << "#" << "/" << path_0 << "/" << ss_0.str();
+      
+      return ss.str();
+    }
+
+    template<typename ind_type>
+    std::string create_path(std::string dloc,  std::string path_0, ind_type ind_0)
+    {
+      std::stringstream ss_0;
+      ss_0 << std::setw(6) << std::setfill('0') << ind_0;
+
+      std::stringstream ss;
+      ss << dloc << "#" << "/" << path_0 << "/" << ss_0.str();
+
+      return ss.str();
+    }
+
+    template<typename ind_type>    
+    std::string create_path(std::string path_0, ind_type ind_0,
+			    std::string path_1, ind_type ind_1)
+    {
+      std::stringstream ss_0;
+      ss_0 << std::setw(6) << std::setfill('0') << ind_0;
+      
+      std::stringstream ss_1;
+      ss_1 << std::setw(6) << std::setfill('0') << ind_1;
+      
+      std::stringstream ss;
+      ss << "#" << "/"
+	 << path_0 << "/" << ss_0.str() << "/"
+	 << path_1 << "/" << ss_1.str();
+
+      return ss.str();
+    }
+    
+    bool compare_paths(const std::string& lhs,
+		       const std::string& rhs)
+    {
+      auto lhs_parts = utils::split(lhs, "/");
+      auto rhs_parts = utils::split(rhs, "/");
+      
+      if(lhs_parts.size()==rhs_parts.size())
+	{
+	  std::size_t N = lhs_parts.size();
+	  
+	  if(N<=2 and lhs_parts.at(1)!=rhs_parts.at(1))	    
+	    {
+	      return (lhs_parts.at(1)<rhs_parts.at(1));
+	    }
+	  else if(N<=3 and std::stoi(lhs_parts.at(2))!=std::stoi(rhs_parts.at(2)))
+	    {
+	      return (std::stoi(lhs_parts.at(2))<std::stoi(rhs_parts.at(2)));
+	    }
+	  else if(N<=4 and lhs_parts.at(3)!=rhs_parts.at(3))
+	    {
+	      return (lhs_parts.at(3)<rhs_parts.at(3));
+	    }
+	  else if(N<=5 and std::stoi(lhs_parts.at(4))!=std::stoi(rhs_parts.at(4)))
+	    {
+	      return (std::stoi(lhs_parts.at(4))<std::stoi(rhs_parts.at(4)));
+	    }
+	  else
+	    {
+	      return lhs<rhs;
+	    }
+	  /*
+	  if(lhs_parts.size()==3)
+	    {
+	      return ((lhs_parts.at(1)<rhs_parts.at(1)) and
+		      (std::stoi(lhs_parts.at(2))<std::stoi(rhs_parts.at(2))));
+	    }
+	  else if(lhs_parts.size()==5)
+	    {
+	      return ((lhs_parts.at(1)<rhs_parts.at(1)) and
+		      (std::stoi(lhs_parts.at(2))<std::stoi(rhs_parts.at(2))) and
+		      (lhs_parts.at(3)<rhs_parts.at(3)) and
+		      (std::stoi(lhs_parts.at(4))<std::stoi(rhs_parts.at(4))));
+	    }	  
+	  else
+	    {
+	      return (lhs<rhs);
+	    }
+	  */
+	}
+      else if(lhs_parts.size()>=3 and
+	      rhs_parts.size()>=3)
+	{
+	  std::size_t Nlhs = lhs_parts.size();
+	  std::size_t Nrhs = rhs_parts.size();
+	  
+	  if(Nlhs<=2 and Nrhs<=2 and lhs_parts.at(1)!=rhs_parts.at(1))	    
+	    {
+	      return (lhs_parts.at(1)<rhs_parts.at(1));
+	    }
+	  else if(Nlhs<=3 and Nrhs<=3 and std::stoi(lhs_parts.at(2))!=std::stoi(rhs_parts.at(2)))
+	    {
+	      return (std::stoi(lhs_parts.at(2))<std::stoi(rhs_parts.at(2)));
+	    }
+	  else
+	    {
+	      return lhs<rhs;	      
+	    }
+	}
+      else
+	{
+	  return lhs<rhs;
+	  //return lhs_parts.size()<rhs_parts.size();
+	}      
     }
     
   }

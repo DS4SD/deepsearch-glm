@@ -138,8 +138,6 @@ namespace andromeda
   
   bool subject<FIGURE>::from_json(const nlohmann::json& json_figure)
   {
-    LOG_S(INFO) << __FUNCTION__;
-    
     {
       base_subject::valid = true;
       base_subject::_from_json(json_figure);
@@ -156,8 +154,6 @@ namespace andromeda
   bool subject<FIGURE>::from_json(const nlohmann::json& json_figure,
 				  const std::vector<std::shared_ptr<prov_element> >& doc_provs)
   {
-    LOG_S(INFO) << __FUNCTION__;
-    
     bool init_prov = base_subject::set_prov_refs(json_figure, doc_provs, provs);
     
     bool init_figure = this->from_json(json_figure);

@@ -39,6 +39,7 @@ namespace andromeda
     
     std::vector<std::string> to_row(std::size_t col_width);
 
+    std::string get_type() { return to_name(flvr); }
     std::string get_name() { return to_name(flvr); }
 
     hash_type get_hash_i() { return hash_i; }

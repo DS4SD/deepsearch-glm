@@ -81,7 +81,7 @@ namespace andromeda
 
     // Arxiv:  "arXiv:2201.08390v1 [gr-qc] 20 Jan 2022"
     {
-      pcre2_expr expr(this->get_key(), "email", R"((?P<link>(arXiv:(\d+).(\d+)(v\d*)? \[.+\] (\d+) [A-Za-z]+ \d+)))");
+      pcre2_expr expr(this->get_key(), "arxiv", R"((?P<link>(arXiv:(\d+).(\d+)(v\d*)? \[.+\] (\d+) [A-Za-z]+ \d+)))");
       exprs.push_back(expr);
     }
     

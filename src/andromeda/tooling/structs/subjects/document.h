@@ -97,8 +97,8 @@ namespace andromeda
     
   private:
 
-    void set_dscr(nlohmann::json& data);
-    void set_orig(nlohmann::json& data);
+    void set_kept(const nlohmann::json& data);
+    void set_orig(const nlohmann::json& data);
 
     bool is_preprocessed();
     bool originates_from_pdf();
@@ -121,8 +121,13 @@ namespace andromeda
     uint64_t doc_hash;
     std::string doc_name;
 
-    nlohmann::json orig, dscr, info;
+    nlohmann::json orig;
 
+    std::vector<std::string> kept_keys;
+    nlohmann::json kept;
+
+  public:
+    
     std::vector<std::shared_ptr<page_element> > pages;
     std::vector<std::shared_ptr<prov_element> > provs;
 
@@ -147,8 +152,9 @@ namespace andromeda
     doc_name(""),
 
     orig(nlohmann::json::value_t::null),
-    dscr(nlohmann::json::value_t::null),
-    info(nlohmann::json::value_t::null),
+
+    kept_keys({"description", "file-info", "_s3_data", "conversion_settings"}),
+    kept(nlohmann::json::object({})),
     
     pages(),
     provs(),
@@ -174,28 +180,15 @@ namespace andromeda
   {
     nlohmann::json result = base_subject::_to_json(filters);
 
-    result["description"] = nlohmann::json::object({});
-    if(dscr!=nlohmann::json::value_t::null)
+    for(auto key:kept_keys)
       {
-	result["description"] = dscr;
+	result[key] = nlohmann::json::object({});
+	
+	if(kept.count(key))
+	  {
+	    result[key] = kept[key];
+	  }
       }
-
-    result["file-info"] = nlohmann::json::object({});
-    if(info!=nlohmann::json::value_t::null)
-      {
-	result["file-info"] = info;
-      }    
-    
-    /*
-      if(orig.count("description"))
-      {
-      result["description"] = orig["description"];
-      }
-      else
-      {
-      result["description"] = nlohmann::json::object({});
-      }
-    */
     
     // updated the description with predefined labels in schema
     {
@@ -271,6 +264,8 @@ namespace andromeda
   bool subject<DOCUMENT>::from_json(const nlohmann::json& doc)
   {
     base_subject::_from_json(doc);
+
+    set_kept(doc);
     
     base_subject::from_json(doc, pages_lbl, pages);
     base_subject::from_json(doc, provs_lbl, provs);
@@ -301,10 +296,9 @@ namespace andromeda
   {
     base_subject::clear();
 
-    orig = nlohmann::json::value_t::null;
-    dscr = nlohmann::json::value_t::null;
-    info = nlohmann::json::value_t::null;
-      
+    orig = nlohmann::json::object({});
+    kept = nlohmann::json::object({});
+
     body.clear();
     meta.clear();
 
@@ -344,7 +338,7 @@ namespace andromeda
     clear();
 
     {
-      set_dscr(data);
+      set_kept(data);
       set_orig(data);
     }
 
@@ -366,8 +360,20 @@ namespace andromeda
     return true;
   }
 
-  void subject<DOCUMENT>::set_dscr(nlohmann::json& data)
+  void subject<DOCUMENT>::set_kept(const nlohmann::json& data)
   {
+    for(auto key:kept_keys)
+      {
+	if(data.count(key))
+	  {
+	    kept[key] = data.at(key);
+	  }
+	else
+	  {
+	    kept[key] = nlohmann::json::object({});
+	  }
+      }
+    
     if(data.count("file-info") and
        data["file-info"].count("document-hash"))
       {
@@ -382,20 +388,10 @@ namespace andromeda
         doc_hash = utils::to_reproducible_hash(doc_name);
       }
 
-    if(data.count("description"))
-      {
-        dscr = data.at("description");
-      }
-
-    if(data.count("file-info"))
-      {
-        info = data.at("file-info");
-      }    
-
     base_subject::dloc = doc_name + "#";
   }
 
-  void subject<DOCUMENT>::set_orig(nlohmann::json& data)
+  void subject<DOCUMENT>::set_orig(const nlohmann::json& data)
   {
     orig = data;
   }
@@ -489,23 +485,24 @@ namespace andromeda
   
   bool subject<DOCUMENT>::finalise_properties()
   {
+    //LOG_S(INFO) << "#-properties: " << properties.size();
+    
     // only keep document global properties
-    std::set<std::pair<hash_type, model_name> > doc_properties={};
-
-    for(auto& prop:properties)
-      {
-	doc_properties.insert({prop.get_subj_hash(), prop.get_model()});
-      }
+    //std::set<std::pair<hash_type, model_name> > doc_properties={};
+    //for(auto& prop:properties)
+    //{
+    //doc_properties.insert({prop.get_subj_hash(), prop.get_model()});
+    //}
     
     for(auto& text:texts)
       {
         for(auto& prop:text->properties)
           {
-	    std::pair<hash_type, model_name> key({prop.get_subj_hash(), prop.get_model()});
-	    if(doc_properties.count(key)==0)
-	      {
-		properties.push_back(prop);
-	      }
+	    //std::pair<hash_type, model_name> key({prop.get_subj_hash(), prop.get_model()});
+	    //if(doc_properties.count(key)==0)
+	    //{
+	    properties.push_back(prop);
+	    //}
 	  }
 	text->properties.clear();
       }
@@ -514,11 +511,11 @@ namespace andromeda
       {
         for(auto& prop:table->properties)
           {
-	    std::pair<hash_type, model_name> key({prop.get_subj_hash(), prop.get_model()});
-	    if(doc_properties.count(key)==0)
-	      {
-		properties.push_back(prop);
-	      }	    
+	    //std::pair<hash_type, model_name> key({prop.get_subj_hash(), prop.get_model()});
+	    //if(doc_properties.count(key)==0)
+	    //{
+	    properties.push_back(prop);
+	    //}	    
 	  }
 	table->properties.clear();
       }    
@@ -527,66 +524,129 @@ namespace andromeda
       {
         for(auto& prop:figure->properties)
           {
-	    std::pair<hash_type, model_name> key({prop.get_subj_hash(), prop.get_model()});
-	    if(doc_properties.count(key)==0)
-	      {
-		properties.push_back(prop);
-	      }
+	    //std::pair<hash_type, model_name> key({prop.get_subj_hash(), prop.get_model()});
+	    //if(doc_properties.count(key)==0)
+	    //{
+	    properties.push_back(prop);
+	    //}
 	  }
 	figure->properties.clear();
       }    
 
+    //LOG_S(INFO) << "#-properties: " << properties.size();
+    
     std::sort(properties.begin(), properties.end());
+
+    auto itr = std::unique(properties.begin(), properties.end());
+    properties.erase(itr, properties.end());
+    
+    //LOG_S(INFO) << "#-properties: " << properties.size();
     
     return true;
   }
 
   bool subject<DOCUMENT>::finalise_instances()
   {
+    //LOG_S(INFO) << "#-instances: " << instances.size();
+    
     instances.clear();
+
+    //LOG_S(INFO) << "#-instances: " << instances.size();
 
     for(auto& subj:texts)
       {
+	//LOG_S(INFO) << "#-instances " << subj->get_self_ref() << ": " << subj->instances.size();
+	
         for(auto& ent:subj->instances)
           {
-	    instances.push_back(ent);	    
+	    instances.push_back(ent);
+
+	    //if(ent.get_subj_path()=="")
+	    //{
+	    //LOG_S(INFO) << ent.to_json().dump();
+	    //}
           }
       }
-
+    //LOG_S(INFO) << " texts #-instances: " << instances.size();
+    
     for(auto& subj:tables)
       {
+	//LOG_S(INFO) << "#-instances " << subj->get_self_ref() << ": " << subj->instances.size();
         for(auto& ent:subj->instances)
           {
-	    instances.push_back(ent);	    
+	    instances.push_back(ent);
+
+	    //if(ent.get_subj_path()=="")
+	    //{
+	    //LOG_S(INFO) << " => " << ent.to_json().dump();
+	    //}	    
           }
 
         for(auto& capt:subj->captions)
           {
+	    //LOG_S(INFO) << "#-instances " << capt->get_self_ref() << ": " << capt->instances.size();
+	    
             for(auto& ent:capt->instances)
               {
-		instances.push_back(ent);	    
+		instances.push_back(ent);
+
+		//if(ent.get_subj_path()=="")
+		//{
+		//LOG_S(INFO) << ent.to_json().dump();
+		//}
               }
           }
       }
-
+    //LOG_S(INFO) << "tables #-instances: " << instances.size();
+    
     for(auto& subj:figures)
       {
+	//LOG_S(INFO) << "#-instances " << subj->get_self_ref() << ": " << subj->instances.size();
+	
         for(auto& ent:subj->instances)
           {
-	    instances.push_back(ent);	    
+	    instances.push_back(ent);
           }
 
         for(auto& capt:subj->captions)
           {
+	    //LOG_S(INFO) << "#-instances " << capt->get_self_ref() << ": " << capt->instances.size();
+	    
             for(auto& ent:capt->instances)
               {
-		instances.push_back(ent);	    
+		instances.push_back(ent);
               }
           }
       }
-
-    std::sort(instances.begin(), instances.end());
+    //LOG_S(INFO) << "figures #-instances: " << instances.size();
     
+    //for(auto& ent:instances)      
+    //{
+    //if(ent.get_subj_path()=="")
+    //{
+    //LOG_S(INFO) << ent.to_json().dump();	
+    //}
+    //}
+    
+    LOG_S(INFO) << "#-instances: " << instances.size();
+    
+    std::sort(instances.begin(), instances.end());
+
+    for(std::size_t l=0; l+1<instances.size(); l++)
+      {
+	if(instances.at(l)==instances.at(l+1))
+	  {
+	    LOG_S(INFO) << l;
+	    LOG_S(INFO) << instances.at(l+0).to_json().dump();
+	    LOG_S(INFO) << instances.at(l+1).to_json().dump();
+	  }
+      }
+    
+    auto itr = std::unique(instances.begin(), instances.end());
+    instances.erase(itr, instances.end());
+    
+    LOG_S(INFO) << "#-instances: " << instances.size();    
+
     return true;
   }
 
@@ -659,6 +719,7 @@ namespace andromeda
 
 	    assert(texts.at(ind)->get_hash()==prop.get_subj_hash());
 	    texts.at(ind)->properties.push_back(prop);
+	    texts.at(ind)->applied_models.insert(prop.get_type());
 	  }	
 	else if(parts.size()==3 and parts.at(1)==tables_lbl)
 	  {
@@ -666,13 +727,15 @@ namespace andromeda
 
 	    assert(tables.at(ind)->get_hash()==prop.get_subj_hash());
 	    tables.at(ind)->properties.push_back(prop);
+	    tables.at(ind)->applied_models.insert(prop.get_type());
 	  }
 	else if(parts.size()==3 and parts.at(1)==figures_lbl)
 	  {	    
 	    int ind = std::stoi(parts.at(2));
 	    
 	    assert(figures.at(ind)->get_hash()==prop.get_subj_hash());
-	    figures.at(ind)->properties.push_back(prop);	    
+	    figures.at(ind)->properties.push_back(prop);
+	    figures.at(ind)->applied_models.insert(prop.get_type());
 	  }
 	else if(parts.size()==5 and parts.at(1)==tables_lbl and parts.at(3)==captions_lbl)
 	  {
@@ -681,6 +744,7 @@ namespace andromeda
 
 	    assert(tables.at(ti)->get_hash()==prop.get_subj_hash());
 	    tables.at(ti)->captions.at(ci)->properties.push_back(prop);
+	    tables.at(ti)->captions.at(ci)->applied_models.insert(prop.get_type());	    
 	  }
 	else if(parts.size()==5 and parts.at(1)==figures_lbl and parts.at(3)==captions_lbl)
 	  {	    
@@ -689,6 +753,7 @@ namespace andromeda
 
 	    assert(figures.at(fi)->get_hash()==prop.get_subj_hash());
 	    figures.at(fi)->captions.at(ci)->properties.push_back(prop);
+	    figures.at(fi)->captions.at(ci)->applied_models.insert(prop.get_type());
 	  }	
 	else
 	  {
@@ -714,41 +779,30 @@ namespace andromeda
 	else if(parts.size()==3 and parts.at(1)==texts_lbl)
 	  {
 	    int ind = std::stoi(parts.at(2));
-
+	    
 	    assert(texts.at(ind)->get_hash()==inst.get_subj_hash());
 	    texts.at(ind)->instances.push_back(inst);
+	    texts.at(ind)->applied_models.insert(inst.get_type());
 	  }	
 	else if(parts.size()==3 and parts.at(1)==tables_lbl)
 	  {
 	    int ind = std::stoi(parts.at(2));
 
-	    //assert(tables.at(ind)->get_hash()==inst.get_subj_hash());
-	    if(tables.at(ind)->get_hash()==inst.get_subj_hash())
-	      {
-		tables.at(ind)->instances.push_back(inst);
-	      }
-	    else
-	      {
-		LOG_S(INFO) << tables.at(ind)->get_hash() << "\t" << inst.get_subj_hash();
-		LOG_S(INFO) << inst.to_json().dump(2);
-	      }
+	    assert(tables.at(ind)->get_hash()==inst.get_subj_hash());
+
+	    assert(inst.get_name().size()>0);
+	    
+	    tables.at(ind)->instances.push_back(inst);
+	    tables.at(ind)->applied_models.insert(inst.get_type());
 	  }
 	else if(parts.size()==3 and parts.at(1)==figures_lbl)
 	  {	    
 	    int ind = std::stoi(parts.at(2));
 	    
-	    //assert(figures.at(ind)->get_hash()==inst.get_subj_hash());
-	    //figures.at(ind)->instances.push_back(inst);
+	    assert(figures.at(ind)->get_hash()==inst.get_subj_hash());
 
-	    if(figures.at(ind)->get_hash()==inst.get_subj_hash())
-	      {
-		figures.at(ind)->instances.push_back(inst);
-	      }
-	    else
-	      {
-		LOG_S(INFO) << figures.at(ind)->get_hash() << "\t" << inst.get_subj_hash();
-		LOG_S(INFO) << inst.to_json().dump(2);
-	      }	    
+	    figures.at(ind)->instances.push_back(inst);
+	    figures.at(ind)->applied_models.insert(inst.get_type());
 	  }
 	else if(parts.size()==5 and parts.at(1)==tables_lbl and parts.at(3)==captions_lbl)
 	  {
@@ -756,7 +810,9 @@ namespace andromeda
 	    int ci = std::stoi(parts.at(4));
 
 	    assert(tables.at(ti)->captions.at(ci)->get_hash()==inst.get_subj_hash());
+
 	    tables.at(ti)->captions.at(ci)->instances.push_back(inst);
+	    tables.at(ti)->captions.at(ci)->applied_models.insert(inst.get_type());
 	  }
 	else if(parts.size()==5 and parts.at(1)==figures_lbl and parts.at(3)==captions_lbl)
 	  {	    
@@ -764,7 +820,9 @@ namespace andromeda
 	    int ci = std::stoi(parts.at(4));
 
 	    assert(figures.at(fi)->captions.at(ci)->get_hash()==inst.get_subj_hash());
+
 	    figures.at(fi)->captions.at(ci)->instances.push_back(inst);
+	    figures.at(fi)->captions.at(ci)->applied_models.insert(inst.get_type());
 	  }	
 	else
 	  {

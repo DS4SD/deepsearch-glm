@@ -24,7 +24,7 @@ namespace andromeda
     virtual model_name get_name() { return EXPRESSION; }
 
     virtual bool apply(subject<TEXT>& subj);
-    virtual bool apply(subject<TABLE>& subj);
+    virtual bool apply_on_table_data(subject<TABLE>& subj);
 
   private:
 
@@ -307,7 +307,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<ENT, EXPRESSION>::apply(subject<TABLE>& subj)
+  bool nlp_model<ENT, EXPRESSION>::apply_on_table_data(subject<TABLE>& subj)
   {
     if(not satisfies_dependencies(subj))
       {
@@ -340,7 +340,8 @@ namespace andromeda
 
     post_process(subj);
 
-    subj.contract_wtokens_from_instances(EXPRESSION);
+    // FIXME not sure ...
+    //subj.contract_wtokens_from_instances(EXPRESSION);
 
     //subj.show(false, false, false, true, false, true, false);
 
@@ -355,7 +356,8 @@ namespace andromeda
 
     apply_abbr_regex(subj);
 
-    subj.contract_wtokens_from_instances(EXPRESSION);
+    // FIXME not sure ...
+    //subj.contract_wtokens_from_instances(EXPRESSION);
 
     for(auto& ent:subj.instances)
       {

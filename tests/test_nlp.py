@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+GENERATE=False
+
 import os
 import json
 
@@ -12,22 +14,11 @@ from deepsearch_glm.utils.ds_utils import to_legacy_document_format
 
 from deepsearch_glm.nlp_train_semantic import train_semantic
 
-GENERATE=True
-
 def round_floats(o):
     if isinstance(o, float): return round(o, 2)
     if isinstance(o, dict): return {k: round_floats(v) for k, v in o.items()}
     if isinstance(o, (list, tuple)): return [round_floats(x) for x in o]
     return o
-
-def test_01_load_nlp_models():
-    models = load_pretrained_nlp_models()
-    #print(f"models: {models}")
-
-    assert "language" in models
-    assert "semantic" in models
-    assert "name" in models
-    assert "reference" in models
 
 def check_dimensions(item):
 
@@ -38,7 +29,28 @@ def check_dimensions(item):
     for row in item["data"]:
         assert len(row)==len(headers)
 
-def test_02A_run_nlp_models_on_text():
+def get_reduced_instances(instances):
+
+    headers = instances["headers"]
+    
+    table=[]
+    for row in instances["data"]:
+        if "texts" in row[4]:
+            table.append([row[0], row[1], row[4], row[5], row[-2]])
+
+    return table, [headers[0], headers[1], headers[4], headers[5], headers[-2]]
+        
+def test_01_load_nlp_models():
+    models = load_pretrained_nlp_models()
+    #print(f"models: {models}")
+
+    assert "language" in models
+    assert "semantic" in models
+    assert "name" in models
+    assert "reference" in models
+
+# _run_nlp_models_on_text():    
+def test_02A():
 
     source = "./tests/data/texts/test_02A_text_01.jsonl"
     target = source
@@ -69,12 +81,13 @@ def test_02A_run_nlp_models_on_text():
         for label in ["relations"]:
             assert label not in sres
 
-        print(tres["properties"])
-        print(sres["properties"])
+        #print(tres["properties"])
+        #print(sres["properties"])
             
         assert tres==sres
-            
-def test_02B_run_nlp_models_on_text():
+
+# _run_nlp_models_on_text():
+def test_02B():
 
     source = "./tests/data/texts/test_02B_text_01.jsonl"
     target = source
@@ -108,7 +121,8 @@ def test_02B_run_nlp_models_on_text():
 
         assert tres==sres            
 
-def test_03A_run_nlp_models_on_document():
+# _run_nlp_models_on_document():        
+def test_03A():
 
     with open("./tests/data/docs/1806.02284.json") as fr:
         doc = json.load(fr)
@@ -126,8 +140,9 @@ def test_03A_run_nlp_models_on_document():
     check_dimensions(res["properties"])
     check_dimensions(res["instances"])
     check_dimensions(res["relations"])
-    
-def test_03B_run_nlp_models_on_document():
+
+# _run_nlp_models_on_document():
+def test_03B():
 
     with open("./tests/data/docs/1806.02284.json") as fr:
         doc = json.load(fr)
@@ -150,7 +165,8 @@ def test_03B_run_nlp_models_on_document():
                   
     check_dimensions(res["properties"])
 
-def test_03C_run_nlp_models_on_document():
+#_run_nlp_models_on_document():
+def test_03C():
 
     model = init_nlp_model("language;semantic;sentence;term;verb;conn;geoloc;reference")
 
@@ -184,26 +200,27 @@ def test_03C_run_nlp_models_on_document():
             tdoc = round_floats(tdoc)
 
         assert res==tdoc
-"""
-def test_03D_run_nlp_models_on_document():
+
+# run_nlp_models_on_document():
+def test_03D():
 
     model_i = init_nlp_model("term")
-    model_j = init_nlp_model("semantic;language")
-
-    model_ij = init_nlp_model("term;reference")
-    #model_ij = init_nlp_model("language;reference")
-    #model_ij = init_nlp_model("language;semantic")
+    model_j = init_nlp_model("reference")
+    #model_j = init_nlp_model("verb")
+    
+    model_k = init_nlp_model("term;reference")
+    #model_k = init_nlp_model("term;verb")
 
     source = "./tests/data/docs/1806.02284.json"
     target_i = "./tests/data/docs/1806.02284.nlp.i.json"
     target_j = "./tests/data/docs/1806.02284.nlp.j.json"
-    target_ij = "./tests/data/docs/1806.02284.nlp.ij.json"
+    target_k = "./tests/data/docs/1806.02284.nlp.k.json"
     
     if True: # generate the test-data
         with open(source) as fr:
             doc = json.load(fr)
 
-        print("apply model_i")
+        #print("apply model_i")
         res_i = model_i.apply_on_doc(doc)
         #res_i = round_floats(res_i)
 
@@ -211,36 +228,56 @@ def test_03D_run_nlp_models_on_document():
         fw.write(json.dumps(res_i, indent=2)+"\n")            
         fw.close()
 
-        print("apply model_j")
-        #res_j = model_j.apply_on_doc(res_i)
-        res_j = model_j.apply_on_doc(doc)
+        #print("apply model_j")
+        res_j = model_j.apply_on_doc(res_i)
+        #res_j = model_j.apply_on_doc(doc)
         res_j = round_floats(res_j)
 
         fw = open(target_j, "w")
         fw.write(json.dumps(res_j, indent=2)+"\n")            
         fw.close()
 
-        print("apply model_ij")
-        res_ij = model_ij.apply_on_doc(doc)
-        res_ij = round_floats(res_ij)
+        #print("apply model_k")
+        res_k = model_k.apply_on_doc(doc)
+        res_k = round_floats(res_k)
         
-        fw = open(target_ij, "w")
-        fw.write(json.dumps(res_ij, indent=2)+"\n")            
+        fw = open(target_k, "w")
+        fw.write(json.dumps(res_k, indent=2)+"\n")            
         fw.close()
 
-        assert len(res_j["properties"])==len(res_ij["properties"])
-        assert len(res_j["instances"])==len(res_ij["instances"])
-        
-        print(tabulate(res_j["properties"]["data"][0:10],
+        assert res_j["tables"]==res_k["tables"]
+
+        """
+        print(tabulate(res_j["properties"]["data"][0:30],
                        headers=res_j["properties"]["headers"]))
         
-        print(tabulate(res_ij["properties"]["data"][0:10],
-                       headers=res_ij["properties"]["headers"]))
+        print(tabulate(res_k["properties"]["data"][0:30],
+                       headers=res_k["properties"]["headers"]))
+        """
         
-        assert res_j["properties"]["data"]==res_ij["properties"]["data"]
+        assert len(res_j["properties"]["data"])==len(res_k["properties"]["data"])
+        assert res_j["properties"]["data"]==res_k["properties"]["data"]
+
+        table_i, headers_i = get_reduced_instances(res_i["instances"])
+        table_j, headers_j = get_reduced_instances(res_j["instances"])
+        table_k, headers_k = get_reduced_instances(res_k["instances"])
         
-        #assert res_j["instances"]==res_ij["instances"]        
-        #assert res_j==res_ij
+        #print(tabulate(table_j, headers=headers_j))
+        #print(tabulate(table_k, headers=headers_k))
+
+        print("#-inst-i: ", len(table_i))
+        print("#-inst-j: ", len(table_j))
+        print("#-inst-k: ", len(table_k))
+
+        assert table_j==table_k
+        
+        #print("#-instances-j: ", len(res_j["instances"]["data"]))
+        #print("#-instances-j: ", len(res_k["instances"]["data"]))
+        
+        #assert len(res_j["instances"]["data"])==len(res_k["instances"]["data"])
+        assert res_j["instances"]["data"]==res_k["instances"]["data"]
+
+        assert res_j==res_k
 
     else:
         with open(source) as fr:
@@ -254,9 +291,9 @@ def test_03D_run_nlp_models_on_document():
             tdoc = round_floats(tdoc)
 
         assert res==tdoc
-"""
-        
-def test_04A_terms():
+
+# test term model        
+def test_04A():
 
     source = "./tests/data/texts/terms.jsonl"
     target = "./tests/data/texts/terms.nlp.jsonl"
@@ -290,7 +327,8 @@ def test_04A_terms():
 
             res = model.apply_on_text(data["text"])
             res = round_floats(res)
-            
+
+            """
             for i,row_i in enumerate(res["properties"]["data"]):
                 row_j = data["properties"]["data"][i]
                 assert row_i==row_j
@@ -298,12 +336,14 @@ def test_04A_terms():
             for i,row_i in enumerate(res["instances"]["data"]):
                 row_j = data["instances"]["data"][i]
                 assert row_i==row_j
-                
+            """
+            
             assert res==data
        
     assert True
 
-def test_04B_semantic():
+# test semantic classifier
+def test_04B():
 
     model = init_nlp_model("semantic")
 
@@ -339,14 +379,17 @@ def test_04B_semantic():
             
             res = model.apply_on_text(data["text"])
             res = round_floats(res)
-            
+
+            """
             for i,row_i in enumerate(res["properties"]["data"]):
                 row_j = data["properties"]["data"][i]
                 assert row_i==row_j
-
+            """
+            
             assert res==data
 
-def test_04C_references():
+# test reference model
+def test_04C():
 
     model = init_nlp_model("reference")
 

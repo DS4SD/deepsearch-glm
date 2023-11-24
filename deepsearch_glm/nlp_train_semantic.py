@@ -452,7 +452,7 @@ def train_semantic(mode, idir, odir, autotune=True, duration=360, modelsize="1M"
     if mode=="all" or mode=="train":
 
         #train_fst(annot_file, fst_model_file, fst_metrics_file, autotune=True, duration=300, modelsize="100M")
-        train_fst(data_file, fst_model_file, fst_metrics_file, autotune=True, duration=600, modelsize="100M")    
+        train_fst(data_file, fst_model_file, fst_metrics_file, autotune=True, duration=3600, modelsize="100M")    
 
     if mode=="all" or mode=="eval":
         

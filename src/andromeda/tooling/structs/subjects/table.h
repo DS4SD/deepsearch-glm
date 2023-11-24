@@ -256,8 +256,6 @@ namespace andromeda
   
   bool subject<TABLE>::set_data(const nlohmann::json& item)
   {
-    LOG_S(INFO) << __FUNCTION__;
-    
     base_subject::clear_models();
 
     data.clear();
@@ -277,8 +275,6 @@ namespace andromeda
             data.push_back({});
             for(ind_type j=0; j<grid.at(i).size(); j++)
               {
-		//LOG_S(INFO) << "grid_"<<i<<","<<j<<grid.at(i).at(j).dump();
-
                 std::string text = "";
                 if(grid.at(i).at(j).count("text")==1)
                   {
@@ -294,11 +290,6 @@ namespace andromeda
 		    bbox[1] = coor.at(1).get<float>();
 		    bbox[2] = coor.at(2).get<float>();
 		    bbox[3] = coor.at(3).get<float>();
-
-		    //LOG_S(INFO) << bbox[0] << ", "
-		    //<< bbox[1] << ", "
-		    //<< bbox[2] << ", "
-		    //<< bbox[3];
                   }
 		
                 std::array<uint64_t,2> row_span={i,i+1};

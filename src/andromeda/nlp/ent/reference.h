@@ -53,14 +53,6 @@ namespace andromeda
     initialise();
   }
 
-  /*
-  nlp_model<ENT, REFERENCE>::nlp_model(std::filesystem::path resources_dir)
-  {
-    //initialise(resources_dir);
-    initialise();
-  }
-  */
-  
   nlp_model<ENT, REFERENCE>::~nlp_model()
   {}
 
@@ -74,16 +66,6 @@ namespace andromeda
 
     return true;
   }
-  
-  /*
-  void nlp_model<ENT, REFERENCE>::initialise(std::filesystem::path resources_dir)
-  {
-    if(not base_crf_model::load(resources_dir / "models/crf/reference/reference-latest.bin", false))
-      {
-	LOG_S(FATAL) << "could not load REFERENCE model from " << resources_dir;
-      }
-  }
-  */
   
   bool nlp_model<ENT, REFERENCE>::apply(subject<DOCUMENT>& doc)
   {
@@ -262,13 +244,14 @@ namespace andromeda
 	    std::string name = subj.from_ctok_range(ctok_range);
 	    
 	    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
-				       REFERENCE, label,
-				       name, orig, 
-				       char_range, ctok_range, wtok_range);	
+					REFERENCE, label,
+					name, orig, 
+					char_range, ctok_range, wtok_range);	
 	  }
       }
 
     // delete all non-reference instances
+    /*
     {
       auto itr=subj.instances.begin();
       while(itr!=subj.instances.end())
@@ -283,7 +266,7 @@ namespace andromeda
 	    }
 	}
     }
-    
+    */    
   }
   
 }

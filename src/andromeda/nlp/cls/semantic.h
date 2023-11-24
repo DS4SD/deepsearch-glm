@@ -15,8 +15,8 @@ namespace andromeda
     4. text
 
     The goal is to use the semantic labels downstream to extract meta-data
-    items and parse the references.    
-   */
+    items and parse the references.
+  */
   template<>
   class nlp_model<CLS, SEMANTIC>: public fasttext_supervised_model
   {
@@ -25,29 +25,29 @@ namespace andromeda
 
     const static inline std::set<std::string> known_headers
     = {"abstract", "introduction", "references", "conclusion"};
-    
+
   public:
 
     nlp_model();
     nlp_model(std::filesystem::path resources_dir);
-    
+
     ~nlp_model();
 
     virtual std::set<model_name> get_dependencies() { return dependencies; }
-    
+
     virtual model_type get_type() { return CLS; }
     virtual model_name get_name() { return SEMANTIC; }
-    
-    template<typename subject_type>  
+
+    template<typename subject_type>
     bool get(subject_type& subj, base_property& prop);
-    
+
     virtual bool preprocess(const subject<TEXT>& subj, std::string& text);
     virtual bool preprocess(const subject<TABLE>& subj, std::string& text);
 
     virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj);
     virtual bool apply(subject<DOCUMENT>& subj);
-    
+
   private:
 
     void initialise();
@@ -56,14 +56,14 @@ namespace andromeda
     void initialise_model();
 
     void get_semantic_mapping();
-    
+
   private:
 
     const static std::set<model_name> dependencies;
 
     //std::filesystem::path resources_dir;
-    std::filesystem::path model_file;    
-    
+    std::filesystem::path model_file;
+
     std::vector<pcre2_expr> author_list, authors;
     //std::vector<pcre2_expr> table_refs, figure_refs;
     std::vector<pcre2_expr> caption_refs;
@@ -75,7 +75,7 @@ namespace andromeda
     fasttext_supervised_model(),
     model_file(glm_variables::get_fst_dir() / "semantic/fst_semantic.bin")
   {
-    initialise();    
+    initialise();
   }
 
   nlp_model<CLS, SEMANTIC>::~nlp_model()
@@ -87,74 +87,74 @@ namespace andromeda
 
     initialise_model();
   }
-  
+
   void nlp_model<CLS, SEMANTIC>::initialise_regex()
   {
-    // Yinhan Liu , Myle Ott , Naman Goyal , J . S . - A . Du , Mandar Joshi , Danqi Chen , Omer Levy , Mike Lewis , Luke Zettlemoyer , and Veselin Stoyanov 
+    // Yinhan Liu , Myle Ott , Naman Goyal , J . S . - A . Du , Mandar Joshi , Danqi Chen , Omer Levy , Mike Lewis , Luke Zettlemoyer , and Veselin Stoyanov
     {
       std::string authors_str = R"(((?P<author>(([A-Z][a-z]+\s)(([A-Z][a-z]+|[A-Z]\s\.|\-|\')\s)*([A-Z][a-z]+)))\s((\,|and|\&)\s)+)+(?P<lauthor>(([A-Z][a-z]+\s)(([A-Z][a-z]+|[A-Z]\s\.|\-|\')\s)*([A-Z][a-z]+))))";
-      
+
       pcre2_expr expr(this->get_key(), "__author_list__", authors_str);
       author_list.push_back(expr);
     }
 
-    // Y . Liu , M . Ott , N . Goyal , J . S . - A . Du , M . Joshi , D . Chen , O . Levy , M . Lewis , L . Zettlemoyer 
+    // Y . Liu , M . Ott , N . Goyal , J . S . - A . Du , M . Joshi , D . Chen , O . Levy , M . Lewis , L . Zettlemoyer
     {
       std::string authors_str = R"(((?P<author>((([A-Z]\s\.|\-)\s)+([A-Z][a-z]+)))\s((\,|\&|and)\s)+)+(?P<lauthor>((([A-Z]\s\.|\-)\s)+([A-Z][a-z]+))))";
 
       pcre2_expr expr(this->get_key(), "__author_list__", authors_str);
       author_list.push_back(expr);
     }
-    
+
     // __ival__ . Srivastava , R . - K . , Greff , K . & Schmidhuber , J . Highway networks . CoRR e - prints ( __year__ ) . arXiv : __fval__ .
     {
       std::string authors_str = R"((((?P<author>(([A-Z][a-z]+\s)(\,\s)(([A-Z]\s\.|\-)\s)+)))((\,|\&|and)\s))+(?P<lauthor>(([A-Z][a-z]+\s)(\,\s)(([A-Z]\s\.|\-)\s)+)))";
 
       pcre2_expr expr(this->get_key(), "__author_list__", authors_str);
       author_list.push_back(expr);
-    }    
+    }
 
     {
       pcre2_expr expr(this->get_key(), "__author__",
-		      R"((?P<author>([A-Z][a-z]+)\s\,(\s[A-Z\-]\s\.)+)\s(\,|and|\&))");
+                      R"((?P<author>([A-Z][a-z]+)\s\,(\s[A-Z\-]\s\.)+)\s(\,|and|\&))");
       authors.push_back(expr);
     }
 
     {
       pcre2_expr expr(this->get_key(), "__author__",
-		      R"((and|\&)\s(?P<author>([A-Z][a-z]+)\s\,\s([A-Z\-]\s\.)+)\s)");
+                      R"((and|\&)\s(?P<author>([A-Z][a-z]+)\s\,\s([A-Z\-]\s\.)+)\s)");
       authors.push_back(expr);
     }
 
     {
       pcre2_expr expr(this->get_key(), "__author__",
-		      R"((?P<author>((\s[A-Z\-]\s\.)+\s([A-Z][a-z]+)))\s(\,|and|\&)+)");
+                      R"((?P<author>((\s[A-Z\-]\s\.)+\s([A-Z][a-z]+)))\s(\,|and|\&)+)");
       authors.push_back(expr);
     }
-    
+
     {
       pcre2_expr expr(this->get_key(), "__table__",
-		      R"(^(?P<table>Table|TABLE|Tab|TAB)(\s*\.)?(\s*)(?P<index>(__(i|f)val__|[A-Z])))");
+                      R"(^(?P<table>Table|TABLE|Tab|TAB)(\s*\.)?(\s*)(?P<index>(__(i|f)val__|[A-Z])))");
       caption_refs.push_back(expr);
     }
 
     {
       pcre2_expr expr(this->get_key(), "__table__",
-		      R"(^(?P<table>Table|TABLE|Tab|TAB))");
+                      R"(^(?P<table>Table|TABLE|Tab|TAB))");
       caption_refs.push_back(expr);
     }
 
     {
       pcre2_expr expr(this->get_key(), "__figure__",
-		      R"(^(?P<figure>(Figure|FIGURE|Fig|FIG))(\s*\.)?(\s*)(?P<index>(__(i|f)val__|[A-Z])))");
+                      R"(^(?P<figure>(Figure|FIGURE|Fig|FIG))(\s*\.)?(\s*)(?P<index>(__(i|f)val__|[A-Z])))");
       caption_refs.push_back(expr);
     }
 
     {
       pcre2_expr expr(this->get_key(), "__figure__",
-		      R"(^(?P<figure>(Figure|FIGURE|Fig|FIG))(\s*\.)?)");
+                      R"(^(?P<figure>(Figure|FIGURE|Fig|FIG))(\s*\.)?)");
       caption_refs.push_back(expr);
-    }    
+    }
   }
 
   void nlp_model<CLS, SEMANTIC>::initialise_model()
@@ -163,22 +163,22 @@ namespace andromeda
 
     if(not fasttext_supervised_model::load(model_file))
       {
-	LOG_S(FATAL) << "could not load semantic model ...";
+        LOG_S(FATAL) << "could not load semantic model ...";
       }
   }
 
-  template<typename subject_type>  
+  template<typename subject_type>
   bool nlp_model<CLS, SEMANTIC>::get(subject_type& subj, base_property& property)
   {
     for(auto& prop:subj.properties)
       {
-	if(prop.get_type()==get_key())
-	  {
-	    property = prop; 
-	    return true;
-	  }
+        if(prop.get_type()==get_key())
+          {
+            property = prop;
+            return true;
+          }
       }
-    
+
     return false;
   }
 
@@ -188,82 +188,62 @@ namespace andromeda
 
     if(wtokens.size()==0)
       {
-	///LOG_S(WARNING) << "word-tokens have not been set";
-
-	text.clear();
-	return false;
-      }
-    
-    std::stringstream ss;
-    
-    std::size_t MAXLEN = 256;
-    for(std::size_t l=0; l<std::min(wtokens.size(), MAXLEN); l++)
-      {
-	auto& token = wtokens.at(l);	    
-	auto tags = token.get_tags();
-	
-	if(tags.size()>0)
-	  {
-	    ss << "__" << *(tags.begin()) << "__";		
-	  }
-	else
-	  {
-	    std::string text = token.get_word();
-	    ss << text;
-	  }
-	
-	ss << " ";
-      }
-    
-    text = ss.str();
-    //LOG_S(INFO) << __FUNCTION__ << " orig: " << text; 
-
-    /*
-    for(auto& expr:author_list)
-      {
-	std::vector<pcre2_item> items;
-	expr.find_all(text, items);
-
-	for(auto& item:items)
-	  {
-	    text = utils::replace(text, item.text, "__author_list__");		    		    	    
-	  }
+        text.clear();
+        return false;
       }
 
-    if(text.find("__author_list__")==std::string::npos)
-      {
-	for(auto& expr:authors)
-	  {
-	    std::vector<pcre2_item> items;
-	    expr.find_all(text, items);
-	    
-	    for(auto& item:items)
-	      {
-		for(auto& grp:item.groups)
-		  {
-		    if(grp.group_name=="author")
-		      {
-			text = utils::replace(text, grp.text, "__author__");		    		    
-		      }
-		  }
-	      }
-	  }
-      }
+    {
+      text = subj.get_text();
 
-    for(auto& expr:caption_refs)
-      {
-	std::vector<pcre2_item> items;
-	expr.find_all(text, items);
+      std::vector<base_instance> insts={};
+      for(auto inst:subj.instances)
+        {
+          if(inst.is_model(NUMVAL) or inst.is_model(LINK))
+            {
+              insts.push_back(inst);
+            }
+        }
 
-	for(auto& item:items)
-	  {
-	    text = utils::replace(text, item.text, "__caption_ref__");		    		    	    
-	  }
-      }
-    */
-    
-    text = utils::to_lower(text);
-    
+      if(insts.size()>0)
+        {
+          std::sort(insts.begin(), insts.end());
+
+          std::size_t l=0;
+          std::stringstream ss;
+
+          for(std::size_t i=0; i<insts.size(); i++)
+            {
+              auto crng = insts.at(i).get_char_range();
+
+              if(l<crng.at(0))
+                {
+                  ss << text.substr(l, crng.at(0)-l);
+                  ss << " __" << insts.at(i).get_subtype() << "__ ";
+
+                  l = crng.at(1);
+                }
+            }
+
+          if(l<text.size())
+            {
+              ss << text.substr(l, text.size()-l);
+            }
+
+          text = ss.str();
+        }
+      else
+        {
+          text = subj.get_text();
+
+          if(text.size()>=256)
+            {
+              text = text.substr(0, 256);
+            }
+        }
+    }
+
+    //text = utils::to_lower(text);
+
     return true;
   }
 
@@ -272,11 +252,11 @@ namespace andromeda
     std::stringstream ss;
     for(std::size_t i=0; i<subj.data.size(); i++)
       {
-	auto& row = subj.data.at(i);	
-	for(std::size_t j=0; j<row.size(); j++)
-	  {
-	    ss << row.at(j).text << "; ";
-	  }
+        auto& row = subj.data.at(i);
+        for(std::size_t j=0; j<row.size(); j++)
+          {
+            ss << row.at(j).text << "; ";
+          }
       }
 
     text = ss.str();
@@ -285,19 +265,25 @@ namespace andromeda
   }
 
   bool nlp_model<CLS, SEMANTIC>::apply(subject<TEXT>& subj)
-  {    
-    auto text = utils::to_lower(subj.text);
+  {
+    std::string text="", label="null";
+    double conf=0.0;
 
-    if(known_headers.count(text))
+    if(not preprocess(subj, text))
       {
-	subj.properties.emplace_back(subj.get_hash(), TEXT, "#",
-				     get_name(), "meta-data", 1.0);
-	return true;
+        return false; //continue; // skip continue; // skip
       }
-    else
+
+    if(not classify(text, label, conf))
       {
-	return fasttext_supervised_model::classify(subj);
+        return false; //continue; // skip
       }
+
+    subj.properties.emplace_back(subj.get_hash(), TEXT, subj.get_self_ref(), 
+                                 get_name(), label, conf);
+    subj.applied_models.insert(get_key());
+
+    return true;
   }
 
   bool nlp_model<CLS, SEMANTIC>::apply(subject<TABLE>& subj)
@@ -312,77 +298,27 @@ namespace andromeda
         return false;
       }
 
-    /*
-    uint64_t abs_ind=-1, intro_ind=-1, ref_ind=-1;
     for(uint64_t ind=0; ind<subj.texts.size(); ind++)
       {
-	auto& para = subj.texts.at(ind);
+        auto& para = subj.texts.at(ind);
 
-	std::string otext = para->get_text();
-	std::string ltext = utils::to_lower(otext);
+        this->apply(*para);
+      }
 
-	if(abs_ind==-1 and ltext.find("abstract")!=std::string::npos)
-	  {
-	    abs_ind = ind;
-	  }
-	
-	if(intro_ind==-1 and ltext.find("introduction")!=std::string::npos)
-	  {
-	    intro_ind = ind;
-	  }
-
-	if(ref_ind==-1 and ltext.find("reference")!=std::string::npos)
-	  {
-	    ref_ind = ind;
-	  }
+    /*
+      if(abs_ind!=-1 and ind<abs_ind and label=="reference")
+      {
+      label = "meta-data";
+      }
+      else if(ref_ind!=-1 and ind<ref_ind and label=="reference")
+      {
+      label = "text";
       }
     */
-    
-    std::string text="", label="null";
-    double conf=0.0;
 
-    for(uint64_t ind=0; ind<subj.texts.size(); ind++)
-      {
-	auto& para = subj.texts.at(ind);
-	
-	if(not preprocess(*para, text))
-	  {
-	    continue; // skip
-	  }
-	
-	if(not classify(text, label, conf))
-	  {
-	    continue; // skip
-	  }
-
-	/*
-	if(abs_ind!=-1 and ind<abs_ind and label=="reference")
-	  {
-	    label = "meta-data";
-	  }
-	else if(ref_ind!=-1 and ind<ref_ind and label=="reference")
-	  {
-	    label = "text";
-	  }
-	*/
-	
-	//std::string key = get_key();	
-	    
-	para->properties.emplace_back(para->get_hash(), TEXT, para->get_self_ref(), //"#/texts/"+std::to_string(ind),
-				      get_name(), label, conf);
-	para->applied_models.insert(get_key());
-
-	//subj.properties.emplace_back(para->get_hash(), TEXT, "#/texts/"+std::to_string(ind),
-	//get_name(), label, conf);
-	//subj.applied_models.insert(get_key());
-	
-	//subj.properties.emplace_back(para->get_hash(), TEXT, para->get_self_ref(),
-	//get_name(), label, conf);
-      }
-    
     return update_applied_models(subj);
   }
-  
+
 }
 
 #endif

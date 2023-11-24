@@ -340,12 +340,6 @@ namespace andromeda
     dloc = item.value(dloc_lbl, dloc);
     sref = item.value(sref_lbl, sref);
 
-    applied_models.clear();
-    if(item.count(applied_models_lbl))
-      {
-	applied_models = item.value(applied_models_lbl, applied_models);
-      }
-
     bool read_props=true, read_insts=true, read_rels=true;
 
     properties.clear();
@@ -367,6 +361,36 @@ namespace andromeda
       {
         const nlohmann::json& rels = item[rels_lbl];
         read_rels = andromeda::from_json(relations, rels);
+      }
+
+    applied_models.clear();
+    if(item.count(applied_models_lbl))
+      {
+	applied_models = item.value(applied_models_lbl, applied_models);
+      }
+    else
+      {
+	for(auto& prop:properties)
+	  {
+	    applied_models.insert(prop.get_type());
+	  }
+
+	for(auto& inst:instances)
+	  {
+	    applied_models.insert(inst.get_type());
+	  }
+
+	for(auto& rel:relations)
+	  {
+	    applied_models.insert(rel.get_type());
+	  }
+
+      }
+
+    std::set<std::string> implicit_models={"lapos"};
+    for(auto implicit_model:implicit_models)
+      {
+	applied_models.erase(implicit_model);
       }
 
     return (read_props and read_insts and read_rels);
