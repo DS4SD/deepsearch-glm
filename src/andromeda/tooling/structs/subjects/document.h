@@ -92,8 +92,11 @@ namespace andromeda
     void init_provs();
     void show_provs();
 
+  private:
+    
     void join_properties();
     void join_instances();
+    void join_applied_models();
     
   private:
 
@@ -280,8 +283,12 @@ namespace andromeda
     
     base_subject::from_json(doc, provs, other_lbl, other);        
 
-    join_properties();
-    join_instances();
+    {
+      join_properties();
+      join_instances();
+      
+      join_applied_models();
+    }
     
     return true;
   }
@@ -628,24 +635,26 @@ namespace andromeda
     //}
     //}
     
-    LOG_S(INFO) << "#-instances: " << instances.size();
+    //LOG_S(INFO) << "#-instances: " << instances.size();
     
     std::sort(instances.begin(), instances.end());
 
+    /*
     for(std::size_t l=0; l+1<instances.size(); l++)
       {
 	if(instances.at(l)==instances.at(l+1))
 	  {
-	    LOG_S(INFO) << l;
-	    LOG_S(INFO) << instances.at(l+0).to_json().dump();
-	    LOG_S(INFO) << instances.at(l+1).to_json().dump();
+	  //LOG_S(INFO) << l;
+	    //LOG_S(INFO) << instances.at(l+0).to_json().dump();
+	    //LOG_S(INFO) << instances.at(l+1).to_json().dump();
 	  }
       }
+    */
     
     auto itr = std::unique(instances.begin(), instances.end());
     instances.erase(itr, instances.end());
     
-    LOG_S(INFO) << "#-instances: " << instances.size();    
+    //LOG_S(INFO) << "#-instances: " << instances.size();    
 
     return true;
   }
@@ -829,7 +838,35 @@ namespace andromeda
 	    LOG_S(WARNING) << "ignoring instances with subj-path: " << path; 
 	  }
       }
-  }  
+  }
+
+  void subject<DOCUMENT>::join_applied_models()
+  {
+    for(auto& text:texts)
+      {
+	text->applied_models = this->applied_models;
+      }
+
+    for(auto& table:tables)
+      {
+	table->applied_models = this->applied_models;
+
+	for(auto& capt:table->captions)
+	  {
+	    capt->applied_models = this->applied_models;
+	  }
+      }
+
+    for(auto& figure:figures)
+      {
+	figure->applied_models = this->applied_models;
+
+	for(auto& capt:figure->captions)
+	  {
+	    capt->applied_models = this->applied_models;
+	  }
+      }
+  }
   
 }
 

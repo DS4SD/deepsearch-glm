@@ -35,7 +35,7 @@ def get_reduced_instances(instances):
     
     table=[]
     for row in instances["data"]:
-        if "texts" in row[4]:
+        if "reference" in row[0] and "texts" in row[4]:
             table.append([row[0], row[1], row[4], row[5], row[-2]])
 
     return table, [headers[0], headers[1], headers[4], headers[5], headers[-2]]
@@ -265,16 +265,17 @@ def test_03D():
         #print(tabulate(table_j, headers=headers_j))
         #print(tabulate(table_k, headers=headers_k))
 
+        """
         print("#-inst-i: ", len(table_i))
         print("#-inst-j: ", len(table_j))
         print("#-inst-k: ", len(table_k))
-
+        """
         assert table_j==table_k
         
         #print("#-instances-j: ", len(res_j["instances"]["data"]))
         #print("#-instances-j: ", len(res_k["instances"]["data"]))
         
-        #assert len(res_j["instances"]["data"])==len(res_k["instances"]["data"])
+        assert len(res_j["instances"]["data"])==len(res_k["instances"]["data"])
         assert res_j["instances"]["data"]==res_k["instances"]["data"]
 
         assert res_j==res_k

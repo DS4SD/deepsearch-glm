@@ -69,7 +69,7 @@ namespace andromeda
     std::vector<pcre2_expr> caption_refs;
   };
 
-  const std::set<model_name> nlp_model<CLS, SEMANTIC>::dependencies = {LINK,NUMVAL};
+  const std::set<model_name> nlp_model<CLS, SEMANTIC>::dependencies = {LINK, NUMVAL};
 
   nlp_model<CLS, SEMANTIC>::nlp_model():
     fasttext_supervised_model(),
@@ -279,6 +279,8 @@ namespace andromeda
         return false; //continue; // skip
       }
 
+    //LOG_S(INFO) << label << ", " << conf << ": " << text.substr(0, 64);
+    
     subj.properties.emplace_back(subj.get_hash(), TEXT, subj.get_self_ref(), 
                                  get_name(), label, conf);
     subj.applied_models.insert(get_key());

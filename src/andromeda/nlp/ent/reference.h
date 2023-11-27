@@ -45,7 +45,7 @@ namespace andromeda
     std::filesystem::path model_file;
   };
 
-  const std::set<model_name> nlp_model<ENT, REFERENCE>::dependencies = { SEMANTIC, LINK, NUMVAL};
+  const std::set<model_name> nlp_model<ENT, REFERENCE>::dependencies = { LINK, NUMVAL, SEMANTIC };
 
   nlp_model<ENT, REFERENCE>::nlp_model():
     model_file(get_crf_dir() / "reference/crf_reference.bin")
@@ -69,6 +69,12 @@ namespace andromeda
   
   bool nlp_model<ENT, REFERENCE>::apply(subject<DOCUMENT>& doc)
   {
+    if(not satisfies_dependencies(doc))
+      {
+	return false;
+      }
+
+    //LOG_S(INFO) << "#-texts: " << doc.texts.size();
     for(auto& paragraph:doc.texts)
       {
 	this->apply(*paragraph);
@@ -79,18 +85,25 @@ namespace andromeda
   
   bool nlp_model<ENT, REFERENCE>::apply(subject<TEXT>& subj)
   {
+    //LOG_S(INFO) << __FILE__ << ":" << __LINE__ << "\t" << subj.get_text();
+    
     if(not satisfies_dependencies(subj))
       {
+	//LOG_S(WARNING) << "does not satisfy deps ... ";
 	return false;
       }
-
+    
     bool is_ref=false;
     for(auto& cls:subj.properties)
-      {
-	if((cls.get_type()==to_key(SEMANTIC)) and
-	   (cls.is_label("reference")))
+      {	
+	if((cls.get_type()==to_key(SEMANTIC)) and (cls.is_label("reference")))
 	  {
 	    is_ref = true;
+	    //LOG_S(WARNING) << " => " << cls.get_type() << "\t" << cls.get_label();
+	  }
+	else
+	  {
+	    //LOG_S(INFO) << " => " << cls.get_type() << "\t" << cls.get_label();
 	  }
       }
     
@@ -109,7 +122,7 @@ namespace andromeda
 
   void nlp_model<ENT, REFERENCE>::run_model(subject<TEXT>& subj)
   {
-    //LOG_S(WARNING) << __FILE__ << ":" << __LINE__;
+    //LOG_S(WARNING) << __FILE__ << ":" << __LINE__ << "\t" << __FUNCTION__;
     
     std::vector<crf_token_type> crf_tokens={};
     std::map<std::size_t, std::size_t> ptid_to_wtid={};
@@ -251,7 +264,6 @@ namespace andromeda
       }
 
     // delete all non-reference instances
-    /*
     {
       auto itr=subj.instances.begin();
       while(itr!=subj.instances.end())
@@ -266,7 +278,6 @@ namespace andromeda
 	    }
 	}
     }
-    */    
   }
   
 }
