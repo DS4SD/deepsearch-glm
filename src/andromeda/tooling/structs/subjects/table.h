@@ -169,6 +169,8 @@ namespace andromeda
       result["#-cols"] = ncols;
 
       auto& json_table = result[base_subject::table_data_lbl];
+      json_table = nlohmann::json::array({});
+      
       for(index_type i=0; i<nrows; i++)
         {
           nlohmann::json row = nlohmann::json::array({});
@@ -181,7 +183,6 @@ namespace andromeda
 
           json_table.push_back(row);
         }
-
 
       result[base_subject::table_data_lbl] = json_table;
     }

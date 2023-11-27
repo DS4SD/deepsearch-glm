@@ -384,8 +384,8 @@ def to_legacy_document_format(doc_glm, doc_leg):
                 "confidence": obj.get("confidence", 0),
                 "created_by": obj.get("created_by", ""),
                 "type": obj.get("type", "figure"),                
-                "cells": None,                    
-                "data": None,
+                "cells": [],                    
+                "data": [],
                 "text": text,
                 "prov": [{"bbox": pelem["bbox"], "page": pelem["page"], "span": [0,len(text)]}]                    
             }                
@@ -432,8 +432,8 @@ def to_legacy_document_format(doc_glm, doc_leg):
                 "#-rows": obj.get("#-rows", 0),
                 "confidence": obj.get("confidence", 0),
                 "created_by": obj.get("created_by", ""),
-                "type": obj.get("type", "figure"),                
-                "cells": None,                                        
+                "type": obj.get("type", "table"),                
+                "cells": [],                                        
                 "data": obj["data"],
                 "text": text,
                 "prov": [{"bbox": pelem["bbox"], "page": pelem["page"], "span": [0,0]}]                    
