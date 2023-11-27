@@ -18,8 +18,8 @@
       "confidence": 0.0,
       "created_by": "unknown",
       "type": "figure",
-      "cells": null,
-      "data": null,
+      "cells": [],
+      "data": [],
       "text": "FIGURE1 Schematic of a data flow for the creation of a Knowledge Graph. The data flow consists of three main task types: extraction of document elements (abstracts, paragraphs, tables, figures, etc.), annotation of these elements to detect entities and their relationships and finally aggregation of these entities and their relationships. For every task, we keep complete provenance, such that we can always trace back to a specific document or element that embeds a certain entity or relationship",
       "prov": [
         {
@@ -41,8 +41,8 @@
       "confidence": 0.0,
       "created_by": "unknown",
       "type": "figure",
-      "cells": null,
-      "data": null,
+      "cells": [],
+      "data": [],
       "text": "",
       "prov": [
         {
@@ -64,8 +64,8 @@
       "confidence": 0.0,
       "created_by": "unknown",
       "type": "figure",
-      "cells": null,
-      "data": null,
+      "cells": [],
+      "data": [],
       "text": "FIGURE 3 The time-to-solution for k-hop graph traversal for Neo4J and our new graph engine. The results were obtained for the graph500 and twitter benchmark graphs. The 10th and 90th percentiles are represented by the shaded regions; the median is shown by the markers",
       "prov": [
         {
@@ -87,8 +87,8 @@
       "confidence": 0.0,
       "created_by": "unknown",
       "type": "figure",
-      "cells": null,
-      "data": null,
+      "cells": [],
+      "data": [],
       "text": "FIGURE 4 Visual workflow editor for deep queries in the CPS platform. The interface exhibits a left toolbar to pick specific graph operations, a main drawing area for the workflow DAG and a right panel to inspect and define parameters of each graph operation. Colors indicate different operation types such as input node-retrieval (blue), traversal (red), logical operators (green) and transform functions (yellow). Valid workflows can be executed using the ' play ' button",
       "prov": [
         {
@@ -110,8 +110,8 @@
       "confidence": 0.0,
       "created_by": "unknown",
       "type": "figure",
-      "cells": null,
-      "data": null,
+      "cells": [],
+      "data": [],
       "text": "",
       "prov": [
         {
@@ -133,8 +133,8 @@
       "confidence": 0.0,
       "created_by": "unknown",
       "type": "figure",
-      "cells": null,
-      "data": null,
+      "cells": [],
+      "data": [],
       "text": "FIGURE5 The architectural design of the CPS platform. On the left, we show the data flow processing architecture orchestrated through an asynchronous REST API. On the right, we sketch the multitenant KG serving facility which provides a dedicated environment for each project",
       "prov": [
         {
@@ -156,8 +156,8 @@
       "confidence": 0.0,
       "created_by": "unknown",
       "type": "figure",
-      "cells": null,
-      "data": null,
+      "cells": [],
+      "data": [],
       "text": "FIGURE 6 Sketch of the entire pipeline to perform deep data exploration on large corpora",
       "prov": [
         {
@@ -179,8 +179,8 @@
       "confidence": 0.0,
       "created_by": "unknown",
       "type": "figure",
-      "cells": null,
-      "data": null,
+      "cells": [],
+      "data": [],
       "text": "FIGURE 7 The evaluation workflow to identify the petroleum system elements (PSE) in an article and infer its properties. It starts by searching for all petroleum system elements of a certain type (eg, source, reservoir or seal) and a particular report (worktasks 1 and 2). By successive graph traversals (worktasks 3-5, 7-9, 11, 12) along specific edges and logical operations (worktasks 6, 10, 13, 14), we are able to obtain a list of candidate formations (worktask 15), ages (worktask 16) and rocks (worktask 17), ranked by their accumulated weight. Execution of this query takes less than 18 ms on average",
       "prov": [
         {
@@ -202,8 +202,8 @@
       "confidence": 0.0,
       "created_by": "unknown",
       "type": "figure",
-      "cells": null,
-      "data": null,
+      "cells": [],
+      "data": [],
       "text": "",
       "prov": [
         {
@@ -4864,7 +4864,7 @@
       "confidence": 0.9599999785423279,
       "created_by": "high_conf_pred",
       "type": "table",
-      "cells": null,
+      "cells": [],
       "data": [
         [
           {
