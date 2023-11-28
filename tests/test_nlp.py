@@ -429,7 +429,7 @@ def test_04C():
             
             assert res==data
 
-def test_05_to_legacy():
+def test_05A():
 
     model = init_nlp_model("reference;term")
     

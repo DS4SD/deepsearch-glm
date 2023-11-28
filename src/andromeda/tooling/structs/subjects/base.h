@@ -45,6 +45,8 @@ namespace andromeda
 
     const static inline std::string confidence_lbl = "confidence"; // for tables and figures
     const static inline std::string created_by_lbl = "created_by"; // for tables and figures
+
+    const static inline std::set<std::string> implicit_models = {"lapos"};
     
   public:
 
@@ -309,6 +311,11 @@ namespace andromeda
 
     if(filters.size()==0 or filters.count(applied_models_lbl))
       {
+	for(auto implicit_model:implicit_models)
+	  {
+	    applied_models.erase(implicit_model);
+	  }
+	
 	result[applied_models_lbl] = applied_models;
       }
     
@@ -386,8 +393,7 @@ namespace andromeda
 	  }
 
       }
-
-    std::set<std::string> implicit_models={"lapos"};
+    
     for(auto implicit_model:implicit_models)
       {
 	applied_models.erase(implicit_model);
@@ -418,7 +424,7 @@ namespace andromeda
   {
     nlohmann::json& json_vals = result[key];
     json_vals = nlohmann::json::array({});
-
+    
     for(auto& val:vals)
       {
         json_vals.push_back(val->to_json(filters));
