@@ -30,7 +30,7 @@ namespace andromeda
 						      "#"};
 
   const std::set<std::string> constants::special_words={"''"};
-
+  
   const std::set<std::string> constants::abbreviations={"e.g.", "i.e.", "et al.", "etc."};
 }
 

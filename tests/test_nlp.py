@@ -147,14 +147,14 @@ def test_03B():
     with open("./tests/data/docs/1806.02284.json") as fr:
         doc = json.load(fr)
 
-    filters = ["applied-models", "properties"]
+    filters = ["applied_models", "properties"]
         
     model = init_nlp_model("sentence;language;term;reference", filters)
 
     res = model.apply_on_doc(doc)
     res = round_floats(res)
 
-    for label in ["dloc", "applied-models",
+    for label in ["dloc", "applied_models",
                   "description", "body", "meta",
                   "page-elements", "texts", "tables", "figures",
                   "properties"]: 
@@ -180,7 +180,7 @@ def test_03C():
         res = model.apply_on_doc(doc)
         res = round_floats(res)
 
-        extract_references_from_doc(res)
+        #extract_references_from_doc(res)
         
         fw = open(target, "w")
         fw.write(json.dumps(res, indent=2)+"\n")            

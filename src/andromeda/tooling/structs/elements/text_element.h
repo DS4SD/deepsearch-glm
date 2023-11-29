@@ -357,14 +357,15 @@ namespace andromeda
           {
             std::string tmp = char_tokens.at(j).str();
 
-            if(constants::spaces.count(tmp)      or
-               constants::brackets.count(tmp)    or
+	    if(constants::spaces.count(tmp) or
+               constants::brackets.count(tmp) or
                constants::punktuation.count(tmp) or
-               constants::numbers.count(tmp)      )
-              {
-                stop = true;
-              }
-
+	       constants::numbers.count(tmp))
+	      {
+		stop = true;
+	      }
+	    
+	    
             if((not stop) or (j-i)==0)
               {
                 dst += char_tokens.at(j).len();
@@ -378,6 +379,8 @@ namespace andromeda
               {
                 stop = true;
               }
+
+	    //LOG_S(INFO) << stop << "\t" << tmp << "\t" << ss.str();
           }
 
         std::string word = ss.str();
@@ -389,6 +392,42 @@ namespace andromeda
         l = j;
 
         char_l += dst;
+      }
+
+    // contract all pure numbers (0-9) into integers
+    auto curr = word_tokens.begin();
+    auto prev = word_tokens.begin();
+    while(curr != word_tokens.end())
+      {
+	if(curr==word_tokens.begin())
+	  {
+	    curr++;
+	  }
+	else
+	  {
+	    auto prev_wrd = prev->get_word();
+	    auto curr_wrd = curr->get_word();
+	    
+	    auto prev_char = prev_wrd.back();
+	    auto curr_char = curr_wrd.back();
+
+	    if('0'<=prev_char and prev_char<='9' and
+	       '0'<=curr_char and curr_char<='9' and
+	       prev->get_rng(1)==curr->get_rng(0))
+	      {
+		prev_wrd += curr_wrd;
+	
+		word_token token(prev->get_rng(0), prev_wrd);
+		*prev = token;
+	
+		curr = word_tokens.erase(curr);
+	      }
+	    else
+	      {
+		prev++;
+		curr++;
+	      }
+	  }
       }
   }
 

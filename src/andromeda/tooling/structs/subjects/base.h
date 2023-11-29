@@ -24,9 +24,10 @@ namespace andromeda
     const static inline std::string recs_lbl = "records";
 
     const static inline std::string prov_lbl = "prov";
-    const static inline std::string hash_lbl = "hash";
-    //const static inline std::string text_lbl = "text";
 
+    const static inline std::string subj_hash_lbl = "subj_hash";
+    const static inline std::string text_hash_lbl = "text_hash"; // for text
+    
     const static inline std::string dloc_lbl = "dloc"; // location in the document
     const static inline std::string sref_lbl = "sref"; // self-reference via path
     const static inline std::string jref_lbl = "$ref"; // json-ref convention
@@ -34,12 +35,11 @@ namespace andromeda
     const static inline std::string name_lbl = "name";
     const static inline std::string type_lbl = "type";
 
-    const static inline std::string applied_models_lbl = "applied-models";
+    const static inline std::string applied_models_lbl = "applied_models";
 
     const static inline std::string text_lbl = "text"; // for text
     const static inline std::string orig_lbl = "orig"; // for text
-    const static inline std::string text_hash_lbl = "text-hash"; // for text
-
+    
     const static inline std::string table_data_lbl = "data"; // for tables and figures
     const static inline std::string figure_data_lbl = "data"; // for tables and figures
 
@@ -286,7 +286,7 @@ namespace andromeda
     nlohmann::json result = nlohmann::json::object({});
 
     {
-      result[hash_lbl] = hash;
+      result[subj_hash_lbl] = hash;
       result[dloc_lbl] = dloc;
       result[sref_lbl] = sref;
     }
@@ -343,7 +343,8 @@ namespace andromeda
   
   bool base_subject::_from_json(const nlohmann::json& item)
   {
-    hash = item.value(hash_lbl, hash);
+    hash = item.value(subj_hash_lbl, hash);
+
     dloc = item.value(dloc_lbl, dloc);
     sref = item.value(sref_lbl, sref);
 

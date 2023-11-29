@@ -91,15 +91,40 @@ def extract_references(filenames, ofile):
         except:
             continue
 
-        odoc = nlp_model.apply_on_doc(idoc)
+        if random.random()<0.9:
+            training_sample = True
+        else:
+            training_sample = False
         
+        odoc = nlp_model.apply_on_doc(idoc)
+
+        props = pd.DataFrame(odoc["properties"]["data"],
+                             columns=odoc["properties"]["headers"])
+
+        props_refs = props[props["label"]=="reference"]
+        #print(props_refs)
+        refs_hash = list(props_refs["subj_hash"])
+
+        texts = pd.DataFrame.from_records(odoc["texts"])
+        #print(texts)
+
+        refs = pd.merge(props_refs, texts, how='inner', on=['subj_hash'])
+        #print(refs[refs["confidence"]>0.95][["confidence", "text"]])
+
+        for i,ref in refs.iterrows():
+
+            if ref["confidence"]>0.95 and len(ref["text"])>32:
+                item = {"training-sample": training_sample, "text": ref["text"]}
+                fw.write(json.dumps(item)+"\n")
+
+        #input("continue ...")
+            
+        """
         for item in odoc["texts"]:
 
             if "properties" not in item:
                 continue
             
-            df = pd.DataFrame(item["properties"]["data"],
-                              columns=item["properties"]["headers"])
 
             if (df[df["type"]=="semantic"]["label"]=="reference").bool():
                 #print(item["text"])
@@ -113,7 +138,8 @@ def extract_references(filenames, ofile):
                 
                 item = {"training-sample": training_sample, "text": item["text"]}
                 fw.write(json.dumps(item)+"\n")
-
+        """
+        
     fw.close()
 
     print("#-items: ", total)
