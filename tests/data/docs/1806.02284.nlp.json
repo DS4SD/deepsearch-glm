@@ -442,7 +442,7 @@
           "sref": "#/figures/0/captions/0",
           "subj_hash": 16535999405521191333,
           "text": "Figure 1: A diagram of the conversion pipeline in the Corpus Conversion Service platform. It consists of 5 components: (1) Parsing of the document and its contained bitmap images, (2) Annotating the text of the parsed documents with layout semantic labels, (3) Training models based on the ground-truth acquired by the annotations, (4) Applying machine learned models on the parsed documents to determine the layout semantic label of each cell and finally (5) Assembling the document into a structured data format (e. g. JSON). The main conversion pipeline is depicted in blue and allows you to process and convert documents at scale into a structured data format. The green and orange sections can be used optionally, in order to process scanned documents (green) or train new models based on human annotation (orange).",
-          "text-hash": 9615465947839001361,
+          "text_hash": 9615465947839001361,
           "type": "caption"
         }
       ],
@@ -473,7 +473,7 @@
           "sref": "#/figures/1/captions/0",
           "subj_hash": 9115121388992506886,
           "text": "Figure 3: The labelled cells annotated on the title page of a poster abstract about the CCS [11]. Here, the title, authors, affiliation, subtitle, main-text, caption and picture labels are represented respectively as red, green, purple, dark-red, yellow, orange and ivory.",
-          "text-hash": 17324714532994059892,
+          "text_hash": 17324714532994059892,
           "type": "caption"
         }
       ],
@@ -504,7 +504,7 @@
           "sref": "#/figures/2/captions/0",
           "subj_hash": 14775249782836392461,
           "text": "Figure 2: The cells obtained for the title page of a poster abstract about the CCS [11] after the parsing stage. During the parsing, we extract all bounding boxes of the text (or cells) in such a way that they all have: (1) a maximum width, (2) are only single line and (3) split into multiple cells in case of listidentifiers, multi-columns or crossing vertical lines (such as in tables).",
-          "text-hash": 6754994759646241897,
+          "text_hash": 6754994759646241897,
           "type": "caption"
         }
       ],
@@ -535,7 +535,7 @@
           "sref": "#/figures/3/captions/0",
           "subj_hash": 7479698582664857938,
           "text": "Figure 4: The annotation rate of pages for two different collections (Physical Review B and Elsevier papers) as a function of the number of annotated pages. As one can observe, the mean annotation rate is increasing after each training (depicted by a vertical dashed red line). After the first training, the human annotator is presented a pre-annotated page, using the predictions from the latest model. As the predictions become better with increasing size of the ground-truth, less corrections need to be made and hence more pages can be annotated in similar time intervals.",
-          "text-hash": 504280783932681152,
+          "text_hash": 504280783932681152,
           "type": "caption"
         }
       ],
@@ -566,7 +566,7 @@
           "sref": "#/figures/4/captions/0",
           "subj_hash": 17801697261174341699,
           "text": "Figure 5: A typical image of a parsed PDF page that is fed to the default models. In red, we show the detection of the tables combined with the confidence of the model. The results displayed here originate from the YOLOv2 model.",
-          "text-hash": 8628591081653072559,
+          "text_hash": 8628591081653072559,
           "type": "caption"
         }
       ],
@@ -597,7 +597,7 @@
           "sref": "#/figures/5/captions/0",
           "subj_hash": 3206590615695639432,
           "text": "Figure 6: Diagram of the architecture of our platform. The architecture is composed from 4 layers: an interface layer with REST-API and frontend, an orchestration layer with a message broker and results backend, a compute layer consisting out of a variable number of asynchronous workers and finally a storage layer providing a NoSQL database and an object store. The NoSQL database stores the queryable meta-data of each file that is stored in the object store.",
-          "text-hash": 4488590919374042342,
+          "text_hash": 4488590919374042342,
           "type": "paragraph"
         }
       ],
@@ -628,7 +628,7 @@
           "sref": "#/figures/6/captions/0",
           "subj_hash": 6667504298804810757,
           "text": "Figure 7: Evolution of number of users and number of PDF pages on the platform. The jumps in the number of pages originates from big ingestions of documents performed by some users. This proves that the CCS platform is also able to accomodate these short burst of extreme activity.",
-          "text-hash": 14863303056159196785,
+          "text_hash": 14863303056159196785,
           "type": "caption"
         }
       ],
@@ -659,7 +659,7 @@
           "sref": "#/figures/7/captions/0",
           "subj_hash": 16175086861512378818,
           "text": "Figure 8: Speedup in the pipeline components as a function of the number of worker nodes (each with four cores, running four local worker processes).",
-          "text-hash": 9976536719025941296,
+          "text_hash": 9976536719025941296,
           "type": "caption"
         }
       ],
@@ -742,7 +742,7 @@
       "sref": "#/footnotes/0",
       "subj_hash": 13109829297289816265,
       "text": "Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org.",
-      "text-hash": 13032800243621120549,
+      "text_hash": 13032800243621120549,
       "type": "footnote"
     },
     {
@@ -756,7 +756,7 @@
       "sref": "#/footnotes/1",
       "subj_hash": 6056950725387475159,
       "text": "KDD \u201918, August 19-23, 2018, London, United Kingdom",
-      "text-hash": 15473297532078357059,
+      "text_hash": 15473297532078357059,
       "type": "footnote"
     },
     {
@@ -770,7 +770,7 @@
       "sref": "#/footnotes/2",
       "subj_hash": 82667377498161992,
       "text": "\u00a9 2018 Copyright held by the owner/author(s). Publication rights licensed to ACM. ACM ISBN 978-1-4503-5552-0/18/08...$15.00",
-      "text-hash": 3001373187661149606,
+      "text_hash": 3001373187661149606,
       "type": "footnote"
     },
     {
@@ -784,7 +784,7 @@
       "sref": "#/footnotes/3",
       "subj_hash": 4157740687705909538,
       "text": "https://doi.org/10.1145/3219819.3219834",
-      "text-hash": 3547103316902677392,
+      "text_hash": 3547103316902677392,
       "type": "footnote"
     },
     {
@@ -798,7 +798,7 @@
       "sref": "#/footnotes/4",
       "subj_hash": 11592315251976452419,
       "text": "$^{1}$This number originates from a keynote talk by Phil Ydens, Adobe\u2019s VP Engineering for Document Cloud. A video of the presentation can be found here: https://youtu.be/ 5Axw6OGPYHw",
-      "text-hash": 14549584251446631343,
+      "text_hash": 14549584251446631343,
       "type": "footnote"
     },
     {
@@ -812,7 +812,7 @@
       "sref": "#/footnotes/5",
       "subj_hash": 14606262418347792388,
       "text": "$^{2}$This is clearly the case on the popular arXiv scientific online repository: https://arxiv. org/help/stats/2012_by_area/index",
-      "text-hash": 7221931865252575858,
+      "text_hash": 7221931865252575858,
       "type": "footnote"
     },
     {
@@ -826,7 +826,7 @@
       "sref": "#/footnotes/6",
       "subj_hash": 7599391434737032939,
       "text": "$^{3}$https://www.xpdfreader.com",
-      "text-hash": 104933780092600391,
+      "text_hash": 104933780092600391,
       "type": "footnote"
     },
     {
@@ -840,7 +840,7 @@
       "sref": "#/footnotes/7",
       "subj_hash": 9645151231942484724,
       "text": "$^{4}$http://tabula.technology/",
-      "text-hash": 11894228156061308002,
+      "text_hash": 11894228156061308002,
       "type": "footnote"
     },
     {
@@ -854,7 +854,7 @@
       "sref": "#/footnotes/8",
       "subj_hash": 4601317523235901886,
       "text": "$^{5}$https://www.abbyy.com/",
-      "text-hash": 3391629868238619420,
+      "text_hash": 3391629868238619420,
       "type": "footnote"
     },
     {
@@ -868,7 +868,7 @@
       "sref": "#/footnotes/9",
       "subj_hash": 1678429643964197526,
       "text": "$^{6}$https://www.nuance.com/",
-      "text-hash": 1693441792396921860,
+      "text_hash": 1693441792396921860,
       "type": "footnote"
     },
     {
@@ -882,7 +882,7 @@
       "sref": "#/footnotes/10",
       "subj_hash": 9599864648545137978,
       "text": "$^{7}$https://www.ibm.com/us-en/marketplace/data-capture-and-imaging",
-      "text-hash": 11939931591922575256,
+      "text_hash": 11939931591922575256,
       "type": "footnote"
     },
     {
@@ -896,7 +896,7 @@
       "sref": "#/footnotes/11",
       "subj_hash": 11599600757439696813,
       "text": "$^{8}$a line of text might be printed character-by-character, word-by-word or the entire text snippet.",
-      "text-hash": 14551310605717713161,
+      "text_hash": 14551310605717713161,
       "type": "footnote"
     },
     {
@@ -910,7 +910,7 @@
       "sref": "#/footnotes/12",
       "subj_hash": 8672351490975826115,
       "text": "$^{9}$http://qpdf.sourceforge.net/",
-      "text-hash": 17478669388996915759,
+      "text_hash": 17478669388996915759,
       "type": "footnote"
     },
     {
@@ -924,7 +924,7 @@
       "sref": "#/footnotes/13",
       "subj_hash": 13163501967272675186,
       "text": "$^{10}$It is important to notice that there is no restriction on the number of labels nor the semantic meaning of these labels. The only limitation one has is that the set of semantic labels needs to be consistent across the dataset, but this is evidently true for any type of ML algorithm.",
-      "text-hash": 13266614683838167520,
+      "text_hash": 13266614683838167520,
       "type": "footnote"
     },
     {
@@ -938,7 +938,7 @@
       "sref": "#/footnotes/14",
       "subj_hash": 16307739621375260129,
       "text": "$^{11}$All the data is coming from the bulk data download https://arxiv.org/help/bulk_data_s3",
-      "text-hash": 10131428201408538445,
+      "text_hash": 10131428201408538445,
       "type": "footnote"
     },
     {
@@ -952,7 +952,7 @@
       "sref": "#/footnotes/15",
       "subj_hash": 16584453941359713372,
       "text": "$^{12}$https://journals.aps.org/prb",
-      "text-hash": 9846388834475228858,
+      "text_hash": 9846388834475228858,
       "type": "footnote"
     },
     {
@@ -966,7 +966,7 @@
       "sref": "#/footnotes/16",
       "subj_hash": 7152618592130781617,
       "text": "$^{13}$https://www.openapis.org/",
-      "text-hash": 831347610428179229,
+      "text_hash": 831347610428179229,
       "type": "footnote"
     },
     {
@@ -980,7 +980,7 @@
       "sref": "#/footnotes/17",
       "subj_hash": 6593099618554401757,
       "text": "$^{14}$https://www.rabbitmq.com/",
-      "text-hash": 15235037228412732729,
+      "text_hash": 15235037228412732729,
       "type": "footnote"
     },
     {
@@ -994,7 +994,7 @@
       "sref": "#/footnotes/18",
       "subj_hash": 7200807455610600839,
       "text": "$^{15}$https://www.redis.io/",
-      "text-hash": 782710111840296691,
+      "text_hash": 782710111840296691,
       "type": "footnote"
     },
     {
@@ -1008,7 +1008,7 @@
       "sref": "#/footnotes/19",
       "subj_hash": 1602196689966359724,
       "text": "$^{16}$http://www.celeryproject.org/",
-      "text-hash": 1778492971410642442,
+      "text_hash": 1778492971410642442,
       "type": "footnote"
     },
     {
@@ -1022,7 +1022,7 @@
       "sref": "#/footnotes/20",
       "subj_hash": 4503261997707320357,
       "text": "$^{17}$https://www.mongodb.com/",
-      "text-hash": 3489272016069066385,
+      "text_hash": 3489272016069066385,
       "type": "footnote"
     },
     {
@@ -1036,7 +1036,7 @@
       "sref": "#/footnotes/21",
       "subj_hash": 2838531283607966593,
       "text": "$^{18}$https://kubernetes.io/",
-      "text-hash": 5145030134774826221,
+      "text_hash": 5145030134774826221,
       "type": "footnote"
     },
     {
@@ -1050,7 +1050,7 @@
       "sref": "#/footnotes/22",
       "subj_hash": 3398848297472714606,
       "text": "$^{19}$ibm.biz/privatecloud",
-      "text-hash": 4585077909629360588,
+      "text_hash": 4585077909629360588,
       "type": "footnote"
     },
     {
@@ -1064,7 +1064,7 @@
       "sref": "#/footnotes/23",
       "subj_hash": 6724984968154270143,
       "text": "$^{20}$We don\u2019t show the number of documents, since the number of pages in a document can range from 1 to well above 1000. Consequently, the number of pages is a more robust metric to measure the scaling with regard to the corpus size.",
-      "text-hash": 14814952417700014875,
+      "text_hash": 14814952417700014875,
       "type": "footnote"
     }
   ],
@@ -94054,7 +94054,7 @@
           "sref": "#/tables/0/captions/0",
           "subj_hash": 9160199179916979172,
           "text": "Table 1: Time-to-solution and performance results for the Faster RCNN and YOLOv2 models. The training of the models was done on 25000 PDF pages. The prediction (per page) and performance numbers (Recall= \u211b and Precision= \ud835\udcab) were obtained on 5000 page images, where the prediction confidence cutoff was tuned to yield the maximum F1 score for each. All time-to-solution measurements for training were obtained on a POWER8 node with a single Pascal P100 GPU.",
-          "text-hash": 17279509228359814482,
+          "text_hash": 17279509228359814482,
           "type": "paragraph"
         }
       ],
@@ -94663,7 +94663,7 @@
           "sref": "#/tables/1/captions/0",
           "subj_hash": 18354136439820865774,
           "text": "Table 3: Comparison for two different journal templates showing the aggregated precision and recall averaged over all labels. Each model has been independently trained on a dataset of 400 pages each. The results show that the ML algorithm proves to perform very well for the multiple document templates, simply by providing a different dataset to train on.",
-          "text-hash": 8085176655901164108,
+          "text_hash": 8085176655901164108,
           "type": "paragraph"
         }
       ],
@@ -97523,7 +97523,7 @@
       "sref": "#/texts/0",
       "subj_hash": 7377574370756688828,
       "text": "arXiv:1806.02284v1 [cs.DL] 24 May 2018",
-      "text-hash": 605943372629925146,
+      "text_hash": 605943372629925146,
       "type": "paragraph"
     },
     {
@@ -97537,7 +97537,7 @@
       "sref": "#/texts/1",
       "subj_hash": 10227328696767902037,
       "text": "Corpus Conversion Service: A Machine Learning Platform to Ingest Documents at Scale.",
-      "text-hash": 11303007895399162817,
+      "text_hash": 11303007895399162817,
       "type": "title"
     },
     {
@@ -97551,7 +97551,7 @@
       "sref": "#/texts/2",
       "subj_hash": 8770494724746327817,
       "text": "Peter W J Staar, Michele Dolfi, Christoph Auer, Costas Bekas",
-      "text-hash": 17380979703907035493,
+      "text_hash": 17380979703907035493,
       "type": "paragraph"
     },
     {
@@ -97565,7 +97565,7 @@
       "sref": "#/texts/3",
       "subj_hash": 18258237174351515285,
       "text": "taa,dol,cau,bek@zurich.ibm.com",
-      "text-hash": 7883794643982446593,
+      "text_hash": 7883794643982446593,
       "type": "paragraph"
     },
     {
@@ -97579,7 +97579,7 @@
       "sref": "#/texts/4",
       "subj_hash": 5704354110496947297,
       "text": "IBM Research",
-      "text-hash": 16114797969310195405,
+      "text_hash": 16114797969310195405,
       "type": "paragraph"
     },
     {
@@ -97593,7 +97593,7 @@
       "sref": "#/texts/5",
       "subj_hash": 11056873211244709904,
       "text": "Rueschlikon, Switzerland",
-      "text-hash": 10483037511456664190,
+      "text_hash": 10483037511456664190,
       "type": "paragraph"
     },
     {
@@ -97607,7 +97607,7 @@
       "sref": "#/texts/6",
       "subj_hash": 11788868678004267702,
       "text": "ABSTRACT",
-      "text-hash": 14650435066888584228,
+      "text_hash": 14650435066888584228,
       "type": "subtitle-level-1"
     },
     {
@@ -97621,7 +97621,7 @@
       "sref": "#/texts/7",
       "subj_hash": 3624246356859711021,
       "text": "1 INTRODUCTION",
-      "text-hash": 4359834464932974729,
+      "text_hash": 4359834464932974729,
       "type": "subtitle-level-1"
     },
     {
@@ -97635,7 +97635,7 @@
       "sref": "#/texts/8",
       "subj_hash": 17999848460847860039,
       "text": "Over the past few decades, the amount of scientific articles and technical literature has increased exponentially in size. Consequently, there is a great need for systems that can ingest these documents at scale and make the contained knowledge discoverable. Unfortunately, both the format of these documents (e.g. the PDF format or bitmap images) as well as the presentation of the data (e.g. complex tables) make the extraction of qualitative and quantitive data extremely challenging. In this paper, we present a modular, cloud-based platform to ingest documents at scale. This platform, called the Corpus Conversion Service (CCS), implements a pipeline which allows users to parse and annotate documents (i.e. collect ground-truth), train machine-learning classification algorithms and ultimately convert any type of PDF or bitmap-documents to a structured content representation format. We will show that each of the modules is scalable due to an asynchronous microservice architecture and can therefore handle massive amounts of documents. Furthermore, we will show that our capability to gather ground-truth is accelerated by machine-learning algorithms by at least one order of magnitude. This allows us to both gather large amounts of ground-truth in very little time and obtain very good precision/recall metrics in the range of 99% with regard to content conversion to structured output. The CCS platform is currently deployed on IBM internal infrastructure and serving more than 250 active users for knowledge-engineering project engagements.",
-      "text-hash": 8142196169563728819,
+      "text_hash": 8142196169563728819,
       "type": "paragraph"
     },
     {
@@ -97649,7 +97649,7 @@
       "sref": "#/texts/9",
       "subj_hash": 14387482728083328702,
       "text": "ACM Reference Format:",
-      "text-hash": 7430992009485070364,
+      "text_hash": 7430992009485070364,
       "type": "subtitle-level-1"
     },
     {
@@ -97663,7 +97663,7 @@
       "sref": "#/texts/10",
       "subj_hash": 11222145795862225841,
       "text": "Peter W J Staar, Michele Dolfi, Christoph Auer, Costas Bekas. 2018. Corpus Conversion Service: A Machine Learning Platform to Ingest Documents at Scale.. In KDD '18: The 24th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining, August 19-23, 2018, London, United Kingdom. ACM, New York, NY, USA, 9 pages. https://doi.org/10. 1145/3219819.3219834",
-      "text-hash": 10605881125688857885,
+      "text_hash": 10605881125688857885,
       "type": "paragraph"
     },
     {
@@ -97677,7 +97677,7 @@
       "sref": "#/texts/11",
       "subj_hash": 16923207262044929933,
       "text": "It is estimated that there are roughly 2.5 trillion PDF documents currently in circulation$^{1}$. These documents range from manuals for appliances, annual reports of companies, all the way to research papers, detailing a specific scientific discovery. It is needless to say that valuable qualitative and quantitative information is contained in many of them. However, content encoded in PDF is by its nature reduced to streams of printing instructions purposed to faithfully present a pleasing visual layout. Both the data representation and the enormous variability of layouts across these documents make it extremely challenging to access content and transform it into a representation that enables knowledge discovery. In addition to the sheer current quantity of documents, the submission rate of published documents in the scientific domain is also growing exponentially$^{2}$. This poses a real problem, since more and more information published in the PDF documents is going dark. In order to make the content of these documents searchable (e.g. find me a phase-diagram of material XYZ), one needs essentially two components. First, you need to ingest documents from a variety of formats (with the PDF format being the most prevalent one) and convert these documents to structured data files with a structured format such as JSON or XML. Second, you need a query engine that is able to deal with a large variety of concepts (documents, images, authors, tables, etc) extracted from these documents and put these into context.",
-      "text-hash": 9516638039579926761,
+      "text_hash": 9516638039579926761,
       "type": "paragraph"
     },
     {
@@ -97691,7 +97691,7 @@
       "sref": "#/texts/12",
       "subj_hash": 3749305213430885773,
       "text": "In this paper, we focus entirely on the first component, the ingestion of documents and their conversion into structured data files. The solution we propose is thought of as a platform, which at its core has trainable machine learning algorithms. This platform, called Corpus Conversion Service (CCS), consists out of a set of microservices organized in five main components. Each of these microservices can be consumed by its own REST API. This approach not only allows us to build complex pipelines to process documents automatically, but also allows us to develop new microservices against the platform. In order to make this platform scalable, all microservices are integrated through asynchronous communication protocols, which gives us many benefits: It allows to do proper resource management, eliminates strong dependencies and makes the platform robust against single task failures.",
-      "text-hash": 3945867624210419433,
+      "text_hash": 3945867624210419433,
       "type": "paragraph"
     },
     {
@@ -97705,7 +97705,7 @@
       "sref": "#/texts/13",
       "subj_hash": 3409470577915009676,
       "text": "To obtain a thorough understanding of what our platform can do and how well it performs, we have structured this paper as follows: In Section 2, we briefly review the current state-of-the-art document",
-      "text-hash": 4583103017707584490,
+      "text_hash": 4583103017707584490,
       "type": "paragraph"
     },
     {
@@ -97719,7 +97719,7 @@
       "sref": "#/texts/14",
       "subj_hash": 17187299362680072378,
       "text": "processing solutions. In Section 3, we present the design of the platform and its components. In Section 4, we discuss the architecture, the deployment methods, and how well the platform scales with regard to volume (both in users and content) and compute resources, respectively. Finally, in Section 5, we discuss the open questions w.r.t. research and possible next steps in the development of the platform.",
-      "text-hash": 9243393324994873880,
+      "text_hash": 9243393324994873880,
       "type": "paragraph"
     },
     {
@@ -97733,7 +97733,7 @@
       "sref": "#/texts/15",
       "subj_hash": 697648145931166262,
       "text": "2 STATE OF THE ART",
-      "text-hash": 2385816824895853732,
+      "text_hash": 2385816824895853732,
       "type": "subtitle-level-1"
     },
     {
@@ -97747,7 +97747,7 @@
       "sref": "#/texts/16",
       "subj_hash": 7935233310532930917,
       "text": "The task of converting PDF documents and automatic content reconstruction has been an outstanding problem for over three decades [3, 4]. Broadly speaking, there are two types of approaches to this problem. In the first approach, documents are converted with the goal to represent the content as close as possible to the original visual layout of the document. This can be done through a conversion from PDF towards HTML or MS Word for example. The second approach attempts to convert the document into a format that can be easily processed programmatically, i.e. a representation of the document which is not preserving the layout, yet contains all the content from the original document in a structured format. For example, this could be a JSON/XML file with a particular schema. Since our Corpus Conversion Service is thought of as a first step towards a knowledge discovery platform for documents, we have opted for the second approach in our solution.",
-      "text-hash": 57757550267838417,
+      "text_hash": 57757550267838417,
       "type": "paragraph"
     },
     {
@@ -97761,7 +97761,7 @@
       "sref": "#/texts/17",
       "subj_hash": 2762070725424637531,
       "text": "Many solutions have already been developed that tackle the problem of document conversion. There are well known open-source programs such as Xpdf 3 and Tabula$^{4}$. There are also proprietary solutions, such as Abby$^{5}$, Nuance 6 or DataCap$^{7}$. In contrast to the open-source solutions, all three proprietary solutions support also",
-      "text-hash": 5230489225511983287,
+      "text_hash": 5230489225511983287,
       "type": "paragraph"
     },
     {
@@ -97775,7 +97775,7 @@
       "sref": "#/texts/18",
       "subj_hash": 7536915191196259776,
       "text": "extraction from scanned documents. Besides the well known opensource and proprietary solutions, there are also countless academic solutions as well as libraries. For example, the challenge of segmenting complex page layouts is actively addressed by recurring competitions posed by ICDAR, as in Ref. [1] and previous editions.",
-      "text-hash": 167221319977518894,
+      "text_hash": 167221319977518894,
       "type": "paragraph"
     },
     {
@@ -97789,7 +97789,7 @@
       "sref": "#/texts/19",
       "subj_hash": 11495493007651807568,
       "text": "3 PLATFORM DESIGN",
-      "text-hash": 10322960049580053438,
+      "text_hash": 10322960049580053438,
       "type": "subtitle-level-1"
     },
     {
@@ -97803,7 +97803,7 @@
       "sref": "#/texts/20",
       "subj_hash": 7650015170039242996,
       "text": "Given the plethora of existing solutions, we would like to point out how our solution differs from these, and thus approaches the problem of document conversion in a new way.",
-      "text-hash": 333520156392116834,
+      "text_hash": 333520156392116834,
       "type": "paragraph"
     },
     {
@@ -97817,7 +97817,7 @@
       "sref": "#/texts/21",
       "subj_hash": 14959508657858158650,
       "text": "The key idea is that we do not write any rule-based conversion algorithms, but rather utilize generic machine learning algorithms which produce models that can be easily and quickly trained on ground-truth acquired via human annotation. This flexible mechanism allows us to adapt very quickly to certain templates of documents, achieve very accurate results and ultimately eliminates the time-consuming and costly tuning of traditional rule-based conversion algorithms. This approach is in stark contrast to the previously mentioned state of the art conversion systems, which are all rulebased.",
-      "text-hash": 6868109665737773720,
+      "text_hash": 6868109665737773720,
       "type": "paragraph"
     },
     {
@@ -97831,7 +97831,7 @@
       "sref": "#/texts/22",
       "subj_hash": 10379300903412882972,
       "text": "While the approach of swapping rule based solutions with machine learning solutions might appear very natural in the current era of artificial intelligence, it has some serious consequences with regard to its design. First of all, one can not think anymore at the level of a single document. Rather, one should think at the level of a collection of documents (or a corpus of documents). A machine learned model for a single document is not very useful, but a machine learned model for a certain type of documents (e.g. scientific articles, patents, regulations, contracts, etc.) obviously is. This is the first big distinction between the current existing solutions and ours: Existing solutions take one document at a time (no matter its origin) and convert it to a desired output format. Our solution can ingest an entire collection of documents and build machine learned models on top of that. Of course, once the the model is trained, one can convert documents one at a time, too.",
-      "text-hash": 11150916691880738938,
+      "text_hash": 11150916691880738938,
       "type": "paragraph"
     },
     {
@@ -97845,7 +97845,7 @@
       "sref": "#/texts/23",
       "subj_hash": 4994395008195818594,
       "text": "A second discriminator between the existing solutions and ours is that we need to provide the tools to gather ground-truth, since no model can be trained without it. Hence, not only do we need the ability to manage collections of documents, we also need the ability for people to annotate documents and store these annotations in an efficient way. These annotations are then used as ground-truth data to train models. It is clear then that ML models add an extra level of complexity: One has to provide the ability to store a collection of documents, annotate these documents, store the annotations, train a model and ultimately apply this model on unseen documents. For the authors of this paper, it was therefore evident that our solution cannot be a monolithic application. It fits much better the concept of a cloud-based platform that can execute the previously mentioned tasks in an efficient and scalable way.",
-      "text-hash": 16536368219630364368,
+      "text_hash": 16536368219630364368,
       "type": "paragraph"
     },
     {
@@ -97859,7 +97859,7 @@
       "sref": "#/texts/24",
       "subj_hash": 4203835122307823579,
       "text": "3.1 Components",
-      "text-hash": 3789103236857293111,
+      "text_hash": 3789103236857293111,
       "type": "subtitle-level-1"
     },
     {
@@ -97873,7 +97873,7 @@
       "sref": "#/texts/25",
       "subj_hash": 13520362244078084911,
       "text": "Our platform implements a processing pipeline to ingest, manage, parse, annotate, train and eventually convert the data contained in any type of format (scanned or programmatically created PDF, bitmap images, Word documents, etc.) into a structured data format (e.g. JSON or XML).",
-      "text-hash": 12910497814715733387,
+      "text_hash": 12910497814715733387,
       "type": "paragraph"
     },
     {
@@ -97887,7 +97887,7 @@
       "sref": "#/texts/26",
       "subj_hash": 1749622367305947670,
       "text": "This processing pipeline is formed by five components as depicted in Figure 1: (1) parsing of documents into an internal format optimised for ML, (2) Annotation of the label ground-truth in parsed documents (3) training ML models from the acquired annotations, (4) applying the custom ML model(s), (5) assembling the document(s) into a structured data format. If a trained model is available, only components 1, 4 and 5 are needed to convert the documents. If no template-specific machine learned model is available yet, we provide two additional components 2 and 3, that allow users to gather ground-truth and train custom models. It is important to note that the platform comes with default models, so annotation and training are advised to retrieve the best quality output, yet they are optional.",
-      "text-hash": 1334541935326461060,
+      "text_hash": 1334541935326461060,
       "type": "paragraph"
     },
     {
@@ -97901,7 +97901,7 @@
       "sref": "#/texts/27",
       "subj_hash": 11083736481641202939,
       "text": "Let us now elaborate on what each of the five components deliver in the rest of this section.",
-      "text-hash": 10456209429844276823,
+      "text_hash": 10456209429844276823,
       "type": "paragraph"
     },
     {
@@ -97915,7 +97915,7 @@
       "sref": "#/texts/28",
       "subj_hash": 15403141463083979171,
       "text": "3.2 Parsing of Documents",
-      "text-hash": 6127225399482532623,
+      "text_hash": 6127225399482532623,
       "type": "subtitle-level-1"
     },
     {
@@ -97929,7 +97929,7 @@
       "sref": "#/texts/29",
       "subj_hash": 12234429517419341922,
       "text": "In the parsing component of the pipeline, we solve the following straightforward but non-trivial task: Find the bounding boxes of all text-snippets that appear on each PDF page. For simplicity, we will refer to the bounding boxes of the text-snippets as cells in the remainder of the paper. There are two reasons why we are interested in these cells. First, they provide us with the crucial geometric features which are later used in the machine learning models to determine the layout semantic label. Second, the concept of a cell can be easily transferred to scanned documents. In Figure 2, we show the cells obtained from an example PDF page after the parsing stage.",
-      "text-hash": 13908173772261346000,
+      "text_hash": 13908173772261346000,
       "type": "paragraph"
     },
     {
@@ -97943,7 +97943,7 @@
       "sref": "#/texts/30",
       "subj_hash": 16957857111665886816,
       "text": "While the task of finding the cells might appear intuitive from a conceptual point of view, it is not in practice, since there does not exist a unique, precise definition of the cells. This lack of a precise definition has its origins not only in the ISO-standard 8 detailing the PDF document code but also in the variability of the quality of PDFs. Older PDFs which were created from scanned images using OCR typically return cells for each word, while more recent PDFs allow us to create cells for full text-lines. This variability in the geometric features of the cell (e.g. the width of the cell) can negatively impact the performance of later machine learning models. As a consequence, we reduce the variability of the geometric features as much as possible. The more consistent and homogeneous the geometric features of a cell are, the better the machine learning algorithms can do predictions.",
-      "text-hash": 9481411723883903182,
+      "text_hash": 9481411723883903182,
       "type": "paragraph"
     },
     {
@@ -97957,7 +97957,7 @@
       "sref": "#/texts/31",
       "subj_hash": 10390915169360946497,
       "text": "For programmatic PDFs, the text cells are contructed from raw streams of symbols and transforms defined in the PDF document. This operation relies on the iterators provided by the QPDF library$^{9}$.",
-      "text-hash": 11149022357700220845,
+      "text_hash": 11149022357700220845,
       "type": "paragraph"
     },
     {
@@ -97971,7 +97971,7 @@
       "sref": "#/texts/32",
       "subj_hash": 15254383206256494278,
       "text": "For scanned PDFs, we use a two step approach to find the cells by first running all bitmap resources in the PDF through an OCR engine and then merging the extracted text-snippets from the images with the remaining cells from the programmatically created content. Eventually, all the created cells and line paths are stored in an internal JSON format, which also keeps references to the bitmap resources embedded in the PDF document. From this point, all further processing does not need to distinguish between scanned or programmatic sources.",
-      "text-hash": 6573226034038831156,
+      "text_hash": 6573226034038831156,
       "type": "paragraph"
     },
     {
@@ -97985,7 +97985,7 @@
       "sref": "#/texts/33",
       "subj_hash": 17759618186065566858,
       "text": "3.3 Ground-truth gathering through human-annotation",
-      "text-hash": 8679681341332585960,
+      "text_hash": 8679681341332585960,
       "type": "subtitle-level-1"
     },
     {
@@ -97999,7 +97999,7 @@
       "sref": "#/texts/34",
       "subj_hash": 11638821473906997927,
       "text": "In this component, we collect ground-truth for the custom machine learning models to be trained on. Representative ground-truth data is of paramount importance to obtain machine learned models with excellent recall and precision. Unfortunately, it is often very hard to obtain lots of representative ground-truth data, primarily due the the enormous variability across the layout of documents. As a consequence, the concept of annotators for documents were incorporated into the platform from the very beginning. The purpose of these annotators is two-fold.",
-      "text-hash": 14503768930839698451,
+      "text_hash": 14503768930839698451,
       "type": "paragraph"
     },
     {
@@ -98013,7 +98013,7 @@
       "sref": "#/texts/35",
       "subj_hash": 13020065077657899116,
       "text": "First and foremost, the annotators on the platform allow us to gather ground-truth at scale using a crowd-sourcing approach. In each annotation task, we retrieve the original PDF page and its associated parsed components, containing the cells (see Figure 2). We then ask the (human) annotator to assign each cell a layout semantic label. Examples of semantic labels are: Title, Abstract, Authors, Subtitle, Text, Table, Figure, List, etc$^{10}$. In the annotator tool, each layout semantic label is visually represented by a colour. By assigning a colour to each semantic label, the task of semantic annotation is translated into a colouring-task, as can be seen in Figure 3. Since humans are very efficient in visual recognition, this task comes very natural to us. The required time spent to annotate a single page starting from the parsing output has shown to average at 30 seconds over various annotation campaigns.",
-      "text-hash": 13130850271187616458,
+      "text_hash": 13130850271187616458,
       "type": "paragraph"
     },
     {
@@ -98027,7 +98027,7 @@
       "sref": "#/texts/36",
       "subj_hash": 10103841011442966464,
       "text": "The second purpose of the annotators is to visually inspect the quality of our machine learned models. The goal of the models is to emulate the action of the annotators, i.e. to assign a layout semantic label to each cell. Clearly, the result of a prediction for each page can therefore be displayed as if it were an annotated page. This allows the users to directly inspect the results of the models on unseen pages. A direct consequence of this inspection capability in the annotators is that the annotation task can be transformed easily into a correction task, i.e. the human annotators only need to correct the incorrectly predicted labels. Of course, as the models become better over time, the number of corrections needed to be made become less and less. This allows us to significantly reduce the annotation time per document. Since annotations are typically created by professionals with a high hourly rate, the colouring technique allowed us to significantly reduce the cost of ground-truth gathering.",
-      "text-hash": 11435379797753757998,
+      "text_hash": 11435379797753757998,
       "type": "paragraph"
     },
     {
@@ -98041,7 +98041,7 @@
       "sref": "#/texts/37",
       "subj_hash": 10982401368140758581,
       "text": "In Figure 3, we show the annotation-rate in number-of-annotatedpages per minute. The vertical red lines indicate that a training was performed on the annotated pages, and a new, improved model is",
-      "text-hash": 10548529097098469537,
+      "text_hash": 10548529097098469537,
       "type": "paragraph"
     },
     {
@@ -98055,7 +98055,7 @@
       "sref": "#/texts/38",
       "subj_hash": 887751753527930563,
       "text": "used from that point to predict the labels. Since the corrections become less and less, the rate of annotation goes up. It is needless to say that this inter-leaving of training models (based on annotated ground-truth) and annotation benefits directly from our platform approach, since each task (submitting page-annotations, training the model, applying the model for predicting the labels) comes down to an asynchronous call to a microservice. The accelerated annotation leads to a speed-up of a factor of 10 for ground-truth collection.",
-      "text-hash": 2205427981859754031,
+      "text_hash": 2205427981859754031,
       "type": "paragraph"
     },
     {
@@ -98069,7 +98069,7 @@
       "sref": "#/texts/39",
       "subj_hash": 4695688617288377564,
       "text": "3.4 Machine Learning: Training models & Applying models",
-      "text-hash": 16834670239362291258,
+      "text_hash": 16834670239362291258,
       "type": "subtitle-level-1"
     },
     {
@@ -98083,7 +98083,7 @@
       "sref": "#/texts/40",
       "subj_hash": 3275001812318455279,
       "text": "In the CCS, there are essentially two types of machine-learning models. On the one hand, we have default models, which are designed to be layout independent. They take a raster image of the page to identify and locate basic objects, such as tables, figures, formulas, etc. On the other hand, we also support the training of custom, templatespecific models, which are designed to specialize on a particular layout template and allow us to convert and extract the data out of documents with very high precision and recall. They will classify each cell in the page with regard to their layout semantic label.",
-      "text-hash": 4429706140044408651,
+      "text_hash": 4429706140044408651,
       "type": "paragraph"
     },
     {
@@ -98097,7 +98097,7 @@
       "sref": "#/texts/41",
       "subj_hash": 15354930767839681193,
       "text": "3.4.1 Metrics. Before discussing the performance of the models, let us first define the precision and recall metrics used to evaluate the results. The first observation is that the output of a machine learned model is exactly the same of what a human annotator would produce, i.e. it will assign a text cell a semantic label. The correctness of this label is what we aim to measure with the recall and precision metrics. The second observation is that we deal with a",
-      "text-hash": 6184852591532473349,
+      "text_hash": 6184852591532473349,
       "type": "paragraph"
     },
     {
@@ -98111,7 +98111,7 @@
       "sref": "#/texts/42",
       "subj_hash": 6337233386759158728,
       "text": "multi-class classification problem, i.e. we don't have only two labels, but many possible semantic labels, hence the performance result will be the average of the recall and precision for each label.",
-      "text-hash": 15490331838172880166,
+      "text_hash": 15490331838172880166,
       "type": "paragraph"
     },
     {
@@ -98125,7 +98125,7 @@
       "sref": "#/texts/43",
       "subj_hash": 2249972239307071508,
       "text": "The recall (= \u211b) and precision (= \ud835\udcab) for a given label on a page is defined by the standard formulas",
-      "text-hash": 1131271437908497026,
+      "text_hash": 1131271437908497026,
       "type": "paragraph"
     },
     {
@@ -98139,7 +98139,7 @@
       "sref": "#/texts/44",
       "subj_hash": 12383805870947794174,
       "text": "\u211b = t$_{p}$ t$_{p}$ + f$_{p}$ , \ud835\udcab = t$_{p}$ t$_{p}$ + f$_{n}$ , (1)",
-      "text-hash": 14055366495763095132,
+      "text_hash": 14055366495763095132,
       "type": "equation"
     },
     {
@@ -98153,7 +98153,7 @@
       "sref": "#/texts/45",
       "subj_hash": 7053654953998543393,
       "text": "where t$_{p}$, f$_{p}$ and f$_{n}$ represent respectively true positive, false positive and false negative predicted labels.",
-      "text-hash": 642098605774556301,
+      "text_hash": 642098605774556301,
       "type": "paragraph"
     },
     {
@@ -98167,7 +98167,7 @@
       "sref": "#/texts/46",
       "subj_hash": 15921044595687116426,
       "text": "3.4.2 Default Models. The aim of the default models is to identify specific, ubiquitous objects in documents. Examples of such objects are tables, figures with their captions, mathematical formulas, etc. Due to the high variability in both the document layout as well as in the representation of these objects, we need very robust object detection methods. Currently, the most robust methods for detecting objects are deep neural networks such as R-CNNs (and their derivatives Fast-and Faster-R-CNN) [5, 6, 10], the YOLO architecture [8, 9] and the SSD networks [7]. On our platform, we have the Faster-R-CNN [10] and the YOLOv2 [9] networks available as individual microservices, both for training and predictions.",
-      "text-hash": 5618307884355612648,
+      "text_hash": 5618307884355612648,
       "type": "paragraph"
     },
     {
@@ -98181,7 +98181,7 @@
       "sref": "#/texts/47",
       "subj_hash": 12234068400463628788,
       "text": "In this paper, we will focus only on the detection of table objects, but the same principles described in the following analysis are also applied for other type of objects.",
-      "text-hash": 13907813772802190178,
+      "text_hash": 13907813772802190178,
       "type": "paragraph"
     },
     {
@@ -98195,7 +98195,7 @@
       "sref": "#/texts/48",
       "subj_hash": 4628466594790006384,
       "text": "The networks available on our platform have been trained on arXiv data$^{11}$. We have annotated 30000 PDF pages and know the",
-      "text-hash": 16911352314006995166,
+      "text_hash": 16911352314006995166,
       "type": "paragraph"
     },
     {
@@ -98209,7 +98209,7 @@
       "sref": "#/texts/49",
       "subj_hash": 9651706913678711778,
       "text": "location of at least one table on each page. From these 30000 pages, we have used 25000 pages as training data and kept the other 5000 pages for evaluation. Due to the large size of the dataset, we did not need to employ any data-augmentation technique, which is usually necessary for object-detection or image-classification algorithms.",
-      "text-hash": 11888191065829014864,
+      "text_hash": 11888191065829014864,
       "type": "paragraph"
     },
     {
@@ -98223,7 +98223,7 @@
       "sref": "#/texts/50",
       "subj_hash": 1363251178266051349,
       "text": "We do not locate the table directly on the image of the original PDF page but rather on an image representation of the parsed PDF page with cell boxes. The reasoning behind this is to reduce the variability between all input PDF pages as much as possible and thus increase the effectiveness of the deep neural networks. An example of such an image can be seen in Figure 5. The red bounding boxes around the tables are a result of the prediction using YOLOv2 and are absent in the image on which the model predicts. Note that the visualisation of the text cells visible in Figure 5 does not include any text of the original document, but only its geometrical definition. This is important when one compares for example Asian documents with Japanese, Chinese or Korean characters versus European languages with the roman alphabet. We do not want the deep neural network to focus on the specific characters, but rather on the layout of the cells in the page.",
-      "text-hash": 2009046567395259777,
+      "text_hash": 2009046567395259777,
       "type": "paragraph"
     },
     {
@@ -98237,7 +98237,7 @@
       "sref": "#/texts/51",
       "subj_hash": 18259197018396996238,
       "text": "Let us now discuss both deep neural network training microservices on the platform. In Table 1, we show the time-to-solution for training and predicting a single page as well as the performance in terms of recall and precision. In the training phase, we ensure that both algorithms ran each 100 epochs, i.e. all 25000 page images were fed to the network 100 times. We observe that the out-ofthe-box Faster R-CNN from Tensorflow does not implement any batching during the training phase, while YOLOv2 batches 8 images at a time, thanks to an image resizing which is automatically applied. We believe that this is the main origin for the discrepancy of time-to-solution for the training phase. The same holds true for the prediction. Therefore, from the point of view of the platform, the YOLOv2 architecture seems better suited for deployment, as it allows to have a much higher throughput (\u2248 10 pages/sec/node).",
-      "text-hash": 7883278994224882668,
+      "text_hash": 7883278994224882668,
       "type": "paragraph"
     },
     {
@@ -98251,7 +98251,7 @@
       "sref": "#/texts/52",
       "subj_hash": 14663676516964431047,
       "text": "For the performance analysis, let us outline one pre-processing stage which is needed before computing the metrics described previously. The object-detection networks predict a set of bounding boxes with a confidence level between 0 and 1. We use these bounding boxes to associate with each cell a label, which is in this particular case either Table or Not-Table, depending on whether they overlap",
-      "text-hash": 7164504172498806323,
+      "text_hash": 7164504172498806323,
       "type": "paragraph"
     },
     {
@@ -98265,7 +98265,7 @@
       "sref": "#/texts/53",
       "subj_hash": 4577067829072175096,
       "text": "Table 2: Performance results for the template specific model of the Physical Review B journals. The confusion matrix highlights the huge imbalance between the number of text cells with different labels. The usage of ensemble machine learning methods allows to achieve a very high accuracy over all label types.",
-      "text-hash": 3406859306294395222,
+      "text_hash": 3406859306294395222,
       "type": "paragraph"
     },
     {
@@ -98279,7 +98279,7 @@
       "sref": "#/texts/54",
       "subj_hash": 2569392033451362672,
       "text": "with the predicted bounding box. The corresponding recall and precision are then computed for this dual-class classification problem. In order to do a fair comparison of the two networks, we optimise the precision and recall metrics with regard to the predicted confidence. For YOLOv2 we observe that the recall goes down and the precision goes up as the confidence is increased, obtaining a maximum F1 score of 98.7% at a confidence level of 0. 5. The Faster R-CNN method is also performing quite well, but has slightly lower precision and recall numbers. We believe this originates from the selective search algorithm which is used to determine regions of interest. The images we feed it are not typical photographic images (made with a camera) but layout visualisations. The selective search algorithm in Faster R-CNN might not be optimal for such type of objects.",
-      "text-hash": 5414143675771382750,
+      "text_hash": 5414143675771382750,
       "type": "paragraph"
     },
     {
@@ -98293,7 +98293,7 @@
       "sref": "#/texts/55",
       "subj_hash": 14539041145469267811,
       "text": "3.4.3 Template specific Models. The goal of template specific models is to obtain a better extraction quality by specializing the model on a specific template. This is necessary in many technical fields, where the accuracy of the extracted data is of paramount importance. Furthermore, many technical documents in a specific field typically appear in a certain template and it often makes sense to take advantage of this template to improve extraction quality.",
-      "text-hash": 6991735551340401103,
+      "text_hash": 6991735551340401103,
       "type": "paragraph"
     },
     {
@@ -98307,7 +98307,7 @@
       "sref": "#/texts/56",
       "subj_hash": 8607014065143641201,
       "text": "For an algorithm to fit in the interactive platform design we identified a few key requirements. First, it is crucial that the model can generate good results with a limited set of pages. In practice this means the algorithm needs to perform well for 100-400 annotated pages, or the equivalent of a couple of man-hours for annotation. Second it must be robust against extreme imbalance of the labeled data. It is clear that cells of the label Title will be much more uncommon than cells with the label of Text. Last, the model needs to be very quick in training and predicting, since it will support the interactive annotation process.",
-      "text-hash": 17832237182951286493,
+      "text_hash": 17832237182951286493,
       "type": "paragraph"
     },
     {
@@ -98321,7 +98321,7 @@
       "sref": "#/texts/57",
       "subj_hash": 1994904537764312371,
       "text": "For these reasons, we chose random forest [2] as a machine learning algorithm for template specific models. Random forest algorithms are known to be trained fast and can produce very accurate results on limited, but relatively structured data. In our case,",
-      "text-hash": 1377511684573734815,
+      "text_hash": 1377511684573734815,
       "type": "paragraph"
     },
     {
@@ -98335,7 +98335,7 @@
       "sref": "#/texts/58",
       "subj_hash": 7742256726079628058,
       "text": "this structure originates of course from the template. Furthermore, random forest is an ensemble method, meaning that they learn on the distribution function of the features, and not individual dataelements. As a consequence, they are typically more robust against imbalance of the labeled data, since the distribution functions are renormalised.",
-      "text-hash": 250119056806139256,
+      "text_hash": 250119056806139256,
       "type": "paragraph"
     },
     {
@@ -98349,7 +98349,7 @@
       "sref": "#/texts/59",
       "subj_hash": 8810233123818174294,
       "text": "The random forest method is applied to each cell of the page based on a feature vector representing all of its properties. For example, the feature vector contains information as the page number, the size of the text cell, its position, as well as the distance from the neighbouring cells. Additionally to pure geometrical information we include the text style (normal, italic, or bold) and some text statistics, as the fraction of numeric characters. We then improve the obtained results by performing subsequent iterations with other random forest methods, which operate on an enlarged feature space including the previously predicted labels of the neighbourhood around the current cell.",
-      "text-hash": 17619932035192809924,
+      "text_hash": 17619932035192809924,
       "type": "paragraph"
     },
     {
@@ -98363,7 +98363,7 @@
       "sref": "#/texts/60",
       "subj_hash": 16446711449286912460,
       "text": "It is important to realize that almost all of these features are purely geometrical. This allows us to apply exactly the same machine learning methods on both scanned and programmatic PDF documents.",
-      "text-hash": 9704353849744984874,
+      "text_hash": 9704353849744984874,
       "type": "paragraph"
     },
     {
@@ -98377,7 +98377,7 @@
       "sref": "#/texts/61",
       "subj_hash": 9558434107504657973,
       "text": "In Table 2, we illustrate the performance results of the models for a particular scientific journal, Physical Review B$^{12}$. We randomly chose 100 open-access papers and annotated 400 pages of them with 6 semantic labels. Tables 2 shows the confusion matrix between the true and the predicted labels as well as the derived recall and precision metrics for each label. We observe that the recall and precision numbers are excellent, with most of them above 99%. This is not surprising, since we are building models that specialise for a particular template.",
-      "text-hash": 11971893452237256865,
+      "text_hash": 11971893452237256865,
       "type": "paragraph"
     },
     {
@@ -98391,7 +98391,7 @@
       "sref": "#/texts/62",
       "subj_hash": 18349896906192842040,
       "text": "Moreover, the same ML algorithm proves to perform very well on different document templates, as is evident from the numbers shown in Table 3, simply by providing it with different datasets to train on. The latter is the power of our platform: we can re-use the same machine-learning algorithm to generate different models solely based on the data gathered by the annotation on the platform. We do not need to define rules and heuristics or update code in order to deal with new types of documents. We only need to gather more data.",
-      "text-hash": 8080940474762743702,
+      "text_hash": 8080940474762743702,
       "type": "paragraph"
     },
     {
@@ -98405,7 +98405,7 @@
       "sref": "#/texts/63",
       "subj_hash": 10082834006373808153,
       "text": "3.5 Assembly",
-      "text-hash": 11736313095563614837,
+      "text_hash": 11736313095563614837,
       "type": "subtitle-level-1"
     },
     {
@@ -98419,7 +98419,7 @@
       "sref": "#/texts/64",
       "subj_hash": 15253541252152665681,
       "text": "In this component, we build a structured data file in JSON or XML format, which contains all the text and objects (e.g. tables) from the original document, retaining the layout semantics. This structured data file is constructed by assembling all the cells from the parsed file",
-      "text-hash": 6565628665194191037,
+      "text_hash": 6565628665194191037,
       "type": "paragraph"
     },
     {
@@ -98433,7 +98433,7 @@
       "sref": "#/texts/65",
       "subj_hash": 3904142170608486950,
       "text": "Listing 1: Excerpt from the JSON output of the Corpus Conversion Service after conversion of this paper.",
-      "text-hash": 4079383948124449940,
+      "text_hash": 4079383948124449940,
       "type": "paragraph"
     },
     {
@@ -98447,7 +98447,7 @@
       "sref": "#/texts/66",
       "subj_hash": 6410818076508661508,
       "text": "{ 'description ': { 'title ': 'Corpus Conversion Service: A machine learning platform to ingest documents at scale. ',, \u2192 'abstract ': 'Over the past few decades, the amount of scientific articles [...] ',, \u2192 'affiliations ': 'IBM Research Rueschlikon, Switzerland ', 'authors ': 'Peter W J Staar, Michele Dolfi, Christoph Auer, Costas Bekas ', \u2192 }, 'main-text ': [{ 'prov ': [{ 'bbox ': [52.304, 509.750, 168.099, 523.980], 'page ': 1 }], 'type ': 'subtitle-level-1 ', 'text ': '1 INTRODUCTION ' }, { 'prov ': [{ 'bbox ': [52.304, 337.678, 286.067, 380.475], 'page ': 1 }], 'type ': 'paragraph ', 'text ': 'It is estimated that [...] put these into context. ' },...], 'tables ': [{...},...], 'images ': [{...},...] }",
-      "text-hash": 15129105844666734962,
+      "text_hash": 15129105844666734962,
       "type": "paragraph"
     },
     {
@@ -98461,7 +98461,7 @@
       "sref": "#/texts/67",
       "subj_hash": 12813875992986832439,
       "text": "in combination with their associated predicted (or human-annotated) layout semantic labels. It should be noted that no machine learning is used in this component. It is purely rule based and therefore completely deterministic.",
-      "text-hash": 13337022012432085155,
+      "text_hash": 13337022012432085155,
       "type": "paragraph"
     },
     {
@@ -98475,7 +98475,7 @@
       "sref": "#/texts/68",
       "subj_hash": 11030869010407626539,
       "text": "The assembly phase is a two step process. First, one gathers all the cells with their associated layout semantic label and sorts them according to reading order. Then, the text of all cells that have the same label is contracted into a temporary document objects. Third, we build the internal structure of the temporary document objects, based on the information provided by the models. The latter is only applicable for internally structured objects, such as tables. An example of the generated JSON output is shown in Listing 1.",
-      "text-hash": 10508897272021404039,
+      "text_hash": 10508897272021404039,
       "type": "paragraph"
     },
     {
@@ -98489,7 +98489,7 @@
       "sref": "#/texts/69",
       "subj_hash": 2142320548375900929,
       "text": "4 ARCHITECTURE AND ORCHESTRATION OF CLOUD BASED MICROSERVICES",
-      "text-hash": 950718827856471405,
+      "text_hash": 950718827856471405,
       "type": "subtitle-level-1"
     },
     {
@@ -98503,7 +98503,7 @@
       "sref": "#/texts/70",
       "subj_hash": 12747011194397783283,
       "text": "In this section, we describe how the microservices in each of the components of the platform are deployed and orchestrated. Before discussing the technical details, we would like to point out our requirements for the architecture of the platform. These requirements are all related to scaling. Specifically, we would like the platform to scale with the number of documents, the number of users and last but not least the number of cloud based compute resources. In other words, we want a service that can ingest millions of documents, serve potentially thousands of users and scale its compute resources such that the time-to-solution is reasonable at all times for any operation. It is clear that the architecture of such a service is heavily influenced by these requirements.",
-      "text-hash": 13395059553653450335,
+      "text_hash": 13395059553653450335,
       "type": "paragraph"
     },
     {
@@ -98517,7 +98517,7 @@
       "sref": "#/texts/71",
       "subj_hash": 174789262945188010,
       "text": "4.1 Platform layers",
-      "text-hash": 3197077882590976520,
+      "text_hash": 3197077882590976520,
       "type": "subtitle-level-1"
     },
     {
@@ -98531,7 +98531,7 @@
       "sref": "#/texts/72",
       "subj_hash": 7228893318503650455,
       "text": "In Figure 1, we have shown a diagram of our pipeline on the platform to process documents. In Figure 6, we show a sketch of its",
-      "text-hash": 475277818666452483,
+      "text_hash": 475277818666452483,
       "type": "paragraph"
     },
     {
@@ -98545,7 +98545,7 @@
       "sref": "#/texts/73",
       "subj_hash": 9230667184712205690,
       "text": "architecture. As one can observe, we have grouped the service into four layers. These layers are:",
-      "text-hash": 12309253064221915096,
+      "text_hash": 12309253064221915096,
       "type": "paragraph"
     },
     {
@@ -98559,7 +98559,7 @@
       "sref": "#/texts/74",
       "subj_hash": 17419815751432442882,
       "text": "(1) An interface layer which implements a REST-API and a user frontend: The user frontend is an AngularJS application build on top of the REST-API and implements the annotators for ground-truth gathering. The REST-API is built and documented using the OpenAPI specifications 13 and is implemented in Python.",
-      "text-hash": 8731693174932948592,
+      "text_hash": 8731693174932948592,
       "type": "paragraph"
     },
     {
@@ -98573,7 +98573,7 @@
       "sref": "#/texts/75",
       "subj_hash": 11194226403360998426,
       "text": "(2) An orchestration layer that schedules the tasks for the microservices, stores their execution status and final result. The task scheduling is done with the Message Broker RabbitMQ$^{14}$. The results are stored in the in-memory data store Redis$^{15}$. In order to perform certain consecutive tasks (e. g. parsing a PDF page with embedded scanned images requires first a parsing of the programmatic PDF page to extract the images and then an OCR service to extract the cells from these images) we can directly chain tasks, such that subsequent steps are only executed if the previous terminated successfully. This approach allows for a very robust, fault-tolerant service with very little downtime.",
-      "text-hash": 10633901501381588600,
+      "text_hash": 10633901501381588600,
       "type": "paragraph"
     },
     {
@@ -98587,7 +98587,7 @@
       "sref": "#/texts/76",
       "subj_hash": 9005324696118733701,
       "text": "(3) A compute layer that implements the microservices detailed in section 3: Each of the workers in this layer executes the available microservices (e.g. parsing, training, predictions, assembly, etc). In order to scale with regard to resources, we have encapsulated each microservice into a distributed task queue using the Celery library$^{16}$. This allows us to dynamically scale the compute resources, since each worker can be spawned automatically on the cluster and register itself to the broker. The workers are not only consumers of tasks, but may also produce new ones. This is the case for the requests",
-      "text-hash": 17146307233289309425,
+      "text_hash": 17146307233289309425,
       "type": "paragraph"
     },
     {
@@ -98601,7 +98601,7 @@
       "sref": "#/texts/77",
       "subj_hash": 8082547756621048511,
       "text": "operating on the whole corpus. Whenever possible we parallelise the compute-heavy operations at the page (or document) level.",
-      "text-hash": 18059523399368641563,
+      "text_hash": 18059523399368641563,
       "type": "paragraph"
     },
     {
@@ -98615,7 +98615,7 @@
       "sref": "#/texts/78",
       "subj_hash": 7791113385466815951,
       "text": "(4) A storage layer that stores all documents as well as the results from the microservices: The storage layer is composed out of two services: an object-store that stores all documents and processed stages (e. g. the parsed PDF pages, trained models, etc) and a queryable NoSQL database that stores the metadata of each file in the object-store. The object-store allows us to easily scale the storage with regard to the number of processed documents. However, it is not build to be queried efficiently, which is why we put a NoSQL database (in our case we use MongoDB$^{17}$) on top to manage the storage and act as an access-layer.",
-      "text-hash": 18360382746077681451,
+      "text_hash": 18360382746077681451,
       "type": "paragraph"
     },
     {
@@ -98629,7 +98629,7 @@
       "sref": "#/texts/79",
       "subj_hash": 2845012065511066307,
       "text": "By design, all the microservices in the compute layer are stateless, i.e. they don't manage any data, but only operate on it. This allows us to trust the additional stability and data safety concerns to the state-of-the-art tools that we have chosen, such as MongoDB, Redis and RabbitMQ. Being a cloud-based platform, our solution allows for these software assets to be detached from the main deployment and to be served by specialised vendors services which are certified to the latest industry requirements such as data-at-rest encryption, high availability, etc.",
-      "text-hash": 5147922161190726703,
+      "text_hash": 5147922161190726703,
       "type": "paragraph"
     },
     {
@@ -98643,7 +98643,7 @@
       "sref": "#/texts/80",
       "subj_hash": 15072914837937068796,
       "text": "The choice of the services plays also a crucial role in addressing the scaling requirements for the platform. From the sketch (Fig. 6), it is clear that the compute layer has a considerable amount of communication with these external services. During the development we evaluated multiple options and, e. g. we had to replace some services because of inadequate performance or scaling bottlenecks. For example other result-backends didn't offer the auto-cleaning functionality offered by Redis and, before opting for a custom solution mixing MongoDB with an object storage, we evaluated other solutions as",
-      "text-hash": 6457975667604208730,
+      "text_hash": 6457975667604208730,
       "type": "paragraph"
     },
     {
@@ -98657,7 +98657,7 @@
       "sref": "#/texts/81",
       "subj_hash": 15263283599394646155,
       "text": "the GridFS storage, but it didn't fit to the constraints of typical cloud environments.",
-      "text-hash": 6564180200469858791,
+      "text_hash": 6564180200469858791,
       "type": "paragraph"
     },
     {
@@ -98671,7 +98671,7 @@
       "sref": "#/texts/82",
       "subj_hash": 11417717357379295278,
       "text": "4.2 Deployment",
-      "text-hash": 10410411375713696396,
+      "text_hash": 10410411375713696396,
       "type": "subtitle-level-1"
     },
     {
@@ -98685,7 +98685,7 @@
       "sref": "#/texts/83",
       "subj_hash": 9031137420247852045,
       "text": "Our platform is deployable on Kubernetes clusters 18 available on many cloud providers or even on-premise installations, e. g. using the IBM Cloud Private 19 distribution. Depending on the requirements, the storage services are launched inside the same cluster or linked to externally hosted endpoints.",
-      "text-hash": 17120327512656828009,
+      "text_hash": 17120327512656828009,
       "type": "paragraph"
     },
     {
@@ -98699,7 +98699,7 @@
       "sref": "#/texts/84",
       "subj_hash": 18436578077535696718,
       "text": "The common parts of all deployments are the interface and the compute layer. The compute layer is designed for dynamically adapt the number of resources on the current load. For example, more parsing-microservice instances could be spawned when a large document is uploaded and they can automatically scaled down at the end of the task, such that the resources are free for other components, like training and assembling the processed documents.",
-      "text-hash": 8003240278028347820,
+      "text_hash": 8003240278028347820,
       "type": "paragraph"
     },
     {
@@ -98713,7 +98713,7 @@
       "sref": "#/texts/85",
       "subj_hash": 11734907767490759865,
       "text": "The components running in the compute layer are further organized in different queues, such that we can control the fraction of resources allocated for each different component depending on their computational requirements. The parse component is indeed more demanding than the simple annotation components.",
-      "text-hash": 14704352826439757333,
+      "text_hash": 14704352826439757333,
       "type": "paragraph"
     },
     {
@@ -98727,7 +98727,7 @@
       "sref": "#/texts/86",
       "subj_hash": 7845460979782401889,
       "text": "Currently, our main system operates on 5 Kubernetes nodes with 4 CPU cores and 8 GB of main memory each, and additionally one POWER 8 node with four GPUs is dedicated to the deep learning training and prediction tasks. Here, the flexible binding of microservices to specific nodes is a great advantage of the Kubernetes deployment. Moreover, 5 other virtual machines are employed to host the services in the orchestration and store layer.",
-      "text-hash": 18296438351865061837,
+      "text_hash": 18296438351865061837,
       "type": "paragraph"
     },
     {
@@ -98741,7 +98741,7 @@
       "sref": "#/texts/87",
       "subj_hash": 17769988780693768120,
       "text": "4.3 Scaling benchmarks",
-      "text-hash": 8669715371308316950,
+      "text_hash": 8669715371308316950,
       "type": "subtitle-level-1"
     },
     {
@@ -98755,7 +98755,7 @@
       "sref": "#/texts/88",
       "subj_hash": 12387489643011067991,
       "text": "Let us now discuss some scaling results on our platform. As we pointed out in the beginning of the section, our requirements for the platform were scaling with regard to the number of users, the number of processed documents and compute resources. In Figure 7, we show the number of users and the number of processed PDF",
-      "text-hash": 14043220598855238339,
+      "text_hash": 14043220598855238339,
       "type": "paragraph"
     },
     {
@@ -98769,7 +98769,7 @@
       "sref": "#/texts/89",
       "subj_hash": 10375772475809458895,
       "text": "pages 20 as a function of time. As one can see, the number of users and processed PDF pages has been increasing steadily over time since the launch of our service in April 2017. It is however interesting to see that there are sharp steps, indicating that some users have been uploading massive amounts of documents into the service in a very small amount of time. Due to our design, it was not a problem to accommodate these peaks and our service was able to handle these short burst of extreme activity.",
-      "text-hash": 11451664978555915307,
+      "text_hash": 11451664978555915307,
       "type": "paragraph"
     },
     {
@@ -98783,7 +98783,7 @@
       "sref": "#/texts/90",
       "subj_hash": 7054726458191881751,
       "text": "In Figure 8, we show the scaling of the three main pipeline microservices (i.e. the parsing of PDF documents, applying machine learned models and conversion of documents to JSON) on the platform with regard to compute resources. We show this scaling by displaying the speedup versus the number of worker nodes available. Here, we chose to have four workers serving each pipeline microservice, since each worker is running on a node with four cores. As one can observe, the speedup in the parse and ML apply tasks scales linearly with the the number of workers, and thus the nodes. Notably, we can even observe a slightly better-than-linear speedup, which appears due to bandwidth constraints on the baseline with one worker. The speedup on the assemble tasks, in comparison, flattens off sooner, as this task can only be parallelised on the document and not on the page level. The variability in the length of documents is reflected in a load imbalance between the worker nodes, however this averages out with sufficiently large corpus sizes. Consequently, we are able to scale the compute resources in order to keep the time-to-solution constant for any job-size.",
-      "text-hash": 641132783909312643,
+      "text_hash": 641132783909312643,
       "type": "paragraph"
     },
     {
@@ -98797,7 +98797,7 @@
       "sref": "#/texts/91",
       "subj_hash": 7794115281016062068,
       "text": "5 CONCLUSION",
-      "text-hash": 18347902420476900066,
+      "text_hash": 18347902420476900066,
       "type": "subtitle-level-1"
     },
     {
@@ -98811,7 +98811,7 @@
       "sref": "#/texts/92",
       "subj_hash": 7038163015905900647,
       "text": "We have presented a scalable, cloud based platform, which can ingest, parse and annotate documents, and particularly, train & apply advanced machine learning models in order to extract the content of the ingested documents and convert it into a structured data representation.",
-      "text-hash": 657005981473069779,
+      "text_hash": 657005981473069779,
       "type": "paragraph"
     },
     {
@@ -98825,7 +98825,7 @@
       "sref": "#/texts/93",
       "subj_hash": 1508626318915838319,
       "text": "The fundamental design choices in our solution have proven to enable scaling in three elementary ways. First, it can service multiple users concurrently. Second, it can ingest, parse and apply machine learned models on many documents at the same time. Third, it can scale its compute resources for different tasks on the platform according to their respective load so the conversion of documents on the platform is at all times bounded in time, given enough resources.",
-      "text-hash": 1575427749670982603,
+      "text_hash": 1575427749670982603,
       "type": "paragraph"
     },
     {
@@ -98839,7 +98839,7 @@
       "sref": "#/texts/94",
       "subj_hash": 17247086344435786796,
       "text": "In the future, we plan to extend the platform in two major areas. First, we would like to extend the number of microservices, especially with regard to image understanding. The number of types of images is enormous (e.g. line & scatterplot, histograms, pie-charts, geographic maps, etc). The goal here would be to extract the data out of these individual type of images after a successful identification with an image-classifier. Second, we would like to improve the quality and performance of our default models. We strongly believe that the results can be greatly improved since the neural networks we currently use are optimised for photographic images, and not images of parsed document pages (as is shown in Figure 5). To leverage this growing use of deep learning models, we will additionally introduce",
-      "text-hash": 9192771730962863754,
+      "text_hash": 9192771730962863754,
       "type": "paragraph"
     },
     {
@@ -98853,7 +98853,7 @@
       "sref": "#/texts/95",
       "subj_hash": 10287541089279789496,
       "text": "specialised data-parallelism in order to speed up the training and provide interactive user-customisation capabilities.",
-      "text-hash": 11530911151361059606,
+      "text_hash": 11530911151361059606,
       "type": "paragraph"
     },
     {
@@ -98867,7 +98867,7 @@
       "sref": "#/texts/96",
       "subj_hash": 7819882792760965882,
       "text": "ACKNOWLEDGMENTS",
-      "text-hash": 18322720810464861272,
+      "text_hash": 18322720810464861272,
       "type": "subtitle-level-1"
     },
     {
@@ -98881,7 +98881,7 @@
       "sref": "#/texts/97",
       "subj_hash": 15983582675278266440,
       "text": "The authors would like to thank Roxana Istrate and Matthieu Mottet for their contribution to the development of the CCS system.",
-      "text-hash": 5556222901900980902,
+      "text_hash": 5556222901900980902,
       "type": "paragraph"
     },
     {
@@ -98895,7 +98895,7 @@
       "sref": "#/texts/98",
       "subj_hash": 12711351442546714716,
       "text": "This work was supported by the NCCR MARVEL (http://nccr-marvel. ch), funded by the Swiss National Science Foundation. MD was supported by the FORCE project, funded by Horizon 2020 under NMBP-23-2016 call with Grant agreement number 721027 (http://the-force-project.eu).",
-      "text-hash": 13431247303555599034,
+      "text_hash": 13431247303555599034,
       "type": "paragraph"
     },
     {
@@ -98909,7 +98909,7 @@
       "sref": "#/texts/99",
       "subj_hash": 1225384713519841338,
       "text": "REFERENCES",
-      "text-hash": 1858797456585454232,
+      "text_hash": 1858797456585454232,
       "type": "subtitle-level-1"
     },
     {
@@ -98923,7 +98923,7 @@
       "sref": "#/texts/100",
       "subj_hash": 1712774266196702392,
       "text": "[1] A. Antonacopoulos, C. Clausner, C. Papadopoulos, and S. Pletschacher. 2015. ICDAR2015 Competition on Recognition of Documents with Complex Layouts-RDCL2015. In Proceedings of the 13th International Conference on Document Analysis and Recognition (ICDAR2015). Nancy, 1151-1155.",
-      "text-hash": 1659105420801451542,
+      "text_hash": 1659105420801451542,
       "type": "paragraph"
     },
     {
@@ -98937,7 +98937,7 @@
       "sref": "#/texts/101",
       "subj_hash": 14718288547983000340,
       "text": "[2] Leo Breiman. 2001. Random Forests. Machine Learning 45, 1 (01 Oct 2001), 5-32. https://doi.org/10.1023/A:1010933404324",
-      "text-hash": 6812664208788567426,
+      "text_hash": 6812664208788567426,
       "type": "paragraph"
     },
     {
@@ -98951,7 +98951,7 @@
       "sref": "#/texts/102",
       "subj_hash": 16943780574244090186,
       "text": "[3] R. Cattoni, T. Coianiz, S. Messelodi, and C. M. Modena. 1998. Geometric layout analysis techniques for document image understanding: a review. Technical Report.",
-      "text-hash": 9486476535199015848,
+      "text_hash": 9486476535199015848,
       "type": "paragraph"
     },
     {
@@ -98965,7 +98965,7 @@
       "sref": "#/texts/103",
       "subj_hash": 8004985786049140169,
       "text": "[4] Jean-Pierre Chanod, Boris Chidlovskii, Herv\u00e9 Dejean, Olivier Fambon, J\u00e9r\u00f4me Fuselier, Thierry Jacquin, and Jean-Luc Meunier. 2005. From Legacy Documents to XML: A Conversion Framework. Springer Berlin Heidelberg, Berlin, Heidelberg, 92-103. https://doi.org/10.1007/11551362_9",
-      "text-hash": 18434854666592634661,
+      "text_hash": 18434854666592634661,
       "type": "paragraph"
     },
     {
@@ -98979,7 +98979,7 @@
       "sref": "#/texts/104",
       "subj_hash": 12744546813104546377,
       "text": "[5] Ross Girshick. 2015. Fast R-CNN. In Proceedings of the 2015 IEEE International Conference on Computer Vision (ICCV) (ICCV '15). IEEE Computer Society, Washington, DC, USA, 1440-1448. https://doi.org/10.1109/ICCV.2015.169",
-      "text-hash": 13406949228208477349,
+      "text_hash": 13406949228208477349,
       "type": "paragraph"
     },
     {
@@ -98993,7 +98993,7 @@
       "sref": "#/texts/105",
       "subj_hash": 16061746189176848219,
       "text": "[6] Ross B. Girshick, Jeff Donahue, Trevor Darrell, and Jitendra Malik. 2013. Rich feature hierarchies for accurate object detection and semantic segmentation. CoRR abs/1311.2524 (2013). arXiv:1311.2524 http://arxiv.org/abs/1311.2524",
-      "text-hash": 5756829059313082807,
+      "text_hash": 5756829059313082807,
       "type": "paragraph"
     },
     {
@@ -99007,7 +99007,7 @@
       "sref": "#/texts/106",
       "subj_hash": 11872392946390819176,
       "text": "[7] Wei Liu, Dragomir Anguelov, Dumitru Erhan, Christian Szegedy, Scott Reed, Cheng-Yang Fu, and Alexander C. Berg. 2016. SSD: Single Shot MultiBox Detector. Springer International Publishing, Cham, 21-37. https://doi.org/10. 1007/978-3-319-46448-0_2",
-      "text-hash": 14270091870781297606,
+      "text_hash": 14270091870781297606,
       "type": "paragraph"
     },
     {
@@ -99021,7 +99021,7 @@
       "sref": "#/texts/107",
       "subj_hash": 2956849475535726296,
       "text": "[8] Joseph Redmon, Santosh Kumar Divvala, Ross B. Girshick, and Ali Farhadi. 2016. You Only Look Once: Unified, Real-Time Object Detection. 2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR) (2016), 779-788.",
-      "text-hash": 4738468948628789302,
+      "text_hash": 4738468948628789302,
       "type": "paragraph"
     },
     {
@@ -99035,7 +99035,7 @@
       "sref": "#/texts/108",
       "subj_hash": 6623297047995432604,
       "text": "[9] Joseph Redmon and Ali Farhadi. 2016. YOLO9000: Better, Faster, Stronger. arXiv preprint arXiv:1612.08242 (2016).",
-      "text-hash": 15195146357792776186,
+      "text_hash": 15195146357792776186,
       "type": "paragraph"
     },
     {
@@ -99049,7 +99049,7 @@
       "sref": "#/texts/109",
       "subj_hash": 2507285765516108280,
       "text": "[10] Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun. 2015. Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks. In Advances in Neural Information Processing Systems 28, C. Cortes, N. D. Lawrence, D. D. Lee, M. Sugiyama, and R. Garnett (Eds.). Curran Associates, Inc., 91-99. http://papers.nips.cc/paper/ 5638-faster-r-cnn-towards-real-time-object-detection-with-region-proposal-networks. pdf",
-      "text-hash": 5476658171803931478,
+      "text_hash": 5476658171803931478,
       "type": "paragraph"
     },
     {
@@ -99063,7 +99063,7 @@
       "sref": "#/texts/110",
       "subj_hash": 14905276480471286920,
       "text": "[11] Peter W J Staar, Michele Dolfi, Christoph Auer, and Costas Bekas. 2018. Corpus Conversion Service poster at the SysML conference. http://www.sysml.cc/doc/ 76.pdf",
-      "text-hash": 6922174983558886886,
+      "text_hash": 6922174983558886886,
       "type": "paragraph"
     }
   ]

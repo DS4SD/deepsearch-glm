@@ -669,7 +669,7 @@
           "sref": "#/figures/0/captions/0",
           "subj_hash": 5929648907277899214,
           "text": "FIGURE1 Schematic of a data flow for the creation of a Knowledge Graph. The data flow consists of three main task types: extraction of document elements (abstracts, paragraphs, tables, figures, etc.), annotation of these elements to detect entities and their relationships and finally aggregation of these entities and their relationships. For every task, we keep complete provenance, such that we can always trace back to a specific document or element that embeds a certain entity or relationship",
-          "text-hash": 12816755167354360565,
+          "text_hash": 12816755167354360565,
           "type": "caption"
         }
       ],
@@ -716,7 +716,7 @@
           "sref": "#/figures/2/captions/0",
           "subj_hash": 13588295264109661534,
           "text": "FIGURE 3 The time-to-solution for k-hop graph traversal for Neo4J and our new graph engine. The results were obtained for the graph500 and twitter benchmark graphs. The 10th and 90th percentiles are represented by the shaded regions; the median is shown by the markers",
-          "text-hash": 9558113653035301733,
+          "text_hash": 9558113653035301733,
           "type": "caption"
         }
       ],
@@ -747,7 +747,7 @@
           "sref": "#/figures/3/captions/0",
           "subj_hash": 5867845979623066511,
           "text": "FIGURE 4 Visual workflow editor for deep queries in the CPS platform. The interface exhibits a left toolbar to pick specific graph operations, a main drawing area for the workflow DAG and a right panel to inspect and define parameters of each graph operation. Colors indicate different operation types such as input node-retrieval (blue), traversal (red), logical operators (green) and transform functions (yellow). Valid workflows can be executed using the ' play ' button",
-          "text-hash": 12590315652817418422,
+          "text_hash": 12590315652817418422,
           "type": "caption"
         }
       ],
@@ -794,7 +794,7 @@
           "sref": "#/figures/5/captions/0",
           "subj_hash": 3722064109667835816,
           "text": "FIGURE5 The architectural design of the CPS platform. On the left, we show the data flow processing architecture orchestrated through an asynchronous REST API. On the right, we sketch the multitenant KG serving facility which provides a dedicated environment for each project",
-          "text-hash": 1256907401557265619,
+          "text_hash": 1256907401557265619,
           "type": "caption"
         }
       ],
@@ -825,7 +825,7 @@
           "sref": "#/figures/6/captions/0",
           "subj_hash": 5492278710328857395,
           "text": "FIGURE 6 Sketch of the entire pipeline to perform deep data exploration on large corpora",
-          "text-hash": 10669134213704159562,
+          "text_hash": 10669134213704159562,
           "type": "caption"
         }
       ],
@@ -856,7 +856,7 @@
           "sref": "#/figures/7/captions/0",
           "subj_hash": 14119822239274862236,
           "text": "FIGURE 7 The evaluation workflow to identify the petroleum system elements (PSE) in an article and infer its properties. It starts by searching for all petroleum system elements of a certain type (eg, source, reservoir or seal) and a particular report (worktasks 1 and 2). By successive graph traversals (worktasks 3-5, 7-9, 11, 12) along specific edges and logical operations (worktasks 6, 10, 13, 14), we are able to obtain a list of candidate formations (worktask 15), ages (worktask 16) and rocks (worktask 17), ranked by their accumulated weight. Execution of this query takes less than 18 ms on average",
-          "text-hash": 2397375916393726887,
+          "text_hash": 2397375916393726887,
           "type": "paragraph"
         }
       ],
@@ -985,7 +985,7 @@
       "sref": "#/footnotes/0",
       "subj_hash": 4934591159529761265,
       "text": "This is an open access article under the terms of the Creative Commons Attribution License, which permits use, distribution and reproduction in any medium, provided the original work is properly cited.",
-      "text-hash": 11226800603937609484,
+      "text_hash": 11226800603937609484,
       "type": "footnote"
     },
     {
@@ -999,7 +999,7 @@
       "sref": "#/footnotes/1",
       "subj_hash": 16070682594069297502,
       "text": "\u00a9 2020 The Authors. Applied AI Letters published by John Wiley & Sons Ltd.",
-      "text-hash": 2671219352918255461,
+      "text_hash": 2671219352918255461,
       "type": "footnote"
     }
   ],
@@ -77044,7 +77044,7 @@
       "sref": "#/page-footers/0",
       "subj_hash": 12400883656433726216,
       "text": "Applied AI Letters. 2020;1:e20. https://doi.org/10.1002/ail2.20",
-      "text-hash": 8372141692634509619,
+      "text_hash": 8372141692634509619,
       "type": "page-footer"
     },
     {
@@ -77058,7 +77058,7 @@
       "sref": "#/page-footers/1",
       "subj_hash": 10244115652970867690,
       "text": "wileyonlinelibrary.com/journal/ail2 1of15",
-      "text-hash": 6196517219334265105,
+      "text_hash": 6196517219334265105,
       "type": "page-footer"
     }
   ],
@@ -77074,7 +77074,7 @@
       "sref": "#/page-headers/0",
       "subj_hash": 1841431076736563689,
       "text": "Received: 15 September 2020",
-      "text-hash": 16688788223092401940,
+      "text_hash": 16688788223092401940,
       "type": "page-header"
     },
     {
@@ -77088,7 +77088,7 @@
       "sref": "#/page-headers/1",
       "subj_hash": 3915126318503464014,
       "text": "Revised: 23 November 2020",
-      "text-hash": 1000711515083668085,
+      "text_hash": 1000711515083668085,
       "type": "page-header"
     },
     {
@@ -77102,7 +77102,7 @@
       "sref": "#/page-headers/2",
       "subj_hash": 1727876228376027809,
       "text": "Accepted: 25 November 2020",
-      "text-hash": 17099649843681009628,
+      "text_hash": 17099649843681009628,
       "type": "page-header"
     },
     {
@@ -77116,7 +77116,7 @@
       "sref": "#/page-headers/3",
       "subj_hash": 4558221577189246496,
       "text": "DOI: 10.1002/ail2.20",
-      "text-hash": 348625343742526555,
+      "text_hash": 348625343742526555,
       "type": "page-header"
     },
     {
@@ -77130,7 +77130,7 @@
       "sref": "#/page-headers/4",
       "subj_hash": 8492015887072434396,
       "text": "STAAR ET AL.",
-      "text-hash": 14658966106383255015,
+      "text_hash": 14658966106383255015,
       "type": "page-header"
     },
     {
@@ -77144,7 +77144,7 @@
       "sref": "#/page-headers/5",
       "subj_hash": 8492015887072434396,
       "text": "STAAR ET AL.",
-      "text-hash": 14658966106383255015,
+      "text_hash": 14658966106383255015,
       "type": "page-header"
     },
     {
@@ -77158,7 +77158,7 @@
       "sref": "#/page-headers/6",
       "subj_hash": 8492015887072434396,
       "text": "STAAR ET AL.",
-      "text-hash": 14658966106383255015,
+      "text_hash": 14658966106383255015,
       "type": "page-header"
     },
     {
@@ -77172,7 +77172,7 @@
       "sref": "#/page-headers/7",
       "subj_hash": 8492015887072434396,
       "text": "STAAR ET AL.",
-      "text-hash": 14658966106383255015,
+      "text_hash": 14658966106383255015,
       "type": "page-header"
     },
     {
@@ -77186,7 +77186,7 @@
       "sref": "#/page-headers/8",
       "subj_hash": 8492015887072434396,
       "text": "STAAR ET AL.",
-      "text-hash": 14658966106383255015,
+      "text_hash": 14658966106383255015,
       "type": "page-header"
     },
     {
@@ -77200,7 +77200,7 @@
       "sref": "#/page-headers/9",
       "subj_hash": 8492015887072434396,
       "text": "STAAR ET AL.",
-      "text-hash": 14658966106383255015,
+      "text_hash": 14658966106383255015,
       "type": "page-header"
     },
     {
@@ -77214,7 +77214,7 @@
       "sref": "#/page-headers/10",
       "subj_hash": 4361549266732238272,
       "text": "8of15",
-      "text-hash": 329104147727696635,
+      "text_hash": 329104147727696635,
       "type": "page-header"
     },
     {
@@ -77228,7 +77228,7 @@
       "sref": "#/page-headers/11",
       "subj_hash": 8492015887072434396,
       "text": "STAAR ET AL.",
-      "text-hash": 14658966106383255015,
+      "text_hash": 14658966106383255015,
       "type": "page-header"
     },
     {
@@ -77242,7 +77242,7 @@
       "sref": "#/page-headers/12",
       "subj_hash": 8492015887072434396,
       "text": "STAAR ET AL.",
-      "text-hash": 14658966106383255015,
+      "text_hash": 14658966106383255015,
       "type": "page-header"
     },
     {
@@ -77256,7 +77256,7 @@
       "sref": "#/page-headers/13",
       "subj_hash": 8492015887072434396,
       "text": "STAAR ET AL.",
-      "text-hash": 14658966106383255015,
+      "text_hash": 14658966106383255015,
       "type": "page-header"
     },
     {
@@ -77270,7 +77270,7 @@
       "sref": "#/page-headers/14",
       "subj_hash": 8492015887072434396,
       "text": "STAAR ET AL.",
-      "text-hash": 14658966106383255015,
+      "text_hash": 14658966106383255015,
       "type": "page-header"
     },
     {
@@ -77284,7 +77284,7 @@
       "sref": "#/page-headers/15",
       "subj_hash": 8492015887072434396,
       "text": "STAAR ET AL.",
-      "text-hash": 14658966106383255015,
+      "text_hash": 14658966106383255015,
       "type": "page-header"
     },
     {
@@ -77298,7 +77298,7 @@
       "sref": "#/page-headers/16",
       "subj_hash": 8492015887072434396,
       "text": "STAAR ET AL.",
-      "text-hash": 14658966106383255015,
+      "text_hash": 14658966106383255015,
       "type": "page-header"
     },
     {
@@ -77312,7 +77312,7 @@
       "sref": "#/page-headers/17",
       "subj_hash": 8492015887072434396,
       "text": "STAAR ET AL.",
-      "text-hash": 14658966106383255015,
+      "text_hash": 14658966106383255015,
       "type": "page-header"
     },
     {
@@ -77326,7 +77326,7 @@
       "sref": "#/page-headers/18",
       "subj_hash": 8492015887072434396,
       "text": "STAAR ET AL.",
-      "text-hash": 14658966106383255015,
+      "text_hash": 14658966106383255015,
       "type": "page-header"
     }
   ],
@@ -80424,7 +80424,7 @@
           "sref": "#/tables/0/captions/0",
           "subj_hash": 8669048055071941045,
           "text": "TABLE 1 Top-k accuracies validation of KG query results. Numbers represent the fraction in which any of the k highest ranked answers matches the expected answer",
-          "text-hash": 14400864471075544784,
+          "text_hash": 14400864471075544784,
           "type": "caption"
         }
       ],
@@ -82127,7 +82127,7 @@
       "sref": "#/texts/0",
       "subj_hash": 2144509362215609527,
       "text": "LETTER",
-      "text-hash": 16381206540184854990,
+      "text_hash": 16381206540184854990,
       "type": "subtitle-level-1"
     },
     {
@@ -82141,7 +82141,7 @@
       "sref": "#/texts/1",
       "subj_hash": 16672720454366774824,
       "text": "Corpus processing service: A Knowledge Graph platform to perform deep data exploration on corpora",
-      "text-hash": 4375081646508065875,
+      "text_hash": 4375081646508065875,
       "type": "subtitle-level-1"
     },
     {
@@ -82155,7 +82155,7 @@
       "sref": "#/texts/2",
       "subj_hash": 16781763356419781679,
       "text": "Peter W. J. Staar",
-      "text-hash": 4049808513512976982,
+      "text_hash": 4049808513512976982,
       "type": "subtitle-level-1"
     },
     {
@@ -82169,7 +82169,7 @@
       "sref": "#/texts/3",
       "subj_hash": 3352447812305581329,
       "text": "|",
-      "text-hash": 17767354399704232748,
+      "text_hash": 17767354399704232748,
       "type": "paragraph"
     },
     {
@@ -82183,7 +82183,7 @@
       "sref": "#/texts/4",
       "subj_hash": 14877831450145300436,
       "text": "Michele Dolfi",
-      "text-hash": 1571808557594152175,
+      "text_hash": 1571808557594152175,
       "type": "subtitle-level-1"
     },
     {
@@ -82197,7 +82197,7 @@
       "sref": "#/texts/5",
       "subj_hash": 3352447812305581329,
       "text": "|",
-      "text-hash": 17767354399704232748,
+      "text_hash": 17767354399704232748,
       "type": "paragraph"
     },
     {
@@ -82211,7 +82211,7 @@
       "sref": "#/texts/6",
       "subj_hash": 13336841394978214677,
       "text": "Christoph Auer",
-      "text-hash": 9737597816447750448,
+      "text_hash": 9737597816447750448,
       "type": "paragraph"
     },
     {
@@ -82225,7 +82225,7 @@
       "sref": "#/texts/7",
       "subj_hash": 15325526562897377208,
       "text": "IBM Research, Rueschlikon, Switzerland",
-      "text-hash": 3204757815416943811,
+      "text_hash": 3204757815416943811,
       "type": "paragraph"
     },
     {
@@ -82239,7 +82239,7 @@
       "sref": "#/texts/8",
       "subj_hash": 4017434568255781081,
       "text": "Correspondence Peter W. J. Staar, IBM Research, Saumerstrasse 4, 8820 Rueschlikon, Switzerland. Email: taa@zurich.ibm.com",
-      "text-hash": 961470147553945060,
+      "text_hash": 961470147553945060,
       "type": "paragraph"
     },
     {
@@ -82253,7 +82253,7 @@
       "sref": "#/texts/9",
       "subj_hash": 8487024695951375934,
       "text": "Abstract",
-      "text-hash": 14650447666970618949,
+      "text_hash": 14650447666970618949,
       "type": "subtitle-level-1"
     },
     {
@@ -82267,7 +82267,7 @@
       "sref": "#/texts/10",
       "subj_hash": 11695737263227886476,
       "text": "Knowledge Graphs have been fast emerging as the de facto standard to model and explore knowledge in weakly structured data. Large corpora of documents constitute a source of weakly structured data of particular interest for both the academic and business world. Key examples include scientific publications, technical reports, manuals, patents, regulations, etc. Such corpora embed many facts that are elementary to critical decision making or enabling new discoveries. In this paper, we present a scalable cloud platform to create and serve Knowledge Graphs, which we named corpus processing service (CPS). Its purpose is to process large document corpora, extract the content and embedded facts, and ultimately represent these in a consistent knowledge graph that can be intuitively queried. To accomplish this, we use state-of-the-art natural language understanding models to extract entities and relationships from documents converted with our previously presented corpus conversion service platform. This pipeline is complemented with a newly developed graph engine which ensures extremely performant graph queries and provides powerful graph analytics capabilities. Both components are tightly integrated and can be easily consumed through REST APIs. Additionally, we provide user interfaces to control the data ingestion flow and formulate queries using a visual programming approach. The CPS platform is designed as a modular microservice system operating on Kubernetes clusters. Finally, we validate the quality of queries on our endto-end knowledge pipeline in a real-world application in the oil and gas industry.",
-      "text-hash": 9356514212507371703,
+      "text_hash": 9356514212507371703,
       "type": "paragraph"
     },
     {
@@ -82281,7 +82281,7 @@
       "sref": "#/texts/11",
       "subj_hash": 8500733160758672230,
       "text": "KEYWORDS",
-      "text-hash": 14650267244735310237,
+      "text_hash": 14650267244735310237,
       "type": "subtitle-level-1"
     },
     {
@@ -82295,7 +82295,7 @@
       "sref": "#/texts/12",
       "subj_hash": 4452030907228745864,
       "text": "document processing, knowledge graph, semantic search",
-      "text-hash": 243147861724212659,
+      "text_hash": 243147861724212659,
       "type": "paragraph"
     },
     {
@@ -82309,7 +82309,7 @@
       "sref": "#/texts/13",
       "subj_hash": 11913688961435238004,
       "text": "1 | INTRODUCTION",
-      "text-hash": 8854903187485535375,
+      "text_hash": 8854903187485535375,
       "type": "subtitle-level-1"
     },
     {
@@ -82323,7 +82323,7 @@
       "sref": "#/texts/14",
       "subj_hash": 9977041563469582014,
       "text": "As of 2015, Adobe estimated that there were 2.7 trillion PDF documents in circulation globally. It is self-evident that this number has increased ever since. The explosive growth of documents one can observe since digital publishing became mainstream is posing a serious challenge to both the academic and corporate world. The increased publication rate of scientific articles makes it harder and harder for academics to keep aware of all the latest findings. Similarly, the ever-growing number of internal reports, documentation, patents, contracts, regulations, court filings, etc., is for most corporations becoming simply unmanageable.",
-      "text-hash": 6468010182398147525,
+      "text_hash": 6468010182398147525,
       "type": "paragraph"
     },
     {
@@ -82337,7 +82337,7 @@
       "sref": "#/texts/15",
       "subj_hash": 4361549266817300114,
       "text": "2of15",
-      "text-hash": 329104147827159977,
+      "text_hash": 329104147827159977,
       "type": "paragraph"
     },
     {
@@ -82351,7 +82351,7 @@
       "sref": "#/texts/16",
       "subj_hash": 8425126282903547933,
       "text": "In a previous publication, we presented the corpus conversion service (CCS). 1 The CCS is a scalable cloud service, which leverages state-of-the-art machine learning to convert complex formats (eg, PDF, Word, and Bitmap) into a richly structured JSON representation of their content. As such, the CCS solves the first problem when confronted with a large corpus of documents, that is, make the content of the documents programmatically accessible. Examples of the latter would be ' List all images with their caption from the corpus or list all titles with their publication date. ' The second problem is to obviously search or explore the content of the documents in a large corpus. For this problem, we have developed the corpus processing service (CPS), which we present in this paper. The CPS is intended to create knowledge bases (KBs) from the converted JSON corpus and serve these KBs through in-memory knowledge graph stores. As such, the CPS is the natural extension of the CCS and has as an express purpose to make corpora of documents available for deep data exploration.",
-      "text-hash": 14716796829201051176,
+      "text_hash": 14716796829201051176,
       "type": "paragraph"
     },
     {
@@ -82365,7 +82365,7 @@
       "sref": "#/texts/17",
       "subj_hash": 16507313240019459642,
       "text": "The purpose of CPS is to enable deep data exploration directly on large corpora. Here, we define deep data exploration as the capability to ingest large corpora of documents into a scalable service and detect, extract and combine facts contained in these corpora in order to make new discoveries or support critical decision making. It is key to understand that our goal of creating and querying Knowledge Graphs to enable deep data exploration goes beyond search in the spirit of rank and retrieve. Although search is by no means trivial, many state-of-the art solutions exist for this purpose. * We argue, however, that one needs query capabilities which allow for a combination of extracted facts and a fast, onthe-fly creation of new datasets to enable actual deep data exploration. Those datasets can then be used for further anal-",
-      "text-hash": 4261190952114998337,
+      "text_hash": 4261190952114998337,
       "type": "paragraph"
     },
     {
@@ -82379,7 +82379,7 @@
       "sref": "#/texts/18",
       "subj_hash": 7900229969942228522,
       "text": "ysis, which might lead to new discoveries or support decision making.",
-      "text-hash": 12931323242585971793,
+      "text_hash": 12931323242585971793,
       "type": "paragraph"
     },
     {
@@ -82393,7 +82393,7 @@
       "sref": "#/texts/19",
       "subj_hash": 10081303962589804251,
       "text": "To better distinguish this approach from conventional search, let us consider some example questions:",
-      "text-hash": 6426882630003520482,
+      "text_hash": 6426882630003520482,
       "type": "paragraph"
     },
     {
@@ -82407,7 +82407,7 @@
       "sref": "#/texts/20",
       "subj_hash": 12186698460099365002,
       "text": "a. Definition of high temperature superconductor.",
-      "text-hash": 8586326920090596785,
+      "text_hash": 8586326920090596785,
       "type": "paragraph"
     },
     {
@@ -82421,7 +82421,7 @@
       "sref": "#/texts/21",
       "subj_hash": 14190244699299580163,
       "text": "b. Publications of <person> before year 2010.",
-      "text-hash": 2034196463390881594,
+      "text_hash": 2034196463390881594,
       "type": "paragraph"
     },
     {
@@ -82435,7 +82435,7 @@
       "sref": "#/texts/22",
       "subj_hash": 1376279050886549305,
       "text": "c. Maps of the Permian basin.",
-      "text-hash": 17379120122282474820,
+      "text_hash": 17379120122282474820,
       "type": "paragraph"
     },
     {
@@ -82449,7 +82449,7 @@
       "sref": "#/texts/23",
       "subj_hash": 10155628801693924200,
       "text": "d. Geological formations from the Miocene age with their depth, thickness, geographic location, and composition.",
-      "text-hash": 6073268612165724563,
+      "text_hash": 6073268612165724563,
       "type": "paragraph"
     },
     {
@@ -82463,7 +82463,7 @@
       "sref": "#/texts/24",
       "subj_hash": 9107499507097280105,
       "text": "e. List all high-Tc superconductors with their known crystallographic and material properties?",
-      "text-hash": 14246074989165808788,
+      "text_hash": 14246074989165808788,
       "type": "paragraph"
     },
     {
@@ -82477,7 +82477,7 @@
       "sref": "#/texts/25",
       "subj_hash": 7248467870339433322,
       "text": "Question (a) undoubtedly fits the classic search paradigm, since here one can expect a search engine to find a number sources with exact answers (ie, definitions). Likewise, question (b) can be easily answered through metadata based filter rules on a literature database. Question (c) already requires some extent of domain knowledge to be encoded in a model to accurately classify the relevance of all known maps to the query, at least assuming no manual curation effort has been done. Questions (d) and (e) ultimately impose query capabilities which are clearly infeasible to support through manual curation, and are very unlikely to be answered in any single data source. These questions require the system to return a more complex data structure (eg, a table in which the rows list the formations or materials while the columns contain their respective properties).",
-      "text-hash": 13592184899010298257,
+      "text_hash": 13592184899010298257,
       "type": "paragraph"
     },
     {
@@ -82491,7 +82491,7 @@
       "sref": "#/texts/26",
       "subj_hash": 13346892078888080449,
       "text": "Concluding from the above examples, we define the following qualifying criteria for a system that supports deep data exploration on corpora:",
-      "text-hash": 9732050976592056956,
+      "text_hash": 9732050976592056956,
       "type": "paragraph"
     },
     {
@@ -82505,7 +82505,7 @@
       "sref": "#/texts/27",
       "subj_hash": 1118972765223422660,
       "text": "1. It can answer queries by combining different data elements from different sources into a new data structure.",
-      "text-hash": 15389200666968750079,
+      "text_hash": 15389200666968750079,
       "type": "paragraph"
     },
     {
@@ -82519,7 +82519,7 @@
       "sref": "#/texts/28",
       "subj_hash": 324023167304456371,
       "text": "2. It supports (1) by creating a knowledge model from a controlled, unstructured corpus in a mostly unsupervised way. It may profit from, but not require any manually curated data.",
-      "text-hash": 15837385157674255818,
+      "text_hash": 15837385157674255818,
       "type": "paragraph"
     },
     {
@@ -82533,7 +82533,7 @@
       "sref": "#/texts/29",
       "subj_hash": 4651508276868765576,
       "text": "3. It may restrict supported queries to a specific domain (eg, a technical field).",
-      "text-hash": 11572955042484278451,
+      "text_hash": 11572955042484278451,
       "type": "paragraph"
     },
     {
@@ -82547,7 +82547,7 @@
       "sref": "#/texts/30",
       "subj_hash": 3052020526349962744,
       "text": "To meet the objectives defined earlier, CPS implements and tightly integrates two essential components. The first component is a scalable Knowledge Graph creation pipeline, which is used to automatically process text, tables and images through state-of-the-art segmentation and natural language understanding (NLU) models and extract entities and relationships from them. The second component serves the created KG, enabling users to perform deep queries and advanced graph analytics in real time. 2 This is supported through an underlying, highly optimized graph engine we developed to specifically address requirements for deep data exploration.",
-      "text-hash": 18009286910191614723,
+      "text_hash": 18009286910191614723,
       "type": "paragraph"
     },
     {
@@ -82561,7 +82561,7 @@
       "sref": "#/texts/31",
       "subj_hash": 6725501529910185390,
       "text": "It is worth noting that the CPS platform is a fully functioning cloud application that has been successfully deployed in multiple real-world scenarios in material science 3 and oil and gas industries. 4",
-      "text-hash": 11737175762912836309,
+      "text_hash": 11737175762912836309,
       "type": "paragraph"
     },
     {
@@ -82575,7 +82575,7 @@
       "sref": "#/texts/32",
       "subj_hash": 14814111183601762276,
       "text": "In the remainder of this paper, we discuss in detail the technical aspects and implementation details of the two main components of the CPS. In section 2, we present in depth how the platform extracts facts from corpora at a massive scale. In section 3, we go into detail of designing deep queries and show how we compute them in a very efficient",
-      "text-hash": 1414786465877142815,
+      "text_hash": 1414786465877142815,
       "type": "paragraph"
     },
     {
@@ -82589,7 +82589,7 @@
       "sref": "#/texts/33",
       "subj_hash": 18391264192891079539,
       "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
-      "text-hash": 4975885909619128714,
+      "text_hash": 4975885909619128714,
       "type": "paragraph"
     },
     {
@@ -82603,7 +82603,7 @@
       "sref": "#/texts/34",
       "subj_hash": 4361549266681704196,
       "text": "3of15",
-      "text-hash": 329104147711745343,
+      "text_hash": 329104147711745343,
       "type": "paragraph"
     },
     {
@@ -82617,7 +82617,7 @@
       "sref": "#/texts/35",
       "subj_hash": 8043608144162608258,
       "text": "way with our high-performance graph engine. Later, in section 4, we will discuss in detail how both components are deployed and interacting on the cloud. Finally, in section 5, we present the complete system in a real world case study and benchmark its accuracy.",
-      "text-hash": 13076251584287625657,
+      "text_hash": 13076251584287625657,
       "type": "paragraph"
     },
     {
@@ -82631,7 +82631,7 @@
       "sref": "#/texts/36",
       "subj_hash": 7159467829896778939,
       "text": "2 | SCALABLE KNOWLEDGE GRAPH CREATION",
-      "text-hash": 13901790948575121858,
+      "text_hash": 13901790948575121858,
       "type": "subtitle-level-1"
     },
     {
@@ -82645,7 +82645,7 @@
       "sref": "#/texts/37",
       "subj_hash": 5617240156952377,
       "text": "In CPS, a Knowledge Graph is defined as a collection of entities and their relationships forming the graphs nodes and edges. Entities can have a wide variety of types. A basic scenario includes types such as documents, document components, keywords, and authors. In addition, there can be more specific types tied to domain verticals, such as materials and properties in material science, or geological ages, formations, rocks, minerals, structures, etc., for oil and gas exploration. Relationships in the KG are strictly defined between the entities. Similar to the entities, the relationships are typed (' has-material-property ' or ' has-geological-age '). Also, relationships in the KG can be weighted, for example, to represent the trustworthiness of a fact that the relationship represents.",
-      "text-hash": 16151270992855323972,
+      "text_hash": 16151270992855323972,
       "type": "paragraph"
     },
     {
@@ -82659,7 +82659,7 @@
       "sref": "#/texts/38",
       "subj_hash": 3276490574487379366,
       "text": "In typical cases, we start from a collection of documents in different formats. Sometimes, documents are available in semistructured, machine-interpretable formatssuchasJSON,XML,orHTML.However,inthevastmajority of cases this does not apply, especially for proprietary documents of companies and organizations. The latter are very often scanned or programmatic PDF documents. Using the CCS, 1 these types of documents are converted into structured JSON files. Those provide easy access to the meta-data (eg, title, abstract, references, authors) and the document body. The latter is structured by subtitles (of various levels), paragraphs, lists, tables (with internal row and column structures), figures, and linked captions. O n c et h ec o r p u si sp r e s n ti nas t r u c t u r e d,m a c h i n e processableformat,theKGiscreatedbyapplyingthreedistincttasks,namely extraction, annotation,and aggregation. The inherent dependencies between these three tasks are defined through a directed acyclic graph (DAG). We willrefertothisDAGoftasksasadataflow(DF).Inthenextsections,weestablishtheconceptofDFsanddiscuss the details for each DF task.",
-      "text-hash": 17496609193730656989,
+      "text_hash": 17496609193730656989,
       "type": "paragraph"
     },
     {
@@ -82673,7 +82673,7 @@
       "sref": "#/texts/39",
       "subj_hash": 3367451956962330174,
       "text": "2.1 | DF tasks",
-      "text-hash": 17765848133863277637,
+      "text_hash": 17765848133863277637,
       "type": "subtitle-level-1"
     },
     {
@@ -82687,7 +82687,7 @@
       "sref": "#/texts/40",
       "subj_hash": 5509744459704235873,
       "text": "In Figure 1, we sketch a minimal DF, in which each of the three tasks is used consecutively in order to generate entities and relationships for a generic KG. We will use Figure1toillustratethepurposeandimplementationof each DF task.",
-      "text-hash": 10647094536020604316,
+      "text_hash": 10647094536020604316,
       "type": "paragraph"
     },
     {
@@ -82701,7 +82701,7 @@
       "sref": "#/texts/41",
       "subj_hash": 18391264192891079539,
       "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
-      "text-hash": 4975885909619128714,
+      "text_hash": 4975885909619128714,
       "type": "paragraph"
     },
     {
@@ -82715,7 +82715,7 @@
       "sref": "#/texts/42",
       "subj_hash": 4361549176688508574,
       "text": "4of15",
-      "text-hash": 329104066308221861,
+      "text_hash": 329104066308221861,
       "type": "paragraph"
     },
     {
@@ -82729,7 +82729,7 @@
       "sref": "#/texts/43",
       "subj_hash": 12374482891052873875,
       "text": "2.1.1 | Extraction",
-      "text-hash": 8758905122433574314,
+      "text_hash": 8758905122433574314,
       "type": "subtitle-level-1"
     },
     {
@@ -82743,7 +82743,7 @@
       "sref": "#/texts/44",
       "subj_hash": 2755397864153233778,
       "text": "In an extraction task, we generate new data entities (eg, document components) from an original set of source entities (eg, documents). During this process, new links are created which connect these newly generated data entities to their original source entity. Typical examples of such extraction tasks are the extraction of abstracts, paragraphs, tables, or figures from the structured document files.",
-      "text-hash": 18305914688852125577,
+      "text_hash": 18305914688852125577,
       "type": "paragraph"
     },
     {
@@ -82757,7 +82757,7 @@
       "sref": "#/texts/45",
       "subj_hash": 4698316471746130896,
       "text": "From a scalability point of view, this task is embarrassingly parallel, which makes it extremely easy to implement on loosely interconnected environments such as a cloud. We simply iterate in parallel over all source entities in the backend database, extract the desired components and then insert those components as new data entities back into the database. Extraction tasks have no internal synchronization points.",
-      "text-hash": 11458501594938683627,
+      "text_hash": 11458501594938683627,
       "type": "paragraph"
     },
     {
@@ -82771,7 +82771,7 @@
       "sref": "#/texts/46",
       "subj_hash": 11827267218358801841,
       "text": "One particular benefit of this task is to make the query capability on the Knowledge Graph more fine grained by being able to provide provenance information on the result. For example, this would let the user explore all the paragraphs, tables, or figures that embed a certain fact.",
-      "text-hash": 8932299863639200460,
+      "text_hash": 8932299863639200460,
       "type": "paragraph"
     },
     {
@@ -82785,7 +82785,7 @@
       "sref": "#/texts/47",
       "subj_hash": 6297710299044869343,
       "text": "2.1.2 | Annotation",
-      "text-hash": 12444247655523627494,
+      "text_hash": 12444247655523627494,
       "type": "subtitle-level-1"
     },
     {
@@ -82799,7 +82799,7 @@
       "sref": "#/texts/48",
       "subj_hash": 7158837349769150986,
       "text": "In the annotation task, we apply NLU methods to detect language entities and their relationships within a single data entity. Here, data entities can be as simple as a snippet of text (eg, a paragraph) or more complex structures such as tables or figures. The main goal of the annotation task is to obtain all relevant information from the data entity with regard to the domain of the corpus. Since different technical fields require different annotations, our annotation task is modular, allowing language entities to be annotated for material science, oil and gas, or more basic entities (eg, noun phrases, abbreviations, unit and values, etc.).",
-      "text-hash": 13902418307602972721,
+      "text_hash": 13902418307602972721,
       "type": "paragraph"
     },
     {
@@ -82813,7 +82813,7 @@
       "sref": "#/texts/49",
       "subj_hash": 1150871476689677866,
       "text": "From a technical perspective, the language entities are detected and annotated using multiple NLU methods, ranging from complex regular expressions \u2020 to LSTM networks. 5,6 We employ state-of-the-art NLU toolkits such as Spacy 7 or NLTK \u2021 to train and apply custom named entity recognition models. A detailed investigation of these NLU annotators unfortunately goes beyond of the scope of this paper. However, in Figure 2, we show the different types of named (geological) entities found in a paragraph by our oil and gas annotation model.",
-      "text-hash": 15370812655802342481,
+      "text_hash": 15370812655802342481,
       "type": "paragraph"
     },
     {
@@ -82827,7 +82827,7 @@
       "sref": "#/texts/50",
       "subj_hash": 5163702913945903725,
       "text": "In Listing 1, we also show an excerpt of how the annotations (both language entities and relationships) are stored in the backend. It is noteworthy here that relationships are stored as (weighted) links between two entity references. \u00a7 The usage of references reduces data duplication and more importantly ensures that the relationships are always defined between two known entities in the KG. The latter simplifies the aggregation of the relationships significantly, since no new entities need to be created in the KG in order to aggregate the relationships (see section 2.1.4).",
-      "text-hash": 11348986383696847000,
+      "text_hash": 11348986383696847000,
       "type": "paragraph"
     },
     {
@@ -82841,7 +82841,7 @@
       "sref": "#/texts/51",
       "subj_hash": 5462319091745771382,
       "text": "FIGURE 2 Illustration of various detected language entities in a particularly rich snippet of an AAPG abstract. 8 The language entities here are all related to geological concepts in the domain of oil and gas exploration",
-      "text-hash": 11050304000116997517,
+      "text_hash": 11050304000116997517,
       "type": "paragraph"
     },
     {
@@ -82855,7 +82855,7 @@
       "sref": "#/texts/52",
       "subj_hash": 18391264192891079539,
       "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
-      "text-hash": 4975885909619128714,
+      "text_hash": 4975885909619128714,
       "type": "paragraph"
     },
     {
@@ -82869,7 +82869,7 @@
       "sref": "#/texts/53",
       "subj_hash": 958124839653591304,
       "text": "LISTING 1 Excerpt of the annotated abstract from an AAPG paper 8 with its original text and the detected entities and relationships. Note that relationships are typed (encoded in the field name) and weighted. The weight reflects the confidence of the language annotation model during extraction. Relationships are always defined on detected entities, and will therefore use references defining a link between two entities",
-      "text-hash": 15194258930241746739,
+      "text_hash": 15194258930241746739,
       "type": "paragraph"
     },
     {
@@ -82883,7 +82883,7 @@
       "sref": "#/texts/54",
       "subj_hash": 1448405324616602032,
       "text": "From a scaling perspective, this task is again embarrassingly parallel. Unlike the extraction task, the annotation task is not creating new data entities, but rather appending new data associated with an existing data entity. We simply apply the desired entity and relationship annotators on all document components (paragraphs, tables, etc.) in parallel by distributing the operations on all available compute resources. Annotation tasks have no internal synchronization points. From a corpus of about 100 000 documents, we typically extract about 3 million paragraphs. Assuming unlimited resources, the annotation task could be distributed to potentially 3 million independent workers.",
-      "text-hash": 17018759417884348107,
+      "text_hash": 17018759417884348107,
       "type": "paragraph"
     },
     {
@@ -82897,7 +82897,7 @@
       "sref": "#/texts/55",
       "subj_hash": 2617775076168299948,
       "text": "2.1.3 | Aggregation of entities",
-      "text-hash": 18150799209915986647,
+      "text_hash": 18150799209915986647,
       "type": "subtitle-level-1"
     },
     {
@@ -82911,7 +82911,7 @@
       "sref": "#/texts/56",
       "subj_hash": 13974986056043304735,
       "text": "The aggregation task for entities is similar to an extraction task, in the sense that we create new entities and link them each to the source they were mentioned in. In addition to extraction, the entity aggregation task also applies a similarity metric \u00b6 between the entities during extraction. This similarity metric will define if two entities refer to the same language concept and thus need to be represented by a single entity in the KG, rather than remaining separated. In Figure 1, we have illustrated the aggregation task for two types of entities across many different document components. These entity types could be for example materials and properties or geological formations and geological ages. The links connecting the new entities to their source entity are weighted according to the frequency of the match, that is, we set a higher weight if the language entity has been found multiple times. From an implementation point of view, the aggregation task for entities is nontrivial. In distributed computing, it corresponds to a reduction operation. Our implementation distributes the iteration of the source elements among all available computational resources. The aggregation is first performed in a local buffer, which is then synchronized with the backend database only when it reaches a maximum size. The synchronization step is a simple atomic update into an existing (or a newly created) database object. The synchronization for updates from each worker task does not collide with the others.",
-      "text-hash": 2253911354578933030,
+      "text_hash": 2253911354578933030,
       "type": "paragraph"
     },
     {
@@ -82925,7 +82925,7 @@
       "sref": "#/texts/57",
       "subj_hash": 5985285694705576020,
       "text": "2.1.4 | Aggregation of relationships",
-      "text-hash": 12765605759878485615,
+      "text_hash": 12765605759878485615,
       "type": "subtitle-level-1"
     },
     {
@@ -82939,7 +82939,7 @@
       "sref": "#/texts/58",
       "subj_hash": 11235296141350659290,
       "text": "The aggregation of relationships introduces new links between the entities that were aggregated in the previous aggregation operation. In Figure 1, this task is depicted as the last operation, where entities with an annotated relationship are explicitly linked together. For example, we create an edge between the Egret-Hibernia Petroleum System and Jeanne D'Arc Basin from Listing 1.",
-      "text-hash": 7583169921155047905,
+      "text_hash": 7583169921155047905,
       "type": "paragraph"
     },
     {
@@ -82953,7 +82953,7 @@
       "sref": "#/texts/59",
       "subj_hash": 18391264192891079539,
       "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
-      "text-hash": 4975885909619128714,
+      "text_hash": 4975885909619128714,
       "type": "paragraph"
     },
     {
@@ -82967,7 +82967,7 @@
       "sref": "#/texts/60",
       "subj_hash": 4361549266576336732,
       "text": "6of15",
-      "text-hash": 329104147615819111,
+      "text_hash": 329104147615819111,
       "type": "paragraph"
     },
     {
@@ -82981,7 +82981,7 @@
       "sref": "#/texts/61",
       "subj_hash": 5771309285006424458,
       "text": "Similar to the aggregation of entities, the aggregation task for relationships is a reduction operation. Two independent document components could describe the same relationship between two entities. To minimize the synchronization lookup operation with the backend database, this task also utilizes a local buffer which accumulates the changes to be committed to the KG until the maximum size is reached. This approach allows to distribute the computation among all the source document components and performs very few blocking operations in the backend database.",
-      "text-hash": 12691372718925440689,
+      "text_hash": 12691372718925440689,
       "type": "paragraph"
     },
     {
@@ -82995,7 +82995,7 @@
       "sref": "#/texts/62",
       "subj_hash": 5371685212527510397,
       "text": "2.2 | Data flows",
-      "text-hash": 11140938221338345864,
+      "text_hash": 11140938221338345864,
       "type": "subtitle-level-1"
     },
     {
@@ -83009,7 +83009,7 @@
       "sref": "#/texts/63",
       "subj_hash": 7817257645383866853,
       "text": "The purpose of a DF is to provide an execution plan for the task types detailed above in a meaningful order to generate or update a specific KG. When instantiating a DF, one has the possibility to define in a declarative way:",
-      "text-hash": 12955841367339550496,
+      "text_hash": 12955841367339550496,
       "type": "paragraph"
     },
     {
@@ -83023,7 +83023,7 @@
       "sref": "#/texts/64",
       "subj_hash": 2929626768872004841,
       "text": "1. Which document components should be extracted from a converted corpus to form source entities (eg, extract all paragraphs, tables, figures and captions from the AAPG articles)?",
-      "text-hash": 17906500337671162388,
+      "text_hash": 17906500337671162388,
       "type": "paragraph"
     },
     {
@@ -83037,7 +83037,7 @@
       "sref": "#/texts/65",
       "subj_hash": 15879756297712818143,
       "text": "2. Which annotator model(s) to use on which type of source entity (eg, run the geology or material science annotators on paragraphs)?",
-      "text-hash": 2573988876245521638,
+      "text_hash": 2573988876245521638,
       "type": "paragraph"
     },
     {
@@ -83051,7 +83051,7 @@
       "sref": "#/texts/66",
       "subj_hash": 16116531546352845311,
       "text": "3. Which entity and relationship aggregations to perform on which set of annotated language entities?",
-      "text-hash": 2702000589258555142,
+      "text_hash": 2702000589258555142,
       "type": "paragraph"
     },
     {
@@ -83065,7 +83065,7 @@
       "sref": "#/texts/67",
       "subj_hash": 9541434157786316356,
       "text": "The DFs can thus be seen as blueprints for processing the corpus into a defined graph topology. Notably, our implementation of DFs and their tasks retains the flexibility of processing not only source documents of a well-known data schema such as from CCS, but virtually any structure that can be transformed to a JSON representation, including data entities from precurated databases. We designed the CPS platform to support export and import of DFs on entirely new datasets without the burden of recreating it from scratch.",
-      "text-hash": 6610972392363355263,
+      "text_hash": 6610972392363355263,
       "type": "paragraph"
     },
     {
@@ -83079,7 +83079,7 @@
       "sref": "#/texts/68",
       "subj_hash": 997682002692959482,
       "text": "Our backend engine can exploit the DAG defined through the DF to massively distribute the individual tasks on all compute resources, because independent branches of the DAG each containing a chain of tasks can execute in parallel. The achievable level of parallelism changes throughout the execution. A practical example is a DF which extracts paragraphs and abstracts from all documents in the corpus, then annotates them and finally aggregates all entities. Here, the extraction tasks are distributed only over all documents; then, in the annotation tasks, we increase the parallelism to all document components. Any synchronization points thus can be pushed back into the aggregation tasks.",
-      "text-hash": 15235788623540001281,
+      "text_hash": 15235788623540001281,
       "type": "paragraph"
     },
     {
@@ -83093,7 +83093,7 @@
       "sref": "#/texts/69",
       "subj_hash": 11590138063543342276,
       "text": "3 | DEEP DATA EXPLORATION USING KNOWLEDGE GRAPHS",
-      "text-hash": 9254996552431571455,
+      "text_hash": 9254996552431571455,
       "type": "subtitle-level-1"
     },
     {
@@ -83107,7 +83107,7 @@
       "sref": "#/texts/70",
       "subj_hash": 16380310806374538602,
       "text": "We will now look into the requirements to perform deep data exploration on a populated Knowledge Graph. A deep data exploration requires two fundamental capabilities:",
-      "text-hash": 4676441280076073873,
+      "text_hash": 4676441280076073873,
       "type": "paragraph"
     },
     {
@@ -83121,7 +83121,7 @@
       "sref": "#/texts/71",
       "subj_hash": 5393976293631695754,
       "text": "1. perform deep queries on the graph, that is, queries that require multi-hop traversals and",
-      "text-hash": 11127633169729292465,
+      "text_hash": 11127633169729292465,
       "type": "paragraph"
     },
     {
@@ -83135,7 +83135,7 @@
       "sref": "#/texts/72",
       "subj_hash": 1988335831916069382,
       "text": "2. perform graph analytics on the full graph or subsets of it on-the-fly.",
-      "text-hash": 16834701212347777085,
+      "text_hash": 16834701212347777085,
       "type": "paragraph"
     },
     {
@@ -83149,7 +83149,7 @@
       "sref": "#/texts/73",
       "subj_hash": 5147764798816678886,
       "text": "Deep queries are essential to dynamically combine independent facts together in the given query context. This would apply for example to explorational queries aimed to characterize petroleum system elements, as detailed in our case study (see section 5). Graph analytics can further reveal hidden structure in the KG topology. Examples of advanced graphanalytical operations are page rank, node centralities, 9,10 node clustering, spectral analysis, and label propagation.",
-      "text-hash": 11297301064675504413,
+      "text_hash": 11297301064675504413,
       "type": "paragraph"
     },
     {
@@ -83163,7 +83163,7 @@
       "sref": "#/texts/74",
       "subj_hash": 285583876932865368,
       "text": "Both deep queries and graph analytics have in common that they are inherently expensive to compute on conventional graph databases, due to a rapid expansion of the number of visited nodes as a function of the graph-traversal depth. This is a major obstacle in providing reasonable time-to-solution in the aforementioned cases. Virtually all established graph database products on the market today ** fall victim to this, as was also reported in multiple sources. 11,12 Due to the poor performance we observed with available graph databases, we developed a new graph engine for the CPS platform. This graph engine is able to execute advanced graph-analytics 2 as well as evaluate deep queries with multi-hop traversals on large graphs (>1B edges) extremely fast.",
-      "text-hash": 16231538415772072803,
+      "text_hash": 16231538415772072803,
       "type": "paragraph"
     },
     {
@@ -83177,7 +83177,7 @@
       "sref": "#/texts/75",
       "subj_hash": 18391264192891079539,
       "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
-      "text-hash": 4975885909619128714,
+      "text_hash": 4975885909619128714,
       "type": "paragraph"
     },
     {
@@ -83191,7 +83191,7 @@
       "sref": "#/texts/76",
       "subj_hash": 4361549257370278754,
       "text": "7of15",
-      "text-hash": 329104161989101977,
+      "text_hash": 329104161989101977,
       "type": "paragraph"
     },
     {
@@ -83205,7 +83205,7 @@
       "sref": "#/texts/77",
       "subj_hash": 13183039880198077038,
       "text": "In the remaining part of this section, we elaborate on our newly developed graph engine. In section 3.1, we discuss the implementation design. In section 3.2, we discuss performance results and compare it to Neo4J. Later, in section 3.3, we will explain how the deep queries are formulated and evaluated in the graph engine.",
-      "text-hash": 10251595290936699029,
+      "text_hash": 10251595290936699029,
       "type": "paragraph"
     },
     {
@@ -83219,7 +83219,7 @@
       "sref": "#/texts/78",
       "subj_hash": 13428900458866068249,
       "text": "3.1 | Design of the graph engine",
-      "text-hash": 9938197928077211940,
+      "text_hash": 9938197928077211940,
       "type": "subtitle-level-1"
     },
     {
@@ -83233,7 +83233,7 @@
       "sref": "#/texts/79",
       "subj_hash": 1430911655724119030,
       "text": "In computer science, two prevalent implementation schemes for graphs have emerged, one using adjacency lists and one relying on adjacency matrices. 13,14 In the adjacency list format, every node is essentially an object which contains a set of indices representing its neighbors. \u2020\u2020 The edges are therefore stored as a property of the node. In the adjacency matrix approach, all nodes obtain an identifier (typically an unsigned integer) and the edges are stored as a list of nodeidentifier tuples.",
-      "text-hash": 17396562708416737549,
+      "text_hash": 17396562708416737549,
       "type": "paragraph"
     },
     {
@@ -83247,7 +83247,7 @@
       "sref": "#/texts/80",
       "subj_hash": 13770706479324480755,
       "text": "It is commonly known that most graph operations can be translated into matrix-operations using linear algebra. 13 For example, consider the graph-traversal V ! A W, in which we start from a set of nodes V and traverse the edge A in order to obtain a new set of nodes W. This can be directly translated into linear algebra as",
-      "text-hash": 9596444718520353290,
+      "text_hash": 9596444718520353290,
       "type": "paragraph"
     },
     {
@@ -83261,7 +83261,7 @@
       "sref": "#/texts/81",
       "subj_hash": 11165481757050847950,
       "text": "w $^{!}$= Av ! with v $^{!}$$_{i}$= 1 if node i \\b V 0 if node i = 2 V , GLYPH<C26> \u00f0 1 \u00de",
-      "text-hash": 7657471412122468341,
+      "text_hash": 7657471412122468341,
       "type": "equation"
     },
     {
@@ -83275,7 +83275,7 @@
       "sref": "#/texts/82",
       "subj_hash": 9572077971492738329,
       "text": "and with A being the adjacency matrix representation of the edge A. Translating single graph-traversals into linear algebra operations significantly simplifies the job of deeper graph traversals. For example, to obtain the k-order neighborhood of node set V, one simply needs to evaluate Equation (1) k times recursively, as in",
-      "text-hash": 6656818579934057252,
+      "text_hash": 6656818579934057252,
       "type": "paragraph"
     },
     {
@@ -83289,7 +83289,7 @@
       "sref": "#/texts/83",
       "subj_hash": 14951391138799557075,
       "text": "w $^{!}$= A$^{k}$v $^{!}$= AA \u2026 Av ! GLYPH<C16>GLYPH<C17> GLYPH<C16> GLYPH<C17> GLYPH<C16> GLYPH<C17> : \u00f0 2 \u00de",
-      "text-hash": 1498163960925914858,
+      "text_hash": 1498163960925914858,
       "type": "equation"
     },
     {
@@ -83303,7 +83303,7 @@
       "sref": "#/texts/84",
       "subj_hash": 16602156009514813718,
       "text": "Therefore, deep queries can be implemented efficiently as long as Equation (1) can be evaluated efficiently. Over the past decades, lots of research has been conducted in the High Performance Computing community on the acceleration and parallelization of Equation (1) in the context of graphs. In this context, the matrix A is sparse and the linear operation of Equation (1) is referred to as a sparse matrix vector multiplication (SpMV), for which highly optimized implementations have been developed. 15,16 Notably, most advanced graph-analytical operations can be formulated using SpMV operations. The most trivial case is page-rank, in which one recursively executes Equation (1) in combination with a renormalization until w ! is equal to v $^{!}$. In our previous work, 2 we have also shown in detail that advanced graph-analytical operations such as node centralities and spectral analysis of the graph can be done effectively with only SpMV operations.",
-      "text-hash": 4445641728881669933,
+      "text_hash": 4445641728881669933,
       "type": "paragraph"
     },
     {
@@ -83317,7 +83317,7 @@
       "sref": "#/texts/85",
       "subj_hash": 7162849562576593449,
       "text": "Since both deep queries and advanced graph analytics hugely benefit from a fast SpMV kernel, we have opted to design the graph engine in the CPS platform to work entirely with the adjacency matrix format.",
-      "text-hash": 13884895358995816532,
+      "text_hash": 13884895358995816532,
       "type": "paragraph"
     },
     {
@@ -83331,7 +83331,7 @@
       "sref": "#/texts/86",
       "subj_hash": 15385417954505503552,
       "text": "3.2 | Memory architecture and performance optimization",
-      "text-hash": 3140380205981200763,
+      "text_hash": 3140380205981200763,
       "type": "subtitle-level-1"
     },
     {
@@ -83345,7 +83345,7 @@
       "sref": "#/texts/87",
       "subj_hash": 10815650641518265876,
       "text": "Both adjacency lists and adjacency matrices-based graph implementations have specific advantages and disadvantages. The adjacency list format is very well suited for node-centric operations since it exploits data-locality for local graph operations, such as first order traversals. However, it proves suboptimal for global scale graph operations, which are required for deep queries and the advanced graph analytics. Here, one typically has to perform graph-traversals starting from many (or even all) nodes and accumulating the weight in the resulting nodes. In an adjacency list format, this often leads to many cache misses during execution, resulting in low performance. Furthermore, parallelizing global graph-traversals in the adjacency list format suffers significantly from concurrent write conflicts between threads during execution. In the adjacency matrix format, these problems are not encountered. The graph-traversals can be directly translated into a SpMV or even a sparse-matrix sparse-vector multiplication (SpMSpV). It has also been well established how to execute the SpMV effectively in a multithreaded fashion, and how to minimize cache-misses by applying a clever sorting of the tuples list. 17",
-      "text-hash": 7939832404963099695,
+      "text_hash": 7939832404963099695,
       "type": "paragraph"
     },
     {
@@ -83359,7 +83359,7 @@
       "sref": "#/texts/88",
       "subj_hash": 18391264192891079539,
       "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
-      "text-hash": 4975885909619128714,
+      "text_hash": 4975885909619128714,
       "type": "paragraph"
     },
     {
@@ -83373,7 +83373,7 @@
       "sref": "#/texts/89",
       "subj_hash": 12004249365408683930,
       "text": "To illustrate the advantages of the adjacency matrix format for our needs, we show the time-to-solution (TTS) for queries with increasing order of traversals for Neo4J \u2021\u2021 and our graph engine in Figure 3. We computed a k-hop traversal query on the graph500 \u00a7\u00a7 (64M edges) and twitter-graph \u00b6\u00b6 (1.5B edges). Two important observations can be made. Firstly, our graph engine is able to run easily third, fourth, and even higher-order graph traversals. With Neo4J, this proves very difficult, as the TTS grows upwards of 1 hour. Secondly, our graph engine shows minimal variance in the TTS between all runs of the k-order graph-traversals. This is in stark contrast to Neo4J, where the TTS strongly depends on which node(s) one starts from.",
-      "text-hash": 9124629550221661345,
+      "text_hash": 9124629550221661345,
       "type": "paragraph"
     },
     {
@@ -83387,7 +83387,7 @@
       "sref": "#/texts/90",
       "subj_hash": 7223381657047466215,
       "text": "Another big advantage of using the adjacency matrix format is that we can exploit advanced compression methods 18 such as CSR or blocked COO. This reduces significantly the memory footprint of the graph and allows bigger graphs to be hosted entirely in-memory. In our case, we have opted to represent the edges by blocked matrices of a fixed size, in which each block matrix is of type COO. We chose the size of the block-matrix to be 2 16 = 65 536, allowing a pair of indices to be compactly represented by two unsigned short integers. Consequently, an edge has a memory footprint of only 4 bytes (equivalent to a single 32-bit integer), while a weighted edge a footprint of 8 bytes. *** This is a significant reduction in memory footprint compared to Neo4J graph databases, which use 33 bytes for unweighted edges $^{\u2020\u2020\u2020}$). Consequently, we can host graphs of close to 8 billion edges on a virtual machine with 32 GB of free memory, and even close to one trillion edges on a bare-metal POWER9 node with 4 TB of memory.",
-      "text-hash": 13549646715324792350,
+      "text_hash": 13549646715324792350,
       "type": "paragraph"
     },
     {
@@ -83401,7 +83401,7 @@
       "sref": "#/texts/91",
       "subj_hash": 15132906055887224772,
       "text": "3.3 | Formulation and evaluation of deep queries",
-      "text-hash": 3609048564712975615,
+      "text_hash": 3609048564712975615,
       "type": "subtitle-level-1"
     },
     {
@@ -83415,7 +83415,7 @@
       "sref": "#/texts/92",
       "subj_hash": 17129434987283608290,
       "text": "The goal of querying a KG is to answer complex questions. As such, users need to be provided with a functionality to formulate complex queries on the KG and quickly evaluate them.",
-      "text-hash": 3711217782201102361,
+      "text_hash": 3711217782201102361,
       "type": "paragraph"
     },
     {
@@ -83429,7 +83429,7 @@
       "sref": "#/texts/93",
       "subj_hash": 10350406469077463155,
       "text": "In order to avoid imposing a complex query language onto users, we have devised a way to define complex graph queries in a declarative format, which we call a workflow. Workflows are represented as a DAG of operations and are conceptually related to DFs. Unlike the former, the nodes of workflow DAGs do not represent data-transformation tasks, but specific graph operations which mutate an input (or intermediate) set of nodes into another set. We call these operations worktasks. For further convenience, we have developed a graphical user interface (UI) which allows to define such workflows in a visual programming approach (see Figure 4).",
-      "text-hash": 6157696558870441610,
+      "text_hash": 6157696558870441610,
       "type": "paragraph"
     },
     {
@@ -83443,7 +83443,7 @@
       "sref": "#/texts/94",
       "subj_hash": 16949854269270315165,
       "text": "Currently, we support four fundamental types of worktasks: node-retrieval, traversal, logical operators and transform functions. In the following sections, we will discuss in detail how the worktasks are implemented in the context of our adjacency matrix design.",
-      "text-hash": 4111476184068705704,
+      "text_hash": 4111476184068705704,
       "type": "paragraph"
     },
     {
@@ -83457,7 +83457,7 @@
       "sref": "#/texts/95",
       "subj_hash": 18391264192891079539,
       "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
-      "text-hash": 4975885909619128714,
+      "text_hash": 4975885909619128714,
       "type": "paragraph"
     },
     {
@@ -83471,7 +83471,7 @@
       "sref": "#/texts/96",
       "subj_hash": 4361549266593946746,
       "text": "9of15",
-      "text-hash": 329104147597527681,
+      "text_hash": 329104147597527681,
       "type": "paragraph"
     },
     {
@@ -83485,7 +83485,7 @@
       "sref": "#/texts/97",
       "subj_hash": 9802652237802670052,
       "text": "3.3.1 | Node retrieval",
-      "text-hash": 6349660887815587103,
+      "text_hash": 6349660887815587103,
       "type": "subtitle-level-1"
     },
     {
@@ -83499,7 +83499,7 @@
       "sref": "#/texts/98",
       "subj_hash": 5524728206729419689,
       "text": "This task finds a set of nodes which satisfy certain search criteria. This can range from finding a single node by its (approximate) name or exact node identifier, to finding nodes that satisfy a particular property. The task constructs a node vector v $^{!}$, such that",
-      "text-hash": 10699646946138261716,
+      "text_hash": 10699646946138261716,
       "type": "paragraph"
     },
     {
@@ -83513,7 +83513,7 @@
       "sref": "#/texts/99",
       "subj_hash": 4043385013945968936,
       "text": "v $^{!}$$_{i}$= 1 if node i \\b S 0 if node i = 2 S , GLYPH<C26> \u00f0 3 \u00de",
-      "text-hash": 588808569772103507,
+      "text_hash": 588808569772103507,
       "type": "equation"
     },
     {
@@ -83527,7 +83527,7 @@
       "sref": "#/texts/100",
       "subj_hash": 11778884428660217326,
       "text": "where S represents the set of nodes that satisfy the search criteria.",
-      "text-hash": 9277850099981357845,
+      "text_hash": 9277850099981357845,
       "type": "paragraph"
     },
     {
@@ -83541,7 +83541,7 @@
       "sref": "#/texts/101",
       "subj_hash": 12875050310340408203,
       "text": "3.3.2 | Graph traversal",
-      "text-hash": 10555101842315227314,
+      "text_hash": 10555101842315227314,
       "type": "subtitle-level-1"
     },
     {
@@ -83555,7 +83555,7 @@
       "sref": "#/texts/102",
       "subj_hash": 3785875504044487339,
       "text": "The simplest type of graph-traversal is the direct graph-traversal. As explained in detail in section 3.1, these can be implemented as a straightforward SpMV operation w $^{!}$= Av $^{!}$. In more advanced types of graph-traversals, we evaluate all paths of different depth. Since the number of paths connecting two nodes might increase exponentially with the pathlength, one typically reduces the contribution of each path by weighting it with the inverse factorial of the path-length. For example, consider the case in which we want to explore deeper, indirect paths as follows,",
-      "text-hash": 909351913600217042,
+      "text_hash": 909351913600217042,
       "type": "paragraph"
     },
     {
@@ -83569,7 +83569,7 @@
       "sref": "#/texts/103",
       "subj_hash": 12105626155924658285,
       "text": "w $^{!}$= A + A 2 2 ! + A 3 3 ! + GLYPH<C1> GLYPH<C1> GLYPH<C1> GLYPH<C18> GLYPH<C19> v $^{!}$= e$^{A}$- 1 GLYPH<C0> GLYPH<C1> v $^{!}$: \u00f0 4 \u00de",
-      "text-hash": 9027673695254677144,
+      "text_hash": 9027673695254677144,
       "type": "equation"
     },
     {
@@ -83583,7 +83583,7 @@
       "sref": "#/texts/104",
       "subj_hash": 16265612055607243129,
       "text": "In its most generic case, a graph-traversal can therefore be written down as a matrix-function applied on an edge, that is, w $^{!}$= fA \u00f0 \u00de v $^{!}$. As discussed in detail in previous work, 2 this type of operation can be evaluated extremely efficiently using a recursive Chebyshev polynomial expansion.",
-      "text-hash": 4579475315408875396,
+      "text_hash": 4579475315408875396,
       "type": "paragraph"
     },
     {
@@ -83597,7 +83597,7 @@
       "sref": "#/texts/105",
       "subj_hash": 18391264192891079539,
       "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
-      "text-hash": 4975885909619128714,
+      "text_hash": 4975885909619128714,
       "type": "paragraph"
     },
     {
@@ -83611,7 +83611,7 @@
       "sref": "#/texts/106",
       "subj_hash": 10252446451495472512,
       "text": "3.3.3 | Logical operations",
-      "text-hash": 6188098459342469819,
+      "text_hash": 6188098459342469819,
       "type": "subtitle-level-1"
     },
     {
@@ -83625,7 +83625,7 @@
       "sref": "#/texts/107",
       "subj_hash": 17011944206067158637,
       "text": "In logical operations, two sets of nodes are merged into one resulting set, each represented through a node vector. There are three common logical operations, AND, OR, and NOT. In the AND and OR operations, we compute the geometric or the arithmetic mean respectively for each pairwise elements in the vectors. In the NOT operation, we inverse the sign for each element of the input vector.",
-      "text-hash": 3756558606376352920,
+      "text_hash": 3756558606376352920,
       "type": "paragraph"
     },
     {
@@ -83639,7 +83639,7 @@
       "sref": "#/texts/108",
       "subj_hash": 16289627123982758705,
       "text": "3.3.4 | Transform functions",
-      "text-hash": 4767177430745297228,
+      "text_hash": 4767177430745297228,
       "type": "subtitle-level-1"
     },
     {
@@ -83653,7 +83653,7 @@
       "sref": "#/texts/109",
       "subj_hash": 13969801897340997317,
       "text": "Lastly, we implement operations which transform the weights associated with nodes. One such operation renormalizes and ultimately ranks the nodes according to their weight.",
-      "text-hash": 2263647560089238528,
+      "text_hash": 2263647560089238528,
       "type": "paragraph"
     },
     {
@@ -83667,7 +83667,7 @@
       "sref": "#/texts/110",
       "subj_hash": 105697770555684555,
       "text": "With these four types of operations, we can express rich queries to answer complex questions, which can have multiple inputs and outputs. Let us now discuss how a workflow is evaluated within the graph engine. Once a workflow has been submitted, each worktask is initially assigned a vector. These vectors are all initialized to zero (v $^{!}$$_{i}$= 0). Next, the graph will analyze the DAG of worktasks and identify which tasks can be run in parallel. This is achieved by performing a topological sort using depth-first traversal, which yields a list in which each item is a set of tasks that can be executed in parallel. The graph engine then proceeds with the parallel task computations.",
-      "text-hash": 16051124526605366258,
+      "text_hash": 16051124526605366258,
       "type": "paragraph"
     },
     {
@@ -83681,7 +83681,7 @@
       "sref": "#/texts/111",
       "subj_hash": 15938840672015995359,
       "text": "For each task, we obtain a set of nodes with corresponding weights by identifying the nonzero elements in the associated node vector. After executing the full workflow, we therefore obtain for each task a list of nodes which can be sorted according to their weights. The higher the weight of the node, the more relevant this node is. As such, we can also retrace which nodes were important in each stage of the workflow.",
-      "text-hash": 2523894108122369766,
+      "text_hash": 2523894108122369766,
       "type": "paragraph"
     },
     {
@@ -83695,7 +83695,7 @@
       "sref": "#/texts/112",
       "subj_hash": 16505790528099785698,
       "text": "4 | CLOUD DESIGN AND DEPLOYMENT",
-      "text-hash": 4262729847538649369,
+      "text_hash": 4262729847538649369,
       "type": "subtitle-level-1"
     },
     {
@@ -83709,7 +83709,7 @@
       "sref": "#/texts/113",
       "subj_hash": 14738723905055920039,
       "text": "The primary deployment target for the CPS is a cloud environment orchestrated via Kubernetes. We package the full platform assets with a Helm chart for quick deployment on multiple setups. For example we can easily deploy the platform on the IBM Cloud or on-premise in an IBM Cloud Private instance, both on x86-and POWER-based nodes.",
-      "text-hash": 1485721651435830494,
+      "text_hash": 1485721651435830494,
       "type": "paragraph"
     },
     {
@@ -83723,7 +83723,7 @@
       "sref": "#/texts/114",
       "subj_hash": 5699550326698755904,
       "text": "In Figure 5, we show the high-level cloud design of the CPS. The platform allows to manage and instrument the corpus processing in a multitenant fashion, that is, it handles multiple knowledge ingestion pipelines and it serves multiple knowledge graphs. We call each unit a Knowledge Graph Space (KGS), which consists of a dedicated instance of the graph engine, a dedicated MongoDB database and a bucket on a cloud object store (COS). A dashboard allows each project owner to manage the access and the usage of resources. The KGS can be launched into multiple flavors to optimally balance the utilization of the cluster. These flavors range from a virtual machine with small amount of memory to a full dedicated node including hardware acceleration with GPUs. Once a KGS is created, it can be paused and rescaled without loss of data or downtime.",
-      "text-hash": 10750023430231115131,
+      "text_hash": 10750023430231115131,
       "type": "paragraph"
     },
     {
@@ -83737,7 +83737,7 @@
       "sref": "#/texts/115",
       "subj_hash": 11609131422778723150,
       "text": "For the KG creation pipeline, we implemented an asynchronous compute scheme we already use in our CCS solution. 1 The system is exposed to the user via an API frontend which communicates to the compute workers through a message broker and a result backend. The workers operate on the data, which is hosted on a NoSQL database and a cloud object store for data blobs. These workers are dynamically scaled by the cloud orchestrator to best match the current load of the platform.",
-      "text-hash": 9163968380151462261,
+      "text_hash": 9163968380151462261,
       "type": "paragraph"
     },
     {
@@ -83751,7 +83751,7 @@
       "sref": "#/texts/116",
       "subj_hash": 788128893109726279,
       "text": "The processing of the KG creation typically starts with the user submitting the DF to the frontend API. The DAG of operations is then interpreted as described in the previous section and fine-grained tasks are submitted to the broker, for example, the whole corpus is split in many independent chunks. The user receives an overall status from the API and is notified when the DF processing has completed.",
-      "text-hash": 15724564631854553726,
+      "text_hash": 15724564631854553726,
       "type": "paragraph"
     },
     {
@@ -83765,7 +83765,7 @@
       "sref": "#/texts/117",
       "subj_hash": 7029344862946908483,
       "text": "The KG data are distributed between three storage solutions: a NoSQL database, a cloud object storage (COS) and the KGS. Each node is represented as a document in a NoSQL database which contains all the properties attached to the node, for example, the text of a paragraph. If there is a binary object attached to the node, for example, the PDF document or an image, this is stored on the COS. The KGS contains only the minimal information needed to execute the queries, that is, the connectivity of the graph and the properties which are indexed for filtering and search.",
-      "text-hash": 13806805648097199994,
+      "text_hash": 13806805648097199994,
       "type": "paragraph"
     },
     {
@@ -83779,7 +83779,7 @@
       "sref": "#/texts/118",
       "subj_hash": 18391264192891079539,
       "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
-      "text-hash": 4975885909619128714,
+      "text_hash": 4975885909619128714,
       "type": "paragraph"
     },
     {
@@ -83793,7 +83793,7 @@
       "sref": "#/texts/119",
       "subj_hash": 2144926686518491811,
       "text": "11of15",
-      "text-hash": 16380805707549272026,
+      "text_hash": 16380805707549272026,
       "type": "paragraph"
     },
     {
@@ -83807,7 +83807,7 @@
       "sref": "#/texts/120",
       "subj_hash": 18333396269095847693,
       "text": "The KGS is exposed to the user via a REST API which is able to aggregate results collected from the different storage sources. To ensure decent performance when serving queries of multiple users, the graph engine can be dynamically scaled horizontally. Most workflow queries execute fast enough such that they can be responded from a synchronous request. Others, especially the graph analytics computations, are more expensive and return large amounts of data. Thus, these queries are executed through an asynchronous API and the results are paginated and streamed back to the user on completion.",
-      "text-hash": 5024699355629880632,
+      "text_hash": 5024699355629880632,
       "type": "paragraph"
     },
     {
@@ -83821,7 +83821,7 @@
       "sref": "#/texts/121",
       "subj_hash": 4030998538427149966,
       "text": "5 | CASE STUDY: OIL AND GAS EXPLORATION",
-      "text-hash": 956984534850296757,
+      "text_hash": 956984534850296757,
       "type": "subtitle-level-1"
     },
     {
@@ -83835,7 +83835,7 @@
       "sref": "#/texts/122",
       "subj_hash": 10295608624766759271,
       "text": "Oil and gas exploration is a complex, technical field of expertise. Unfortunately, the data of many geological processes and entities is scattered across databases (public and proprietary) and corpora of documents, where it is often deeply embedded in text, tables, and figures. This is a serious impediment for efficient exploration of new oil and gas opportunities. For example, geographic information of geological structures can be found in NaturalEarthData, \u2021\u2021\u2021 while their history, evolution, and components (eg, formations with their age, rock-composition, and depth) are discussed in reports (governmental and proprietary) and scientific articles. As such, experts in oil and gas exploration often need to read many documents in order to find all the information of a certain geographic area and get a good understanding of its underlying geology.",
-      "text-hash": 6212506812498931614,
+      "text_hash": 6212506812498931614,
       "type": "paragraph"
     },
     {
@@ -83849,7 +83849,7 @@
       "sref": "#/texts/123",
       "subj_hash": 10633780781731536747,
       "text": "The main tasks of the experts working in oil and gas exploration are to identify potential new exploration sites. This is typically done by describing a basin or one of its sub-regions. In practice, ' describing a basin ' boils down to identifying all geological formations with their properties in the basin and investigating if these formations constitute a petroleum system. 19 In its most minimalistic form, a petroleum system is defined by three components: source, reservoir, and seal. The source is the rock formation in which the oil or gas was created. Once created, the oil or gas typically migrates to a porous reservoir rock, which holds the oil and gas. In order for the oil and gas not to escape, the reservoir needs to be covered by an impermeable rock formation which is called the seal. Each one of these components is comprised of one or more formations, with a certain age and rock composition. To identify a petroleum system in a certain geographical area, one has to find a candidate formation for each component (ie, reservoir, seal, and source) and observe that the properties of these components satisfy some well-established constraints. For example, the reservoir",
-      "text-hash": 8189171326047604114,
+      "text_hash": 8189171326047604114,
       "type": "paragraph"
     },
     {
@@ -83863,7 +83863,7 @@
       "sref": "#/texts/124",
       "subj_hash": 18391264192891079539,
       "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
-      "text-hash": 4975885909619128714,
+      "text_hash": 4975885909619128714,
       "type": "paragraph"
     },
     {
@@ -83877,7 +83877,7 @@
       "sref": "#/texts/125",
       "subj_hash": 1080447728722590413,
       "text": "12",
-      "text-hash": 15441160910541481976,
+      "text_hash": 15441160910541481976,
       "type": "paragraph"
     },
     {
@@ -83891,7 +83891,7 @@
       "sref": "#/texts/126",
       "subj_hash": 4361549257087816853,
       "text": "of 15",
-      "text-hash": 329104161717916080,
+      "text_hash": 329104161717916080,
       "type": "paragraph"
     },
     {
@@ -83905,7 +83905,7 @@
       "sref": "#/texts/127",
       "subj_hash": 10195664788154887804,
       "text": "formation has to have a lower depth than the seal formation. Another example of such constraints is that the age of the seal and reservoir has to be older than the source.",
-      "text-hash": 5965659969661688967,
+      "text_hash": 5965659969661688967,
       "type": "paragraph"
     },
     {
@@ -83919,7 +83919,7 @@
       "sref": "#/texts/128",
       "subj_hash": 7538054744015619336,
       "text": "In order for the CPS platform to help the oil and gas explorationalists in their day-to-day job effectively, it needs to meet two objectives. On the one hand, it needs to create a consistent Knowledge Graph from a document corpus. This Knowledge Graph has to contain all geological formations with their respective properties (eg, geographical locations, depth, age, and rock composition). On the other hand, CPS needs to provide fast query responses, such that one can automatically retrieve potential components of petroleum systems and apply the constraints to filter out promising candidates.",
-      "text-hash": 13307027925001159475,
+      "text_hash": 13307027925001159475,
       "type": "paragraph"
     },
     {
@@ -83933,7 +83933,7 @@
       "sref": "#/texts/129",
       "subj_hash": 12426662601736619109,
       "text": "During the development and implementation of custom NLU annotators in CPS for oil and gas exploration, the client team worked hand in hand with the IBM Research team to set up a controlled accuracy benchmark in which the key capabilities of the CPS can be quantified. The goal of the benchmark was to test the entire pipeline depicted in Figure 6, that is, from PDF document ingestion to a final, queryable KG. The key components of this specific pipeline are,",
-      "text-hash": 8341863300316693152,
+      "text_hash": 8341863300316693152,
       "type": "paragraph"
     },
     {
@@ -83947,7 +83947,7 @@
       "sref": "#/texts/130",
       "subj_hash": 4162783521620221579,
       "text": "1. the conversion of PDF documents into JSON through CCS,",
-      "text-hash": 527957687390948274,
+      "text_hash": 527957687390948274,
       "type": "paragraph"
     },
     {
@@ -83961,7 +83961,7 @@
       "sref": "#/texts/131",
       "subj_hash": 5135259059216244866,
       "text": "2. the creation of the KG in the CPS from the JSON documents, and",
-      "text-hash": 11300804242294087097,
+      "text_hash": 11300804242294087097,
       "type": "paragraph"
     },
     {
@@ -83975,7 +83975,7 @@
       "sref": "#/texts/132",
       "subj_hash": 16998817296948099535,
       "text": "3. the querying of the KG served by CPS to identify petroleum systems elements with their properties.",
-      "text-hash": 4121058581451712246,
+      "text_hash": 4121058581451712246,
       "type": "paragraph"
     },
     {
@@ -83989,7 +83989,7 @@
       "sref": "#/texts/133",
       "subj_hash": 1205649569241141618,
       "text": "On the suggestion of the experts in the client team, the entire pipeline was run on the 1051 Field Evaluation Reports from the C&C Reservoirs \u00a7\u00a7\u00a7 dataset. The advantage of using this dataset for an accuracy benchmark is that each report includes two parts. One part is verbose text describing the history, evolution, and composition of the fields. The language used is of similar complexity to standard geological publications and thus a realistic challenge for our KG creation pipeline. The second part at the end of each report is comprised of tables which summarize the text and provide us the elements of the petroleum systems with their properties. Therefore, we ingest these reports into CCS and extract both text and tables. Then, by generating a KG only from the text and keeping the tables as ground-truth to compare answers of the KG queries against, we obtain a well-controlled, end-to-end accuracy benchmark.",
-      "text-hash": 17333577132913364873,
+      "text_hash": 17333577132913364873,
       "type": "paragraph"
     },
     {
@@ -84003,7 +84003,7 @@
       "sref": "#/texts/134",
       "subj_hash": 12257840490666828590,
       "text": "For step (1) of the pipeline, we ingested all 1051 PDFs into CCS and visually annotated the document structure on 300 (out of 46 019) pages. This yielded a page model which accurately converted all documents to JSON format with a 99.7% recall and 99.3% precision in the converted structure. These numbers are in line with those reported in our previous works. 1 Importantly, very accurate conversion results are key to the resulting quality, since otherwise the language annotators will process incomplete data and eventually the relevance of query results will suffer.",
-      "text-hash": 8803415231465414997,
+      "text_hash": 8803415231465414997,
       "type": "paragraph"
     },
     {
@@ -84017,7 +84017,7 @@
       "sref": "#/texts/135",
       "subj_hash": 7040847965650746591,
       "text": "In step (2), we create the Knowledge Graph by executing a DF that will generate all the entities and relationships relevant to the geology domain. Our language annotator models trained for geology extract geographic areas, geological structures (eg, basins), formations, ages, rocks, petroleum systems, and their elements (PSE) (eg, seal, source, and reservoir). Overall, we extracted a total of 4597 PSEs, 8811 formations, 471 geological ages, and 64 rock types (relevant to the PSEs). The full processing performed at an average rate of 130 ms per page per worker core, on a system with three worker nodes each using four cores. Eventually, the KG included 679 296 edges connecting 116 662 nodes.",
-      "text-hash": 13799731378750663142,
+      "text_hash": 13799731378750663142,
       "type": "paragraph"
     },
     {
@@ -84031,7 +84031,7 @@
       "sref": "#/texts/136",
       "subj_hash": 7927601225025519287,
       "text": "In step (3), we query the Knowledge Graph using a tailored evaluation workflow. This workflow allows us to identify PSEs and their connected properties in the Knowledge Graph, for example, their age, formation and rock",
-      "text-hash": 13120217128072555470,
+      "text_hash": 13120217128072555470,
       "type": "paragraph"
     },
     {
@@ -84045,7 +84045,7 @@
       "sref": "#/texts/137",
       "subj_hash": 18391264192891079539,
       "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
-      "text-hash": 4975885909619128714,
+      "text_hash": 4975885909619128714,
       "type": "paragraph"
     },
     {
@@ -84059,7 +84059,7 @@
       "sref": "#/texts/138",
       "subj_hash": 1080447728722590402,
       "text": "13",
-      "text-hash": 15441160910541481977,
+      "text_hash": 15441160910541481977,
       "type": "paragraph"
     },
     {
@@ -84073,7 +84073,7 @@
       "sref": "#/texts/139",
       "subj_hash": 4361549257087816853,
       "text": "of 15",
-      "text-hash": 329104161717916080,
+      "text_hash": 329104161717916080,
       "type": "paragraph"
     },
     {
@@ -84087,7 +84087,7 @@
       "sref": "#/texts/140",
       "subj_hash": 8207961846673301043,
       "text": "composition. In Figure 7, we visualize the DAG of this workflow. The final node weights are accumulated throughout the branches on the workflow and represent the relevance score of each node.",
-      "text-hash": 14933956665806015562,
+      "text_hash": 14933956665806015562,
       "type": "paragraph"
     },
     {
@@ -84101,7 +84101,7 @@
       "sref": "#/texts/141",
       "subj_hash": 11998199584890640594,
       "text": "To evaluate the correctness of the predicted PSE properties, we follow the standard practice of reporting the top-k accuracy. This is computed as the percentage in which any of the k highest ranked answers matches the expected answer, over all documents. In Table 1, we show the top-1, top-2, top-3, and top-5 accuracy for all properties of each petroleum system element. One can make two distinct observations. First, the top-1 numbers are in the range of 0.75-0.9, meaning that for 3 in 4 cases, the most relevant result predicted by the KG was correct (precision). Secondly, we observe that the top-5 numbers are very high (\u2265 0.97), showing that the system was able detect and aggregate most of the PSEs and their properties (recall). Thus, the recall of the language annotators in the KG creation pipeline was very satisfactory.",
-      "text-hash": 9121677663017059817,
+      "text_hash": 9121677663017059817,
       "type": "paragraph"
     },
     {
@@ -84115,7 +84115,7 @@
       "sref": "#/texts/142",
       "subj_hash": 16446129547721407877,
       "text": "6 | CONCLUSIONS",
-      "text-hash": 4326952903809379008,
+      "text_hash": 4326952903809379008,
       "type": "subtitle-level-1"
     },
     {
@@ -84129,7 +84129,7 @@
       "sref": "#/texts/143",
       "subj_hash": 6720443978031524294,
       "text": "With the introduction of the CPS platform, we demonstrate substantial benefit for domain experts and data scientists in exercising deep exploration of published knowledge in a fully integrated, yet modular cloud solution. CPS seamlessly connects to the CSS, complementing it with a highly scalable, automated pipeline to build consistent domain knowledge models and an intuitive, powerful approach to explorational queries and graph-scale analytics. This is accomplished through three fundamental design considerations: (1) We do not require manual data curation or annotation; (2) We built a scalable, efficient architecture to support the ingestion, processing and query workloads, all embedded in",
-      "text-hash": 11733208797674542845,
+      "text_hash": 11733208797674542845,
       "type": "paragraph"
     },
     {
@@ -84143,7 +84143,7 @@
       "sref": "#/texts/144",
       "subj_hash": 18391264192891079539,
       "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
-      "text-hash": 4975885909619128714,
+      "text_hash": 4975885909619128714,
       "type": "paragraph"
     },
     {
@@ -84157,7 +84157,7 @@
       "sref": "#/texts/145",
       "subj_hash": 2144926730621142072,
       "text": "14of15",
-      "text-hash": 16380805732317250115,
+      "text_hash": 16380805732317250115,
       "type": "paragraph"
     },
     {
@@ -84171,7 +84171,7 @@
       "sref": "#/texts/146",
       "subj_hash": 14222671032550229818,
       "text": "a single platform; and (3) We expose the capabilities through an intuitively consumable API and complementary UI tools.",
-      "text-hash": 1925144237473465665,
+      "text_hash": 1925144237473465665,
       "type": "paragraph"
     },
     {
@@ -84185,7 +84185,7 @@
       "sref": "#/texts/147",
       "subj_hash": 17486770941839589126,
       "text": "In our oil and gas case study, we successfully verified our solution for a real-world application with the help of subject matter experts from a client team. Currently, CCS and CPS are actively used in more than five client engagements, most notably in the oil and gas industry as well as in the material science industry.",
-      "text-hash": 5943448246547541309,
+      "text_hash": 5943448246547541309,
       "type": "paragraph"
     },
     {
@@ -84199,7 +84199,7 @@
       "sref": "#/texts/148",
       "subj_hash": 16574813224778118841,
       "text": "Future work will focus on processing public repositories such as the arXiv.org library, USPTO, and PubMed in order to make their content available to deep data exploration.",
-      "text-hash": 4472913868502496196,
+      "text_hash": 4472913868502496196,
       "type": "paragraph"
     },
     {
@@ -84213,7 +84213,7 @@
       "sref": "#/texts/149",
       "subj_hash": 3356142343274371864,
       "text": "DATA AVAILABILITY STATEMENT",
-      "text-hash": 17772737780533561635,
+      "text_hash": 17772737780533561635,
       "type": "subtitle-level-1"
     },
     {
@@ -84227,7 +84227,7 @@
       "sref": "#/texts/150",
       "subj_hash": 4778022085288441371,
       "text": "Data subject to third party restrictions.",
-      "text-hash": 11662592888764396578,
+      "text_hash": 11662592888764396578,
       "type": "paragraph"
     },
     {
@@ -84241,7 +84241,7 @@
       "sref": "#/texts/151",
       "subj_hash": 4361549257598904601,
       "text": "ORCID",
-      "text-hash": 329104162230294308,
+      "text_hash": 329104162230294308,
       "type": "subtitle-level-1"
     },
     {
@@ -84255,7 +84255,7 @@
       "sref": "#/texts/152",
       "subj_hash": 3523281823889115814,
       "text": "Peter W. J. Staar https://orcid.org/0000-0002-8088-0823 Michele Dolfi https://orcid.org/0000-0001-7216-8505 Christoph Auer https://orcid.org/0000-0001-5761-0422",
-      "text-hash": 1167445296370300893,
+      "text_hash": 1167445296370300893,
       "type": "paragraph"
     },
     {
@@ -84269,7 +84269,7 @@
       "sref": "#/texts/153",
       "subj_hash": 8500729849894221215,
       "text": "ENDNOTES",
-      "text-hash": 14650266124350583462,
+      "text_hash": 14650266124350583462,
       "type": "subtitle-level-1"
     },
     {
@@ -84283,7 +84283,7 @@
       "sref": "#/texts/154",
       "subj_hash": 7813503946963688644,
       "text": "* For example, ElasticSearch (https://www.elastic.co) and ApacheLucene (https://lucene.apache.org).",
-      "text-hash": 12950565807350876671,
+      "text_hash": 12950565807350876671,
       "type": "paragraph"
     },
     {
@@ -84297,7 +84297,7 @@
       "sref": "#/texts/155",
       "subj_hash": 9230987401345399746,
       "text": "\u2020 Most language entities from a technical field are typically represented in a very specific, rigorous way that can be easily captured by regular expressions. We found that in practice, regular expressions often outperform DL models, since we can simply encode these representations.",
-      "text-hash": 6930355155738437881,
+      "text_hash": 6930355155738437881,
       "type": "paragraph"
     },
     {
@@ -84311,7 +84311,7 @@
       "sref": "#/texts/156",
       "subj_hash": 1997735398126013155,
       "text": "\u2021 https://www.nltk.org",
-      "text-hash": 16829787344811603994,
+      "text_hash": 16829787344811603994,
       "type": "paragraph"
     },
     {
@@ -84325,7 +84325,7 @@
       "sref": "#/texts/157",
       "subj_hash": 13566764974477978642,
       "text": "\u00a7 We follow the standard JSON-schema for references.",
-      "text-hash": 9498574747519310377,
+      "text_hash": 9498574747519310377,
       "type": "paragraph"
     },
     {
@@ -84339,7 +84339,7 @@
       "sref": "#/texts/158",
       "subj_hash": 4925537010788978399,
       "text": "\u00b6 A rather simple similarity metric is to perform a fuzzy comparison of the names of the newly found entities (ie, the name field found in Listing 1). A more sophisticated approach is to use word embeddings to identify if two concepts are similar.",
-      "text-hash": 11235784383716113382,
+      "text_hash": 11235784383716113382,
       "type": "paragraph"
     },
     {
@@ -84353,7 +84353,7 @@
       "sref": "#/texts/159",
       "subj_hash": 16552665876195410077,
       "text": "** For example Neo4J, Titan, JanusGraph, Amazon Neptune, and Arangodb.",
-      "text-hash": 4287966239864749480,
+      "text_hash": 4287966239864749480,
       "type": "paragraph"
     },
     {
@@ -84367,7 +84367,7 @@
       "sref": "#/texts/160",
       "subj_hash": 17579390613842440572,
       "text": "\u2020\u2020 This memory architecture is clearly documented for Titan (http://s3.thinkaurelius.com/docs/titan/current/data-model.html) and Neo4J (http://key-value-stories.blogspot.com/2015/02/neo4j-architecture.html).",
-      "text-hash": 5855266272999108487,
+      "text_hash": 5855266272999108487,
       "type": "paragraph"
     },
     {
@@ -84381,7 +84381,7 @@
       "sref": "#/texts/161",
       "subj_hash": 722212543953276862,
       "text": "\u2021\u2021 We chose Neo4J as a reference since it is currently the most popular graph database solution, see https://db-engines.com/en/ranking_ trend/graph+dbms",
-      "text-hash": 15713827668903361733,
+      "text_hash": 15713827668903361733,
       "type": "paragraph"
     },
     {
@@ -84395,7 +84395,7 @@
       "sref": "#/texts/162",
       "subj_hash": 11085577343317113173,
       "text": "\u00a7\u00a7 http://graph500.org/",
-      "text-hash": 7449211522826545008,
+      "text_hash": 7449211522826545008,
       "type": "paragraph"
     },
     {
@@ -84409,7 +84409,7 @@
       "sref": "#/texts/163",
       "subj_hash": 1792096630133661292,
       "text": "\u00b6\u00b6 https://snap.stanford.edu/data/higgs-twitter.html",
-      "text-hash": 16747146533825186967,
+      "text_hash": 16747146533825186967,
       "type": "paragraph"
     },
     {
@@ -84423,7 +84423,7 @@
       "sref": "#/texts/164",
       "subj_hash": 11462638369524745676,
       "text": "*** We assume the weight can be represented by a float value.",
-      "text-hash": 7288340874592977655,
+      "text_hash": 7288340874592977655,
       "type": "paragraph"
     },
     {
@@ -84437,7 +84437,7 @@
       "sref": "#/texts/165",
       "subj_hash": 16611805225457383637,
       "text": "\u2020\u2020\u2020 https://neo4j.com/developer/guide-sizing-and-hardware-calculator/",
-      "text-hash": 4512570954370983408,
+      "text_hash": 4512570954370983408,
       "type": "paragraph"
     },
     {
@@ -84451,7 +84451,7 @@
       "sref": "#/texts/166",
       "subj_hash": 1531505125666754945,
       "text": "\u2021\u2021\u2021 https://www.naturalearthdata.com/",
-      "text-hash": 16922240937803157180,
+      "text_hash": 16922240937803157180,
       "type": "paragraph"
     },
     {
@@ -84465,7 +84465,7 @@
       "sref": "#/texts/167",
       "subj_hash": 15684389308320953629,
       "text": "\u00a7\u00a7\u00a7 https://www.ccreservoirs.com/",
-      "text-hash": 2845896203864732456,
+      "text_hash": 2845896203864732456,
       "type": "paragraph"
     },
     {
@@ -84479,7 +84479,7 @@
       "sref": "#/texts/168",
       "subj_hash": 14590754343934702701,
       "text": "REFERENCES",
-      "text-hash": 1858797456585454232,
+      "text_hash": 1858797456585454232,
       "type": "subtitle-level-1"
     },
     {
@@ -84493,7 +84493,7 @@
       "sref": "#/texts/169",
       "subj_hash": 10480452763767134455,
       "text": "1. Staar Peter WJ, Michele D, Christoph A, Costas B. Corpus conversion service: a machine learning platform to ingest documents at scale. KDD '18. New York, NY: ACM; 2018:774-782.",
-      "text-hash": 7982224532612302350,
+      "text_hash": 7982224532612302350,
       "type": "paragraph"
     },
     {
@@ -84507,7 +84507,7 @@
       "sref": "#/texts/170",
       "subj_hash": 11866471329779366855,
       "text": "2. Staar Peter WJ, Kl BP, Roxana I, et al. Stochastic Matrix-Function Estimators: Scalable Big-Data Kernels with High Performance. Chicago, IL: IEEE; 2016:812-821.",
-      "text-hash": 8969674542364551422,
+      "text_hash": 8969674542364551422,
       "type": "paragraph"
     },
     {
@@ -84521,7 +84521,7 @@
       "sref": "#/texts/171",
       "subj_hash": 6016885898370676469,
       "text": "3. Matteo M, Christoph A, Val'ery W, et al. An information extraction and knowledge graph platform for accelerating biochemical discoveries. ArXiv.abs/1907.08400; 2019.",
-      "text-hash": 12797055744904705040,
+      "text_hash": 12797055744904705040,
       "type": "paragraph"
     },
     {
@@ -84535,7 +84535,7 @@
       "sref": "#/texts/172",
       "subj_hash": 13946275785662847920,
       "text": "4. Paolo R, Marco P, Floriana B, Peter S, Costas B. Application of Geocognitive Technologies to Basin & Petroleum System Analyses, Texas: Society of Petroleum Engineers; 2019). Abu Dhabi International Petroleum Exhibition & Conference, Abu Dhabi, UAE, :10. https://doi. org/10.2118/197610-MS.",
-      "text-hash": 2278118371277588683,
+      "text_hash": 2278118371277588683,
       "type": "paragraph"
     },
     {
@@ -84549,7 +84549,7 @@
       "sref": "#/texts/173",
       "subj_hash": 7693798302433367973,
       "text": "5. Guillaume L, Miguel B, Sandeep S, Kazuya K, Chris D. Neural Architectures for Named Entity Recognition, Stroudsburg PA: Association for Computational Linguistics; 2016.",
-      "text-hash": 13426003943449777376,
+      "text_hash": 13426003943449777376,
       "type": "paragraph"
     },
     {
@@ -84563,7 +84563,7 @@
       "sref": "#/texts/174",
       "subj_hash": 3109792572574236398,
       "text": "6. Chiu Jason PC, Eric N. Named entity recognition with bidirectional LSTM-CNNs. TACL. 2016;4:357-370.",
-      "text-hash": 17942512882695875605,
+      "text_hash": 17942512882695875605,
       "type": "paragraph"
     },
     {
@@ -84577,7 +84577,7 @@
       "sref": "#/texts/175",
       "subj_hash": 8111170387462350170,
       "text": "7. Matthew H, Ines M. spaCy 2: natural language understanding with bloom embeddings, convolutional neural networks and incremental parsing. To appear. 2017.",
-      "text-hash": 15035325662489879393,
+      "text_hash": 15035325662489879393,
       "type": "paragraph"
     },
     {
@@ -84591,7 +84591,7 @@
       "sref": "#/texts/176",
       "subj_hash": 14682702346227170925,
       "text": "8. Magoon LB, Hudson TL, Peters KE. Egret-Hibernia(!), a significant petroleum system, northern Grand Banks area, offshore eastern Canada. Am Assoc Pet Geol Bull. 2005;89(9):1203-1237.",
-      "text-hash": 1825488956803771544,
+      "text_hash": 1825488956803771544,
       "type": "paragraph"
     },
     {
@@ -84605,7 +84605,7 @@
       "sref": "#/texts/177",
       "subj_hash": 18391264192891079539,
       "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
-      "text-hash": 4975885909619128714,
+      "text_hash": 4975885909619128714,
       "type": "paragraph"
     },
     {
@@ -84619,7 +84619,7 @@
       "sref": "#/texts/178",
       "subj_hash": 11430385775112165283,
       "text": "9. Estrada E. Subgraph centrality in complex networks. Phys Rev E. 2005;71(5):056103.",
-      "text-hash": 7383629567386653914,
+      "text_hash": 7383629567386653914,
       "type": "paragraph"
     },
     {
@@ -84633,7 +84633,7 @@
       "sref": "#/texts/179",
       "subj_hash": 5825495964576843004,
       "text": "10. Estrada Ernesto, Higham Desmond J. (2010). Network Properties Revealed through Matrix Functions. SIAM Review, 52, (4), 696-714. http://dx.doi.org/10.1137/090761070.",
-      "text-hash": 12713726337853489671,
+      "text_hash": 12713726337853489671,
       "type": "paragraph"
     },
     {
@@ -84647,7 +84647,7 @@
       "sref": "#/texts/180",
       "subj_hash": 5698421097735371040,
       "text": "11. Labs Redis. Benchmarking RedisGraph 1.0. 2019.",
-      "text-hash": 10746649133789046619,
+      "text_hash": 10746649133789046619,
       "type": "paragraph"
     },
     {
@@ -84661,7 +84661,7 @@
       "sref": "#/texts/181",
       "subj_hash": 5870535063942256428,
       "text": "12. TigerGraph. Real-Time Deep Link Analytics. 2018.",
-      "text-hash": 12596629408176592215,
+      "text_hash": 12596629408176592215,
       "type": "paragraph"
     },
     {
@@ -84675,7 +84675,7 @@
       "sref": "#/texts/182",
       "subj_hash": 18196767266655606709,
       "text": "13. Jeremy K, John G. Graph Algorithms in the Language of Linear Algebra. Philadelphia, PA: Society for Industrial and Applied Mathematics; 2011.",
-      "text-hash": 4940703957630358736,
+      "text_hash": 4940703957630358736,
       "type": "paragraph"
     },
     {
@@ -84689,7 +84689,7 @@
       "sref": "#/texts/183",
       "subj_hash": 3623403683642367845,
       "text": "14. Kepner Jeremy, Bader David, Bulu\u00e7 Ayd \u0131 n, Gilbert John, Mattson Timothy, Meyerhenke Henning (2015). Graphs, Matrices, and the GraphBLAS: Seven Good Reasons. Procedia Computer Science, 51, 2453-2462. http://dx.doi.org/10.1016/j.procs.2015.05.353.",
-      "text-hash": 1288017376570396064,
+      "text_hash": 1288017376570396064,
       "type": "paragraph"
     },
     {
@@ -84703,7 +84703,7 @@
       "sref": "#/texts/184",
       "subj_hash": 13936866850854297069,
       "text": "15. Aydin B, Gilbert John R. The combinatorial BLAS: design, implementation, and applications. Int J High Perform Comput Appl. 2011;25 (4):496-509.",
-      "text-hash": 2215522210708998936,
+      "text_hash": 2215522210708998936,
       "type": "paragraph"
     },
     {
@@ -84717,7 +84717,7 @@
       "sref": "#/texts/185",
       "subj_hash": 8497015665124263236,
       "text": "16. Jeremy K, Peter A, Bader David A, et al. Mathematical foundations of the GraphBLAS. 2016 IEEE HPEC. 2016; 1-9.",
-      "text-hash": 14644960259055240063,
+      "text_hash": 14644960259055240063,
       "type": "paragraph"
     },
     {
@@ -84731,7 +84731,7 @@
       "sref": "#/texts/186",
       "subj_hash": 15947529491299956047,
       "text": "17. Ariful A, Mathias J, Aydin B, Ng Esmond G. The reverse Cuthill-McKee algorithm in distributed-memory. 2017 IEEE International Parallel and Distributed Processing Symposium (IPDPS). 2017: 22-31.",
-      "text-hash": 2515131343544103798,
+      "text_hash": 2515131343544103798,
       "type": "paragraph"
     },
     {
@@ -84745,7 +84745,7 @@
       "sref": "#/texts/187",
       "subj_hash": 14843401725435831033,
       "text": "18. Rukhsana S, Anila U, Chughtai IR. Review of storage techniques for sparse matrices. 2005 Pakistan Section Multitopic Conference. 2005 1-7.",
-      "text-hash": 1389998498969001988,
+      "text_hash": 1389998498969001988,
       "type": "paragraph"
     },
     {
@@ -84759,7 +84759,7 @@
       "sref": "#/texts/188",
       "subj_hash": 16676439669743530711,
       "text": "19. Welte DH, Horsfield B, Baker DR. Petroleum and Basin Evolution: Insights from Petroleum Geochemistry, Geology, and Basin Modeling, Berlin Heidelberg: Springer-Verlag; 1997.",
-      "text-hash": 4375808543141490670,
+      "text_hash": 4375808543141490670,
       "type": "paragraph"
     },
     {
@@ -84773,7 +84773,7 @@
       "sref": "#/texts/189",
       "subj_hash": 2986547206451163051,
       "text": "How to cite this article: Staar PWJ, Dolfi M, Auer C. Corpus processing service: A Knowledge Graph platform to perform deep data exploration on corpora. Applied AI Letters. 2020;1:e20. https://doi.org/10.1002/ail2.20",
-      "text-hash": 17781974298360978642,
+      "text_hash": 17781974298360978642,
       "type": "paragraph"
     },
     {
@@ -84787,7 +84787,7 @@
       "sref": "#/texts/190",
       "subj_hash": 18391264192891079539,
       "text": "26895595, 2020, 2, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/ail2.20, Wiley Online Library on [23/08/2023]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License",
-      "text-hash": 4975885909619128714,
+      "text_hash": 4975885909619128714,
       "type": "paragraph"
     }
   ]

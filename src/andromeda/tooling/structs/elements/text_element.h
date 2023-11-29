@@ -11,8 +11,13 @@ namespace andromeda
 
     typedef std::tuple<index_type, index_type, std::string> candidate_type;
 
-    const static inline std::string char_tokens_lbl = "char-tokens"; 
-    const static inline std::string word_tokens_lbl = "word-tokens"; 
+    const static inline std::string text_lbl = "text";
+    const static inline std::string orig_lbl = "orig";
+
+    const static inline std::string text_hash_lbl = "text_hash";
+   
+    const static inline std::string char_tokens_lbl = "char_tokens"; 
+    const static inline std::string word_tokens_lbl = "word_tokens"; 
     
   public:
 
@@ -116,15 +121,15 @@ namespace andromeda
   {
     nlohmann::json elem = nlohmann::json::object({});
 
-    elem["text"] = text;
-    elem["orig"] = orig;
+    elem[text_lbl] = text;
+    elem[orig_lbl] = orig;
 
-    elem["text-hash"] = text_hash;
+    elem[text_hash_lbl] = text_hash;
 
     // in the default setting, word-tokens will not be dumped
-    if(filters.count("word-tokens"))
+    if(filters.count(word_tokens_lbl))
       {
-        elem["word-tokens"] = andromeda::to_json(word_tokens, text);	
+        elem[word_tokens_lbl] = andromeda::to_json(word_tokens, text);	
       }
     
     return elem;
@@ -136,14 +141,14 @@ namespace andromeda
     
     this->clear();
 
-    if(elem.count("orig"))
+    if(elem.count(orig_lbl))
       {
-	auto ctext = elem.at("orig").get<std::string>();
+	auto ctext = elem.at(orig_lbl).get<std::string>();
 	result = set_text(ctext);
       }
-    else if(elem.count("text"))
+    else if(elem.count(text_lbl))
       {
-	auto ctext = elem.at("text").get<std::string>();
+	auto ctext = elem.at(text_lbl).get<std::string>();
 	result = set_text(ctext);	
       }
     else
@@ -154,9 +159,9 @@ namespace andromeda
 	return false;
       }
     
-    if(elem.count("word-tokens"))
+    if(elem.count(word_tokens_lbl))
       {
-        const nlohmann::json& json_word_tokens = elem.at("word-tokens");
+        const nlohmann::json& json_word_tokens = elem.at(word_tokens_lbl);
         andromeda::from_json(word_tokens, json_word_tokens);	
       }    
 
