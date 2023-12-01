@@ -22,9 +22,6 @@ namespace andromeda
 
     virtual bool apply(subject<TEXT>& subj);
     virtual bool apply(subject<TABLE>& subj) { return false; }
-
-    //virtual bool apply(subject<WEBDOC>& subj) { return false; }
-    //virtual bool apply(subject<PDFDOC>& subj);
     
   private:
 
@@ -93,7 +90,8 @@ namespace andromeda
       }
     
     std::string orig = subj.text;
-    
+
+    std::vector<range_type> sent_ranges={};
     for(auto& expr:exprs)
       {
 	std::vector<pcre2_item> items;
@@ -109,9 +107,81 @@ namespace andromeda
 	    std::string sent = orig.substr(char_range[0], char_range[1]-char_range[0]); 
 	    
 	    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
-				       SENTENCE, "",
+				       SENTENCE, "proper",
 				       sent, sent,
 				       char_range, ctok_range, wtok_range);
+
+	    sent_ranges.push_back(char_range);
+	  }
+      }
+
+    std::vector<range_type> ranges={};
+    for(auto& rng:sent_ranges)
+      {
+        if(ranges.size()==0 and rng.at(0)==0)
+          {
+	    ranges.push_back(rng);
+          }
+	else if(ranges.size()==0 and rng.at(0)>0)
+          {
+	    ranges.push_back({0, rng.at(0)});
+	    ranges.push_back(rng);
+          }
+	else if(ranges.back().at(1)==rng.at(0))
+          {
+	    ranges.push_back(rng);
+          }
+	else if(ranges.back().at(1)<rng.at(0))
+          {
+	    ranges.push_back({ranges.back().at(1), rng.at(0)});
+	    ranges.push_back(rng);
+          }	
+      }
+
+    if(ranges.size()>0 and ranges.back().at(1)<subj.get_len())
+      {
+	ranges.push_back({ranges.back().at(1), subj.get_len()});
+      }
+    else if(ranges.size()==0 and subj.get_len()>0)
+      {
+	ranges.push_back({0, subj.get_len()});
+      }
+	    
+    for(auto itr=ranges.begin(); itr!=ranges.end(); )
+      {
+	bool updated=false;
+	for(auto sent_rng:sent_ranges)
+	  {
+	    if(*itr==sent_rng)
+	      {
+		itr = ranges.erase(itr);
+		updated=true;
+	      }
+	  }
+
+	if(not updated)
+	  {
+	    itr++;
+	  }
+      }
+
+    for(auto rng:ranges)
+      {
+	range_type char_range = rng;
+	
+	range_type ctok_range = subj.get_char_token_range(char_range);
+	range_type wtok_range = subj.get_word_token_range(char_range);
+	
+	std::string sent = orig.substr(char_range[0], char_range[1]-char_range[0]); 
+
+	std::string normalised_sent = utils::replace(sent, " ", "");
+
+	if(normalised_sent.size()>0)
+	  {
+	    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
+					SENTENCE, "improper",
+					sent, sent,
+					char_range, ctok_range, wtok_range);
 	  }
       }
     

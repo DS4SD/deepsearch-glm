@@ -206,12 +206,13 @@ namespace andromeda
           {
 	    sent_ranges.push_back(inst.get_wtok_range());
 
-	    //LOG_S(INFO) << "sentence: "
+	    //LOG_S(INFO) << "sentence (" << inst.get_subtype() << ") : "
 	    //<< sent_ranges.back().at(0) << ", "
 	    //<< sent_ranges.back().at(1);
           }
       }
 
+    /*
     std::vector<range_type> ranges={};
     for(auto& rng:sent_ranges)
       {
@@ -239,8 +240,10 @@ namespace andromeda
       {
 	ranges.push_back({ranges.back().at(1), wtokens.size()});
       }
+    */
     
-    for(auto& rng:ranges)
+    //for(auto& rng:ranges)
+    for(auto& rng:sent_ranges)
       {
 	//LOG_S(INFO) << "range: " << rng.at(0) << ", " << rng.at(1);
 	

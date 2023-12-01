@@ -52,6 +52,10 @@ examples of execution:
     parser.add_argument('--output-dir', required=False,
                         type=str, default="./reference-models",
                         help="output directory for trained models")
+
+    parser.add_argument('--max-items', required=False,
+                        type=int, default=-1,
+                        help="number of references")
     
     args = parser.parse_args()
 
@@ -67,7 +71,7 @@ examples of execution:
     else:
         odir = args.output_dir
         
-    return args.mode, args.input_dir, odir    
+    return args.mode, args.input_dir, odir, args.max_items    
 
 def shorten_text(text):
     
@@ -192,7 +196,7 @@ def parse_with_anystyle_api(refs):
         
     return []
 
-def update_references(refs):
+def update_references(refs, label_map):
 
     results = parse_with_anystyle_api(refs)
 
@@ -220,9 +224,9 @@ def update_references(refs):
             beg += charlen
             beg += 1
 
-        refs[j]["word-tokens"]["headers"].append("true-label")
+        refs[j]["word_tokens"]["headers"].append("true-label")
                 
-        for ri,row_i in enumerate(refs[j]["word-tokens"]["data"]):
+        for ri,row_i in enumerate(refs[j]["word_tokens"]["data"]):
 
             label="__undef__"
             for rj,row_j in enumerate(item):
@@ -230,20 +234,48 @@ def update_references(refs):
                     label = row_j[0]
                     break
 
-            refs[j]["word-tokens"]["data"][ri].append(label)
+            if label in label_map:
+                label = label_map[label]
+            else:
+                ##print(label)
+                label = "null"
+                
+            refs[j]["word_tokens"]["data"][ri].append(label)
 
         """
-        print("\n\n", tabulate(refs[j]["word-tokens"]["data"],
-                               headers=refs[j]["word-tokens"]["headers"]))
+        print(text)
+        print("\n\n", tabulate(refs[j]["word_tokens"]["data"],
+                               headers=refs[j]["word_tokens"]["headers"]))
         """
         
         refs[j]["annotated"]=True
 
-def annotate(rfile, ofile):
+def annotate(rfile, ofile, max_items):
 
-    nlp_model = init_nlp_model("semantic", filters=["properties", "word-tokens"])
+    label_map = {
+        "author": "authors",
+        "title": "title",
+        "container-title": "conference",
+        "journal": "journal",
+        "date": "date",
+        "volume": "volume",
+        "pages": "pages",
+        "citation-number": "reference-number",
+        "note": "note",
+        "url": "url",
+        "doi": "doi",
+        "isbn": "isbn",
+        "publisher": "publisher"
+    }
+    
+    nlp_model = init_nlp_model("semantic", filters=["properties", "word_tokens"])
 
     num_lines = sum(1 for _ in open(rfile))
+
+    if max_items!=-1:
+        max_items = min(max_items, num_lines)
+    else:
+        max_items = num_lines
     
     refs=[]
 
@@ -252,7 +284,7 @@ def annotate(rfile, ofile):
 
     cnt = 0
     
-    while True:
+    for i in tqdm.tqdm(range(0,max_items)):
 
         line = fr.readline().strip()
         if line==None or len(line)==0:
@@ -271,8 +303,8 @@ def annotate(rfile, ofile):
 
         if len(refs)>=16:
 
-            print(f"\rreferennce-annotation: {cnt}/{num_lines}", end="")
-            update_references(refs)            
+            #print(f"\rreference-annotation: {cnt}/{num_lines}", end="")
+            update_references(refs, label_map)            
 
             for ref in refs:
                 if "annotated" in ref and ref["annotated"]:
@@ -280,7 +312,9 @@ def annotate(rfile, ofile):
 
             refs=[]
 
-                    
+        #if max_items!=-1 and cnt>max_items:
+        #    break
+        
     print(" --> done")
 
     fr.close()
@@ -309,7 +343,7 @@ def prepare_for_crf(afile):
         except:
             continue
 
-        wt = item["word-tokens"]
+        wt = item["word_tokens"]
 
         if item["annotated"]:
 
@@ -477,7 +511,7 @@ def train_fst(train_file, model_file, metrics_file):
             
             model.train(config)
             
-def create_reference_model(mode, idir, odir):
+def create_reference_model(mode:str, idir:str, odir:str, max_items:int=-1):
 
     json_files = glob.glob(os.path.join(idir, "*.json"))
     print("#-docs: ", len(json_files))
@@ -489,19 +523,16 @@ def create_reference_model(mode, idir, odir):
     crf_metrics_file = crf_model_file+".metrics.txt"
     
     """
-
     rfile = os.path.join(tdir, "nlp-train-references-crf.jsonl")
-
-    
 
     fst_model_file = os.path.join(tdir, "fst_sematic")
     """
     
     if mode=="extract" or mode=="all":
-        extract_references(json_files, sfile)
+        extract_references(json_files, sfile, max_items)
 
     if mode=="annotate" or mode=="all":
-        annotate(sfile, afile)
+        annotate(sfile, afile, max_items)
 
     if mode=="train" or mode=="all":
         train_crf(afile, crf_model_file, crf_metrics_file)
@@ -524,6 +555,6 @@ def create_reference_model(mode, idir, odir):
     
 if __name__ == '__main__':
 
-    mode, idir, odir = parse_arguments()
+    mode, idir, odir, max_items = parse_arguments()
 
-    create_reference_model(mode, idir, odir)
+    create_reference_model(mode, idir, odir, max_items)
