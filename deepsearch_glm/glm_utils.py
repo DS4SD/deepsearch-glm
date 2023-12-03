@@ -43,8 +43,7 @@ def load_glm_config(idir:str):
 def load_glm(idir:str):
 
     config = load_glm_config(idir)
-    
-    #glm = andromeda_glm.glm_model()
+
     glm = glm_model()
     glm.load(config)
 
@@ -60,7 +59,7 @@ def create_glm_config_from_docs(odir:str, json_files:list[str],
             },
             "save": {
                 "root": odir,
-                "write-CSV": True,
+                "write-CSV": False,
                 "write-JSON": False,
                 "write-path-text": False
             }
@@ -129,7 +128,6 @@ def create_glm_from_docs(odir:str, json_files:list[str],
     
     config = create_glm_config_from_docs(odir, json_files, nlp_models)
     
-    #glm = andromeda_glm.glm_model()
     glm = glm_model()
     glm.create(config)
 

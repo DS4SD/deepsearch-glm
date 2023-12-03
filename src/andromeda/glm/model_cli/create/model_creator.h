@@ -221,7 +221,7 @@ namespace andromeda
 	  text_node = nodes.insert(text_node, false);
 
 	  text_hash = text_node.get_hash();
-	  LOG_S(INFO) << "inserted node: " << doc_path;
+	  //LOG_S(INFO) << "inserted node: " << doc_path;
 	}
       
       std::vector<word_token>& tokens = subj.get_word_tokens();
