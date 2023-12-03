@@ -255,7 +255,7 @@ namespace andromeda
 
   bool producer<DOCUMENT>::write(doc_type& subj)
   {
-    std::filesystem::path filepath = subj.filepath;
+    std::filesystem::path filepath = subj.get_filepath();
     std::filesystem::path filename = filepath.filename();
     //std::filesystem::path filedir = filepath.dirname();
     

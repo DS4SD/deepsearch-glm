@@ -26,7 +26,8 @@ namespace andromeda
     virtual bool from_json(const nlohmann::json& item,
 			   const std::vector<std::shared_ptr<prov_element> >& doc_provs);
     
-    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_item_ref()):"#"); }
+    //std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_item_ref()):"#"); }
+
     bool is_valid() { return (base_subject::valid); }
     
     bool set_data(const nlohmann::json& data);
@@ -38,10 +39,12 @@ namespace andromeda
 
     void set_hash();
     
-  public:
+  private:
 
     sval_type conf;
     std::string created_by;
+
+  public:
     
     std::vector<std::shared_ptr<prov_element> > provs;
     
@@ -135,8 +138,11 @@ namespace andromeda
   
   bool subject<FIGURE>::from_json(const nlohmann::json& json_figure)
   {
-    base_subject::valid = true;
-
+    {
+      base_subject::valid = true;
+      base_subject::_from_json(json_figure);
+    }
+    
     {
       conf = json_figure.value(base_subject::confidence_lbl, conf);
       created_by = json_figure.value(base_subject::created_by_lbl, created_by);
@@ -169,6 +175,18 @@ namespace andromeda
   bool subject<FIGURE>::set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
 				   std::shared_ptr<utils::text_normaliser> text_normaliser)
   {
+    valid = true;
+    
+    for(auto& caption:captions)
+      {
+	caption->set_tokens(char_normaliser, text_normaliser);
+      }
+
+    for(auto& footnote:footnotes)
+      {
+	footnote->set_tokens(char_normaliser, text_normaliser);
+      }
+
     return true;
   }
   

@@ -84,10 +84,10 @@ namespace andromeda
 
   template<typename doc_type>
   void doc_order::order_maintext(doc_type& doc)
-  {
+  {    
     // make a deep-copy !
     prov_vec_type provs={};
-    for(auto& prov:doc.provs)
+    for(auto& prov:doc.get_provs())
       {
         provs.push_back(*prov);
       }
@@ -100,17 +100,19 @@ namespace andromeda
   template<typename doc_type>
   void doc_order::update_document(doc_type& doc, prov_vec_type& provs)
   {
+    nlohmann::json& orig = doc.get_orig();
+
     // copy ...
-    nlohmann::json maintext = doc.orig["main-text"];
+    nlohmann::json maintext = orig["main-text"];
 
     // re-order
     for(std::size_t l=0; l<provs.size(); l++)
       {
-        maintext.at(l) = doc.orig["main-text"][provs.at(l).get_maintext_ind()];
+        maintext.at(l) = orig["main-text"][provs.at(l).get_maintext_ind()];
       }
 
     // overwrite ...
-    doc.orig["main-text"] = maintext;
+    orig["main-text"] = maintext;
   }
 
   bool doc_order::sort_provs(prov_vec_type& provs)

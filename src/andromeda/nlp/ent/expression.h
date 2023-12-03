@@ -24,7 +24,7 @@ namespace andromeda
     virtual model_name get_name() { return EXPRESSION; }
 
     virtual bool apply(subject<TEXT>& subj);
-    virtual bool apply(subject<TABLE>& subj);
+    virtual bool apply_on_table_data(subject<TABLE>& subj);
 
   private:
 
@@ -307,7 +307,7 @@ namespace andromeda
     return true;
   }
 
-  bool nlp_model<ENT, EXPRESSION>::apply(subject<TABLE>& subj)
+  bool nlp_model<ENT, EXPRESSION>::apply_on_table_data(subject<TABLE>& subj)
   {
     if(not satisfies_dependencies(subj))
       {
@@ -340,7 +340,8 @@ namespace andromeda
 
     post_process(subj);
 
-    subj.contract_wtokens_from_instances(EXPRESSION);
+    // FIXME not sure ...
+    //subj.contract_wtokens_from_instances(EXPRESSION);
 
     //subj.show(false, false, false, true, false, true, false);
 
@@ -355,17 +356,20 @@ namespace andromeda
 
     apply_abbr_regex(subj);
 
-    subj.contract_wtokens_from_instances(EXPRESSION);
+    // FIXME not sure ...
+    //subj.contract_wtokens_from_instances(EXPRESSION);
 
     for(auto& ent:subj.instances)
       {
-        if(ent.model_type==EXPRESSION and ent.model_subtype=="common" and ent.wtoken_len()==1)
+        if(ent.is_model(EXPRESSION) and ent.is_subtype("common") and ent.wtoken_len()==1)
           {
-            subj.word_tokens.at(ent.wtok_range[0]).set_word(ent.name);
+            //subj.word_tokens.at(ent.get_wtok_range(0)).set_word(ent.get_name());
+	    subj.set_word(ent.get_wtok_range(0), ent.get_name());
           }
-        else if(ent.model_type==EXPRESSION and ent.model_subtype=="apostrophe" and ent.wtoken_len()==1)
+        else if(ent.is_model(EXPRESSION) and ent.is_subtype("apostrophe") and ent.wtoken_len()==1)
           {
-            subj.word_tokens.at(ent.wtok_range[0]).set_word(ent.name);
+            //subj.word_tokens.at(ent.get_wtok_range(0)).set_word(ent.get_name());
+	    subj.set_word(ent.get_wtok_range(0), ent.get_name());
           }
         else
           {}
@@ -376,8 +380,8 @@ namespace andromeda
 
   bool nlp_model<ENT, EXPRESSION>::apply_common_regex(subject<TEXT>& subj)
   {
-    //std::string orig = subj.text;
-    std::string text = subj.text;
+    //std::string orig = subj.get_text();
+    std::string text = subj.get_text();
 
     //std::size_t max_id = subj.get_max_ent_hash();
 
@@ -413,7 +417,7 @@ namespace andromeda
                       }
                     //LOG_S(INFO) << __FUNCTION__ << " " << l << ": " << orig;
 
-                    subj.instances.emplace_back(subj.get_hash(),
+                    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
                                                EXPRESSION, expr.get_subtype(),
                                                name, orig,
                                                char_range, ctok_range, wtok_range);
@@ -427,7 +431,7 @@ namespace andromeda
 
   bool nlp_model<ENT, EXPRESSION>::apply_apostrophe_regex(subject<TEXT>& subj)
   {
-    std::string text = subj.text;
+    std::string text = subj.get_text();
 
     //std::size_t max_id = subj.get_max_ent_hash();
 
@@ -456,7 +460,7 @@ namespace andromeda
                     orig = subj.from_ctok_range(ctok_range);
                     name = utils::replace(orig, "'", "");
 
-                    subj.instances.emplace_back(subj.get_hash(),
+                    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
                                                EXPRESSION, expr.get_subtype(),
                                                name, orig,
                                                char_range, ctok_range, wtok_range);
@@ -470,7 +474,7 @@ namespace andromeda
 
   bool nlp_model<ENT, EXPRESSION>::apply_abbr_regex(subject<TEXT>& subj)
   {
-    std::string text = subj.text;
+    std::string text = subj.get_text();
 
     for(std::size_t l=0; l<abbr_exprs.size(); l++)
       {
@@ -497,7 +501,7 @@ namespace andromeda
                     orig = subj.from_ctok_range(ctok_range);
                     name = utils::replace(orig, ".", "");
 
-                    subj.instances.emplace_back(subj.get_hash(),
+                    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
                                                EXPRESSION, expr.get_subtype(),
                                                name, orig,
                                                char_range, ctok_range, wtok_range);
@@ -533,7 +537,7 @@ namespace andromeda
 
   bool nlp_model<ENT, EXPRESSION>::apply_concatenation_regex(subject<TEXT>& subj)
   {
-    std::string text = subj.text;
+    std::string text = subj.get_text();
 
     // find all concat expressions
     for(auto& expr:concat_exprs)
@@ -569,7 +573,7 @@ namespace andromeda
 
                     if(keep)
                       {
-                        subj.instances.emplace_back(subj.get_hash(),
+                        subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
 						   EXPRESSION, expr.get_subtype(),
                                                    name, orig,
                                                    char_range, ctok_range, wtok_range);
@@ -590,12 +594,12 @@ namespace andromeda
       {
         for(std::size_t j=0; j<subj.num_cols(); j++)
           {
-            if(subj(i,j).text.size()==0)
+            if(subj(i,j).get_text().size()==0)
               {
                 continue;
               }
 
-            std::string text = subj(i,j).text;
+            std::string text = subj(i,j).get_text();
 
             // find all concat expressions
             for(auto& expr:concat_exprs)
@@ -631,7 +635,7 @@ namespace andromeda
 
                             if(keep)
                               {
-                                subj.instances.emplace_back(subj.get_hash(),
+                                subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
 							   EXPRESSION, expr.get_subtype(),
                                                            name, orig,
                                                            subj(i,j).get_coor(),
@@ -655,18 +659,16 @@ namespace andromeda
 
   bool nlp_model<ENT, EXPRESSION>::apply_latex_regex(subject<TEXT>& subj)
   {
-    //std::string orig = subj.text;
-    std::string text = subj.text;
+    //std::string orig = subj.get_text();
+    std::string text = subj.get_text();
 
     for(auto& ent:subj.instances)
       {
-        if(ent.model_type==CITE)
+        if(ent.is_model(CITE))
           {
-            utils::mask(text, ent.char_range);
+            utils::mask(text, ent.get_char_range());
           }
       }
-
-    //std::size_t max_id = subj.get_max_ent_hash();
 
     // find all latex expressions
     bool found_new = true;
@@ -696,7 +698,7 @@ namespace andromeda
                         orig = subj.from_ctok_range(ctok_range);
                         name = normalise(orig);
 
-                        subj.instances.emplace_back(subj.get_hash(),
+                        subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
                                                    EXPRESSION, expr.get_subtype(),
                                                    name, orig,
                                                    char_range, ctok_range, wtok_range);
@@ -716,16 +718,16 @@ namespace andromeda
     std::set<std::size_t> forbidden_inds={};
     for(auto& ent:subj.instances)
       {
-        if(ent.model_type==CITE)
+        if(ent.is_model(CITE))
           {
-            for(std::size_t ind=ent.wtok_range[0]; ind<ent.wtok_range[1]; ind++)
+            for(std::size_t ind=ent.get_wtok_range(0); ind<ent.get_wtok_range(1); ind++)
               {
                 forbidden_inds.insert(ind);
               }
           }
       }
 
-    auto& wtokens = subj.word_tokens;
+    auto& wtokens = subj.get_word_tokens();
 
     std::list<std::size_t> wtoken_inds={};
     for(std::size_t l=0; l<wtokens.size(); l++)
@@ -763,7 +765,7 @@ namespace andromeda
   void nlp_model<ENT, EXPRESSION>::add_concatenated_expression(subject<TEXT>& subj,
                                                                std::list<std::size_t> wtoken_inds)
   {
-    auto& wtokens = subj.word_tokens;
+    auto& wtokens = subj.get_word_tokens();
 
     std::set<std::string> special_begins  = {"\"", "'", "''", "{", "}", ".", ",", ";", "/"};
     std::set<std::string> special_endings = {".",",","?","!",":", ";", "\"", "'", "''"};
@@ -832,7 +834,7 @@ namespace andromeda
           {
             //std::size_t max_id = subj.get_max_ent_hash();
 
-            subj.instances.emplace_back(subj.get_hash(),
+            subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
                                        EXPRESSION, "wtoken-concatenation",
                                        name, orig,
                                        char_range, ctok_range, wtok_range);
@@ -850,13 +852,13 @@ namespace andromeda
       {
         auto& ent = *itr;
 
-        if(ent.model_type==EXPRESSION and ent.model_subtype=="common")
+        if(ent.is_model(EXPRESSION) and ent.is_subtype("common"))
           {
             itr++;
           }
-        else if(ent.model_type==EXPRESSION)
+        else if(ent.is_model(EXPRESSION))
           {
-            std::string orig = ent.orig;
+            std::string orig = ent.get_orig();
 
             int cnt_$       = utils::count(orig, '$');
             int diff_cnt_rb = utils::count_imbalance(orig, '(', ')');
@@ -864,7 +866,7 @@ namespace andromeda
             int diff_cnt_sb = utils::count_imbalance(orig, '[', ']');
 
             std::vector<pcre2_item> words;
-            std::string text = ent.orig;
+            std::string text = ent.get_orig();
 
             {
               while(true)
@@ -892,7 +894,7 @@ namespace andromeda
             //LOG_S(WARNING) << ent.name << " ->" << words.size();
             //for(auto word:words)
             //{
-            //LOG_S(WARNING) << "\t ->" << word.text;
+            //LOG_S(WARNING) << "\t ->" << word.get_text();
             //}
 
             if(orig.starts_with("(") and orig.ends_with(")"))
@@ -938,14 +940,14 @@ namespace andromeda
           {
             for(auto itr_j=insts.begin(); itr_j!=insts.end(); itr_j++)
               {
-                auto cr_i = itr_i->char_range;
-                auto cr_j = itr_j->char_range;
+                auto cr_i = itr_i->get_char_range();
+                auto cr_j = itr_j->get_char_range();
 
                 if(itr_i!=itr_j and
-                   itr_i->model_type==EXPRESSION and
-                   itr_j->model_type==EXPRESSION and
+                   itr_i->is_model(EXPRESSION) and
+                   itr_j->is_model(EXPRESSION) and
                    cr_i==cr_j and
-                   (itr_i->model_subtype)=="wtoken-concatenation")
+		   itr_i->is_subtype("wtoken-concatenation"))
                   {
                     //LOG_S(INFO) << "removing: " << itr_i->orig << "; " << itr_i->name;
 
@@ -953,8 +955,8 @@ namespace andromeda
                     erasing=true;
                   }
                 if(itr_i!=itr_j and
-                   itr_i->model_type==EXPRESSION and
-                   itr_j->model_type==EXPRESSION and
+                   itr_i->is_model(EXPRESSION) and
+                   itr_j->is_model(EXPRESSION) and
                    ((cr_j[0]<=cr_i[0] and cr_i[1]<cr_j[1]) or
                     (cr_j[0]<cr_i[0] and cr_i[1]<=cr_j[1]) ) )
                   {
@@ -963,8 +965,8 @@ namespace andromeda
                     itr_i = insts.erase(itr_i);
                     erasing=true;
                   }
-                else if(itr_i->model_type==EXPRESSION and
-                        (itr_j->model_type==NUMVAL or itr_j->model_type==NAME) and
+                else if(itr_i->is_model(EXPRESSION) and
+                        (itr_j->is_model(NUMVAL) or itr_j->is_model(NAME)) and
                         cr_i==cr_j)
                   {
                     //LOG_S(INFO) << "removing: " << itr_i->orig << "; " << itr_i->name;

@@ -11,8 +11,13 @@ namespace andromeda
 
     typedef std::tuple<index_type, index_type, std::string> candidate_type;
 
-    const static inline std::string char_tokens_lbl = "char-tokens"; 
-    const static inline std::string word_tokens_lbl = "word-tokens"; 
+    const static inline std::string text_lbl = "text";
+    const static inline std::string orig_lbl = "orig";
+
+    const static inline std::string text_hash_lbl = "text_hash";
+   
+    const static inline std::string char_tokens_lbl = "char_tokens"; 
+    const static inline std::string word_tokens_lbl = "word_tokens"; 
     
   public:
 
@@ -24,10 +29,26 @@ namespace andromeda
     text_element();
 
     bool is_valid();
+
+    std::size_t get_len() const { return len; } // number-of-chars
+    std::size_t get_dst() const { return dst; } // number-of-utf8-tokens
+
+    bool is_text_valid() { return text_valid; }
     
     void clear();
 
     hash_type get_text_hash() const { return text_hash; }
+
+    std::size_t get_num_wtokens() const { return word_tokens.size(); }
+    const word_token& get_wtoken(std::size_t i) const { return word_tokens.at(i); }
+
+    std::vector<word_token>& get_word_tokens() { return word_tokens; }
+
+    void init_pos() { for(auto& wtoken:word_tokens) { wtoken.set_pos(word_token::UNDEF_POS); } }
+
+    void set_pos(std::size_t i, std::string pos) { word_tokens.at(i).set_pos(pos); }
+    void set_tag(std::size_t i, std::string tag) { word_tokens.at(i).set_tag(tag); }
+    void set_word(std::size_t i, std::string wrd) { word_tokens.at(i).set_word(wrd); } 
     
     bool set_text(const std::string& ctext);
 
@@ -69,18 +90,23 @@ namespace andromeda
     void contract_char_tokens();
     void contract_word_tokens();
 
-  public:
+    //public:
 
-    bool text_valid;
-
-    uint64_t text_hash; // hash of normalised text
+  private:
     
+    bool text_valid;
+    uint64_t text_hash; // hash of normalised text
+
     std::size_t len; // number-of-chars
     std::size_t dst; // number-of-utf8-tokens
+
+  protected:
 
     std::string orig; // original text
     std::string text; // normalised text (removing confusables)
 
+  protected:
+    
     std::vector<char_token> char_tokens;
     std::vector<word_token> word_tokens;
   };
@@ -113,15 +139,15 @@ namespace andromeda
   {
     nlohmann::json elem = nlohmann::json::object({});
 
-    elem["text"] = text;
-    elem["orig"] = orig;
+    elem[text_lbl] = text;
+    elem[orig_lbl] = orig;
 
-    elem["text-hash"] = text_hash;
+    elem[text_hash_lbl] = text_hash;
 
     // in the default setting, word-tokens will not be dumped
-    if(filters.count("word-tokens"))
+    if(filters.count(word_tokens_lbl))
       {
-        elem["word-tokens"] = andromeda::to_json(word_tokens, text);	
+        elem[word_tokens_lbl] = andromeda::to_json(word_tokens, text);	
       }
     
     return elem;
@@ -133,14 +159,14 @@ namespace andromeda
     
     this->clear();
 
-    if(elem.count("orig"))
+    if(elem.count(orig_lbl))
       {
-	auto ctext = elem.at("orig").get<std::string>();
+	auto ctext = elem.at(orig_lbl).get<std::string>();
 	result = set_text(ctext);
       }
-    else if(elem.count("text"))
+    else if(elem.count(text_lbl))
       {
-	auto ctext = elem.at("text").get<std::string>();
+	auto ctext = elem.at(text_lbl).get<std::string>();
 	result = set_text(ctext);	
       }
     else
@@ -151,9 +177,9 @@ namespace andromeda
 	return false;
       }
     
-    if(elem.count("word-tokens"))
+    if(elem.count(word_tokens_lbl))
       {
-        const nlohmann::json& json_word_tokens = elem.at("word-tokens");
+        const nlohmann::json& json_word_tokens = elem.at(word_tokens_lbl);
         andromeda::from_json(word_tokens, json_word_tokens);	
       }    
 
@@ -195,17 +221,21 @@ namespace andromeda
   bool text_element::set_text(const std::string& ctext)
   {
     clear();
-
+    
+    //LOG_S(INFO) << ctext << " -> " << orig << " -> " << text;
+    
     orig = utils::strip(ctext);
     text = orig;
+    
+    //LOG_S(INFO) << ctext << " -> " << orig << " -> " << text;
     
     if(orig.size()==0)
       {
         return false;
       }
-
+    
     len = orig.size();
-
+    
     text_valid = utf8::is_valid(orig.c_str(), orig.c_str()+len);
     text_hash = utils::to_reproducible_hash(orig);
     
@@ -350,14 +380,15 @@ namespace andromeda
           {
             std::string tmp = char_tokens.at(j).str();
 
-            if(constants::spaces.count(tmp)      or
-               constants::brackets.count(tmp)    or
+	    if(constants::spaces.count(tmp) or
+               constants::brackets.count(tmp) or
                constants::punktuation.count(tmp) or
-               constants::numbers.count(tmp)      )
-              {
-                stop = true;
-              }
-
+	       constants::numbers.count(tmp))
+	      {
+		stop = true;
+	      }
+	    
+	    
             if((not stop) or (j-i)==0)
               {
                 dst += char_tokens.at(j).len();
@@ -371,6 +402,8 @@ namespace andromeda
               {
                 stop = true;
               }
+
+	    //LOG_S(INFO) << stop << "\t" << tmp << "\t" << ss.str();
           }
 
         std::string word = ss.str();
@@ -382,6 +415,42 @@ namespace andromeda
         l = j;
 
         char_l += dst;
+      }
+
+    // contract all pure numbers (0-9) into integers
+    auto curr = word_tokens.begin();
+    auto prev = word_tokens.begin();
+    while(curr != word_tokens.end())
+      {
+	if(curr==word_tokens.begin())
+	  {
+	    curr++;
+	  }
+	else
+	  {
+	    auto prev_wrd = prev->get_word();
+	    auto curr_wrd = curr->get_word();
+	    
+	    auto prev_char = prev_wrd.back();
+	    auto curr_char = curr_wrd.back();
+
+	    if('0'<=prev_char and prev_char<='9' and
+	       '0'<=curr_char and curr_char<='9' and
+	       prev->get_rng(1)==curr->get_rng(0))
+	      {
+		prev_wrd += curr_wrd;
+	
+		word_token token(prev->get_rng(0), prev_wrd);
+		*prev = token;
+	
+		curr = word_tokens.erase(curr);
+	      }
+	    else
+	      {
+		prev++;
+		curr++;
+	      }
+	  }
       }
   }
 
@@ -516,12 +585,12 @@ namespace andromeda
 
   std::string text_element::from_char_range(range_type char_range)
   {
-    std::size_t beg = char_range[0];
-    std::size_t len = char_range[1]-beg;
+    std::size_t beg_ = char_range[0];
+    std::size_t len_ = char_range[1]-beg_;
 
     if(char_range[1]<=text.size())
       {
-        return text.substr(beg, len);
+        return text.substr(beg_, len_);
       }
 
     LOG_S(ERROR) << "char-range is out of bounds: text-length: " << text.size()

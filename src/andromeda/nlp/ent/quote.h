@@ -84,12 +84,12 @@ namespace andromeda
 	return false;
       }
 
-    std::string text = subj.text;
+    std::string text = subj.get_text();
     for(auto& inst:subj.instances)
       {
-	if(dependencies.count(inst.model_type)==1)
+	if(dependencies.count(inst.get_model())==1)
 	  {
-	    utils::mask(text, inst.char_range);
+	    utils::mask(text, inst.get_char_range());
 	  }
       }
     
@@ -112,7 +112,7 @@ namespace andromeda
 		    std::string orig = subj.from_char_range(char_range);
 		    std::string name = subj.from_ctok_range(ctok_range);
 		    
-		    subj.instances.emplace_back(subj.get_hash(),
+		    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
 					       QUOTE, expr.get_subtype(),
 					       name, orig, 
 					       char_range, ctok_range, wtok_range);

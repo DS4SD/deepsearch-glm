@@ -14,7 +14,7 @@ namespace andromeda
 	grid.push_back({});
 	for(auto& item:row)
 	  {
-	    grid.back().push_back(item.text);
+	    grid.back().push_back(item.get_text());
 	  }
       }
 

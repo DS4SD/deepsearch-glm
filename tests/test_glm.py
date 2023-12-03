@@ -31,7 +31,7 @@ def test_02A_create_glm_from_doc():
     else:
         rdir = os.path.join(sdir, "glm_ref")
         odir = os.path.join(sdir, "glm_out")
-        
+    
     model_names = "semantic;name;verb;term;abbreviation"
     
     json_files = glob.glob(os.path.join(sdir, "docs/*.json"))

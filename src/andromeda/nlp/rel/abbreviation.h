@@ -75,28 +75,31 @@ namespace andromeda
 
   void nlp_model<REL, ABBREVIATION>::find_abbreviation_instances(subject<TEXT>& subj)
   {  
-    std::string& text = subj.text;
+    std::string text = subj.get_text();
 
     //std::size_t max_id = subj.get_max_ent_hash();
     
     for(auto& ent_j:subj.instances)
       {
-	auto& crng = ent_j.char_range;
+	auto crng = ent_j.get_char_range();
 
-	auto& ctok_rng = ent_j.ctok_range;	    
-	auto& wtok_rng = ent_j.wtok_range;	    
+	auto ctok_rng = ent_j.get_ctok_range();	    
+	auto wtok_rng = ent_j.get_wtok_range();	    
 
-	if(ent_j.model_type==TERM and
+	auto name = ent_j.get_name();
+	auto orig = ent_j.get_orig();
+	
+	if(ent_j.is_model(TERM) and
 	   0<crng[0] and crng[1]<text.size() and 
 	   text[crng[0]-1]=='(' and text[crng[1]]==')' and // preceded and postceded by bracket
-	   ent_j.orig.find(" ")==std::string::npos and // no spaces
-	   (not filter_01.match(ent_j.orig)) and  // no all lower-case words
-	   (not filter_02.match(ent_j.orig))) // no numbers
+	   orig.find(" ")==std::string::npos and // no spaces
+	   (not filter_01.match(orig)) and  // no all lower-case words
+	   (not filter_02.match(orig))) // no numbers
 	  {
-	    subj.instances.emplace_back(subj.get_hash(),
-				       ABBREVIATION, ent_j.model_subtype,
-				       ent_j.name, ent_j.orig,
-				       crng, ctok_rng, wtok_rng);
+	    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
+					ABBREVIATION, ent_j.get_subtype(),
+					//ent_j.get_name(), ent_j.get_orig(),
+					name, orig, crng, ctok_rng, wtok_rng);
 	  }
       }    
   }
@@ -109,17 +112,17 @@ namespace andromeda
       {
 	auto& ent_j = subj.instances.at(l);
 	
-	if(ent_j.model_type==ABBREVIATION)
+	if(ent_j.is_model(ABBREVIATION))
 	  {
-	    i0_to_abbr[ent_j.wtok_range[1]] = l;
+	    i0_to_abbr[ent_j.get_wtok_range(1)] = l;
 	  }
-	else if(ent_j.model_type==NAME)
+	else if(ent_j.is_model(NAME))
 	  {
-	    i1_to_name[ent_j.wtok_range[1]] = l;
+	    i1_to_name[ent_j.get_wtok_range(1)] = l;
 	  }
-	else if(ent_j.model_type==TERM)
+	else if(ent_j.is_model(TERM))
 	  {
-	    i1_to_term[ent_j.wtok_range[1]] = l;
+	    i1_to_term[ent_j.get_wtok_range(1)] = l;
 	  }
       }
 

@@ -39,8 +39,8 @@ namespace andromeda
 
     bool contract_word_tokens(subject<TEXT>& subj);
 
-    void pre_process(std::vector<word_token>& wtokens,
-		     range_type& rng,
+    void pre_process(const std::vector<word_token>& wtokens,
+		     const range_type rng,
                      std::vector<pos_token_type>& pos_tokens,
                      std::map<index_type, index_type>& ptid_to_wtid);
     
@@ -126,7 +126,9 @@ namespace andromeda
   template<typename subject_type>
   bool nlp_model<POS, LAPOS>::check_dependency(const std::set<model_name>& deps,
 					       subject_type& subj, std::string& lang)
-  {    
+  {
+    //LOG_S(INFO) << __FUNCTION__;
+    
     bool static_dependency = satisfies_dependencies(subj, deps);
 
     bool dyn_dependency=false;
@@ -134,9 +136,9 @@ namespace andromeda
     for(auto& prop:subj.properties)
       {
         if(prop.get_type()==to_key(LANGUAGE) and
-           pos_models.count(prop.get_name())==1)
+           pos_models.count(prop.get_label())==1)
           {
-            lang = prop.get_name();
+            lang = prop.get_label();
             dyn_dependency=true;
           }
       }
@@ -147,14 +149,17 @@ namespace andromeda
   bool nlp_model<POS, LAPOS>::apply(subject<TEXT>& subj)
   {
     // initialise
-    for(auto& token:subj.word_tokens)
-      {
-        token.set_pos(word_token::UNDEF_POS);
-      }
+    //for(auto& token:subj.get_word_tokens())
+    //{
+    //token.set_pos(word_token::UNDEF_POS);
+    //}
 
+    subj.init_pos();
+    
     std::string lang="null";
     if(not check_dependency(text_dependencies, subj, lang))
       {
+	//LOG_S(WARNING) << "skipping POS ...";
         return false;
       }
 
@@ -171,23 +176,85 @@ namespace andromeda
     std::vector<pos_token_type> pos_tokens={};
     std::map<index_type, index_type> ptid_to_wtid={};
 
-    auto& wtokens = subj.word_tokens;
+    auto& wtokens = subj.get_word_tokens();
     auto& instances = subj.instances;
 
+    /*
     // iterate over the sentences ...
     for(auto& inst:instances)
       {
-        if(inst.model_type!=SENTENCE)
+	//LOG_S(INFO) << "inst: " << to_key(inst.get_model())
+	//<< "\t" << SENTENCE << "\t" << inst.get_model()
+	//<< "\t" << inst.is_model(SENTENCE);
+	
+        if(not inst.is_model(SENTENCE))
           {
+	    //LOG_S(WARNING) << " --> skipping inst ...";
             continue;
           }
 
-        pre_process(wtokens, inst.wtok_range, pos_tokens, ptid_to_wtid);
+        pre_process(wtokens, inst.get_wtok_range(), pos_tokens, ptid_to_wtid);
 
         pos_model->predict(pos_tokens);
 
         post_process(wtokens, pos_tokens, ptid_to_wtid);
       }
+    */
+
+    std::vector<range_type> sent_ranges={};
+    for(auto& inst:instances)
+      {
+        if(inst.is_model(SENTENCE))
+          {
+	    sent_ranges.push_back(inst.get_wtok_range());
+
+	    //LOG_S(INFO) << "sentence (" << inst.get_subtype() << ") : "
+	    //<< sent_ranges.back().at(0) << ", "
+	    //<< sent_ranges.back().at(1);
+          }
+      }
+
+    /*
+    std::vector<range_type> ranges={};
+    for(auto& rng:sent_ranges)
+      {
+        if(ranges.size()==0 and rng.at(0)==0)
+          {
+	    ranges.push_back(rng);
+          }
+	else if(ranges.size()==0 and rng.at(0)>0)
+          {
+	    ranges.push_back({0, rng.at(0)});
+	    ranges.push_back(rng);
+          }
+	else if(ranges.back().at(1)==rng.at(0))
+          {
+	    ranges.push_back(rng);
+          }
+	else if(ranges.back().at(1)<rng.at(0))
+          {
+	    ranges.push_back({ranges.back().at(1), rng.at(0)});
+	    ranges.push_back(rng);
+          }	
+      }
+
+    if(ranges.size()>0 and ranges.back().at(1)<wtokens.size())
+      {
+	ranges.push_back({ranges.back().at(1), wtokens.size()});
+      }
+    */
+    
+    //for(auto& rng:ranges)
+    for(auto& rng:sent_ranges)
+      {
+	//LOG_S(INFO) << "range: " << rng.at(0) << ", " << rng.at(1);
+	
+        pre_process(wtokens, rng, pos_tokens, ptid_to_wtid);
+
+        pos_model->predict(pos_tokens);
+
+        post_process(wtokens, pos_tokens, ptid_to_wtid);
+      }    
   }
   
   bool nlp_model<POS, LAPOS>::apply(subject<TABLE>& subj)
@@ -204,7 +271,7 @@ namespace andromeda
       {
 	for(std::size_t j=0; j<subj.num_cols(); j++)
 	  {	    
-	    auto& word_tokens = subj(i,j).word_tokens;
+	    auto& word_tokens = subj(i,j).get_word_tokens();
 	  	    
 	    // initialise
 	    for(auto& word_token:word_tokens)
@@ -235,8 +302,8 @@ namespace andromeda
   }
 
 
-  void nlp_model<POS, LAPOS>::pre_process(std::vector<word_token>& wtokens,
-					  range_type& rng,
+  void nlp_model<POS, LAPOS>::pre_process(const std::vector<word_token>& wtokens,
+					  const range_type rng,
                                           std::vector<pos_token_type>& pos_tokens,
                                           std::map<index_type, index_type>& ptid_to_wtid)  
   {

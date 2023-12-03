@@ -82,14 +82,14 @@ namespace andromeda
 
     base_instance();
 
-    base_instance(hash_type subj_hash,
+    base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
                   model_name type,
                   range_type char_range,
                   range_type ctok_range,
                   range_type wtok_range);
 
     // Paragraph entity
-    base_instance(hash_type subj_hash,
+    base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
                   model_name type, std::string subtype,
                   std::string name, std::string orig,
                   range_type char_range,
@@ -97,7 +97,7 @@ namespace andromeda
                   range_type wtok_range);
 
     // Table entity
-    base_instance(hash_type subj_hash,
+    base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
                   model_name type, std::string subtype,
                   std::string name, std::string orig,
                   table_range_type coor,
@@ -107,9 +107,11 @@ namespace andromeda
                   range_type ctok_range,
                   range_type wtok_range);
 
+    /*
     // Document entity
     base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
-                  const base_instance& other);
+    const base_instance& other);
+    */
 
     bool is_wtok_range_match() { return wtok_range_match; }
 
@@ -119,7 +121,39 @@ namespace andromeda
     std::size_t ctoken_len() { return (ctok_range[1]-ctok_range[0]);}
     std::size_t wtoken_len() { return (wtok_range[1]-wtok_range[0]);}
 
-    std::string get_name() const;
+    hash_type get_subj_hash() const { return subj_hash; }
+    subject_name get_subj_name() const { return subj_name; }
+    std::string get_subj_path() const { return subj_path; }
+
+    hash_type get_ehash() const { return ehash; } // entity-hash
+    hash_type get_ihash() const { return ihash; }  // instance-hash: combination of subj-hash, ent-hash and position
+
+    std::string get_name() const { return name; }
+    std::string get_orig() const { return orig; }
+
+    model_name get_model() const { return model_type; }
+
+    std::string get_type() const { return to_key(model_type); }
+    std::string get_subtype() const { return model_subtype; }
+
+    bool is_in(subject_name sn) const { return (sn==subj_name);}
+    bool is_model(model_name mt) const { return (mt==model_type);}
+    bool is_subtype(std::string st) const { return (st==model_subtype);}
+
+    range_type get_char_range() const { return char_range; }
+    index_type get_char_range(index_type i) const { return char_range.at(i); }
+
+    range_type get_ctok_range() const { return ctok_range; }
+    index_type get_ctok_range(index_type i) const { return ctok_range.at(i); }
+
+    range_type get_wtok_range() const { return wtok_range; }
+    index_type get_wtok_range(index_type i) const { return wtok_range.at(i); }
+
+    range_type get_coor() const { return coor; }
+    index_type get_coor(index_type i) const { return coor.at(i); }
+
+    void set_ctok_range(range_type cr) { ctok_range = cr; }
+    void set_wtok_range(range_type wr) { wtok_range = wr; }
 
     std::string get_reference() const;
 
@@ -139,14 +173,16 @@ namespace andromeda
     friend bool operator<(const base_instance& lhs,
                           const base_instance& rhs);
 
+    friend bool operator==(const base_instance& lhs,
+                           const base_instance& rhs);
+
   private:
 
     void initialise_hashes();
 
-  public:
+  protected:
 
     hash_type subj_hash; // hash of the subject from which the entity comes
-
     subject_name subj_name;
     std::string subj_path;
 
@@ -154,7 +190,7 @@ namespace andromeda
     hash_type ihash; // instance-hash: combination of subj-hash, ent-hash and position
 
     val_type conf;
-    
+
     table_range_type coor; // table-coors (ignore for text)
     table_range_type row_span; // table-spans (ignore for text)
     table_range_type col_span; // table-spans (ignore for text)
@@ -174,14 +210,14 @@ namespace andromeda
   base_instance::base_instance()
   {}
 
-  base_instance::base_instance(hash_type subj_hash,
+  base_instance::base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
                                model_name type,
                                range_type char_range,
                                range_type ctok_range,
                                range_type wtok_range):
     subj_hash(subj_hash),
-    subj_name(TEXT),
-    subj_path("#"),
+    subj_name(subj_name),
+    subj_path(subj_path),
 
     ehash(DEFAULT_HASH),
     ihash(DEFAULT_HASH),
@@ -208,21 +244,23 @@ namespace andromeda
     assert(ctok_range[0]<=ctok_range[1]);
     assert(wtok_range[0]<=wtok_range[1]);
 
+    assert(subj_name==TEXT);
+    assert(subj_path!="");
+
     initialise_hashes();
 
     wtok_range_match = (wtok_range[0]<wtok_range[1]);
   }
 
-  base_instance::base_instance(hash_type subj_hash,
+  base_instance::base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
                                model_name type, std::string subtype,
                                std::string name, std::string orig,
                                range_type char_range,
                                range_type ctok_range,
                                range_type wtok_range):
-
     subj_hash(subj_hash),
-    subj_name(TEXT),
-    subj_path("#"),
+    subj_name(subj_name),
+    subj_path(subj_path),
 
     ehash(DEFAULT_HASH),
     ihash(DEFAULT_HASH),
@@ -249,12 +287,15 @@ namespace andromeda
     assert(ctok_range[0]<ctok_range[1]);
     assert(wtok_range[0]<=wtok_range[1]);
 
+    assert(subj_name==TEXT);
+    assert(subj_path!="");
+
     initialise_hashes();
 
     wtok_range_match = (wtok_range[0]<wtok_range[1]);
   }
 
-  base_instance::base_instance(hash_type subj_hash,
+  base_instance::base_instance(hash_type subj_hash, subject_name subj_name, std::string subj_path,
                                model_name type, std::string subtype,
                                std::string name, std::string orig,
                                table_range_type coor,
@@ -265,8 +306,8 @@ namespace andromeda
                                range_type wtok_range):
 
     subj_hash(subj_hash),
-    subj_name(TABLE),
-    subj_path("#"),
+    subj_name(subj_name),
+    subj_path(subj_path),
 
     ehash(DEFAULT_HASH),
     ihash(DEFAULT_HASH),
@@ -289,6 +330,12 @@ namespace andromeda
 
     wtok_range_match(true)
   {
+    assert(subj_name==TABLE);
+    assert(subj_path!="");
+
+    assert(name.size()>0);
+    assert(orig.size()>0);
+
     assert(char_range[0]<=char_range[1]);
     assert(ctok_range[0]<=ctok_range[1]);
     assert(wtok_range[0]<=wtok_range[1]);
@@ -298,41 +345,11 @@ namespace andromeda
     wtok_range_match = (wtok_range[0]<wtok_range[1]);
   }
 
-  base_instance::base_instance(hash_type subj_hash,
-			       subject_name subj_name,
-			       std::string subj_path,
-                               const base_instance& other):
-    subj_hash(subj_hash),
-    subj_name(subj_name),
-    subj_path(subj_path),
-
-    ehash(other.ehash),
-    ihash(other.ihash),
-
-    conf(other.conf),
-
-    coor(other.coor),
-    row_span(other.row_span),
-    col_span(other.col_span),
-
-    model_type(other.model_type),
-    model_subtype(other.model_subtype),
-
-    name(other.name),
-    orig(other.orig),
-
-    char_range(other.char_range),
-    ctok_range(other.ctok_range),
-    wtok_range(other.wtok_range),
-
-    wtok_range_match(other.wtok_range_match)
-  {}
-
   void base_instance::initialise_hashes()
   {
     //ehash = utils::to_hash(name);
     ehash = utils::to_reproducible_hash(name);
-    
+
     std::vector<hash_type> hash_vec =
       {
         subj_hash,
@@ -344,7 +361,7 @@ namespace andromeda
       };
 
     //LOG_S(INFO) << "'" << name << "' => ehash: " << ehash << " => ihash: " << ihash;
-    
+
     ihash = utils::to_hash(hash_vec);
   }
 
@@ -371,369 +388,462 @@ namespace andromeda
 
   nlohmann::json base_instance::to_json_row() const
   {
-    auto row = nlohmann::json::array({to_key(model_type), model_subtype,
-        subj_hash, to_string(subj_name), subj_path,
-        std::round(100.0*conf)/100.0,
-	ehash, ihash,
-        coor[0], coor[1],
-        char_range[0], char_range[1],
-        ctok_range[0], ctok_range[1],
-        wtok_range[0], wtok_range[1],
-        wtok_range_match,
-        name, orig});
-
-    assert(row.size()==headers().size());
-
-    return row;
-  }
-  
-  bool base_instance::from_json_row(const nlohmann::json& row)
-  {
-    if((not row.is_array()) or row.size()!=19)
-      {
-        LOG_S(ERROR) << "inconsistent entity-row: " << row.dump();
-        return false;
-      }
-
-    model_type = to_modelname(row.at(0).get<std::string>());
-    model_subtype = row.at(1).get<std::string>();
-
-    subj_hash = row.at(2).get<hash_type>();
-    subj_name = to_subject_name(row.at(3).get<std::string>());
-    subj_path = row.at(4).get<std::string>();
-
-    conf = (row.at(5).get<val_type>())/100.0;
-    //conf = (row.at(5).get<int>())/100.0;
-
-    ehash = row.at(6).get<hash_type>();
-    ihash = row.at(7).get<hash_type>();
-
-    coor.at(0) = row.at(8).get<ind_type>();
-    coor.at(1) = row.at(9).get<ind_type>();
-
-    char_range.at(0) = row.at(10).get<ind_type>();
-    char_range.at(1) = row.at(11).get<ind_type>();
-
-    ctok_range.at(0) = row.at(12).get<ind_type>();
-    ctok_range.at(1) = row.at(13).get<ind_type>();
-
-    wtok_range.at(0) = row.at(14).get<ind_type>();
-    wtok_range.at(1) = row.at(15).get<ind_type>();
-
-    wtok_range_match = row.at(16).get<bool>();
-
-    name = row.at(17).get<std::string>();
-    orig = row.at(18).get<std::string>();
-
-    return true;
-  }
-
-  std::vector<std::string> base_instance::headers(subject_name subj)
-  {
-    switch(subj)
-      {
-      case TEXT:
-        {
-          return TEXT_HEADERS;
-        }
-        break;
-
-      case TABLE:
-        {
-          return TABLE_HEADERS;
-        }
-        break;
-
-      default:
-        {
-          return HEADERS;
-        }
-      }
-  }
-
-  nlohmann::json base_instance::to_json_row(subject_name subj) const
-  {
     nlohmann::json row;
 
-    switch(subj)
-      {
-      case TEXT:
-        {
-          row = nlohmann::json::array({to_key(model_type), model_subtype,
-              utils::round_conf(conf),
-	      ehash, ihash,
-              char_range[0], char_range[1],
-              ctok_range[0], ctok_range[1],
-              wtok_range[0], wtok_range[1],
-              wtok_range_match,
-              name, orig});
-        }
-        break;
-
-      case TABLE:
-        {
-          row = nlohmann::json::array({to_key(model_type), model_subtype,
-              utils::round_conf(conf),
-	      ehash, ihash,
-              coor[0], coor[1],
-              char_range[0], char_range[1],
-              ctok_range[0], ctok_range[1],
-              wtok_range[0], wtok_range[1],
-              wtok_range_match,
-              name, orig});
-
-        }
-        break;
-
-      default:
-        {
-          row = nlohmann::json::array({to_key(model_type), model_subtype,
-              utils::round_conf(conf),
-	      ehash, ihash,
-              coor[0], coor[1],
-              char_range[0], char_range[1],
-              ctok_range[0], ctok_range[1],
-              wtok_range[0], wtok_range[1],
-              wtok_range_match,
-              name, orig});
-        }
-      }
-
-    if(row.size()!=headers(subj).size())
-      {
-        LOG_S(ERROR);
-      }
-
-    return row;
-  }
-
-  std::vector<std::string> base_instance::short_text_headers()
-  {
-    return SHORT_TEXT_HEADERS;
-  }
-
-  std::vector<std::string> base_instance::short_table_headers()
-  {
-    return SHORT_TABLE_HEADERS;
-  }
-
-  std::string base_instance::get_name() const
-  {
-    return name;
-  }
-
-  std::string base_instance::get_reference() const
-  {
-    std::string ref = subj_path;
-
-    ref += std::to_string(ehash)+"_"+
-      std::to_string(model_type)+"_coor_"+
-      std::to_string(coor.at(0))+"-"+
-      std::to_string(coor.at(1))+"_char_"+
-      std::to_string(char_range.at(0))+"-"+
-      std::to_string(char_range.at(1));
-
-    return ref;
-  }
-
-  nlohmann::json base_instance::to_json() const
-  {
-    nlohmann::json result = nlohmann::json::object();
-    {
-      result["ehash"] = ehash;
-      result["ihash"] = ihash;
-
-      result["confidence"] = utils::round_conf(conf);
-
-      result["model-type"] = to_key(model_type);
-      result["model-subtype"] = model_subtype;
-
-      result["name"] = name;
-      result["orig"] = orig;
-
-      result["coor"] = coor;
-      result["row-span"] = row_span;
-      result["col-span"] = col_span;
-
-      result["char-range"] = char_range;
-      result["ctok-range"] = ctok_range;
-      result["wtok-range"] = wtok_range;
-
-      result["wtok-range-match"] = wtok_range_match;
-    }
-
-    return result;
-  }
-
-
-  std::vector<std::string> base_instance::to_row(std::size_t col_width)
-  {
     switch(subj_name)
       {
       case TEXT:
         {
-          std::vector<std::string> row =
-            {
-              to_key(model_type),
-              model_subtype,
-
-              std::to_string(utils::round_conf(conf)),
-
-              std::to_string(ehash),
-              std::to_string(ihash),
-
-              std::to_string(char_range[0]),
-              std::to_string(char_range[1]),
-
-              wtok_range_match? "true":"false",
-
-              utils::to_fixed_size(name, col_width),
-              utils::to_fixed_size(orig, col_width)
-            };
-          assert(row.size()==SHORT_TEXT_HEADERS.size());
-          return row;
+          row = nlohmann::json::array({to_key(model_type), model_subtype,
+              subj_hash, to_string(subj_name), subj_path,
+              std::round(100.0*conf)/100.0,
+              ehash, ihash,              
+	      nlohmann::json::value_t::null, nlohmann::json::value_t::null, //coor[0], coor[1],
+              char_range[0], char_range[1],
+              ctok_range[0], ctok_range[1],
+              wtok_range[0], wtok_range[1],
+              wtok_range_match,
+              name, orig});
         }
         break;
 
       case TABLE:
         {
-          std::vector<std::string> row =
-            {
-              to_key(model_type),
-              model_subtype,
-
-              std::to_string(utils::round_conf(conf)),
-
-              std::to_string(ehash),
-              std::to_string(ihash),
-
-              std::to_string(coor[0]),
-              std::to_string(coor[1]),
-
-              std::to_string(char_range[0]),
-              std::to_string(char_range[1]),
-
-              wtok_range_match? "true":"false",
-
-              utils::to_fixed_size(name, col_width),
-              utils::to_fixed_size(orig, col_width)
-            };
-          assert(row.size()==SHORT_TABLE_HEADERS.size());
-
-          return row;
+          row = nlohmann::json::array({to_key(model_type), model_subtype,
+              subj_hash, to_string(subj_name), subj_path,
+              std::round(100.0*conf)/100.0,
+              ehash, ihash,
+              coor[0], coor[1],
+              char_range[0], char_range[1],
+              ctok_range[0], ctok_range[1],
+              wtok_range[0], wtok_range[1],
+              wtok_range_match,
+              name, orig});
         }
-        break;
 
       default:
-        {
-          std::vector<std::string> row =
-            {
-              to_key(model_type),
-              model_subtype,
-
-              std::to_string(utils::round_conf(conf)),
-
-              std::to_string(ehash),
-              std::to_string(ihash),
-
-              std::to_string(char_range[0]),
-              std::to_string(char_range[1]),
-
-              wtok_range_match? "true":"false",
-
-              utils::to_fixed_size(name, col_width),
-              utils::to_fixed_size(orig, col_width)
-            };
-          assert(row.size()==SHORT_TEXT_HEADERS.size());
-
-          return row;
-        }
+	{
+          row = nlohmann::json::array({to_key(model_type), model_subtype,
+              subj_hash, to_string(subj_name), subj_path,
+              std::round(100.0*conf)/100.0,
+              ehash, ihash,
+              coor[0], coor[1],
+              char_range[0], char_range[1],
+              ctok_range[0], ctok_range[1],
+              wtok_range[0], wtok_range[1],
+              wtok_range_match,
+              name, orig});	  
+	}
       }
-  }
-
-  std::vector<std::string> base_instance::to_row(std::string& text,
-                                                 std::size_t name_width,
-                                                 std::size_t orig_width)
-  {
-    std::string tmp_0=name;
-
-    std::string tmp_1=orig;
-    if(tmp_1.size()==0)
-      {
-        tmp_1 = text.substr(char_range[0], char_range[1]-char_range[0]);
-      }
-
-    std::vector<std::string> row =
-      { to_key(model_type), model_subtype,
-        std::to_string(utils::round_conf(conf)),
-	std::to_string(ehash), std::to_string(ihash),
-        std::to_string(char_range[0]), std::to_string(char_range[1]),
-        wtok_range_match? "true":"false",
-        utils::to_fixed_size(tmp_0, name_width),
-        utils::to_fixed_size(tmp_1, orig_width)
-      };
-    assert(row.size()==SHORT_TEXT_HEADERS.size());
+    assert(row.size()==headers().size());
 
     return row;
   }
 
-  bool operator<(const base_instance& lhs,
-                 const base_instance& rhs)
-  {
-    if(lhs.subj_path==rhs.subj_path)
-      {
-        if(lhs.coor[0]==rhs.coor[0])
-          {
-            if(lhs.coor[1]==rhs.coor[1])
-              {
-                if(lhs.char_range[0]==rhs.char_range[0])
-                  {
-		    if(lhs.char_range[1]==rhs.char_range[1])
-		      {
-			//LOG_S(INFO) << lhs.model_type << "\t" << rhs.model_type;
-			
-			const auto& ltype = lhs.model_type;
-			const auto& rtype = rhs.model_type; 
-			
-			if(ltype==rtype)
-			  {
-			    const auto& lstype = lhs.model_subtype;
-			    const auto& rstype = rhs.model_subtype; 
-			    
-			    //LOG_S(INFO) << lhs.model_subtype << "\t" << rhs.model_subtype;
-			    return ((lstype.compare(rstype))<0);
-			  }
-			else
-			  {
-			    return (ltype<rtype);
-			  }
-		      }
-		    else
-		      {
-			return lhs.char_range[1]>rhs.char_range[1];
-		      }
-                  }
-                else
-                  {
-                    return lhs.char_range[0]<rhs.char_range[0];
-                  }
-              }
-            else
-              {
-                return lhs.coor[1]<rhs.coor[1];
-              }
-          }
-        else
-          {
-            return lhs.coor[0]<rhs.coor[0];
-          }
-      }
-    else
-      {
-        return (lhs.subj_path==rhs.subj_path);
-      }
-  }
+    bool base_instance::from_json_row(const nlohmann::json& row)
+    {
+      if((not row.is_array()) or row.size()!=19)
+        {
+          LOG_S(ERROR) << "inconsistent entity-row: " << row.dump();
+          return false;
+        }
 
-}
+      model_type = to_modelname(row.at(0).get<std::string>());
+      model_subtype = row.at(1).get<std::string>();
+
+      subj_hash = row.at(2).get<hash_type>();
+      subj_name = to_subject_name(row.at(3).get<std::string>());
+      subj_path = row.at(4).get<std::string>();
+
+      conf = (row.at(5).get<val_type>());
+
+      ehash = row.at(6).get<hash_type>();
+      ihash = row.at(7).get<hash_type>();
+
+      coor = DEFAULT_COOR;
+      if(not row.at(8).is_null())
+	{
+	  coor.at(0) = row.at(8).get<ind_type>();
+	}
+      
+      if(not row.at(9).is_null())
+	{
+	  coor.at(1) = row.at(9).get<ind_type>();
+	}
+      
+      char_range.at(0) = row.at(10).get<ind_type>();
+      char_range.at(1) = row.at(11).get<ind_type>();
+
+      ctok_range.at(0) = row.at(12).get<ind_type>();
+      ctok_range.at(1) = row.at(13).get<ind_type>();
+
+      wtok_range.at(0) = row.at(14).get<ind_type>();
+      wtok_range.at(1) = row.at(15).get<ind_type>();
+
+      wtok_range_match = row.at(16).get<bool>();
+
+      name = row.at(17).get<std::string>();
+      orig = row.at(18).get<std::string>();
+
+      return true;
+    }
+
+    std::vector<std::string> base_instance::headers(subject_name subj)
+    {
+      switch(subj)
+        {
+        case TEXT:
+          {
+            return TEXT_HEADERS;
+          }
+          break;
+
+        case TABLE:
+          {
+            return TABLE_HEADERS;
+          }
+          break;
+
+        default:
+          {
+            return HEADERS;
+          }
+        }
+    }
+
+    nlohmann::json base_instance::to_json_row(subject_name subj) const
+    {
+      nlohmann::json row;
+
+      switch(subj)
+        {
+        case TEXT:
+          {
+            row = nlohmann::json::array({to_key(model_type), model_subtype,
+                utils::round_conf(conf),
+                ehash, ihash,
+                char_range[0], char_range[1],
+                ctok_range[0], ctok_range[1],
+                wtok_range[0], wtok_range[1],
+                wtok_range_match,
+                name, orig});
+          }
+          break;
+
+        case TABLE:
+          {
+            row = nlohmann::json::array({to_key(model_type), model_subtype,
+                utils::round_conf(conf),
+                ehash, ihash,
+                coor[0], coor[1],
+                char_range[0], char_range[1],
+                ctok_range[0], ctok_range[1],
+                wtok_range[0], wtok_range[1],
+                wtok_range_match,
+                name, orig});
+
+          }
+          break;
+
+        default:
+          {
+            row = nlohmann::json::array({to_key(model_type), model_subtype,
+                utils::round_conf(conf),
+                ehash, ihash,
+                coor[0], coor[1],
+                char_range[0], char_range[1],
+                ctok_range[0], ctok_range[1],
+                wtok_range[0], wtok_range[1],
+                wtok_range_match,
+                name, orig});
+          }
+        }
+
+      if(row.size()!=headers(subj).size())
+        {
+          LOG_S(ERROR);
+        }
+
+      return row;
+    }
+
+    std::vector<std::string> base_instance::short_text_headers()
+    {
+      return SHORT_TEXT_HEADERS;
+    }
+
+    std::vector<std::string> base_instance::short_table_headers()
+    {
+      return SHORT_TABLE_HEADERS;
+    }
+
+    std::string base_instance::get_reference() const
+    {
+      std::string ref = subj_path;
+
+      ref += std::to_string(ehash)+"_"+
+        std::to_string(model_type)+"_coor_"+
+        std::to_string(coor.at(0))+"-"+
+        std::to_string(coor.at(1))+"_char_"+
+        std::to_string(char_range.at(0))+"-"+
+        std::to_string(char_range.at(1));
+
+      return ref;
+    }
+
+    nlohmann::json base_instance::to_json() const
+    {
+      nlohmann::json result = nlohmann::json::object();
+      {
+        result["subj_hash"] = subj_hash;
+        result["subj_name"] = to_string(subj_name);
+        result["subj_path"] = subj_path;
+
+        result["ehash"] = ehash;
+        result["ihash"] = ihash;
+
+        result["confidence"] = utils::round_conf(conf);
+
+        result["model-type"] = to_key(model_type);
+        result["model-subtype"] = model_subtype;
+
+        result["name"] = name;
+        result["orig"] = orig;
+
+        result["coor"] = coor;
+        result["row-span"] = row_span;
+        result["col-span"] = col_span;
+
+        result["char-range"] = char_range;
+        result["ctok-range"] = ctok_range;
+        result["wtok-range"] = wtok_range;
+
+        result["wtok-range-match"] = wtok_range_match;
+      }
+
+      return result;
+    }
+
+    std::vector<std::string> base_instance::to_row(std::size_t col_width)
+    {
+      switch(subj_name)
+        {
+        case TEXT:
+          {
+            std::vector<std::string> row =
+              {
+                to_key(model_type),
+                model_subtype,
+
+                std::to_string(utils::round_conf(conf)),
+
+                std::to_string(ehash),
+                std::to_string(ihash),
+
+                std::to_string(char_range[0]),
+                std::to_string(char_range[1]),
+
+                wtok_range_match? "true":"false",
+
+                utils::to_fixed_size(name, col_width),
+                utils::to_fixed_size(orig, col_width)
+              };
+            assert(row.size()==SHORT_TEXT_HEADERS.size());
+            return row;
+          }
+          break;
+
+        case TABLE:
+          {
+            std::vector<std::string> row =
+              {
+                to_key(model_type),
+                model_subtype,
+
+                std::to_string(utils::round_conf(conf)),
+
+                std::to_string(ehash),
+                std::to_string(ihash),
+
+                std::to_string(coor[0]),
+                std::to_string(coor[1]),
+
+                std::to_string(char_range[0]),
+                std::to_string(char_range[1]),
+
+                wtok_range_match? "true":"false",
+
+                utils::to_fixed_size(name, col_width),
+                utils::to_fixed_size(orig, col_width)
+              };
+            assert(row.size()==SHORT_TABLE_HEADERS.size());
+
+            return row;
+          }
+          break;
+
+        default:
+          {
+            std::vector<std::string> row =
+              {
+                to_key(model_type),
+                model_subtype,
+
+                std::to_string(utils::round_conf(conf)),
+
+                std::to_string(ehash),
+                std::to_string(ihash),
+
+                std::to_string(char_range[0]),
+                std::to_string(char_range[1]),
+
+                wtok_range_match? "true":"false",
+
+                utils::to_fixed_size(name, col_width),
+                utils::to_fixed_size(orig, col_width)
+              };
+            assert(row.size()==SHORT_TEXT_HEADERS.size());
+
+            return row;
+          }
+        }
+    }
+
+    std::vector<std::string> base_instance::to_row(std::string& text,
+                                                   std::size_t name_width,
+                                                   std::size_t orig_width)
+    {
+      std::string tmp_0=name;
+
+      std::string tmp_1=orig;
+      if(tmp_1.size()==0)
+        {
+          tmp_1 = text.substr(char_range[0], char_range[1]-char_range[0]);
+        }
+
+      std::vector<std::string> row =
+        { to_key(model_type), model_subtype,
+          std::to_string(utils::round_conf(conf)),
+          std::to_string(ehash), std::to_string(ihash),
+          std::to_string(char_range[0]), std::to_string(char_range[1]),
+          wtok_range_match? "true":"false",
+          utils::to_fixed_size(tmp_0, name_width),
+          utils::to_fixed_size(tmp_1, orig_width)
+        };
+      assert(row.size()==SHORT_TEXT_HEADERS.size());
+
+      return row;
+    }
+
+    bool operator==(const base_instance& lhs,
+                    const base_instance& rhs)
+    {
+      return ((lhs.model_type==rhs.model_type) and
+              (lhs.model_subtype==rhs.model_subtype) and
+              (lhs.subj_name==rhs.subj_name) and
+              (lhs.subj_path==rhs.subj_path) and
+              (lhs.coor[0]==rhs.coor[0]) and
+              (lhs.coor[1]==rhs.coor[1]) and
+              (lhs.char_range[0]==rhs.char_range[0]) and
+              (lhs.char_range[1]==rhs.char_range[1]));
+    }
+
+    bool operator<(const base_instance& lhs,
+                   const base_instance& rhs)
+    {
+      if(lhs.subj_name==rhs.subj_name)
+        {
+          if(lhs.subj_path==rhs.subj_path)
+            {
+              if(lhs.coor[0]==rhs.coor[0])
+                {
+                  if(lhs.coor[1]==rhs.coor[1])
+                    {
+                      if(lhs.char_range[0]==rhs.char_range[0])
+                        {
+                          if(lhs.char_range[1]==rhs.char_range[1])
+                            {
+			      if(lhs.model_type==rhs.model_type)
+				{
+				  return (lhs.model_subtype<rhs.model_subtype);
+				}
+			      else
+				{
+				  return (lhs.model_type<rhs.model_type);
+				}
+			      
+			      /*
+                              //LOG_S(INFO) << lhs.model_type << "\t" << rhs.model_type;
+
+                              const auto& ltype = lhs.model_type;
+                              const auto& rtype = rhs.model_type;
+
+                              if(ltype==rtype)
+                                {
+                                  const auto& lstype = lhs.model_subtype;
+                                  const auto& rstype = rhs.model_subtype;
+
+                                  //LOG_S(INFO) << lhs.model_subtype << "\t" << rhs.model_subtype;
+                                  return ((lstype.compare(rstype))<0);
+                                }
+                              else
+                                {
+                                  return (ltype<rtype);
+                                }
+			      */
+                            }
+                          else
+                            {
+                              return lhs.char_range[1]>rhs.char_range[1];
+                            }
+                        }
+                      else
+                        {
+                          return lhs.char_range[0]<rhs.char_range[0];
+                        }
+                    }
+                  else
+                    {
+                      return lhs.coor[1]<rhs.coor[1];
+                    }
+                }
+              else
+                {
+                  return lhs.coor[0]<rhs.coor[0];
+                }
+            }
+          else
+            {
+              /*
+                auto lhs_parts = utils::split(lhs.subj_path, "/");
+                auto rhs_parts = utils::split(rhs.subj_path, "/");
+
+                if(lhs_parts.size()==rhs_parts.size())
+                {
+                if(lhs_parts.size()==3)
+                {
+                return std::stoi(lhs_parts.at(2))<std::stoi(rhs_parts.at(2));
+                }
+                else
+                {
+                return (lhs.subj_path<rhs.subj_path);
+                }
+                }
+                else
+                {
+                return lhs_parts.size()<rhs_parts.size();
+                }
+              */
+
+              return utils::compare_paths(lhs.subj_path, rhs.subj_path);
+            }
+        }
+      else
+        {
+          return (lhs.subj_name<rhs.subj_name);
+        }
+    }
+
+  }
 
 #endif

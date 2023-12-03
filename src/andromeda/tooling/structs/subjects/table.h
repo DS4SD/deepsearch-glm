@@ -24,7 +24,8 @@ namespace andromeda
 
     void clear();
 
-    std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_item_ref()):"#"); }
+    //std::string get_path() const { return (provs.size()>0? (provs.at(0)->get_item_ref()):"#"); }
+
     bool is_valid() { return (base_subject::valid); }
 
     virtual nlohmann::json to_json(const std::set<std::string>& filters);
@@ -64,10 +65,12 @@ namespace andromeda
 
     bool is_legacy(const nlohmann::json& grid);
     
-  public:
+  private:
 
     sval_type conf;
     std::string created_by;
+
+  public:
     
     std::vector<std::shared_ptr<prov_element> > provs;
 
@@ -207,12 +210,22 @@ namespace andromeda
 
   bool subject<TABLE>::from_json(const nlohmann::json& json_table)
   {
+    //LOG_S(INFO) << __FUNCTION__;
+
+    {
+      base_subject::valid = true;
+      base_subject::_from_json(json_table);
+    }
+    
     {
       conf = json_table.value(base_subject::confidence_lbl, conf);
       created_by = json_table.value(base_subject::created_by_lbl, created_by);
     }
     
-    {
+    {      
+      nrows = json_table.at("#-rows");
+      ncols = json_table.at("#-cols");
+      
       nlohmann::json grid = json_table.at("data");
       
       for(ind_type i=0; i<grid.size(); i++)
@@ -246,6 +259,7 @@ namespace andromeda
   bool subject<TABLE>::set_data(const nlohmann::json& item)
   {
     base_subject::clear_models();
+
     data.clear();
 
     {
@@ -263,8 +277,6 @@ namespace andromeda
             data.push_back({});
             for(ind_type j=0; j<grid.at(i).size(); j++)
               {
-		//LOG_S(INFO) << "grid_"<<i<<","<<j<<grid.at(i).at(j).dump();
-
                 std::string text = "";
                 if(grid.at(i).at(j).count("text")==1)
                   {
@@ -280,11 +292,6 @@ namespace andromeda
 		    bbox[1] = coor.at(1).get<float>();
 		    bbox[2] = coor.at(2).get<float>();
 		    bbox[3] = coor.at(3).get<float>();
-
-		    //LOG_S(INFO) << bbox[0] << ", "
-		    //<< bbox[1] << ", "
-		    //<< bbox[2] << ", "
-		    //<< bbox[3];
                   }
 		
                 std::array<uint64_t,2> row_span={i,i+1};
@@ -376,7 +383,7 @@ namespace andromeda
       {
         for(std::size_t j=0; j<data.at(i).size(); j++)
           {
-            hashes.push_back(data.at(i).at(j).text_hash);
+            hashes.push_back(data.at(i).at(j).get_text_hash());
           }
       }
 
@@ -388,6 +395,16 @@ namespace andromeda
   {
     valid = true;
 
+    for(auto& caption:captions)
+      {
+	caption->set_tokens(char_normaliser, text_normaliser);
+      }
+
+    for(auto& footnote:footnotes)
+      {
+	footnote->set_tokens(char_normaliser, text_normaliser);
+      }
+    
     for(auto& row:data)
       {
         for(auto& cell:row)
@@ -395,7 +412,7 @@ namespace andromeda
             valid = (valid and cell.set_tokens(char_normaliser, text_normaliser));
           }
       }
-
+    
     return valid;
   }
 
@@ -419,8 +436,8 @@ namespace andromeda
     range_type min_range = {0, 0};
     table_range_type table_min_range = {0, 0};
     
-    base_instance fake(base_subject::hash, NULL_MODEL,
-		       "fake", "fake", "fake",
+    base_instance fake(base_subject::hash, TABLE, get_self_ref(),
+		       NULL_MODEL, "fake", "fake", "fake",
 		       coor, table_min_range, table_min_range,
                        min_range, min_range, min_range);
 
@@ -437,7 +454,8 @@ namespace andromeda
       std::numeric_limits<table_index_type>::max(),
       std::numeric_limits<table_index_type>::max()};
     
-    base_instance fake(base_subject::hash, NULL_MODEL, "fake", "fake", "fake",
+    base_instance fake(base_subject::hash, TABLE, get_self_ref(),
+		       NULL_MODEL, "fake", "fake", "fake",
 		       coor, table_max_range, table_max_range,
                        max_range, max_range, max_range);
 
@@ -452,7 +470,7 @@ namespace andromeda
         grid.push_back({});
         for(uint64_t j=0; j<data.at(i).size(); j++)
           {
-            grid.at(i).push_back(data.at(i).at(j).text);
+            grid.at(i).push_back(data.at(i).at(j).get_text());
           }
       }
 
@@ -513,11 +531,11 @@ namespace andromeda
           {
             if(j+1==data.at(i).size())
               {
-                ss << data.at(i).at(j).text << "\n";
+                ss << data.at(i).at(j).get_text() << "\n";
               }
             else
               {
-                ss << data.at(i).at(j).text << ", ";
+                ss << data.at(i).at(j).get_text() << ", ";
               }
           }
       }

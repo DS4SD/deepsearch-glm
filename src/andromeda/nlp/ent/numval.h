@@ -21,7 +21,8 @@ namespace andromeda
     virtual model_name get_name() { return NUMVAL; }
 
     virtual bool apply(subject<TEXT>& subj);
-    virtual bool apply(subject<TABLE>& subj);
+
+    virtual bool apply_on_table_data(subject<TABLE>& subj);
     
   private:
     
@@ -139,8 +140,9 @@ namespace andromeda
     apply_regex(subj);
 
     //subj.show();
-    
-    subj.contract_wtokens_from_instances(NUMVAL);
+
+    // FIXME
+    //subj.contract_wtokens_from_instances(NUMVAL);
     
     //subj.show();
     
@@ -149,7 +151,7 @@ namespace andromeda
   
   bool nlp_model<ENT, NUMVAL>::apply_regex(subject<TEXT>& subj)
   {    
-    std::string text = subj.text;
+    std::string text = subj.get_text();
     for(auto& expr:exprs)
       {
 	std::vector<pcre2_item> items;
@@ -173,7 +175,7 @@ namespace andromeda
 		    std::string orig = subj.from_char_range(char_range);
 		    std::string name = subj.from_ctok_range(ctok_range);
 		    
-		    subj.instances.emplace_back(subj.get_hash(),
+		    subj.instances.emplace_back(subj.get_hash(), TEXT, subj.get_self_ref(),
 						NUMVAL, expr.get_subtype(),
 						name, orig, 
 						char_range, ctok_range, wtok_range);
@@ -189,23 +191,16 @@ namespace andromeda
     return update_applied_models(subj);
   }
   
-  bool nlp_model<ENT, NUMVAL>::apply(subject<TABLE>& subj)
+  bool nlp_model<ENT, NUMVAL>::apply_on_table_data(subject<TABLE>& subj)
   {
-    //LOG_S(INFO) << "starting numval ...";
-    
-    if(not satisfies_dependencies(subj))
-      {
-	return false;
-      }
-
     //subj.show();
 
     for(std::size_t i=0; i<subj.num_rows(); i++)
       {
 	for(std::size_t j=0; j<subj.num_cols(); j++)
 	  {	    
-	    std::string text = subj(i,j).text;
-
+	    std::string text = subj(i,j).get_text();
+	    
 	    if(text.size()==0)
 	      {
 		continue;
@@ -218,8 +213,6 @@ namespace andromeda
 		
 		for(auto& item:items)
 		  {
-		    //LOG_S(INFO) << item.to_json().dump();
-		    
 		    for(auto& grp:item.groups)
 		      {
 			if(grp.group_name=="value")
@@ -233,8 +226,8 @@ namespace andromeda
 			    
 			    std::string orig = subj(i,j).from_char_range(char_range);
 			    std::string name = subj(i,j).from_ctok_range(ctok_range);
-			    
-			    subj.instances.emplace_back(subj.get_hash(),
+
+			    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
 							NUMVAL, expr.get_subtype(),
 							name, orig, 
 							subj(i,j).get_coor(),
@@ -278,11 +271,6 @@ namespace andromeda
 	      {
 		subj(i,j).set_numeric(true);
 	      }
-
-	    //if((not subj(i,j).is_numeric()) and text.size()<3)
-	    //{
-	    //LOG_S(WARNING) << "table-text '" << text << "': " << subj(i,j).get_text();
-	    //}
 	  }
       }
     

@@ -67,55 +67,31 @@ namespace andromeda
   {
     for(auto& ent_i:subj.instances)
       {
-        if((ent_i.model_type==PARENTHESIS and ent_i.model_subtype=="reference") or
-           (ent_i.model_type==LINK))
+        if((ent_i.is_model(PARENTHESIS) and ent_i.is_subtype("reference")) or
+           (ent_i.is_model(LINK)))
           {
-            ranges_01.push_back(ent_i.char_range);
+            ranges_01.push_back(ent_i.get_char_range());
           }
-        else if(ent_i.model_type==NAME or
-                ent_i.model_type==NUMVAL)
+        else if(ent_i.is_model(NAME) or
+                ent_i.is_model(NUMVAL))
           {
-            ranges_02.push_back(ent_i.char_range);
-          }
-      }
-  }
-
-  /*
-  void base_pos_pattern::get_chunks(subject<TEXT>& subj,
-				    std::vector<pcre2_expr>& exprs,
-                                    std::vector<pcre2_item>& chunks)
-  {
-    chunks.clear();
-
-    std::stringstream ss;
-    for(std::size_t l=0; l<subj.word_tokens.size(); l++)
-      {
-        ss << subj.word_tokens.at(l).get_pos() << R"({)" << l << R"(})";
-      }
-
-    std::string encoding = ss.str();
-    for(auto& expr:exprs)
-      {
-        expr.find_all(encoding, chunks);
-
-        for(auto& chunk:chunks)
-          {
-            utils::mask(encoding, chunk.rng);
+            ranges_02.push_back(ent_i.get_char_range());
           }
       }
   }
-  */
-  
+
   void base_pos_pattern::get_chunks(text_element& subj,
 				    std::vector<pcre2_expr>& exprs,
                                     std::vector<pcre2_item>& chunks)
   {
     chunks.clear();
 
+    auto& word_tokens = subj.get_word_tokens();
+    
     std::stringstream ss;
-    for(std::size_t l=0; l<subj.word_tokens.size(); l++)
+    for(std::size_t l=0; l<word_tokens.size(); l++)
       {
-        ss << subj.word_tokens.at(l).get_pos() << R"({)" << l << R"(})";
+        ss << word_tokens.at(l).get_pos() << R"({)" << l << R"(})";
       }
 
     std::string encoding = ss.str();
@@ -186,6 +162,8 @@ namespace andromeda
 				      std::vector<range_type >& ranges_02,
 				      std::vector<pcre2_item>& chunks)
   {
+    auto& word_tokens = subj.get_word_tokens();
+    
     for(pcre2_item& chunk:chunks)
       {
 	std::vector<std::size_t> token_inds = get_indices(chunk.text);	
@@ -198,7 +176,7 @@ namespace andromeda
 	for(std::size_t l=0; l<token_inds.size(); l++)
 	  {
 	    std::size_t ind = token_inds.at(l);
-	    auto& token = subj.word_tokens.at(ind);
+	    auto& token = word_tokens.at(ind);
 
 	    if(l==0)
 	      {
@@ -225,7 +203,7 @@ namespace andromeda
 	   not contains(char_range, ranges_02) and
 	   (char_range[1]-char_range[0])>1)
 	  {
-	    subj.instances.emplace_back(subj.get_hash(),
+	    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
 				       name, subtype,
 				       text, orig,
 				       char_range, ctok_range, wtok_range);
@@ -240,6 +218,8 @@ namespace andromeda
 				       std::vector<range_type >& ranges_02,
 				       std::vector<pcre2_item>& chunks)
   {
+    
+    
     for(pcre2_item& chunk:chunks)
       {
 	std::vector<std::size_t> token_inds = get_indices(chunk.text);	
@@ -249,12 +229,13 @@ namespace andromeda
 	std::size_t ci=0,cj=0;
 
 	auto& elem = subj(coor);
-	
+	auto& word_tokens = elem.get_word_tokens();	
+
 	std::vector<std::pair<std::string, std::string> > words;
 	for(std::size_t l=0; l<token_inds.size(); l++)
 	  {
 	    std::size_t ind = token_inds.at(l);
-	    auto& token = elem.word_tokens.at(ind);
+	    auto& token = word_tokens.at(ind);
 
 	    if(l==0)
 	      {
@@ -281,11 +262,11 @@ namespace andromeda
 	   not contains(char_range, ranges_02) and
 	   (char_range[1]-char_range[0])>1)
 	  {
-	    subj.instances.emplace_back(subj.get_hash(),
-				       name, subtype,
-				       text, orig,
+	    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
+					name, subtype,
+					text, orig,
 					coor, row_span, col_span,
-				       char_range, ctok_range, wtok_range);
+					char_range, ctok_range, wtok_range);
 	  }
       }    
   }

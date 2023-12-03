@@ -101,33 +101,38 @@ def print_on_shell(text, result):
     
 def extract_references_from_doc(doc, verbose=False):
     
-    texts = doc["texts"]
+    texts = pd.DataFrame.from_records(doc["texts"])
 
-    df = pd.DataFrame(doc["instances"]["data"],
-                      columns=doc["instances"]["headers"])
+    props = pd.DataFrame(doc["properties"]["data"],
+                      columns=doc["properties"]["headers"])
+    
+    insts = pd.DataFrame(doc["instances"]["data"],
+                         columns=doc["instances"]["headers"])
+
+    refs = props[props["label"]=="reference"]
+
+    #print("references: \n")
+    #print(refs)
     
     wrapper = textwrap.TextWrapper(width=70)
 
-    result=[]
-    for i,item in enumerate(doc["texts"]):
+    results=[]
+    
+    for i,ref in refs.iterrows():
 
-        path = f"#/texts/{i}"
+        text = texts[texts["hash"]==ref["subj_hash"]]
+        refc = insts[insts["subj_hash"]==ref["subj_hash"]]
+
+        #print(text["text"])
+        #print(refc)
         
-        labels=[]
-        for row in item["properties"]["data"]:
-            labels.append(row[item["properties"]["headers"].index("label")])
-
-        if "reference" in labels:
-
-            refs = df[df["subj_path"]==path]
-            result.append({"text": item["text"], "instances": refs})
-            
-            if verbose:
-                print(f"text: ") #{type_}, labels: ", ",".join(labels))
-                for line in wrapper.wrap(text=item["text"]):
-                    print(f"\t{line}")            
-                
-                print(refs[["type", "subtype", "original"]])            
-                
-    return result
+        results.append(
+            {
+                "text": text["text"],
+                "path": text["sref"],
+                "instances": refc.to_records()
+            }
+        )
+        
+    return results
 

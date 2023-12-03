@@ -262,11 +262,12 @@ namespace andromeda_crf
       {
         nlohmann::json sample = nlohmann::json::parse(line);
 
-        assert(sample.count("word-tokens")>0);
+        //assert(sample.count("word-tokens")>0);
+	//assert(sample.count(text_element::word_tokens_lbl)==1);
         assert(sample.count("training-sample")>0);
         //LOG_S(INFO) << sample.dump(2);
 
-        auto& wtokens = sample["word-tokens"];
+        auto& wtokens = sample.at(andromeda::text_element::word_tokens_lbl);
 
         std::vector<std::string> headers = {};
         headers = wtokens.value("headers", headers);

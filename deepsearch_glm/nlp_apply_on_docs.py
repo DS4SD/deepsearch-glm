@@ -7,8 +7,9 @@ import argparse
 
 import pandas as pd
 
-from utils.ds_utils import convert_pdffiles, to_legacy_document_format
+from tabulate import tabulate
 
+from utils.ds_utils import convert_pdffiles, to_legacy_document_format
 from deepsearch_glm.andromeda_nlp import nlp_model
 
 def parse_arguments():
@@ -100,6 +101,14 @@ def init_nlp_model(models:str, filters:list[str]=[]):
 
     return model
 
+def show_texts(doc_j):
+
+    data=[]
+    for item in doc_j["texts"]:
+        data.append([item["hash"], item["text-hash"], item["text"][0:48]])
+
+    print(tabulate(data, headers=["hash", "text-hash", "text"]))
+        
 def show_doc(doc_j):
 
     """
@@ -125,6 +134,9 @@ def show_doc(doc_j):
     print(json.dumps(doc_j["tables"][0], indent=2))
     """        
 
+    if "texts" in doc_j:
+        show_texts(doc_j)
+    
     if "properties" in doc_j:
         props = pd.DataFrame(doc_j["properties"]["data"],
                              columns=doc_j["properties"]["headers"])

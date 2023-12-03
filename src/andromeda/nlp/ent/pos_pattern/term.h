@@ -22,7 +22,8 @@ namespace andromeda
     virtual model_name get_name() { return TERM; }
 
     virtual bool apply(subject<TEXT>& subj);
-    virtual bool apply(subject<TABLE>& subj);
+
+    virtual bool apply_on_table_data(subject<TABLE>& subj);
     
   private:
 
@@ -124,6 +125,7 @@ namespace andromeda
   {
     if(not satisfies_dependencies(subj, text_dependencies))
       {
+	//LOG_S(WARNING) << "skipping term ...";
 	return false;
       }
     
@@ -146,12 +148,12 @@ namespace andromeda
     return update_applied_models(subj);
   }
 
-  bool nlp_model<ENT, TERM>::apply(subject<TABLE>& subj)
+  bool nlp_model<ENT, TERM>::apply_on_table_data(subject<TABLE>& subj)
   {
-    if(not satisfies_dependencies(subj, table_dependencies))
-      {
-	return false;
-      }
+    //if(not satisfies_dependencies(subj, table_dependencies))
+    //{
+    //return false;
+    //}
 
     for(std::size_t i=0; i<subj.num_rows(); i++)
       {

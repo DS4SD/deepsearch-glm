@@ -25,6 +25,9 @@ namespace andromeda
     virtual std::string get_key() { return to_key(this->get_name()); }
 
     /* INFERENCE */
+
+    template<typename subject_type>
+    bool is_applied(subject_type& subj);
     
     template<typename subject_type>
     bool satisfies_dependencies(subject_type& subj);
@@ -39,7 +42,13 @@ namespace andromeda
     virtual bool apply(std::string& text, nlohmann::json& annots) { return false; }
 
     virtual bool apply(subject<TEXT>& subj) = 0;// { return false; }
-    virtual bool apply(subject<TABLE>& subj) = 0;//{ return false; }
+    //virtual bool apply(subject<TABLE>& subj) = 0;//{ return false; }
+
+    virtual bool apply(subject<TABLE>& subj); //{ return false; }
+    virtual bool apply_on_table_data(subject<TABLE>& subj) { return false; }
+    
+    virtual bool apply(subject<FIGURE>& subj);
+    virtual bool apply_on_figure_data(subject<FIGURE>& subj) { return false; }
 
     virtual bool apply(subject<DOCUMENT>& subj);
 
@@ -61,11 +70,28 @@ namespace andromeda
   };
 
   template<typename subject_type>
+  bool base_nlp_model::is_applied(subject_type& subj)
+  {
+    return (subj.applied_models.count(this->get_key())==1);
+  }
+  
+  template<typename subject_type>
   bool base_nlp_model::satisfies_dependencies(subject_type& subj)
   {
+    //if(subj.applied_models.count(this->get_key()))
+    //{
+	//LOG_S(WARNING) << "already applied " << this->get_key() << " ...";
+    //return false; // already done ...
+    //}
+
+    if(is_applied(subj)) // already done ...
+      {
+	return false;
+      }
+    
     return satisfies_dependencies(subj, get_dependencies());
   }
-
+  
   template<typename subject_type>
   bool base_nlp_model::satisfies_dependencies(subject_type& subj, const std::set<model_name>& deps)
   {
@@ -88,25 +114,62 @@ namespace andromeda
     return true;
   }
 
-  bool base_nlp_model::apply(subject<DOCUMENT>& subj)
+  bool base_nlp_model::apply(subject<TABLE>& subj)
   {
     if(not satisfies_dependencies(subj))
       {
         return false;
       }
 
-    //LOG_S(INFO) << "apply " << get_key() << " on document: " << subj.doc_name;
+    for(auto& caption:subj.captions)
+      {
+        this->apply(*caption);
+      }
 
+    this->apply_on_table_data(subj);
+
+    return true;
+  }
+  
+  bool base_nlp_model::apply(subject<FIGURE>& subj)
+  {
+    if(not satisfies_dependencies(subj))
+      {
+        return false;
+      }
+
+    for(auto& caption:subj.captions)
+      {
+        this->apply(*caption);
+      }
+
+    this->apply_on_figure_data(subj);
+    
+    return true;
+  }
+  
+  bool base_nlp_model::apply(subject<DOCUMENT>& subj)
+  {
+    if(not satisfies_dependencies(subj))
+      {
+        return false;
+      }
+    
     for(auto& text_ptr:subj.texts)
       {
         this->apply(*text_ptr);
       }
-    
+
     for(auto& table_ptr:subj.tables)
       {
         this->apply(*table_ptr);
       }
 
+    for(auto& figure_ptr:subj.figures)
+      {
+        this->apply(*figure_ptr);
+      }
+    
     return update_applied_models(subj);
   }  
 

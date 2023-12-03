@@ -352,15 +352,17 @@ namespace andromeda
   
   bool fasttext_supervised_model::preprocess(const subject<TEXT>& subj, std::string& text)
   {
-    auto& wtokens = subj.word_tokens;
+    //auto& wtokens = subj.word_tokens;
     //LOG_S(INFO) << "tokens: \n\n" << tabulate(wtokens); 
     
     std::stringstream ss;
-    
-    std::size_t MAXLEN = 256;
-    for(std::size_t l=0; l<std::min(wtokens.size(), MAXLEN); l++)
+
+    std::size_t MAX = 256;
+    std::size_t LEN = subj.get_num_wtokens();
+
+    for(std::size_t l=0; l<std::min(LEN, MAX); l++)
       {
-	auto& token = wtokens.at(l);	    
+	const auto& token = subj.get_wtoken(l);	    
 	auto tags = token.get_tags();
 	
 	if(tags.size()>0)
@@ -790,10 +792,10 @@ namespace andromeda
 
     if(preprocess(subj, text) and classify(text, label, conf))
       {
-	std::string key = get_key();	
+	//std::string key = get_key();	
 
-	subj.properties.emplace_back(key, label, conf);
-	subj.applied_models.insert(key);
+	subj.properties.emplace_back(subj.get_hash(), TEXT, "#", get_name(), label, conf);
+	subj.applied_models.insert(get_key());
       }
     
     return update_applied_models(subj);    
@@ -813,13 +815,10 @@ namespace andromeda
 
     if(preprocess(subj, text) and classify(text, label, conf))
       {
-	std::string key = get_key();	
+	//std::string key = get_key();	
 
-	subj.properties.emplace_back(key, label, conf);
-	subj.applied_models.insert(key);
-
-	//LOG_S(INFO) << "text: " << text;
-	//LOG_S(INFO) << key << " (" << label << "): " << conf;
+	subj.properties.emplace_back(subj.get_hash(), TABLE, "#", get_name(), label, conf);
+	subj.applied_models.insert(get_key());
       }
     
     return update_applied_models(subj);    

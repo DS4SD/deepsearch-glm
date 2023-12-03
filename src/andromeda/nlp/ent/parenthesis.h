@@ -21,7 +21,7 @@ namespace andromeda
     virtual model_name get_name() { return PARENTHESIS; }
 
     virtual bool apply(subject<TEXT>& subj);
-    virtual bool apply(subject<TABLE>& subj);
+    virtual bool apply_on_table_data(subject<TABLE>& subj);
 
   private:
 
@@ -96,7 +96,7 @@ namespace andromeda
         return false;
       }
 
-    std::string text = subj.text;
+    std::string text = subj.get_text();
 
     bool updating=true;
 
@@ -119,7 +119,7 @@ namespace andromeda
                 std::string orig = subj.from_char_range(char_range);
                 std::string name = subj.from_ctok_range(ctok_range);
 
-                subj.instances.emplace_back(subj.get_hash(),
+                subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
                                            PARENTHESIS, expr.get_subtype(),
                                            name, orig,
                                            char_range,
@@ -135,7 +135,7 @@ namespace andromeda
     return update_applied_models(subj);
   }
 
-  bool nlp_model<ENT, PARENTHESIS>::apply(subject<TABLE>& subj)
+  bool nlp_model<ENT, PARENTHESIS>::apply_on_table_data(subject<TABLE>& subj)
   {
     if(not satisfies_dependencies(subj))
       {
@@ -146,7 +146,7 @@ namespace andromeda
       {
         for(std::size_t j=0; j<subj.num_cols(); j++)
           {
-	    std::string text = subj(i,j).text;
+	    std::string text = subj(i,j).get_text();
 	    
             if(text.size()==0)
               {
@@ -172,13 +172,13 @@ namespace andromeda
 		    auto row_span = subj(i,j).get_row_span();
 		    auto col_span = subj(i,j).get_col_span();
 		    
-                    subj.instances.emplace_back(subj.get_hash(),
-					       PARENTHESIS, expr.get_subtype(),
-                                               name, orig,
+                    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
+						PARENTHESIS, expr.get_subtype(),
+						name, orig,
 						coor, row_span, col_span,
-                                               char_range,
-                                               ctok_range,
-                                               wtok_range);
+						char_range,
+						ctok_range,
+						wtok_range);
 
                     utils::mask(text, char_range);
                   }

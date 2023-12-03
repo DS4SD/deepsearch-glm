@@ -79,6 +79,12 @@ namespace andromeda
       exprs.push_back(expr);
     }
 
+    // Arxiv:  "arXiv:2201.08390v1 [gr-qc] 20 Jan 2022"
+    {
+      pcre2_expr expr(this->get_key(), "arxiv", R"((?P<link>(arXiv:(\d+).(\d+)(v\d*)? \[.+\] (\d+) [A-Za-z]+ \d+)))");
+      exprs.push_back(expr);
+    }
+    
     return true;
   }
 
@@ -98,7 +104,7 @@ namespace andromeda
 
   bool nlp_model<ENT, LINK>::apply_regex(subject<TEXT>& subj)
   {    
-    std::string text = subj.text;
+    std::string text = subj.get_text();
 
     for(auto& expr:exprs)
       {
@@ -132,7 +138,7 @@ namespace andromeda
 	    // remove spaces
 	    name = utils::replace(name, " ", "");
 	    
-	    subj.instances.emplace_back(subj.get_hash(),
+	    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
 				       LINK, expr.get_subtype(),
 				       name, orig,
 				       char_range, ctok_range, wtok_range);

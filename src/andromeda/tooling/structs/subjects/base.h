@@ -24,27 +24,29 @@ namespace andromeda
     const static inline std::string recs_lbl = "records";
 
     const static inline std::string prov_lbl = "prov";
-    const static inline std::string hash_lbl = "hash";
-    //const static inline std::string text_lbl = "text";
 
-    const static inline std::string dloc_lbl = "dloc";
-    //const static inline std::string dref_lbl = "dref";
-    const static inline std::string jref_lbl = "$ref";
+    const static inline std::string subj_hash_lbl = "subj_hash";
+    const static inline std::string text_hash_lbl = "text_hash"; // for text
+    
+    const static inline std::string dloc_lbl = "dloc"; // location in the document
+    const static inline std::string sref_lbl = "sref"; // self-reference via path
+    const static inline std::string jref_lbl = "$ref"; // json-ref convention
 
     const static inline std::string name_lbl = "name";
     const static inline std::string type_lbl = "type";
 
-    const static inline std::string applied_models_lbl = "applied-models";
+    const static inline std::string applied_models_lbl = "applied_models";
 
     const static inline std::string text_lbl = "text"; // for text
     const static inline std::string orig_lbl = "orig"; // for text
-    const static inline std::string text_hash_lbl = "text-hash"; // for text
-
+    
     const static inline std::string table_data_lbl = "data"; // for tables and figures
     const static inline std::string figure_data_lbl = "data"; // for tables and figures
 
     const static inline std::string confidence_lbl = "confidence"; // for tables and figures
     const static inline std::string created_by_lbl = "created_by"; // for tables and figures
+
+    const static inline std::set<std::string> implicit_models = {"lapos"};
     
   public:
 
@@ -55,6 +57,12 @@ namespace andromeda
 
     virtual ~base_subject() {}
 
+    std::string get_self_ref();
+    void set_self_ref(std::string sref);
+    
+    bool is_valid() const { return valid; }
+    void set_valid(bool val) { this->valid=val; }
+    
     static bool set_prov_refs(const nlohmann::json& data,
 			      const std::vector<std::shared_ptr<prov_element> >& doc_provs,
 			      std::vector<std::shared_ptr<prov_element> >& base_provs);
@@ -103,22 +111,26 @@ namespace andromeda
 			  std::string key,
 			  std::vector<std::shared_ptr<item_type> >& vals);
     
-  public:
-
+    //public:
+  protected:
+    
     bool valid;
     subject_name name;
 
     hash_type hash; // hash of the item
     hash_type dhash; // hash of the document of the item
-
+    
     std::string dloc; // location of item in the document <doc-hash>#<JSON-path-in-doc>
-
+    std::string sref;
+    
+  public:
+    
     std::set<std::string> applied_models;
 
     std::vector<base_property> properties;
     std::vector<base_instance> instances;
     std::vector<base_relation> relations;
-
+    
     //std::vector<base_entity> entities;
   };
 
@@ -129,8 +141,9 @@ namespace andromeda
     hash(-1),
     dhash(-1),
 
-    dloc(""),
-
+    dloc("#"),
+    sref("#"),
+    
     applied_models({}),
 
     properties({}),
@@ -145,8 +158,9 @@ namespace andromeda
     hash(-1),
     dhash(-1),
 
-    dloc(""),
-
+    dloc("#"),
+    sref("#"),
+    
     applied_models({}),
 
     properties({}),
@@ -156,7 +170,7 @@ namespace andromeda
 
   base_subject::base_subject(uint64_t dhash,
                              std::string dloc,
-                             subject_name name)://, prov_element& prov):
+                             subject_name name):
     valid(true),
     name(name),
 
@@ -164,14 +178,46 @@ namespace andromeda
     dhash(dhash),
 
     dloc(dloc),
-
+    sref("#"),
+    
     applied_models({}),
 
     properties({}),
     instances({}),
     relations({})
-  {}
+  {
+    auto parts = utils::split(dloc, "#");
+    if(parts.size()==2)
+      {
+	sref += parts.at(1);
+      }
+    else
+      {
+	LOG_S(WARNING) << "could not derive sref from dloc: " << dloc;
+      }
+  }
 
+  void base_subject::set_self_ref(std::string sref)
+  {
+    this->sref = sref;
+  }
+  
+  std::string base_subject::get_self_ref()
+  {
+    return sref;
+    /*
+    if(dloc=="#")
+      {
+	return dloc;
+      }
+
+    auto parts = utils::split(dloc, "#");
+    assert(parts.size()==2);
+
+    return ("#"+parts.at(1));
+    */
+  }
+  
   bool base_subject::set_prov_refs(const nlohmann::json& data,
 				   const std::vector<std::shared_ptr<prov_element> >& doc_provs,
 				   std::vector<std::shared_ptr<prov_element> >& base_provs)
@@ -203,7 +249,6 @@ namespace andromeda
         if(prov!=NULL)
           {
             nlohmann::json pref;
-            //pref[base_subject::jref_lbl] = prov->get_pref();
 	    pref[base_subject::jref_lbl] = prov->get_self_ref();
 
             result.push_back(pref);
@@ -241,8 +286,9 @@ namespace andromeda
     nlohmann::json result = nlohmann::json::object({});
 
     {
-      result[hash_lbl] = hash;
+      result[subj_hash_lbl] = hash;
       result[dloc_lbl] = dloc;
+      result[sref_lbl] = sref;
     }
     
     if((properties.size()>0) and (filters.size()==0 or filters.count(prps_lbl)))
@@ -265,6 +311,11 @@ namespace andromeda
 
     if(filters.size()==0 or filters.count(applied_models_lbl))
       {
+	for(auto implicit_model:implicit_models)
+	  {
+	    applied_models.erase(implicit_model);
+	  }
+	
 	result[applied_models_lbl] = applied_models;
       }
     
@@ -292,14 +343,10 @@ namespace andromeda
   
   bool base_subject::_from_json(const nlohmann::json& item)
   {
-    hash = item.value(hash_lbl, hash);
-    dloc = item.value(dloc_lbl, dloc);
+    hash = item.value(subj_hash_lbl, hash);
 
-    applied_models.clear();
-    if(item.count(applied_models_lbl))
-      {
-	applied_models = item.value(applied_models_lbl, applied_models);
-      }
+    dloc = item.value(dloc_lbl, dloc);
+    sref = item.value(sref_lbl, sref);
 
     bool read_props=true, read_insts=true, read_rels=true;
 
@@ -322,6 +369,35 @@ namespace andromeda
       {
         const nlohmann::json& rels = item[rels_lbl];
         read_rels = andromeda::from_json(relations, rels);
+      }
+
+    applied_models.clear();
+    if(item.count(applied_models_lbl))
+      {
+	applied_models = item.value(applied_models_lbl, applied_models);
+      }
+    else
+      {
+	for(auto& prop:properties)
+	  {
+	    applied_models.insert(prop.get_type());
+	  }
+
+	for(auto& inst:instances)
+	  {
+	    applied_models.insert(inst.get_type());
+	  }
+
+	for(auto& rel:relations)
+	  {
+	    applied_models.insert(rel.get_type());
+	  }
+
+      }
+    
+    for(auto implicit_model:implicit_models)
+      {
+	applied_models.erase(implicit_model);
       }
 
     return (read_props and read_insts and read_rels);
@@ -349,7 +425,7 @@ namespace andromeda
   {
     nlohmann::json& json_vals = result[key];
     json_vals = nlohmann::json::array({});
-
+    
     for(auto& val:vals)
       {
         json_vals.push_back(val->to_json(filters));

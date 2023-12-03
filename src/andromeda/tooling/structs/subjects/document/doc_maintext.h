@@ -84,8 +84,8 @@ namespace andromeda
 	    auto& curr_prov = curr->provs.back();
 	    auto& next_prov = next->provs.front();
 	    
-	    auto& curr_text = curr->text;
-	    auto& next_text = next->text;
+	    std::string curr_text = curr->get_text();
+	    std::string next_text = next->get_text();
 	    
 	    if(curr_prov->get_type()!="paragraph" or
 	       next_prov->get_type()!="paragraph" or
@@ -105,7 +105,7 @@ namespace andromeda
 	       (jump_col or jump_page))
 	      {
 		curr->concatenate(next);
-		next->valid=false;
+		next->set_valid(false);
 	      }
 	  }
 	
@@ -113,7 +113,7 @@ namespace andromeda
 	  auto itr=texts.begin();
 	  while(itr!=texts.end())
 	    {
-	      if((*itr)->valid)
+	      if((*itr)->is_valid())
 		{
 		  itr++;
 		}

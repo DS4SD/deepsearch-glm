@@ -71,7 +71,7 @@ namespace andromeda
     obj_to_caption={};
     obj_to_notes={};
 
-    auto& provs = doc.provs;
+    auto& provs = doc.get_provs();
 
     page_nums={};
     is_assigned={};
@@ -169,7 +169,7 @@ namespace andromeda
         ind_type prov_ind = prov_to_index.at(prov);
         ind_type page_num = prov->get_page();
 
-        std::string text = elem->text;
+        std::string text = elem->get_text();
 
         text = utils::to_lower(text);
         text = utils::strip(text);
@@ -275,7 +275,7 @@ namespace andromeda
   template<typename doc_type>
   void doc_captions::assign_captions(doc_type& doc)
   {
-    auto& provs = doc.provs;
+    auto& provs = doc.get_provs();
 
     for(auto itr=obj_to_caption.begin(); itr!=obj_to_caption.end(); itr++)
       {
@@ -300,19 +300,10 @@ namespace andromeda
           {
 	    auto& table = prov_to_table.at(prov_i);
 
-	    
-            //LOG_S(WARNING) << "table: "
-	    //<< prov_i->maintext_ind;
-
             for(ind_type j:itr->second)
               {
                 auto& prov_j = provs.at(j);
 		auto& caption = prov_to_text.at(prov_j);
-
-                //LOG_S(WARNING) << "\tassigning caption "
-		//<< prov_i->maintext_ind
-		//<< " to table "
-		//<< prov_j->maintext_ind;
 
                 table->captions.push_back(caption);
               }
@@ -321,18 +312,10 @@ namespace andromeda
           {
 	    auto& figure = prov_to_figure.at(prov_i);
 	    
-            //LOG_S(WARNING) << "figure: "
-	    //<< prov_i->maintext_ind;
-
             for(ind_type j:itr->second)
               {
                 auto& prov_j = provs.at(j);
 		auto& caption = prov_to_text.at(prov_j);
-		
-                //LOG_S(WARNING) << "\tassigning caption "
-		//<< prov_i->maintext_ind
-		//<< " to figure "
-		//<< prov_j->maintext_ind;
 
                 figure->captions.push_back(caption);
               }
