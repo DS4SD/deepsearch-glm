@@ -184,9 +184,10 @@ namespace andromeda
 
   bool nlp_model<CLS, SEMANTIC>::preprocess(const subject<TEXT>& subj, std::string& text)
   {
-    auto& wtokens = subj.word_tokens;
+    //auto& wtokens = subj.get_word_tokens();
 
-    if(wtokens.size()==0)
+    //if(wtokens.size()==0)
+    if(subj.get_num_wtokens()==0)
       {
         text.clear();
         return false;
@@ -255,7 +256,7 @@ namespace andromeda
         auto& row = subj.data.at(i);
         for(std::size_t j=0; j<row.size(); j++)
           {
-            ss << row.at(j).text << "; ";
+            ss << row.at(j).get_text() << "; ";
           }
       }
 

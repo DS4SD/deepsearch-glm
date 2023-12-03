@@ -84,7 +84,7 @@ namespace andromeda
 	return false;
       }
 
-    std::string text = subj.text;
+    std::string text = subj.get_text();
     for(auto& inst:subj.instances)
       {
 	if(dependencies.count(inst.get_model())==1)

@@ -221,7 +221,7 @@ namespace andromeda
       {
         for(std::size_t j=0; j<subj.num_cols(); j++)
           {
-            std::string text = subj(i,j).text;
+            std::string text = subj(i,j).get_text();
 
             if(text.size()==0)
               {

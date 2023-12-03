@@ -86,10 +86,12 @@ namespace andromeda
   {
     chunks.clear();
 
+    auto& word_tokens = subj.get_word_tokens();
+    
     std::stringstream ss;
-    for(std::size_t l=0; l<subj.word_tokens.size(); l++)
+    for(std::size_t l=0; l<word_tokens.size(); l++)
       {
-        ss << subj.word_tokens.at(l).get_pos() << R"({)" << l << R"(})";
+        ss << word_tokens.at(l).get_pos() << R"({)" << l << R"(})";
       }
 
     std::string encoding = ss.str();
@@ -160,6 +162,8 @@ namespace andromeda
 				      std::vector<range_type >& ranges_02,
 				      std::vector<pcre2_item>& chunks)
   {
+    auto& word_tokens = subj.get_word_tokens();
+    
     for(pcre2_item& chunk:chunks)
       {
 	std::vector<std::size_t> token_inds = get_indices(chunk.text);	
@@ -172,7 +176,7 @@ namespace andromeda
 	for(std::size_t l=0; l<token_inds.size(); l++)
 	  {
 	    std::size_t ind = token_inds.at(l);
-	    auto& token = subj.word_tokens.at(ind);
+	    auto& token = word_tokens.at(ind);
 
 	    if(l==0)
 	      {
@@ -214,6 +218,8 @@ namespace andromeda
 				       std::vector<range_type >& ranges_02,
 				       std::vector<pcre2_item>& chunks)
   {
+    
+    
     for(pcre2_item& chunk:chunks)
       {
 	std::vector<std::size_t> token_inds = get_indices(chunk.text);	
@@ -223,12 +229,13 @@ namespace andromeda
 	std::size_t ci=0,cj=0;
 
 	auto& elem = subj(coor);
-	
+	auto& word_tokens = elem.get_word_tokens();	
+
 	std::vector<std::pair<std::string, std::string> > words;
 	for(std::size_t l=0; l<token_inds.size(); l++)
 	  {
 	    std::size_t ind = token_inds.at(l);
-	    auto& token = elem.word_tokens.at(ind);
+	    auto& token = word_tokens.at(ind);
 
 	    if(l==0)
 	      {

@@ -383,7 +383,7 @@ namespace andromeda
       {
         for(std::size_t j=0; j<data.at(i).size(); j++)
           {
-            hashes.push_back(data.at(i).at(j).text_hash);
+            hashes.push_back(data.at(i).at(j).get_text_hash());
           }
       }
 
@@ -470,7 +470,7 @@ namespace andromeda
         grid.push_back({});
         for(uint64_t j=0; j<data.at(i).size(); j++)
           {
-            grid.at(i).push_back(data.at(i).at(j).text);
+            grid.at(i).push_back(data.at(i).at(j).get_text());
           }
       }
 
@@ -531,11 +531,11 @@ namespace andromeda
           {
             if(j+1==data.at(i).size())
               {
-                ss << data.at(i).at(j).text << "\n";
+                ss << data.at(i).at(j).get_text() << "\n";
               }
             else
               {
-                ss << data.at(i).at(j).text << ", ";
+                ss << data.at(i).at(j).get_text() << ", ";
               }
           }
       }

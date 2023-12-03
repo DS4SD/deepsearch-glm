@@ -151,7 +151,7 @@ namespace andromeda
   
   bool nlp_model<ENT, NUMVAL>::apply_regex(subject<TEXT>& subj)
   {    
-    std::string text = subj.text;
+    std::string text = subj.get_text();
     for(auto& expr:exprs)
       {
 	std::vector<pcre2_item> items;
@@ -199,7 +199,7 @@ namespace andromeda
       {
 	for(std::size_t j=0; j<subj.num_cols(); j++)
 	  {	    
-	    std::string text = subj(i,j).text;
+	    std::string text = subj(i,j).get_text();
 	    
 	    if(text.size()==0)
 	      {

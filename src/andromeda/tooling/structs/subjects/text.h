@@ -21,7 +21,7 @@ namespace andromeda
     void finalise();
     void clear();
 
-    bool is_valid() { return (base_subject::valid and text_element::text_valid); }
+    bool is_valid() { return (base_subject::valid and text_element::is_text_valid()); }
 
     virtual nlohmann::json to_json(const std::set<std::string>& filters);
 
@@ -147,13 +147,13 @@ namespace andromeda
     //LOG_S(INFO) << " -> subject<TEXT>::dhash = '" << dhash << "'";
     //LOG_S(INFO) << " -> subject<TEXT>::text_hash = '" << text_element::text_hash << "'";
 
-    std::vector<uint64_t> hashes={dhash, text_element::text_hash};
+    std::vector<uint64_t> hashes={dhash, text_element::get_text_hash()};
     base_subject::hash = utils::to_hash(hashes);
     
     //LOG_S(INFO) << " -> base_subject::hash = " << base_subject::hash;
     //LOG_S(INFO) << " -> subject<TEXT>::hash = " << subject<TEXT>::hash;
     
-    return text_element::text_valid;
+    return text_element::is_text_valid();
   }
 
   bool subject<TEXT>::set_data(const nlohmann::json& item)

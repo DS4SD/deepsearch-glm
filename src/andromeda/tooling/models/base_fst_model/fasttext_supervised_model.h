@@ -352,15 +352,17 @@ namespace andromeda
   
   bool fasttext_supervised_model::preprocess(const subject<TEXT>& subj, std::string& text)
   {
-    auto& wtokens = subj.word_tokens;
+    //auto& wtokens = subj.word_tokens;
     //LOG_S(INFO) << "tokens: \n\n" << tabulate(wtokens); 
     
     std::stringstream ss;
-    
-    std::size_t MAXLEN = 256;
-    for(std::size_t l=0; l<std::min(wtokens.size(), MAXLEN); l++)
+
+    std::size_t MAX = 256;
+    std::size_t LEN = subj.get_num_wtokens();
+
+    for(std::size_t l=0; l<std::min(LEN, MAX); l++)
       {
-	auto& token = wtokens.at(l);	    
+	const auto& token = subj.get_wtoken(l);	    
 	auto tags = token.get_tags();
 	
 	if(tags.size()>0)

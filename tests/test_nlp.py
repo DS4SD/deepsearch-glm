@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-GENERATE=True
+GENERATE=False
 
 import os
 import json
@@ -438,7 +438,7 @@ def test_05A():
     target_leg = "./tests/data/docs/doc_01.leg.json"    
     target_nlp = "./tests/data/docs/doc_01.nlp.json"    
 
-    print(f"reading {source} ... ", end="")
+    #print(f"reading {source} ... ", end="")
     with open(source, "r") as fr:
         doc_i = json.load(fr)
         

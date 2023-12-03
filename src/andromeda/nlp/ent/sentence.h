@@ -60,7 +60,7 @@ namespace andromeda
 	return false;
       }
     
-    std::string text = subj.text;
+    std::string text = subj.get_text();
     
     for(auto& ent:subj.instances)
       {
@@ -89,7 +89,7 @@ namespace andromeda
 	  }
       }
     
-    std::string orig = subj.text;
+    std::string orig = subj.get_text();
 
     std::vector<range_type> sent_ranges={};
     for(auto& expr:exprs)
@@ -138,13 +138,13 @@ namespace andromeda
           }	
       }
 
-    if(ranges.size()>0 and ranges.back().at(1)<subj.get_len())
+    if(ranges.size()>0 and ranges.back().at(1)<text.size())
       {
-	ranges.push_back({ranges.back().at(1), subj.get_len()});
+	ranges.push_back({ranges.back().at(1), text.size()});
       }
-    else if(ranges.size()==0 and subj.get_len()>0)
+    else if(ranges.size()==0 and text.size()>0)
       {
-	ranges.push_back({0, subj.get_len()});
+	ranges.push_back({0, text.size()});
       }
 	    
     for(auto itr=ranges.begin(); itr!=ranges.end(); )
@@ -165,24 +165,51 @@ namespace andromeda
 	  }
       }
 
+    //LOG_S(WARNING) << "text: " << text;
+    //LOG_S(WARNING) << "text-size: " << text.size() << "; subj.len: " << subj.get_len();
+    
     for(auto rng:ranges)
       {
 	range_type char_range = rng;
+
+	//LOG_S(INFO) << "char (1): " << char_range.at(0) << "-" << char_range.at(1);
+	
+	while(char_range.at(0)<char_range.at(1) and
+	      char_range.at(0)<text.size() and
+	      text.at(char_range.at(0))==' ')
+	  {
+	    char_range.at(0) += 1;
+	    //LOG_S(INFO) << " -> char: " << char_range.at(0) << "-" << char_range.at(1);
+	  }
+
+	//LOG_S(INFO) << "char (2): " << char_range.at(0) << "-" << char_range.at(1);
+	
+	while(char_range.at(0)<char_range.at(1) and
+	      0<char_range.at(1) and
+	      text.at(char_range.at(1)-1)==' ')
+	  {
+	    char_range.at(1) -= 1;
+	    //LOG_S(INFO) << " -> char: " << char_range.at(0) << "-" << char_range.at(1);
+	  }
+
+	//LOG_S(INFO) << "char (3): " << char_range.at(0) << "-" << char_range.at(1);
+	
+	if(char_range.at(0)==char_range.at(1))
+	  {
+	    continue;
+	  }
 	
 	range_type ctok_range = subj.get_char_token_range(char_range);
 	range_type wtok_range = subj.get_word_token_range(char_range);
 	
 	std::string sent = orig.substr(char_range[0], char_range[1]-char_range[0]); 
 
-	std::string normalised_sent = utils::replace(sent, " ", "");
-
-	if(normalised_sent.size()>0)
-	  {
-	    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
-					SENTENCE, "improper",
-					sent, sent,
-					char_range, ctok_range, wtok_range);
-	  }
+	//LOG_S(WARNING) << " => sent: " << sent;
+	
+	subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
+				    SENTENCE, "improper",
+				    sent, sent,
+				    char_range, ctok_range, wtok_range);
       }
     
     return update_applied_models(subj);

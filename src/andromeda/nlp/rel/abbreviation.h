@@ -75,7 +75,7 @@ namespace andromeda
 
   void nlp_model<REL, ABBREVIATION>::find_abbreviation_instances(subject<TEXT>& subj)
   {  
-    std::string& text = subj.text;
+    std::string text = subj.get_text();
 
     //std::size_t max_id = subj.get_max_ent_hash();
     

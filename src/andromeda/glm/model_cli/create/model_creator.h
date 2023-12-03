@@ -224,7 +224,7 @@ namespace andromeda
 	  LOG_S(INFO) << "inserted node: " << doc_path;
 	}
       
-      std::vector<word_token>& tokens = subj.word_tokens;
+      std::vector<word_token>& tokens = subj.get_word_tokens();
 
       std::vector<base_instance>& instances = subj.instances;
       std::vector<base_relation>& relations = subj.relations;
@@ -376,7 +376,7 @@ namespace andromeda
 		{
 		  continue;
 		}
-	      std::vector<word_token>& tokens = subj(i,j).word_tokens;
+	      std::vector<word_token>& tokens = subj(i,j).get_word_tokens();
 
 	      //LOG_S(INFO) << "(i, j): " << i << ", " << j;
 	      //LOG_S(INFO) << andromeda::tabulate(tokens, subj(i,j).text);

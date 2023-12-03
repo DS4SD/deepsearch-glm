@@ -363,11 +363,13 @@ namespace andromeda
       {
         if(ent.is_model(EXPRESSION) and ent.is_subtype("common") and ent.wtoken_len()==1)
           {
-            subj.word_tokens.at(ent.get_wtok_range(0)).set_word(ent.get_name());
+            //subj.word_tokens.at(ent.get_wtok_range(0)).set_word(ent.get_name());
+	    subj.set_word(ent.get_wtok_range(0), ent.get_name());
           }
         else if(ent.is_model(EXPRESSION) and ent.is_subtype("apostrophe") and ent.wtoken_len()==1)
           {
-            subj.word_tokens.at(ent.get_wtok_range(0)).set_word(ent.get_name());
+            //subj.word_tokens.at(ent.get_wtok_range(0)).set_word(ent.get_name());
+	    subj.set_word(ent.get_wtok_range(0), ent.get_name());
           }
         else
           {}
@@ -378,8 +380,8 @@ namespace andromeda
 
   bool nlp_model<ENT, EXPRESSION>::apply_common_regex(subject<TEXT>& subj)
   {
-    //std::string orig = subj.text;
-    std::string text = subj.text;
+    //std::string orig = subj.get_text();
+    std::string text = subj.get_text();
 
     //std::size_t max_id = subj.get_max_ent_hash();
 
@@ -429,7 +431,7 @@ namespace andromeda
 
   bool nlp_model<ENT, EXPRESSION>::apply_apostrophe_regex(subject<TEXT>& subj)
   {
-    std::string text = subj.text;
+    std::string text = subj.get_text();
 
     //std::size_t max_id = subj.get_max_ent_hash();
 
@@ -472,7 +474,7 @@ namespace andromeda
 
   bool nlp_model<ENT, EXPRESSION>::apply_abbr_regex(subject<TEXT>& subj)
   {
-    std::string text = subj.text;
+    std::string text = subj.get_text();
 
     for(std::size_t l=0; l<abbr_exprs.size(); l++)
       {
@@ -535,7 +537,7 @@ namespace andromeda
 
   bool nlp_model<ENT, EXPRESSION>::apply_concatenation_regex(subject<TEXT>& subj)
   {
-    std::string text = subj.text;
+    std::string text = subj.get_text();
 
     // find all concat expressions
     for(auto& expr:concat_exprs)
@@ -592,12 +594,12 @@ namespace andromeda
       {
         for(std::size_t j=0; j<subj.num_cols(); j++)
           {
-            if(subj(i,j).text.size()==0)
+            if(subj(i,j).get_text().size()==0)
               {
                 continue;
               }
 
-            std::string text = subj(i,j).text;
+            std::string text = subj(i,j).get_text();
 
             // find all concat expressions
             for(auto& expr:concat_exprs)
@@ -657,8 +659,8 @@ namespace andromeda
 
   bool nlp_model<ENT, EXPRESSION>::apply_latex_regex(subject<TEXT>& subj)
   {
-    //std::string orig = subj.text;
-    std::string text = subj.text;
+    //std::string orig = subj.get_text();
+    std::string text = subj.get_text();
 
     for(auto& ent:subj.instances)
       {
@@ -725,7 +727,7 @@ namespace andromeda
           }
       }
 
-    auto& wtokens = subj.word_tokens;
+    auto& wtokens = subj.get_word_tokens();
 
     std::list<std::size_t> wtoken_inds={};
     for(std::size_t l=0; l<wtokens.size(); l++)
@@ -763,7 +765,7 @@ namespace andromeda
   void nlp_model<ENT, EXPRESSION>::add_concatenated_expression(subject<TEXT>& subj,
                                                                std::list<std::size_t> wtoken_inds)
   {
-    auto& wtokens = subj.word_tokens;
+    auto& wtokens = subj.get_word_tokens();
 
     std::set<std::string> special_begins  = {"\"", "'", "''", "{", "}", ".", ",", ";", "/"};
     std::set<std::string> special_endings = {".",",","?","!",":", ";", "\"", "'", "''"};
@@ -892,7 +894,7 @@ namespace andromeda
             //LOG_S(WARNING) << ent.name << " ->" << words.size();
             //for(auto word:words)
             //{
-            //LOG_S(WARNING) << "\t ->" << word.text;
+            //LOG_S(WARNING) << "\t ->" << word.get_text();
             //}
 
             if(orig.starts_with("(") and orig.ends_with(")"))

@@ -32,10 +32,23 @@ namespace andromeda
 
     std::size_t get_len() const { return len; } // number-of-chars
     std::size_t get_dst() const { return dst; } // number-of-utf8-tokens
+
+    bool is_text_valid() { return text_valid; }
     
     void clear();
 
     hash_type get_text_hash() const { return text_hash; }
+
+    std::size_t get_num_wtokens() const { return word_tokens.size(); }
+    const word_token& get_wtoken(std::size_t i) const { return word_tokens.at(i); }
+
+    std::vector<word_token>& get_word_tokens() { return word_tokens; }
+
+    void init_pos() { for(auto& wtoken:word_tokens) { wtoken.set_pos(word_token::UNDEF_POS); } }
+
+    void set_pos(std::size_t i, std::string pos) { word_tokens.at(i).set_pos(pos); }
+    void set_tag(std::size_t i, std::string tag) { word_tokens.at(i).set_tag(tag); }
+    void set_word(std::size_t i, std::string wrd) { word_tokens.at(i).set_word(wrd); } 
     
     bool set_text(const std::string& ctext);
 
@@ -77,18 +90,23 @@ namespace andromeda
     void contract_char_tokens();
     void contract_word_tokens();
 
-  public:
+    //public:
 
-    bool text_valid;
-
-    uint64_t text_hash; // hash of normalised text
+  private:
     
+    bool text_valid;
+    uint64_t text_hash; // hash of normalised text
+
     std::size_t len; // number-of-chars
     std::size_t dst; // number-of-utf8-tokens
+
+  protected:
 
     std::string orig; // original text
     std::string text; // normalised text (removing confusables)
 
+  protected:
+    
     std::vector<char_token> char_tokens;
     std::vector<word_token> word_tokens;
   };
@@ -567,12 +585,12 @@ namespace andromeda
 
   std::string text_element::from_char_range(range_type char_range)
   {
-    std::size_t beg = char_range[0];
-    std::size_t len = char_range[1]-beg;
+    std::size_t beg_ = char_range[0];
+    std::size_t len_ = char_range[1]-beg_;
 
     if(char_range[1]<=text.size())
       {
-        return text.substr(beg, len);
+        return text.substr(beg_, len_);
       }
 
     LOG_S(ERROR) << "char-range is out of bounds: text-length: " << text.size()

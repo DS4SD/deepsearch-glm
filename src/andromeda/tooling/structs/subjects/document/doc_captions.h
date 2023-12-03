@@ -169,7 +169,7 @@ namespace andromeda
         ind_type prov_ind = prov_to_index.at(prov);
         ind_type page_num = prov->get_page();
 
-        std::string text = elem->text;
+        std::string text = elem->get_text();
 
         text = utils::to_lower(text);
         text = utils::strip(text);

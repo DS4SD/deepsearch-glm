@@ -139,7 +139,7 @@ namespace andromeda
     std::vector<crf_token_type> crf_tokens={};
     std::map<std::size_t, std::size_t> ptid_to_wtid={};
 
-    auto& wtokens = subj.word_tokens;
+    auto& wtokens = subj.get_word_tokens();
     //auto& entities = subj.entities;
 
     //pre_process(wtokens, ent.wtok_range, pos_tokens, ptid_to_wtid);
@@ -186,7 +186,7 @@ namespace andromeda
 
   void nlp_model<ENT, REFERENCE>::post_process(subject<TEXT>& subj)
   {
-    auto& wtokens = subj.word_tokens;
+    auto& wtokens = subj.get_word_tokens();
 
     //std::map<std::string, std::vector<std::array<std::size_t, 2> > > labels_to_crng={};
     std::map<std::string, std::vector<typename word_token::range_type> > labels_to_crng={};

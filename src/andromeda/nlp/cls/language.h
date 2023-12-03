@@ -63,7 +63,7 @@ namespace andromeda
   
   bool nlp_model<CLS, LANGUAGE>::preprocess(const subject<TEXT>& subj, std::string& text)
   {
-    text = subj.text;
+    text = subj.get_text();
     return true;
   }
   
@@ -75,7 +75,7 @@ namespace andromeda
 	auto& row = subj.data.at(i);	
 	for(std::size_t j=0; j<row.size(); j++)
 	  {
-	    ss << row.at(j).text << "; ";
+	    ss << row.at(j).get_text() << "; ";
 	  }
       }
 

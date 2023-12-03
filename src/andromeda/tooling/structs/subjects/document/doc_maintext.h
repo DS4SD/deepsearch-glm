@@ -84,8 +84,8 @@ namespace andromeda
 	    auto& curr_prov = curr->provs.back();
 	    auto& next_prov = next->provs.front();
 	    
-	    auto& curr_text = curr->text;
-	    auto& next_text = next->text;
+	    std::string curr_text = curr->get_text();
+	    std::string next_text = next->get_text();
 	    
 	    if(curr_prov->get_type()!="paragraph" or
 	       next_prov->get_type()!="paragraph" or

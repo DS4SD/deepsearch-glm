@@ -104,7 +104,7 @@ namespace andromeda
 
   bool nlp_model<ENT, LINK>::apply_regex(subject<TEXT>& subj)
   {    
-    std::string text = subj.text;
+    std::string text = subj.get_text();
 
     for(auto& expr:exprs)
       {

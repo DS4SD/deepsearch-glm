@@ -149,11 +149,13 @@ namespace andromeda
   bool nlp_model<POS, LAPOS>::apply(subject<TEXT>& subj)
   {
     // initialise
-    for(auto& token:subj.word_tokens)
-      {
-        token.set_pos(word_token::UNDEF_POS);
-      }
+    //for(auto& token:subj.get_word_tokens())
+    //{
+    //token.set_pos(word_token::UNDEF_POS);
+    //}
 
+    subj.init_pos();
+    
     std::string lang="null";
     if(not check_dependency(text_dependencies, subj, lang))
       {
@@ -174,7 +176,7 @@ namespace andromeda
     std::vector<pos_token_type> pos_tokens={};
     std::map<index_type, index_type> ptid_to_wtid={};
 
-    auto& wtokens = subj.word_tokens;
+    auto& wtokens = subj.get_word_tokens();
     auto& instances = subj.instances;
 
     /*
@@ -269,7 +271,7 @@ namespace andromeda
       {
 	for(std::size_t j=0; j<subj.num_cols(); j++)
 	  {	    
-	    auto& word_tokens = subj(i,j).word_tokens;
+	    auto& word_tokens = subj(i,j).get_word_tokens();
 	  	    
 	    // initialise
 	    for(auto& word_token:word_tokens)
