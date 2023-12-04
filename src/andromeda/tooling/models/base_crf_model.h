@@ -39,6 +39,8 @@ namespace andromeda
 
   protected:
 
+    std::vector<std::string> get_labels();
+    
     /*   PREDICT   */
 
     bool predict(std::vector<crf_token_type>& tokens);
@@ -98,6 +100,24 @@ namespace andromeda
     return success;
   }
 
+  std::vector<std::string> base_crf_model::get_labels()
+  {
+    std::vector<std::string> labels={};
+
+    if(model==NULL)
+      {
+	LOG_S(WARNING) << "asking for labels with un-initialised model";
+	return labels;
+      }
+
+    for(int i=0; i<model->num_classes(); i++)
+      {
+	labels.push_back(model->get_class_label(i));
+      }
+    
+    return labels;
+  }
+  
   bool base_crf_model::save(std::filesystem::path ofile)
   {
     if(model!=NULL)

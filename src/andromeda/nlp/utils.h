@@ -55,7 +55,8 @@ namespace andromeda
     return model;
   }
   
-  bool to_models(model_name name, std::vector<std::shared_ptr<base_nlp_model> >& models, bool verbose)
+  bool to_models(model_name name, std::string desc,
+		 std::vector<std::shared_ptr<base_nlp_model> >& models, bool verbose)
   {
     if(verbose)
       {
@@ -172,6 +173,13 @@ namespace andromeda
 	}
 	break;	
 
+      case CUSTOM_CRF:
+	{
+	  typedef nlp_model<ENT, CUSTOM_CRF> model_type;
+	  model = std::make_shared<model_type>(desc);	  	  	  
+	}
+	break;
+	
       case CONN:
 	{
 	  typedef nlp_model<ENT, CONN> model_type;
@@ -212,7 +220,7 @@ namespace andromeda
       {
 	if(curr_names.count(dep_name)==0)
 	  {
-	    if(not to_models(dep_name, models, verbose))
+	    if(not to_models(dep_name, "", models, verbose))
 	      {
 		LOG_S(FATAL) << "can not satisfy dependencies for model: "
 			     << to_string(name) << " for dependency " << to_string(dep_name);
@@ -228,7 +236,7 @@ namespace andromeda
 		bool verbose)
   {
     model_name name_ = to_modelname(name);
-    return to_models(name_, models, verbose);
+    return to_models(name_, name, models, verbose);
   }
   
   bool to_models(std::string expr,
