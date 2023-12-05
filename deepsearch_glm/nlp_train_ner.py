@@ -45,21 +45,19 @@ examples of execution:
                         help="mode for training semantic model",
                         choices=["prepare","train","all"])
 
-    parser.add_argument('--input-dir', required=False,
+    parser.add_argument('--input-file', required=False,
                         type=str, default=None,
-                        help="input directory with documents with `train.jsonl and `test.jsonl``")
+                        help="input-file with annotations in jsonl format")
     
     parser.add_argument('--output-dir', required=False,
                         type=str, default="./reference-models",
-                        help="output directory for trained models & annotated data")
+                        help="output directory for trained models & prepared data")
 
     parser.add_argument('--max-items', required=False,
                         type=int, default=-1,
                         help="number of references")
     
     args = parser.parse_args()
-
-    idir = args.input_dir
     
     if args.output_dir==None:
         odir = create_nlp_dir()
@@ -71,7 +69,7 @@ examples of execution:
     else:
         odir = args.output_dir
         
-    return args.mode, args.input_dir, odir, args.max_items    
+    return args.mode, args.input_file, odir, args.max_items    
 
 def annotate_item(atem, item, labels, is_training_sample=True, append_to_file=False):
 
@@ -85,7 +83,20 @@ def annotate_item(atem, item, labels, is_training_sample=True, append_to_file=Fa
         atem["word_tokens"]["data"][ri].append(label)
 
     text = atem["text"]
+
+    #print(item)
+    for annot in item["annotation"]:
+
+        lbl = annot["label"].replace(" ", "_").lower().strip()
+        rng = [annot["start"], annot["end"]]
+
+        #print(item["text"][rng[0]:rng[1]])
         
+        for ri,row_i in enumerate(atem["word_tokens"]["data"]):
+            if rng[0]<=row_i[char_i] and row_i[char_j]<=rng[1]:
+                atem["word_tokens"]["data"][ri][-1] = lbl
+        
+    """
     for key,vals in item.items():
 
         if key in labels:
@@ -105,20 +116,20 @@ def annotate_item(atem, item, labels, is_training_sample=True, append_to_file=Fa
                 for ri,row_i in enumerate(atem["word_tokens"]["data"]):
                     if rng[0]<=row_i[char_i] and row_i[char_j]<=rng[1]:
                         atem["word_tokens"]["data"][ri][-1] = key
-
+    """
+    
     """
     print(text)
     print("\n\n", tabulate(atem["word_tokens"]["data"],
                            headers=atem["word_tokens"]["headers"]))
-    """
-    
+    """ 
+
     atem["annotated"]=True
 
-    #exit(-1)
     
     return atem
     
-def prepare_crf(rfile, ofile, max_items, is_training_sample=True, append_to_file=False):
+def prepare_crf(rfile, ofile, max_items, ratio=0.9):
 
     nlp_model = init_nlp_model("language", filters=["properties", "word_tokens"])
 
@@ -131,10 +142,7 @@ def prepare_crf(rfile, ofile, max_items, is_training_sample=True, append_to_file
     refs=[]
 
     fr = open(rfile, "r")
-    if append_to_file:
-        fw = open(ofile, "a")
-    else:
-        fw = open(ofile, "w")
+    fw = open(ofile, "w")
 
     cnt = 0
     
@@ -148,8 +156,12 @@ def prepare_crf(rfile, ofile, max_items, is_training_sample=True, append_to_file
         atem = nlp_model.apply_on_text(item["text"])
         
         atem = annotate_item(atem, item, labels=["chemicals"])
-        atem["training-sample"] = is_training_sample
-        
+
+        if random.random()<ratio:
+            atem["training-sample"] = True
+        else:
+            atem["training-sample"] = False
+
         if "annotated" in atem and atem["annotated"]:
             fw.write(json.dumps(atem)+"\n")
             
@@ -172,10 +184,10 @@ def train_crf(train_file, model_file, metrics_file):
     
             model.train(config)
         
-def create_crf_model(mode, idir, odir, max_items):
+def create_crf_model(mode, ifile, odir, max_items):
 
-    train_file = os.path.join(idir, "train.jsonl")
-    test_file = os.path.join(idir, "test.jsonl")    
+    #train_file = os.path.join(idir, "train.jsonl")
+    #test_file = os.path.join(idir, "test.jsonl")    
     
     #sfile = os.path.join(odir, "nlp-references.data.jsonl")    
     afile = os.path.join(odir, "nlp-data.annot.jsonl")
@@ -184,14 +196,15 @@ def create_crf_model(mode, idir, odir, max_items):
     crf_metrics_file = crf_model_file+".metrics.txt"
     
     if mode=="prepare" or mode=="all":
-        prepare_crf(train_file, afile, max_items, is_training_sample=True, append_to_file=False)
-        prepare_crf(test_file, afile, max_items, is_training_sample=False, append_to_file=True)
+        #prepare_crf(train_file, afile, max_items, is_training_sample=True, append_to_file=False)
+        #prepare_crf(test_file, afile, max_items, is_training_sample=False, append_to_file=True)
+        prepare_crf(ifile, afile, max_items, ratio=0.9)
         
     if mode=="train" or mode=="all":
         train_crf(afile, crf_model_file, crf_metrics_file)
         
 if __name__ == '__main__':
 
-    mode, idir, odir, max_items = parse_arguments()
+    mode, ifile, odir, max_items = parse_arguments()
 
-    create_crf_model(mode, idir, odir, max_items)
+    create_crf_model(mode, ifile, odir, max_items)
