@@ -12,23 +12,11 @@ namespace andromeda
     typedef typename word_token::range_type range_type;
 
     const static inline std::string TAG = "__"+to_string(CUSTOM_CRF)+"__";
-
-    /*
-    const static inline std::set<std::string> LABELS = { "reference-number",
-                                                         "authors", "title",
-                                                         "publisher",
-                                                         "journal", "conference",
-                                                         "date",
-                                                         "volume", "pages",
-                                                         "url", "doi", "isbn",
-							 "note"};
-    */
     
   public:
 
     
     nlp_model(std::string desc);
-    //nlp_model(std::filesystem::path model_file);
 
     ~nlp_model();
 

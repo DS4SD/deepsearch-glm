@@ -29,15 +29,19 @@ from deepsearch_glm.nlp_utils import create_nlp_dir, init_nlp_model
 def parse_arguments():
 
     parser = argparse.ArgumentParser(
-        prog = "nlp_train_reference",
-        description = 'Prepare CRF data for CRF-reference parser',
+        prog = "nlp_train_crf",
+        description = 'train CRF model',
         epilog =
 """
 examples of execution: 
 
-1. end-to-end example on pdf documents:
+1. end-to-end example to train CRF:
 
-    poetry run python ./deepsearch_glm/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
+    poetry run python ./deepsearch_glm/nlp_train_crf.py -m all --input-file <filename> --output-dir <models-directory>'
+
+2. end-to-end example to train CRF with limited samples:
+
+    poetry run python ./deepsearch_glm/nlp_train_crf.py -m all --input-file <filename> --output-dir <models-directory> --max-items 1000'
 """,
         formatter_class=argparse.RawTextHelpFormatter)
         
@@ -113,29 +117,6 @@ def annotate_item(atem, item, labels, is_training_sample=True, append_to_file=Fa
             if char_i<=row_i[char_i_ind] and row_i[char_j_ind]<=char_j:
                 atem["word_tokens"]["data"][ri][-1] = lbl
         
-    """
-    for key,vals in item.items():
-
-        if key in labels:
-
-            ranges=[]
-            
-            ind=0
-            for val in vals:
-                ind = text.find(val, ind)
-
-                if ind!=-1:
-                    ranges.append([ind, ind+len(val)])
-                else:
-                    break
-
-            for rng in ranges:
-                for ri,row_i in enumerate(atem["word_tokens"]["data"]):
-                    if rng[0]<=row_i[char_i] and row_i[char_j]<=rng[1]:
-                        atem["word_tokens"]["data"][ri][-1] = key
-    """
-    
-    
     print(text)
     print("\n\n", tabulate(atem["word_tokens"]["data"],
                            headers=atem["word_tokens"]["headers"]))
@@ -188,7 +169,6 @@ def prepare_crf(rfile, ofile, max_items, ratio=0.9):
 
 def train_crf(train_file, model_file, metrics_file):
 
-    #model = andromeda_nlp.nlp_model()
     model = nlp_model()
                 
     configs = model.get_train_configs()

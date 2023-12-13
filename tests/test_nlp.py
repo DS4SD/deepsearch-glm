@@ -496,6 +496,10 @@ def test_06B():
         
     #print(crf_files)
     for crf_file in crf_files:
+
+        if crf_file.endswith(".annot.jsonl"):
+            continue
+        
         print(f"training on {crf_file}")
         annot_file, model_file, metrics_file = create_crf_model(mode="all",
                                                                 ifile=crf_file,
@@ -511,6 +515,49 @@ def test_06B():
 # predict CRF 
 def test_06C():
 
+    resources_dir = get_resources_dir()
+
+    print(f"{resources_dir}/data_nlp/crf.*.jsonl")
+    crf_files = glob.glob(f"{resources_dir}/data_nlp/crf.*.jsonl")
+        
+    for crf_file in crf_files:
+
+        if crf_file.endswith(".annot.jsonl"):
+            continue
+
+        name = os.path.basename(crf_file).replace("crf.", "").replace(".jsonl", "")
+        
+        print(f"running on {crf_file}")
+        annot_file, model_file, metrics_file = create_crf_model(mode="files",
+                                                                ifile=crf_file,
+                                                                odir=os.path.dirname(crf_file),
+                                                                max_items=1000)
+
+        
+        assert os.path.exists(model_file)
+        
+        model = init_nlp_model(f"language;custom_crf({name}:{model_file})", filters=["properties", "instances"])        
+
+        fr = open(crf_file, "r")
+
+        while True:
+
+            line = fr.readline()
+
+            if line==None or len(line.strip())==0:
+                break
+
+            data = json.loads(line)
+            sres = model.apply_on_text(data["text"])        
+
+            """
+            print(sres["text"])
+            print(tabulate(sres["instances"]["data"],
+                           headers=sres["instances"]["headers"]))
+            """
+            
+        fr.close()
+        
     assert True
     
     
