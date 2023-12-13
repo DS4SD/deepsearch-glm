@@ -176,7 +176,7 @@ namespace andromeda
 
     return true;
   }
-
+  
   bool producer<DOCUMENT>::set_ofs(std::filesystem::path path)
   {
     base_producer::opath = path;
@@ -256,26 +256,31 @@ namespace andromeda
   bool producer<DOCUMENT>::write(doc_type& subj)
   {
     std::filesystem::path filepath = subj.get_filepath();
+
     std::filesystem::path filename = filepath.filename();
-    //std::filesystem::path filedir = filepath.dirname();
+    std::filesystem::path filedir = filepath.parent_path();
+
+    //LOG_S(WARNING) << "filepath: " << filepath.c_str();
+    //LOG_S(WARNING) << "filename: " << filename.c_str();
+    //LOG_S(WARNING) << "filedir: " << filedir.c_str();
     
-    std::filesystem::path opath;// = filedir;
-    if(not get_output_file(opath, filename))
+    std::filesystem::path outfile;// = filedir;
+    if(not get_output_file(outfile, filedir, filename))
       {
-	LOG_S(ERROR) << "can not write: " << opath.c_str();
+	LOG_S(ERROR) << "can not write: " << outfile.c_str();
 	return false;
       }
     
-    LOG_S(WARNING) << "writing: " << opath.c_str();
+    LOG_S(INFO) << "writing: " << outfile.c_str();
     
     std::ofstream ofs;
-    ofs.open(opath.c_str(), std::ofstream::out);
+    ofs.open(outfile.c_str(), std::ofstream::out);
     
     if(ofs.good())
       {
 	nlohmann::json data = subj.to_json({});
 
-	std::string ext=opath.extension();
+	std::string ext=outfile.extension();
 	if(ext==".json")
 	  {
 	    ofs << std::setw(4) << data;

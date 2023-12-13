@@ -71,12 +71,12 @@ examples of execution:
         
     return args.mode, args.input_file, odir, args.max_items    
 
-def annotate_item(atem, item, labels, is_training_sample=True, append_to_file=False):
+def annotate_item(atem, item, labels, is_training_sample=True, append_to_file=False, start_and_end_in_utf8=True):
 
     atem["word_tokens"]["headers"].append("true-label")
 
-    char_i = atem["word_tokens"]["headers"].index("char_i")
-    char_j = atem["word_tokens"]["headers"].index("char_j")
+    char_i_ind = atem["word_tokens"]["headers"].index("char_i")
+    char_j_ind = atem["word_tokens"]["headers"].index("char_j")
     
     label="null"
     for ri,row_i in enumerate(atem["word_tokens"]["data"]):
@@ -84,16 +84,33 @@ def annotate_item(atem, item, labels, is_training_sample=True, append_to_file=Fa
 
     text = atem["text"]
 
-    #print(item)
+    print(item["text"])
     for annot in item["annotation"]:
 
         lbl = annot["label"].replace(" ", "_").lower().strip()
-        rng = [annot["start"], annot["end"]]
+        utf8_rng = [annot["start"], annot["end"]]
 
-        #print(item["text"][rng[0]:rng[1]])
-        
+        print(item["text"][utf8_rng[0]:utf8_rng[1]])
+
+        #beg_ustr = item["text"][0:utf8_rng[0]]
+        beg_ustr = text[0:utf8_rng[0]]
+        beg_bstr = beg_ustr.encode("utf-8")
+
+        #end_ustr = item["text"][0:utf8_rng[1]]
+        end_ustr = text[0:utf8_rng[1]]
+        end_bstr = end_ustr.encode("utf-8")
+
+        byte_rng = [len(beg_bstr), len(end_bstr)]
+
+        if start_and_end_in_utf8:
+            char_i = byte_rng[0]
+            char_j = byte_rng[1]
+        else:
+            char_i = utf8_rng[0]
+            char_j = utf8_rng[1]
+            
         for ri,row_i in enumerate(atem["word_tokens"]["data"]):
-            if rng[0]<=row_i[char_i] and row_i[char_j]<=rng[1]:
+            if char_i<=row_i[char_i_ind] and row_i[char_j_ind]<=char_j:
                 atem["word_tokens"]["data"][ri][-1] = lbl
         
     """
@@ -118,14 +135,16 @@ def annotate_item(atem, item, labels, is_training_sample=True, append_to_file=Fa
                         atem["word_tokens"]["data"][ri][-1] = key
     """
     
-    """
+    
     print(text)
     print("\n\n", tabulate(atem["word_tokens"]["data"],
                            headers=atem["word_tokens"]["headers"]))
-    """ 
+    
 
+    btext = text.encode("utf-8")
+    assert len(text)==len(btext)
+    
     atem["annotated"]=True
-
     
     return atem
     
