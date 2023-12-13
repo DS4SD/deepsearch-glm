@@ -4,14 +4,14 @@ import os
 import json
 import subprocess
 
-from deepsearch_glm.andromeda_nlp import nlp_model
+#from deepsearch_glm.andromeda_nlp import nlp_model
 
 def get_resources_dir():
     
     if "DEEPSEARCH_GLM_RESOURCES_DIR" in os.environ:
         RESOURCES_DIR = os.getenv("DEEPSEARCH_GLM_RESOURCES_DIR")
     else:
-        #from deepsearch_glm.andromeda_nlp import nlp_model
+        from deepsearch_glm.andromeda_nlp import nlp_model
 
         model = nlp_model()
         RESOURCES_DIR = model.get_resources_path()
