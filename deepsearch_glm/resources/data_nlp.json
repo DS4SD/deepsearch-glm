@@ -1,0 +1,14 @@
+{
+    "object-store": "https://ds4sd-public-artifacts.s3.eu-de.cloud-object-storage.appdomain.cloud",
+
+    "nlp":
+    {
+	"bucket": "ds4sd-public-artifacts",
+	"prefix": "deepsearch_glm/v1/data/nlp",
+
+	"crf":
+	{
+	    "materials": ["nlp.crf.materials.jsonl", "data_nlp/crf.materials.jsonl"]
+	}
+    }    
+}

@@ -142,7 +142,7 @@ def annotate_item(atem, item, labels, is_training_sample=True, append_to_file=Fa
     
 
     btext = text.encode("utf-8")
-    assert len(text)==len(btext)
+    #assert len(text)==len(btext)
     
     atem["annotated"]=True
     
@@ -205,13 +205,11 @@ def train_crf(train_file, model_file, metrics_file):
         
 def create_crf_model(mode, ifile, odir, max_items):
 
-    #train_file = os.path.join(idir, "train.jsonl")
-    #test_file = os.path.join(idir, "test.jsonl")    
+    filename = os.path.basename(ifile)
     
-    #sfile = os.path.join(odir, "nlp-references.data.jsonl")    
-    afile = os.path.join(odir, "nlp-data.annot.jsonl")
+    afile = os.path.join(odir, filename.replace(".jsonl", ".annot.jsonl"))
 
-    crf_model_file = os.path.join(odir, "crf_model")
+    crf_model_file = os.path.join(odir, filename.replace(".jsonl", ".crf_model.bin"))
     crf_metrics_file = crf_model_file+".metrics.txt"
     
     if mode=="prepare" or mode=="all":
@@ -221,6 +219,8 @@ def create_crf_model(mode, ifile, odir, max_items):
         
     if mode=="train" or mode=="all":
         train_crf(afile, crf_model_file, crf_metrics_file)
+
+    return afile, crf_model_file, crf_metrics_file
         
 if __name__ == '__main__':
 

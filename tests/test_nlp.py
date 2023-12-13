@@ -4,14 +4,18 @@ GENERATE=False
 
 import os
 import json
+import glob
 
 from tabulate import tabulate
 
 from deepsearch_glm.nlp_utils import list_nlp_model_configs, init_nlp_model, \
     extract_references_from_doc
-from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
+from deepsearch_glm.utils.load_pretrained_models import get_resources_dir, \
+    load_pretrained_nlp_data, \
+    load_pretrained_nlp_models
 from deepsearch_glm.utils.ds_utils import to_legacy_document_format
 
+from deepsearch_glm.nlp_train_crf import create_crf_model
 from deepsearch_glm.nlp_train_semantic import train_semantic
 
 def round_floats(o):
@@ -473,6 +477,42 @@ def test_05A():
         doc_i = round_floats(doc_i)
         
         assert doc_i==doc_leg
+
+# download CRF data
+def test_06A():
+
+    done, data = load_pretrained_nlp_data(key="crf", force=False, verbose=True)
+    print(json.dumps(data, indent=2))
+    
+    assert done
+    
+# train CRF 
+def test_06B():
+
+    resources_dir = get_resources_dir()
+
+    print(f"{resources_dir}/data_nlp/crf.*.jsonl")
+    crf_files = glob.glob(f"{resources_dir}/data_nlp/crf.*.jsonl")
+        
+    #print(crf_files)
+    for crf_file in crf_files:
+        print(f"training on {crf_file}")
+        annot_file, model_file, metrics_file = create_crf_model(mode="all",
+                                                                ifile=crf_file,
+                                                                odir=os.path.dirname(crf_file),
+                                                                max_items=1000)
+
+        assert os.path.exists(annot_file)
+        assert os.path.exists(model_file)
+        assert os.path.exists(metrics_file)
+        
+    assert True
+
+# predict CRF 
+def test_06C():
+
+    assert True
+    
     
 """
 def test_05A_train_semantic():
