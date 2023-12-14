@@ -105,8 +105,6 @@ def show_texts(doc_j):
 
     data=[]
     for item in doc_j["texts"]:
-        print(item)
-        print(item.keys())
         data.append([item["subj_hash"], item["text_hash"], item["text"][0:48]])
 
     print(tabulate(data, headers=["subj_hash", "text_hash", "text"]))
