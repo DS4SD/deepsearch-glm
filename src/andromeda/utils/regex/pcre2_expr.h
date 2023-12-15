@@ -208,6 +208,7 @@ namespace andromeda
     if(ocount==0) { return false; }
     
     PCRE2_SIZE* ovector = pcre2_get_ovector_pointer(match_data);
+   
     if(ovector[0]==0 and ovector[1]==text.size())
       {
 	return get_groups(ind, len, text, annots);

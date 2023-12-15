@@ -39,6 +39,8 @@ namespace andromeda
 
   protected:
 
+    std::vector<std::string> get_labels();
+    
     /*   PREDICT   */
 
     bool predict(std::vector<crf_token_type>& tokens);
@@ -98,6 +100,24 @@ namespace andromeda
     return success;
   }
 
+  std::vector<std::string> base_crf_model::get_labels()
+  {
+    std::vector<std::string> labels={};
+
+    if(model==NULL)
+      {
+	LOG_S(WARNING) << "asking for labels with un-initialised model";
+	return labels;
+      }
+
+    for(int i=0; i<model->num_classes(); i++)
+      {
+	labels.push_back(model->get_class_label(i));
+      }
+    
+    return labels;
+  }
+  
   bool base_crf_model::save(std::filesystem::path ofile)
   {
     if(model!=NULL)
@@ -110,7 +130,39 @@ namespace andromeda
 
   bool base_crf_model::predict(std::vector<crf_token_type>& tokens)
   {
-    predicter.predict(tokens);
+    if(tokens.size()<andromeda_crf::crf_model::MAX_LEN)
+      {
+	predicter.predict(tokens);
+      }
+    else
+      {
+	LOG_S(WARNING) << "encountered tokens-array exceeding max-len of "
+		       << andromeda_crf::crf_model::MAX_LEN;
+	
+	int DELTA = andromeda_crf::crf_model::MAX_LEN-1;
+	int clen = tokens.size();
+
+	for(int I0=0; I0<clen; I0+=DELTA)
+	  {
+	    int I1 = std::min(I0+DELTA, clen);
+	    
+	    std::vector<crf_token_type> sub_tokens={};
+	    for(int i=I0; i<I1; i++)
+	      {
+		sub_tokens.push_back(tokens.at(i));
+	      }
+	    assert(sub_tokens.size()<andromeda_crf::crf_model::MAX_LEN);
+	    
+	    predicter.predict(sub_tokens);
+	    
+	    for(int i=I0; i<I1; i++)
+	      {
+		LOG_S(INFO) << I0 << "\t" << i << "\t" << I1 << "\t" << clen;
+		tokens.at(i) = sub_tokens.at(i-I0);
+	      }
+	  }
+      }
+
     return true;
   }
 

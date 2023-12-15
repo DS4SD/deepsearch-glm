@@ -264,8 +264,6 @@ namespace andromeda
                 ind += 1;
               }
 
-
-
             auto ctok_range = subj.get_char_token_range(char_range);
             auto wtok_range = subj.get_word_token_range(char_range);
 

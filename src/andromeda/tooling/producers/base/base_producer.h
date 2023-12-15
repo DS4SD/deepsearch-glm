@@ -86,7 +86,8 @@ namespace andromeda
 
     bool get_output_file(std::filesystem::path& outfile);
 
-    bool get_output_file(std::filesystem::path& opath,
+    bool get_output_file(std::filesystem::path& outfile,
+			 std::filesystem::path& ifilepath,
 			 std::filesystem::path& ifilename);
     
   protected:
@@ -348,18 +349,41 @@ namespace andromeda
     return true;
   }
 
-  bool base_producer::get_output_file(std::filesystem::path& out,
+  bool base_producer::get_output_file(std::filesystem::path& outfile,
+				      std::filesystem::path& ifiledir,
 				      std::filesystem::path& ifilename)
   {
-    if(opath!=null_opath and path_itr==path_end)
+    if(not write_output)
+      {
+	return false;
+      }
+
+    //if(path_itr==path_end)
+    //{
+    //LOG_S(WARNING) << __FILE__ << ":" << __LINE__;
+    //return false;
+    //}
+    
+    if(opath!=null_opath)
       {
 	std::filesystem::path odir(opath.c_str());
 	
 	std::string ofile = utils::replace(ifilename.c_str(), iformat, oformat);
 	std::filesystem::path ofilename(ofile.c_str());
 	
-	out = odir / ofilename;	
+	outfile = odir / ofilename;		
       }
+    else
+      {
+	std::filesystem::path odir(ifiledir.c_str());
+	
+	std::string ofile = utils::replace(ifilename.c_str(), iformat, oformat);
+	std::filesystem::path ofilename(ofile.c_str());
+	
+	outfile = odir / ofilename;	
+      }
+    
+    //LOG_S(WARNING) << "opath: " << opath.c_str();
     
     return true;
   }

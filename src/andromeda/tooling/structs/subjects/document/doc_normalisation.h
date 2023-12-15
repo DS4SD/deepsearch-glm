@@ -249,6 +249,13 @@ namespace andromeda
                 prov->set(ref_item[doc_type::prov_lbl][0]);
                 provs.push_back(prov);
               }
+	    /*
+	    else if(ref_item.count(doc_type::prov_lbl)==0)
+	      {
+		LOG_S(ERROR) << "missing 'prov' key in "
+                             << item.dump();
+	      }
+	    */
             else
               {
                 LOG_S(ERROR) << "undefined prov for main-text item: "

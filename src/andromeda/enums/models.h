@@ -35,7 +35,7 @@ namespace andromeda
      CITE=515,
      LINK=516, // weblinks in text
      NAME=517, // person/organisation names
-     //ORGANISATION=518,
+     
      
      QUOTE=564, // numerical value's
      PARENTHESIS=565, // anything in brackets
@@ -43,6 +43,8 @@ namespace andromeda
      
      SENTENCE=600,
      REFERENCE=601,
+
+     CUSTOM_CRF=666,
      
      // POS-patterns
      CONN=700,
@@ -81,9 +83,8 @@ namespace andromeda
      SENTENCE,
      REFERENCE,
 
-     //LOCATION,
-     //ORGANISATION,
-     
+     CUSTOM_CRF,
+          
      // POS-patterns
      CONN,
      TERM,
@@ -125,6 +126,8 @@ namespace andromeda
 
 	//case LOCATION: return "LOCATION";
 	//case ORGANISATION: return "ORGANISATION";
+
+      case CUSTOM_CRF: return "CUSTOM_CRF";
 	
       case CONN: return "CONN";
       case TERM: return "TERM";
@@ -141,6 +144,11 @@ namespace andromeda
   model_name to_modelname(std::string name)
   {
     std::string uname = utils::to_upper(utils::strip(name));
+
+    if(uname.starts_with(to_string(CUSTOM_CRF)))
+      {
+	return CUSTOM_CRF;
+      }
     
     for(auto mname:MODEL_NAMES)
       {

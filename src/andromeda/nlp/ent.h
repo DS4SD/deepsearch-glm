@@ -16,3 +16,4 @@
 
 #include <andromeda/nlp/ent/pos_pattern.h>
 
+#include <andromeda/nlp/ent/custom_crf.h>
