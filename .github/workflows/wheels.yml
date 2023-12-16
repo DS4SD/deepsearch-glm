@@ -79,10 +79,10 @@ jobs:
             platform_id: macosx_x86_64
 
           # MacOS arm64
-          #- os: macos-latest
-          #  python: 310
-          #  platform: macos
-          #  platform_id: macosx_arm64
+          - os: macos-latest
+            python: 310
+            platform: macos
+            platform_id: macosx_arm64
 
           # MacOS arm64
           #- os: macos-latest
@@ -131,13 +131,13 @@ jobs:
         run: |
           /Users/runner/.local/bin/poetry run python --version
 
-      - name: Build wheels [macos]
+      - name: Build wheels [macos-x86_64]
         if: matrix.os == 'macos-latest'
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
-          CIBW_ARCHS: x86_64 arm64 
+          CIBW_ARCHS: x86_64 
           CIBW_PLATFORM: macos
-          CIBW_SKIP: "pp* *-musllinux_* *_i686* *_s390*"
+          CIBW_SKIP: "pp* *-musllinux_* *_i686* *_s390* *arm64*"
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           CIBW_BUILD_VERBOSITY: 3
         run: |
@@ -150,6 +150,27 @@ jobs:
           /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
+
+      - name: Build wheels [macos-arm64]
+        if: {{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_arm64'}}
+        env:
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_ARCHS: arm64 
+          CIBW_PLATFORM: macos
+          CIBW_SKIP: "pp* *-musllinux_* *_i686* *x86_64* *_s390*"
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
+          CIBW_BUILD_VERBOSITY: 3
+        run: |
+          /Users/runner/.local/bin/poetry run python --version
+          /Users/runner/.local/bin/poetry add cibuildwheel
+          #/Users/runner/.local/bin/poetry install
+          cat ./pyproject.toml
+          /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
+          ls -l wheelhouse
+          /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
+          mkdir ./dist
+          cp wheelhouse/*.whl ./dist/
+
 
       - name: publish wheels (dry run) [macos]
         if: matrix.os == 'macos-latest'
