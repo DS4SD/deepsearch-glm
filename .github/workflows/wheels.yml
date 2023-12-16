@@ -167,7 +167,7 @@ jobs:
           CIBW_BUILD_VERBOSITY: 3
         run: |
           /Users/runner/.local/bin/poetry run python --version
-          /Users/runner/.local/bin/poetry add cibuildwheel
+          /Users/runner/.local/bin/poetry add cibuildwheel wheel
           #/Users/runner/.local/bin/poetry install
           cat ./pyproject.toml
           /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
