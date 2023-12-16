@@ -132,7 +132,8 @@ jobs:
           /Users/runner/.local/bin/poetry run python --version
 
       - name: Build wheels [macos-x86_64]
-        if: matrix.os == 'macos-latest'
+        if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_x86_64'}}
+        #if: matrix.os == 'macos-latest'
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: x86_64 
