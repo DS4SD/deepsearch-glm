@@ -152,7 +152,7 @@ jobs:
           cp wheelhouse/*.whl ./dist/
 
       - name: Build wheels [macos-arm64]
-        if: {{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_arm64'}}
+        if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_arm64'}}
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: arm64 
