@@ -152,6 +152,9 @@ jobs:
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
 
+      # there is an error with the tagging of wheels for macosx-arm64
+      # see note: https://cibuildwheel.readthedocs.io/en/stable/faq/
+      # see here: https://gist.github.com/anderssonjohan/49f07e33fc5cb2420515a8ac76dc0c95#file-build-pendulum-wheels-yml-L39-L53
       - name: Build wheels [macos-arm64]
         if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_arm64'}}
         env:
@@ -168,6 +171,8 @@ jobs:
           #/Users/runner/.local/bin/poetry install
           cat ./pyproject.toml
           /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
+          ls -l wheelhouse
+          /Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_12_0_arm64 ./wheelhouse/*.whl
           ls -l wheelhouse
           /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
           mkdir ./dist
