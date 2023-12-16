@@ -373,7 +373,7 @@ namespace andromeda
 	  }
       }
 
-    return true;
+    return legacy;
   }
   
   void subject<TABLE>::set_hash()
