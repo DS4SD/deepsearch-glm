@@ -79,16 +79,26 @@ jobs:
             platform_id: macosx_x86_64
 
           # MacOS arm64
+
+          - os: macos-latest
+            python: 38
+            platform: macos
+            platform_id: macosx_arm64
+
+          - os: macos-latest
+            python: 39
+            platform: macos
+            platform_id: macosx_arm64
+
           - os: macos-latest
             python: 310
             platform: macos
             platform_id: macosx_arm64
 
-          # MacOS arm64
-          #- os: macos-latest
-          #  python: 311
-          #  platform: macos
-          #  platform_id: macosx_arm64
+          - os: macos-latest
+            python: 311
+            platform: macos
+            platform_id: macosx_arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v3
