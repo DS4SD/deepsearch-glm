@@ -4,7 +4,7 @@ repos:
     hooks:
       - id: system
         name: Black
-        entry: poetry run black deepsearch-glm
+        entry: poetry run black deepsearch_glm
         pass_filenames: false
         language: system
         files: '\.py$'
