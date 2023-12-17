@@ -1,0 +1,41 @@
+fail_fast: true
+repos:
+  - repo: local
+    hooks:
+      - id: system
+        name: Black
+        entry: poetry run black deepsearch-glm
+        pass_filenames: false
+        language: system
+        files: '\.py$'
+  - repo: local
+    hooks:
+      - id: system
+        name: isort
+        entry: poetry run isort deepsearch-glm
+        pass_filenames: false
+        language: system
+        files: '\.py$'
+  - repo: local
+    hooks:
+      - id: system
+        name: MyPy
+        entry: poetry run mypy deepsearch-glm
+        pass_filenames: false
+        language: system
+        files: '\.py$'
+  - repo: local
+    hooks:
+      - id: system
+        name: Pylint
+        entry: poetry run pylint -j 0 deepsearch-glm
+        pass_filenames: false
+        language: system
+        files: '\.py$'
+  - repo: local
+    hooks:
+      - id: system
+        name: Poetry check
+        entry: poetry lock --check
+        pass_filenames: false
+        language: system
