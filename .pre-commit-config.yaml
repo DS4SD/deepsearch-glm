@@ -11,6 +11,14 @@ repos:
   - repo: local
     hooks:
       - id: system
+        name: Black
+        entry: poetry run black tests
+        pass_filenames: false
+        language: system
+        files: '\.py$'
+  - repo: local
+    hooks:
+      - id: system
         name: isort
         entry: poetry run isort deepsearch_glm
         pass_filenames: false
