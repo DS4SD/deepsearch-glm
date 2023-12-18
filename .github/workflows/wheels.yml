@@ -79,16 +79,26 @@ jobs:
             platform_id: macosx_x86_64
 
           # MacOS arm64
-          #- os: macos-latest
-          #  python: 310
-          #  platform: macos
-          #  platform_id: macosx_arm64
 
-          # MacOS arm64
-          #- os: macos-latest
-          #  python: 311
-          #  platform: macos
-          #  platform_id: macosx_arm64
+          - os: macos-latest
+            python: 38
+            platform: macos
+            platform_id: macosx_arm64
+
+          - os: macos-latest
+            python: 39
+            platform: macos
+            platform_id: macosx_arm64
+
+          - os: macos-latest
+            python: 310
+            platform: macos
+            platform_id: macosx_arm64
+
+          - os: macos-latest
+            python: 311
+            platform: macos
+            platform_id: macosx_arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -131,13 +141,14 @@ jobs:
         run: |
           /Users/runner/.local/bin/poetry run python --version
 
-      - name: Build wheels [macos]
-        if: matrix.os == 'macos-latest'
+      - name: Build wheels [macos-x86_64]
+        if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_x86_64'}}
+        #if: matrix.os == 'macos-latest'
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
-          CIBW_ARCHS: x86_64 arm64 
+          CIBW_ARCHS: x86_64 
           CIBW_PLATFORM: macos
-          CIBW_SKIP: "pp* *-musllinux_* *_i686* *_s390*"
+          CIBW_SKIP: "pp* *-musllinux_* *_i686* *_s390* *arm64*"
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           CIBW_BUILD_VERBOSITY: 3
         run: |
@@ -146,6 +157,34 @@ jobs:
           #/Users/runner/.local/bin/poetry install
           cat ./pyproject.toml
           /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
+          ls -l wheelhouse
+          /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
+          mkdir ./dist
+          cp wheelhouse/*.whl ./dist/
+
+      # there is an error with the tagging of wheels for macosx-arm64
+      # see note: https://cibuildwheel.readthedocs.io/en/stable/faq/
+      # see here: https://gist.github.com/anderssonjohan/49f07e33fc5cb2420515a8ac76dc0c95#file-build-pendulum-wheels-yml-L39-L53
+      - name: Build wheels [macos-arm64]
+        if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_arm64'}}
+        env:
+          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          #CIBW_ARCHS: arm64
+          CIBW_ARCHS_MACOS: arm64
+          CIBW_PLATFORM: macos
+          CIBW_SKIP: "pp* *-musllinux_* *_i686* *x86_64* *_s390*"
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
+          CIBW_BUILD_VERBOSITY: 3
+        run: |
+          /Users/runner/.local/bin/poetry run python --version
+          /Users/runner/.local/bin/poetry add cibuildwheel wheel
+          #/Users/runner/.local/bin/poetry install
+          cat ./pyproject.toml
+          /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
+          ls -l wheelhouse
+          /Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_12_0_arm64 ./wheelhouse/*.whl
+          ls -l wheelhouse
+          rm ./wheelhouse/*x86_64.whl 
           ls -l wheelhouse
           /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
           mkdir ./dist
