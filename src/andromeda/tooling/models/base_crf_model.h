@@ -157,7 +157,7 @@ namespace andromeda
 	    
 	    for(int i=I0; i<I1; i++)
 	      {
-		LOG_S(INFO) << I0 << "\t" << i << "\t" << I1 << "\t" << clen;
+		//LOG_S(INFO) << I0 << "\t" << i << "\t" << I1 << "\t" << clen;
 		tokens.at(i) = sub_tokens.at(i-I0);
 	      }
 	  }
