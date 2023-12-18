@@ -3,13 +3,12 @@
 ![build](https://github.com/DS4SD/deepsearch-glm/actions/workflows/cmake.yml/badge.svg)
 ![tests](https://github.com/DS4SD/deepsearch-glm/actions/workflows/tests.yml/badge.svg)
 
-[//]: # ![Downloads](https://img.shields.io/github/downloads/ds4sd/deepsearch-glm/total.svg)
-
 [![License MIT](https://img.shields.io/github/license/ds4sd/deepsearch-glm)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 [![PyPI version](https://img.shields.io/pypi/v/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
+
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/deepsearch-glm)
 
 ## Getting Started
