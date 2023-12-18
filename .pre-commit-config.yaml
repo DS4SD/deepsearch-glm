@@ -8,8 +8,6 @@ repos:
         pass_filenames: false
         language: system
         files: '\.py$'
-  - repo: local
-    hooks:
       - id: system
         name: Black
         entry: poetry run black tests
