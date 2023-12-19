@@ -11,7 +11,8 @@ import subprocess
 
 import deepsearch as ds
 from deepsearch.cps.client.components.elastic import ElasticDataCollectionSource
-from deepsearch.cps.client.components.queries import RunQueryError
+
+# from deepsearch.cps.client.components.queries import RunQueryError
 from deepsearch.cps.queries import DataQuery
 from dotenv import load_dotenv
 from numerize.numerize import numerize
@@ -67,7 +68,7 @@ def get_ds_api():
     }
 
     config_file = f"{tdir}/ds_config.json"
-    with open(config_file, "w") as fw:
+    with open(config_file, "w", encoding="utf-8") as fw:
         fw.write(json.dumps(config_))
 
     config = ds.DeepSearchConfig.parse_file(config_file)
@@ -107,10 +108,6 @@ def convert_pdffiles(pdf_files, force=False):
 
     for i, pdf_file in enumerate(pdf_files):
         old_file = pdf_file
-        """
-        if os.path.exists(f"{old_file}"):
-            print("exists ...")
-        """
 
         subprocess.call(["ls", f"{old_file}"])
 
@@ -166,7 +163,8 @@ def convert_pdffiles(pdf_files, force=False):
         cmd = ["cp", f"{sfile}", f"{tfile}"]
         print(" ".join(cmd))
 
-        subprocess.call(cmd)
+        # subprocess.call(cmd)
+        subprocess.run(cmd, check=True)
         json_files.append(tfile)
 
     json_files = sorted(list(set(json_files)))
@@ -251,14 +249,6 @@ def ds_index_query(
     data_collection = ElasticDataCollectionSource(elastic_id="default", index_key=index)
     page_size = 50
 
-    """
-        source=["file-info", "description",
-                "main-text",
-                "texts", "tables", "figures",                
-                "page-headers", "page-footers",
-                "footnotes"], 
-    """
-
     # Prepare the data query
     query = DataQuery(
         search_query,  # The search query to be executed
@@ -292,7 +282,7 @@ def ds_index_query(
     for result_page in tqdm(cursor, total=expected_pages, bar_format=bar_format):
         for row in result_page.outputs["data_outputs"]:
             _id = row["_id"]
-            with open(f"{dumpdir}/{_id}.json", "w") as fw:
+            with open(f"{dumpdir}/{_id}.json", "w", encoding="utf-8") as fw:
                 fw.write(json.dumps(row["_source"], indent=2))
 
             count += 1

@@ -22,6 +22,12 @@ repos:
         pass_filenames: false
         language: system
         files: '\.py$'
+      - id: system
+        name: isort
+        entry: poetry run isort tests
+        pass_filenames: false
+        language: system
+        files: '\.py$'
   - repo: local
     hooks:
       - id: system
@@ -30,12 +36,18 @@ repos:
         pass_filenames: false
         language: system
         files: '\.py$'
+      - id: system
+        name: MyPy
+        entry: poetry run mypy tests
+        pass_filenames: false
+        language: system
+        files: '\.py$'
   - repo: local
     hooks:
       - id: system
         name: Pylint
-        entry: poetry run pylint --jobs 0 --disable=E0611 deepsearch_glm
-        #entry: poetry run pylint --errors-only --jobs 0 --disable=E0611 deepsearch_glm
+        #entry: poetry run pylint --jobs 0 --disable=E0611,W0621,R0912,R0914,R0915,R1705,R1732 deepsearch_glm
+        entry: poetry run pylint --errors-only --jobs 0 --disable=E0611 deepsearch_glm
         pass_filenames: false
         language: system
         files: '\.py$'

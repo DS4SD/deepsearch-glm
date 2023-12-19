@@ -1,17 +1,27 @@
 #!/usr/bin/env python
+"""Module to apply NLP-models on text"""
 
 import argparse
-import glob
-import json
-import os
 
 from deepsearch_glm.andromeda_nlp import nlp_model
 from deepsearch_glm.nlp_utils import print_on_shell
 
-default_text = """A team of physicists at Université Paris-Saclay has, for the first time, observed spontaneous quasi-crystal self-assembly. The observation occurred during an experiment they were conducting with tiny vibrating magnetic spheres. The team has written a paper describing their experiment and have posted it on the arXiv preprint server while they await peer review."""
+# import glob
+# import json
+# import os
+
+
+DEFAULT_TEXT = """A team of physicists at Université Paris-Saclay has,
+for the first time, observed spontaneous quasi-crystal self-assembly.
+The observation occurred during an experiment they were conducting with
+tiny vibrating magnetic spheres. The team has written a paper describing
+their experiment and have posted it on the arXiv preprint server while
+they await peer review."""
 
 
 def parse_arguments():
+    """Function to parse arguments for `nlp_apply_on_text`"""
+
     parser = argparse.ArgumentParser(
         prog="nlp_apply_on_text",
         description="Apply NLP on text",
@@ -43,7 +53,7 @@ examples of execution:
         "--text",
         required=False,
         type=str,
-        default=default_text,
+        default=DEFAULT_TEXT,
         help="text on which the NLP is applied.",
     )
 

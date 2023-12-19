@@ -15,7 +15,8 @@ namespace andromeda
     
   public:
 
-    
+
+    nlp_model();
     nlp_model(std::string desc);
 
     ~nlp_model();
@@ -49,12 +50,14 @@ namespace andromeda
     std::filesystem::path model_file;
   };
 
+  nlp_model<ENT, CUSTOM_CRF>::nlp_model()
+  {}
+  
   nlp_model<ENT, CUSTOM_CRF>::nlp_model(std::string desc):
     model_file()
   {
     pcre2_expr expr("custom-crf", "", R"(custom_crf\((?P<name>([a-zA-Z\-]+))\:(?P<file>(.+))\))");
     
-    //std::vector<pcre2_item> items;
     pcre2_item item;
     if(expr.match(desc, item))
       {
@@ -83,14 +86,6 @@ namespace andromeda
       }
   }
 
-  /*
-  nlp_model<ENT, CUSTOM_CRF>::nlp_model(std::filesystem::path model_file):
-    model_file(model_file)
-  {
-    initialise();
-  }
-  */
-  
   nlp_model<ENT, CUSTOM_CRF>::~nlp_model()
   {}
 

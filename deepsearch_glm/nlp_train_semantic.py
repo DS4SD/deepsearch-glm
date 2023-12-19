@@ -1,12 +1,12 @@
 #!/usr/bin/env python
+"""Module to train semantic classifier"""
 
 import argparse
 import glob
 import json
 import os
 import random
-import re
-import time
+import sys
 
 import pandas as pd
 import textColor as tc
@@ -14,11 +14,20 @@ import tqdm
 from tabulate import tabulate
 
 from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.nlp_utils import create_nlp_dir, init_nlp_model, print_on_shell
-from deepsearch_glm.utils.ds_utils import convert_pdffiles, ds_index_query
+from deepsearch_glm.nlp_utils import create_nlp_dir, init_nlp_model
+from deepsearch_glm.utils.ds_utils import ds_index_query
+
+# import re
+# import time
+
+
+# from deepsearch_glm.nlp_utils import create_nlp_dir, init_nlp_model, print_on_shell
+# from deepsearch_glm.utils.ds_utils import convert_pdffiles, ds_index_query
 
 
 def parse_arguments():
+    """Function to parse arguments for `nlp_train_semantic`"""
+
     parser = argparse.ArgumentParser(
         prog="nlp_train_semantic",
         description="train classifier for semantic text classifier",
@@ -44,9 +53,9 @@ examples of execution:
 
     parser.add_argument(
         "--input-dir",
-        required=False,
+        required=True,
         type=str,
-        default="./semantic-models/documents",
+        # default="./semantic-models/documents",
         help="input directory with documents",
     )
 
@@ -54,14 +63,20 @@ examples of execution:
         "--output-dir",
         required=False,
         type=str,
-        default="./semantic-models",
+        default=None,
         help="output directory for trained models",
     )
 
     args = parser.parse_args()
 
-    if args.output_dir == None:
-        odir = create_nlp_dir()
+    idir = args.input_dir
+
+    if not os.path.exists(idir):
+        print(f"input directory {idir} does not exist")
+        sys.exit(-1)
+
+    if args.output_dir is None:
+        odir = idir
 
     elif not os.path.exists(args.output_dir):
         os.mkdir(args.output_dir)
@@ -70,10 +85,12 @@ examples of execution:
     else:
         odir = args.output_dir
 
-    return args.mode, args.input_dir, odir
+    return args.mode, idir, odir
 
 
 def retrieve_data_pubmed(sdir):
+    """Function to retrieve data from pubmed folder"""
+
     tdir = os.path.join(sdir, "pubmed")
 
     if not os.path.exists(sdir):
@@ -95,6 +112,8 @@ def retrieve_data_pubmed(sdir):
 
 
 def retrieve_data_arxiv(sdir):
+    """Function to retrieve data from arxiv folder"""
+
     tdir = os.path.join(sdir, "arxiv")
 
     if not os.path.exists(sdir):
@@ -116,6 +135,8 @@ def retrieve_data_arxiv(sdir):
 
 
 def retrieve_data(sdir, index):
+    """Function to retrieve data"""
+
     tdir = os.path.join(sdir, index)
 
     if not os.path.exists(sdir):
@@ -135,24 +156,15 @@ def retrieve_data(sdir, index):
     return odir
 
 
-def get_data():
-    if False:
-        """
-        if "references" in doc:
-            for item in doc["references"]:
-                data.append({"label":"reference", "text":item["text"], "document-hash":dhash})
-
-
-        """
-
-
 def prepare_data_from_legacy_documents(doc):
+    """Function to prepare data from legacy documents"""
+
     if "file-info" in doc:
         dhash = doc["file-info"]["document-hash"]
     else:
         dhash = -1
 
-    N = len(doc["main-text"])
+    text_len = len(doc["main-text"])
 
     title_ind = len(doc["main-text"])
 
@@ -170,35 +182,35 @@ def prepare_data_from_legacy_documents(doc):
         label = item["type"].lower()
         text = item["text"].lower().strip()
 
-        if "title" == label and title_ind == N:
+        if "title" == label and title_ind == text_len:
             title_ind = i
 
-        if ("title" in label) and ("abstract" in text) and abs_beg == N:
+        if ("title" in label) and ("abstract" in text) and abs_beg == text_len:
             abs_beg = i
 
-        if (text.startswith("abstract")) and abs_beg == N:
+        if (text.startswith("abstract")) and abs_beg == text_len:
             abs_beg = i
 
-        if ("title" in label) and ("introduction" in text) and intro_beg == N:
+        if ("title" in label) and ("introduction" in text) and intro_beg == text_len:
             intro_beg = i
 
-        if ("title" in label) and ("references" in text) and ref_beg == N:
+        if ("title" in label) and ("references" in text) and ref_beg == text_len:
             ref_beg = i
 
         # (("title" in label) or ("caption" in label)) and ("reference" not in text):
         if (
-            ref_end == N
-            and ref_beg < N
+            ref_end == text_len
+            and ref_beg < text_len
             and i > ref_beg
             and (("title" in label))
             and ("reference" not in text)
         ):
             ref_end = i
 
-    if title_ind == N or abs_beg == N or ref_beg == N:
+    if title_ind == text_len or abs_beg == text_len or ref_beg == text_len:
         return data
 
-    print(dhash)
+    # print(dhash)
     for i, item in enumerate(doc["main-text"]):
         if "text" not in item:
             continue
@@ -254,6 +266,8 @@ def prepare_data_from_legacy_documents(doc):
 
 
 def prepare_data_from_description(doc):
+    """Function to prepare data from description"""
+
     if "file-info" in doc:
         dhash = doc["file-info"]["document-hash"]
     else:
@@ -328,15 +342,17 @@ def prepare_data_from_description(doc):
 
 
 def prepare_data(json_files, data_file):
+    """Function to prepare data"""
+
     num_lines = 0
 
-    fw = open(data_file, "w")
+    fw = open(data_file, "w", encoding="utf-8")
 
     for json_file in tqdm.tqdm(json_files):
         data = []
 
         try:
-            with open(json_file, "r") as fr:
+            with open(json_file, "r", encoding="utf-8") as fr:
                 doc = json.load(fr)
         except:
             continue
@@ -357,7 +373,9 @@ def prepare_data(json_files, data_file):
     return num_lines
 
 
-def process_data(data_file):  # , afile):
+def process_data(data_file):
+    """Function to process data"""
+
     model = init_nlp_model("semantic")
 
     configs = model.get_train_configs()
@@ -382,6 +400,8 @@ def process_data(data_file):  # , afile):
 def train_fst(
     data_file, model_file, metrics_file, autotune=True, duration=360, modelsize="1M"
 ):
+    """Function to train fasttext classifier"""
+
     model = nlp_model()
 
     configs = model.get_train_configs()
@@ -405,6 +425,8 @@ def train_fst(
 
 
 def evaluate_model(data_file, model_file, metrics_file):
+    """Function to evaluate fasttext classifier"""
+
     model = nlp_model()
 
     configs = model.get_train_configs()
@@ -424,12 +446,14 @@ def evaluate_model(data_file, model_file, metrics_file):
 
 
 def refine_data(data_file):
+    """Function to refine data"""
+
     model = init_nlp_model("semantic", filters=["properties"])
 
     print(f"reading {data_file}")
 
-    fr = open(data_file, "r")
-    fw = open(data_file.replace(".jsonl", ".v2.jsonl"), "w")
+    fr = open(data_file, "r", encoding="utf-8")
+    fw = open(data_file.replace(".jsonl", ".v2.jsonl"), "w", encoding="utf-8")
 
     table = []
 
@@ -482,6 +506,8 @@ def refine_data(data_file):
 
 
 def train_semantic(mode, idir, odir, autotune=True, duration=360, modelsize="1M"):
+    """Function to train semantic fasttext classifier"""
+
     tdir = os.path.join(odir, "documents")
 
     data_file = os.path.join(odir, "nlp-train-semantic.data.jsonl")
@@ -490,14 +516,14 @@ def train_semantic(mode, idir, odir, autotune=True, duration=360, modelsize="1M"
     fst_model_file = os.path.join(odir, "fst_semantic")
     fst_metrics_file = os.path.join(odir, "fst_semantic.metrics.txt")
 
-    if mode == "all" or mode == "retrieve":
+    if mode in ["all", "retrieve"]:
         retrieve_data_pubmed(tdir)
         json_files = sorted(glob.glob(os.path.join(tdir, "*.json")))
 
         retrieve_data_arxiv(tdir)
         json_files += sorted(glob.glob(os.path.join(tdir, "*.json")))
 
-    if mode == "all" or mode == "prepare":
+    if mode in ["all", "prepare"]:
         json_files = sorted(glob.glob(os.path.join(idir, "*.json")))
         json_files += sorted(glob.glob(os.path.join(idir, "*/*.json")))
 
@@ -509,10 +535,10 @@ def train_semantic(mode, idir, odir, autotune=True, duration=360, modelsize="1M"
 
         num_lines = prepare_data(json_files, data_file)
 
-    if mode == "all" or mode == "process":
+    if mode in ["all", "process"]:
         process_data(data_file)  # , annot_file)
 
-    if mode == "all" or mode == "train":
+    if mode in ["all", "train"]:
         # train_fst(annot_file, fst_model_file, fst_metrics_file, autotune=True, duration=300, modelsize="100M")
         train_fst(
             data_file,
@@ -523,10 +549,10 @@ def train_semantic(mode, idir, odir, autotune=True, duration=360, modelsize="1M"
             modelsize="100M",
         )
 
-    if mode == "all" or mode == "eval":
+    if mode in ["all", "eval"]:
         evaluate_model(data_file, fst_model_file, fst_metrics_file)
 
-    if mode == "all" or mode == "refine":
+    if mode in ["all", "refine"]:
         refine_data(data_file)
 
 

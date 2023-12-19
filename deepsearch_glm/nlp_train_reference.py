@@ -1,29 +1,33 @@
 #!/usr/bin/env python
+"""Module to train CRF reference model"""
 
 import argparse
 import glob
 import json
 import os
 import random
-
-# import re
 import subprocess
+import sys
 import time
 
-# import matplotlib.pyplot as plt
-# import numpy as np
 import pandas as pd
 import textColor as tc
 import tqdm
 from tabulate import tabulate
 
-from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.nlp_utils import create_nlp_dir, init_nlp_model
-
-# from deepsearch_glm.utils.ds_utils import convert_pdffiles
+# from deepsearch_glm.andromeda_nlp import nlp_model
+from deepsearch_glm.nlp_utils import (
+    create_nlp_dir,
+    get_max_items,
+    init_nlp_model,
+    train_crf,
+)
+from deepsearch_glm.utils.load_pretrained_models import get_resources_dir
 
 
 def parse_arguments():
+    """Function to parse arguments for nlp_train_reference"""
+
     parser = argparse.ArgumentParser(
         prog="nlp_train_reference",
         description="Prepare CRF data for CRF-reference parser",
@@ -33,6 +37,10 @@ examples of execution:
 1. end-to-end example on pdf documents:
 
     poetry run python ./deepsearch_glm/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
+
+2. annotate (100) references:
+
+    poetry run python ./deepsearch_glm/nlp_train_semantic.py -m annotate --input-dir '<root-dir-of-json-docs> --output-dir <models-directory> --max-items 100'        
 """,
         formatter_class=argparse.RawTextHelpFormatter,
     )
@@ -48,7 +56,7 @@ examples of execution:
 
     parser.add_argument(
         "--input-dir",
-        required=False,
+        required=True,
         type=str,
         default=None,
         help="input directory with documents",
@@ -58,7 +66,7 @@ examples of execution:
         "--output-dir",
         required=False,
         type=str,
-        default="./reference-models",
+        default=None,
         help="output directory for trained models",
     )
 
@@ -70,8 +78,12 @@ examples of execution:
 
     idir = args.input_dir
 
+    if not os.path.exists(idir):
+        print(f"input directory {idir} does not exist")
+        sys.exit(-1)
+
     if args.output_dir is None:
-        odir = create_nlp_dir()
+        odir = idir  # create_nlp_dir()
 
     elif not os.path.exists(args.output_dir):
         os.mkdir(args.output_dir)
@@ -80,34 +92,36 @@ examples of execution:
     else:
         odir = args.output_dir
 
-    return args.mode, args.input_dir, odir, args.max_items
+    return args.mode, idir, odir, args.max_items
 
 
 def shorten_text(text):
+    """Function to shorten text"""
+
     ntext = text.replace("\n", "")
 
     return ntext.strip()
 
 
 def extract_references(filenames, ofile, max_items: int = -1):
+    """Function to identify and extract references"""
+
     nlp_model = init_nlp_model("semantic")
 
-    fw = open(ofile, "w")
+    fw = open(ofile, "w", encoding="utf-8")
 
     total = 0
     for filename in tqdm.tqdm(filenames):
         # print(f"reading {filename}")
 
         try:
-            with open(filename, "r") as fr:
+            with open(filename, "r", encoding="utf-8") as fr:
                 idoc = json.load(fr)
-        except:
+        except Exception as exc:
+            print(f"could not read line: {str(exc)}")
             continue
 
-        if random.random() < 0.9:
-            training_sample = True
-        else:
-            training_sample = False
+        training_sample = random.random() < 0.9
 
         odoc = nlp_model.apply_on_doc(idoc)
 
@@ -138,7 +152,9 @@ def extract_references(filenames, ofile, max_items: int = -1):
     fw.close()
 
 
-def parse_with_anystyle_api(refs):
+def parse_with_anystyle_api(anystyle, refs):
+    """Function to parse references with the anystyle API"""
+
     time.sleep(1)
 
     tmpfile = "tmp.json"
@@ -147,8 +163,20 @@ def parse_with_anystyle_api(refs):
     for ref in refs:
         payload["input"].append(ref["text"])
 
+    """
     anystyle_token = "9fEhg+39p0J60Bs+WTTwTMcqqTFAUYoyjLlp8nEys4wnfgACn0IoqravX8Exsx/+2q1p4sU7636DR22xUeneLg=="
     anystyle_session = "9GFKMlFoJwbMV6W1Z37YFsG9nbXLqmGicXVzL4r5mn4SqTLcf0revMMFvAjfxcjqR8YBnj2M0fgTWBW12kK1KMFcOgZvZnwQv5lZZ3PQgPP9sait9WgoDR72BHqRpbPe0c1B6%2BNFtYE7aqpugLsTupqBuj%2B%2Fef0tbyd84wC61GkVA9Vtz2nSNC90hDliCre%2BZ2gQUc6runu6yt1M4xa0F8kM4Cxt2pN92XB8hRusqGNfsaCsw5JKdU%2FcDFtdh%2BYDSEBz6DjQFfJq81%2FTI%2F4ulku7mlv73vOC7ew%3D--o%2B2gjgNJqgCjYf4V--3mSN%2FKmNt68WTJsxBh9Bww%3D%3D"
+
+    anystyle_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
+
+    assert anystyle_token == anystyle["token"]
+    assert anystyle_session == anystyle["session"]
+    assert anystyle_agent == anystyle["agent"]
+    """
+
+    token = anystyle["token"]
+    session = anystyle["session"]
+    agent = anystyle["agent"]
 
     res = subprocess.call(
         [
@@ -163,7 +191,7 @@ def parse_with_anystyle_api(refs):
             "-H",
             "content-type: application/json;charset=UTF-8",
             "-H",
-            f"cookie: _any_style_session={anystyle_session}",
+            f"cookie: _any_style_session={session}",
             "-H",
             "origin: https://anystyle.io",
             "-H",
@@ -181,9 +209,9 @@ def parse_with_anystyle_api(refs):
             "-H",
             "sec-fetch-site: same-origin",
             "-H",
-            "user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
+            f"user-agent: {agent}",
             "-H",
-            f"x-csrf-token: {anystyle_token}",
+            f"x-csrf-token: {token}",
             "--data-raw",
             json.dumps(payload),
             "--compressed",
@@ -194,15 +222,16 @@ def parse_with_anystyle_api(refs):
     )
 
     try:
-        with open(tmpfile, "r") as fr:
+        with open(tmpfile, "r", encoding="utf-8") as fr:
             tmp = json.load(fr)
 
         if os.path.exists(tmpfile):
             os.remove(tmpfile)
 
         return tmp
-    except:
+    except Exception as exc:
         print(tc.red("could not call anystyle API endpoint ..."))
+        print(tc.yellow(f" -> error: {str(exc)}"))
 
     if os.path.exists(tmpfile):
         os.remove(tmpfile)
@@ -210,8 +239,10 @@ def parse_with_anystyle_api(refs):
     return []
 
 
-def update_references(refs, label_map):
-    results = parse_with_anystyle_api(refs)
+def update_references(anystyle, refs, label_map, verbose=False):
+    """Function to update references"""
+
+    results = parse_with_anystyle_api(anystyle, refs)
 
     if len(results) != len(refs):
         return
@@ -253,16 +284,22 @@ def update_references(refs, label_map):
 
             refs[j]["word_tokens"]["data"][ri].append(label)
 
-        """
-        print(text)
-        print("\n\n", tabulate(refs[j]["word_tokens"]["data"],
-                               headers=refs[j]["word_tokens"]["headers"]))
-        """
+        if verbose:
+            print(text)
+            print(
+                "\n\n",
+                tabulate(
+                    refs[j]["word_tokens"]["data"],
+                    headers=refs[j]["word_tokens"]["headers"],
+                ),
+            )
 
         refs[j]["annotated"] = True
 
 
-def annotate(rfile, ofile, max_items):
+def annotate_references(rfile, ofile, max_items):
+    """Function to annotate references"""
+
     label_map = {
         "author": "authors",
         "title": "title",
@@ -279,21 +316,19 @@ def annotate(rfile, ofile, max_items):
         "publisher": "publisher",
     }
 
+    resources_dir = get_resources_dir()
+    with open(f"{resources_dir}/data_nlp.json", "r", encoding="utf-8") as fr:
+        configs = json.load(fr)
+        anystyle = configs["services"]["anystyle"]
+
     nlp_model = init_nlp_model("semantic", filters=["properties", "word_tokens"])
 
-    num_lines = sum(1 for _ in open(rfile))
-
-    if max_items != -1:
-        max_items = min(max_items, num_lines)
-    else:
-        max_items = num_lines
+    max_items = get_max_items(rfile, max_items)
 
     refs = []
 
-    fr = open(rfile, "r")
-    fw = open(ofile, "w")
-
-    cnt = 0
+    fr = open(rfile, "r", encoding="utf-8")
+    fw = open(ofile, "w", encoding="utf-8")
 
     for i in tqdm.tqdm(range(0, max_items)):
         line = fr.readline().strip()
@@ -307,13 +342,13 @@ def annotate(rfile, ofile, max_items):
             ref["training-sample"] = item["training-sample"]
 
             refs.append(ref)
-            cnt += 1
-        except:
+
+        except Exception as exc:
+            print(f"Could not process (error: {str(exc)}) for line: {line}")
             continue
 
         if len(refs) >= 16:
-            # print(f"\rreference-annotation: {cnt}/{num_lines}", end="")
-            update_references(refs, label_map)
+            update_references(anystyle, refs, label_map)
 
             for ref in refs:
                 if "annotated" in ref and ref["annotated"]:
@@ -321,213 +356,15 @@ def annotate(rfile, ofile, max_items):
 
             refs = []
 
-        # if max_items!=-1 and cnt>max_items:
-        #    break
-
-    print(" --> done")
-
     fr.close()
     fw.close()
 
     print(f"writing annotation to {ofile}")
 
 
-def prepare_for_crf(afile):
-    labels = {}
-
-    refs = []
-
-    fr = open(afile, "r")
-
-    while True:
-        line = fr.readline().strip()
-        # print(line)
-
-        if line is None or len(line) == 0:
-            break
-
-        try:
-            item = json.loads(line)
-        except:
-            continue
-
-        wt = item["word_tokens"]
-
-        if item["annotated"]:
-            tind = wt["headers"].index("word")
-            lind = wt["headers"].index("true-label")
-
-            for i, row in enumerate(wt["data"]):
-                if row[tind] in ["(", "[", "{"]:
-                    row[lind] = "obracket"
-
-                if row[tind] in [")", "]", "}"]:
-                    row[lind] = "cbracket"
-
-                if row[tind] in [",", ".", "'", '"', ";", ":"]:
-                    row[lind] = row[tind]
-
-                if row[tind] in ["and", "&"] and row[lind] == "author":
-                    row[lind] = "author_and"
-
-                if row[tind] in ["et", "al"] and row[lind] == "author":
-                    row[lind] = "author_etal"
-
-            tokens = []
-            for i, row in enumerate(wt["data"]):
-                text = wt["data"][i][tind]
-                text = text.replace(" ", "")
-
-                wt["data"][i][tind] = text
-                tokens.append(wt["data"][i][tind])
-
-            line = " ".join(tokens)
-
-            if True:  # update true-labels for authors
-                for i, row in enumerate(wt["data"]):
-                    if (
-                        i > 0
-                        and wt["data"][i - 1][lind] == "author"
-                        and wt["data"][i][lind] in ["."]
-                    ):
-                        wt["data"][i][lind] = "author"
-
-                ## example:
-                ##  - `Wright, N. J., Drake, J. J., Mamajek, E. E., & Henry, G. W. 2011, The Astrophysical Journal, 743, 48, doi: 10.1088/0004-637x/743/1/48`,
-                ## `- 5 . Bender , C . M . ; Orszag , S . A . : Advanced Mathematical Methods for Scientists and Engineers : Asymptotic Methods and Perturbation Theory Springer - Verlag New - York Inc , 1999`
-                if (" . , " in line) or (" . ; " in line) or (" . : " in line):
-                    for i, row in enumerate(wt["data"]):
-                        if (
-                            i > 0
-                            and i < len(wt["data"]) - 1
-                            and wt["data"][i - 1][tind] != "."
-                            and wt["data"][i - 1][lind] == "author"
-                            and wt["data"][i + 1][lind] == "author"
-                            and wt["data"][i][lind] in [","]
-                        ):
-                            wt["data"][i][lind] = "author"
-
-            if (
-                True
-            ):  # update true-labels for title, journal, editor, container-title, location, date
-                for i, row in enumerate(wt["data"]):
-                    if (
-                        0 < i
-                        and i < len(wt["data"]) - 1
-                        and wt["data"][i - 1][lind]
-                        in [
-                            "title",
-                            "journal",
-                            "editor",
-                            "container-title",
-                            "volume",
-                            "pages",
-                            "location",
-                            "date",
-                            "url",
-                        ]
-                        and wt["data"][i - 1][lind] == wt["data"][i + 1][lind]
-                        and len(wt["data"][i][lind]) == 1
-                    ):
-                        wt["data"][i][lind] = wt["data"][i - 1][lind]
-
-                for i, row in enumerate(wt["data"]):
-                    if (
-                        0 < i
-                        and i < len(wt["data"]) - 1
-                        and wt["data"][i - 1][lind] in ["title", "volume", "pages"]
-                        and wt["data"][i - 0][lind] == "cbracket"
-                    ):
-                        wt["data"][i][lind] = wt["data"][i - 1][lind]
-
-            for i, row in enumerate(wt["data"]):
-                if " " in wt["data"][i][tind]:
-                    has_space = True
-
-                label = wt["data"][i][lind]
-                if label in labels:
-                    labels[label] += 1
-                else:
-                    labels[label] = 1
-
-            if item["filename"] == "2302.05256.pdf":
-                print("text: ", item["text"])
-                print(tabulate(wt["data"], headers=wt["headers"]), "\n")
-
-            refs.append(item)
-
-    fr.close()
-
-    print(json.dumps(labels, indent=2))
-
-    doc_to_inds = {}
-
-    for i, ref in enumerate(refs):
-        refs[i]["training-sample"] = True
-
-        fname = ref["filename"]
-        if fname in doc_to_inds:
-            doc_to_inds[fname].append(i)
-        else:
-            doc_to_inds[fname] = [i]
-
-    # pick 10% random reference from each paper for validation
-    for key, val in doc_to_inds.items():
-        num = max(1, int(0.1 * len(val)))
-        print(key, " -> ", num, " / ", len(val))
-
-        for l in range(0, num):
-            k = int(random.random() * len(val))
-            refs[val[k]]["training-sample"] = False
-
-    fw = open(afile, "w")
-    for i, ref in enumerate(refs):
-        fw.write(json.dumps(ref) + "\n")
-    fw.close()
-
-    print(tc.green(f"training file has been written to {afile}"))
-
-
-def train_crf(train_file, model_file, metrics_file):
-    # model = andromeda_nlp.nlp_model()
-    model = nlp_model()
-
-    configs = model.get_train_configs()
-
-    for config in configs:
-        if config["mode"] == "train" and config["model"] == "reference":
-            config["files"]["model-file"] = model_file
-            config["files"]["train-file"] = train_file
-            config["files"]["metrics-file"] = metrics_file
-
-            model.train(config)
-
-
-# To train a FST model with HPO, one can use
-#
-# `./fasttext supervised -input <path-to-train.txt> -output model_name -autotune-validation <<path-to-valid.txt>> -autotune-duration 600 -autotune-modelsize 1M`
-#
-#  => the parameters can be found via
-#
-# `./fasttext dump model_cooking.bin args`
-#
-def train_fst(train_file, model_file, metrics_file):
-    # model = andromeda_nlp.nlp_model()
-    model = nlp_model()
-
-    configs = model.get_train_configs()
-    print(configs)
-
-    for config in configs:
-        if config["mode"] == "train" and config["model"] == "semantic":
-            config["files"]["model-file"] = model_file
-            config["files"]["train-file"] = train_file
-            config["files"]["metrics-file"] = metrics_file
-
-            model.train(config)
-
-
 def create_reference_model(mode: str, idir: str, odir: str, max_items: int = -1):
+    """Function to create reference model"""
+
     json_files = glob.glob(os.path.join(idir, "*.json"))
     print("#-docs: ", len(json_files))
 
@@ -537,36 +374,14 @@ def create_reference_model(mode: str, idir: str, odir: str, max_items: int = -1)
     crf_model_file = os.path.join(odir, "crf_reference")
     crf_metrics_file = crf_model_file + ".metrics.txt"
 
-    """
-    rfile = os.path.join(tdir, "nlp-train-references-crf.jsonl")
-
-    fst_model_file = os.path.join(tdir, "fst_sematic")
-    """
-
     if mode in ["extract", "all"]:
         extract_references(json_files, sfile, max_items)
 
     if mode in ["annotate", "all"]:
-        annotate(sfile, afile, max_items)
+        annotate_references(sfile, afile, max_items)
 
     if mode in ["train", "all"]:
-        train_crf(afile, crf_model_file, crf_metrics_file)
-
-    """        
-    if "classify" in mode or mode=="all":
-
-        if mode=="classify" or mode==all:
-            extract_references(sdir, sfile, rfile)
-            
-        train_fst(sfile, fst_model_file, fst_model_file+".metrics.txt")
-
-    if "crf" in mode or mode=="all":
-
-        if mode=="crf" or mode=="all":
-            prepare_for_crf(afile)
-        
-        train_crf(afile, crf_model_file, crf_model_file+".metrics.txt")
-    """
+        train_crf("reference", afile, crf_model_file, crf_metrics_file)
 
 
 if __name__ == "__main__":

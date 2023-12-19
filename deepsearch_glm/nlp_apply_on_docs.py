@@ -3,7 +3,9 @@
 import argparse
 import glob
 import json
-import os
+import sys
+
+# import os
 from typing import List
 
 import pandas as pd
@@ -14,6 +16,8 @@ from deepsearch_glm.utils.ds_utils import convert_pdffiles, to_legacy_document_f
 
 
 def parse_arguments():
+    """Parse arguments for `apply_nlp_on_doc`"""
+
     parser = argparse.ArgumentParser(
         prog="apply_nlp_on_doc",
         description="Apply NLP on `Deep Search` documents",
@@ -96,7 +100,7 @@ examples of execution:
     json = args.json
 
     if pdf is None and json is None:
-        exit(-1)
+        sys.exit(-1)
 
     if pdf is not None:
         pdf_files = sorted(glob.glob(pdf))
@@ -120,6 +124,8 @@ examples of execution:
 
 # FIXME: to be replaced with function in nlp_utils
 def init_nlp_model(models: str, filters: List[str] = []):
+    """Function to initialse NLP models"""
+
     # model = andromeda_nlp.nlp_model()
     model = nlp_model()
 
@@ -134,6 +140,8 @@ def init_nlp_model(models: str, filters: List[str] = []):
 
 
 def show_texts(doc_j):
+    """Function to show the text of the document on shell"""
+
     data = []
     for item in doc_j["texts"]:
         data.append([item["subj_hash"], item["text_hash"], item["text"][0:48]])
@@ -142,28 +150,7 @@ def show_texts(doc_j):
 
 
 def show_doc(doc_j):
-    """
-    print('page-elements')
-    print(json.dumps(doc_j["page-elements"][0:10], indent=2))
-
-    print('main-text')
-    print(json.dumps(doc_j["main-text"][0:10], indent=2))
-
-    print('body')
-    print(json.dumps(doc_j["body"][0:10], indent=2))
-
-    print('meta')
-    print(json.dumps(doc_j["meta"][0:10], indent=2))
-
-    print('texts')
-    print(json.dumps(doc_j["texts"][0:10], indent=2))
-
-    print('figures')
-    print(json.dumps(doc_j["figures"][0], indent=2))
-
-    print('tables')
-    print(json.dumps(doc_j["tables"][0], indent=2))
-    """
+    """Function to show the document"""
 
     if "texts" in doc_j:
         show_texts(doc_j)
@@ -187,12 +174,6 @@ def show_doc(doc_j):
         for key, val in hist.items():
             name = terms[terms["hash"] == key].iloc[0]["name"]
             print(f"{val}\t{name}")
-
-    """
-    ents = pd.DataFrame(doc_j["entities"]["data"], 
-                        columns=doc_j["entities"]["headers"])
-    print(ents)
-    """
 
 
 if __name__ == "__main__":
@@ -221,10 +202,10 @@ if __name__ == "__main__":
 
     for json_file in json_files:
         print(f"reading {json_file} ... ", end="")
-        with open(json_file, "r") as fr:
+        with open(json_file, "r", encoding="utf-8") as fr:
             doc_i = json.load(fr)
 
-        print(f"applying models ... ", end="")
+        print("applying models ... ", end="")
         doc_j = model.apply_on_doc(doc_i)
 
         print(doc_j.keys())
@@ -233,7 +214,7 @@ if __name__ == "__main__":
         nlp_file = json_file.replace(".json", ".nlp.json")
         print(f"writing  models {nlp_file}")
 
-        with open(nlp_file, "w") as fw:
+        with open(nlp_file, "w", encoding="utf-8") as fw:
             fw.write(json.dumps(doc_j, indent=2))
 
         if legacy:
@@ -242,5 +223,5 @@ if __name__ == "__main__":
             nlp_file = json_file.replace(".json", ".leg.json")
             print(f"writing  models {nlp_file}")
 
-            with open(nlp_file, "w") as fw:
+            with open(nlp_file, "w", encoding="utf-8") as fw:
                 fw.write(json.dumps(doc_i, indent=2))

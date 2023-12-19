@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+"""Module to load binary files of models and data"""
+
 
 import json
 import os
@@ -8,6 +10,8 @@ import subprocess
 
 
 def get_resources_dir():
+    """Function to obtain the resources-directory"""
+
     if "DEEPSEARCH_GLM_RESOURCES_DIR" in os.environ:
         resources_dir = os.getenv("DEEPSEARCH_GLM_RESOURCES_DIR")
     else:
@@ -20,19 +24,11 @@ def get_resources_dir():
 
 
 def load_pretrained_nlp_data(key: str, force: bool = False, verbose: bool = False):
-    """
-    if "DEEPSEARCH_GLM_RESOURCES_DIR" in os.environ:
-        RESOURCES_DIR = str(os.getenv("DEEPSEARCH_GLM_RESOURCES_DIR"))
-    else:
-        from deepsearch_glm.andromeda_nlp import nlp_model
-
-        model = nlp_model()
-        RESOURCES_DIR = model.get_resources_path()
-    """
+    """Function to load data to train NLP models"""
 
     resources_dir = get_resources_dir()
 
-    with open(f"{resources_dir}/data_nlp.json") as fr:
+    with open(f"{resources_dir}/data_nlp.json", "r", encoding="utf-8") as fr:
         nlp_data = json.load(fr)
 
     cos_url = nlp_data["object-store"]
@@ -51,16 +47,13 @@ def load_pretrained_nlp_data(key: str, force: bool = False, verbose: bool = Fals
     data = {}
 
     for name, cmd in cmds.items():
-        print(f"{name}: {cmd}")
-
         data_file = cmd[3]
 
         if force or (not os.path.exists(data_file)):
             if verbose:
-                print(f"downloading {name} ... ", end="")
+                print(f" -> downloading {name} ... ", end="")
 
-            message = subprocess.run(cmd)
-            print(message)
+            subprocess.run(cmd, check=True)
 
             if verbose:
                 print("done!")
@@ -79,19 +72,11 @@ def load_pretrained_nlp_data(key: str, force: bool = False, verbose: bool = Fals
 
 
 def load_pretrained_nlp_models(force: bool = False, verbose: bool = False):
-    """
-    if "DEEPSEARCH_GLM_RESOURCES_DIR" in os.environ:
-        RESOURCES_DIR = str(os.getenv("DEEPSEARCH_GLM_RESOURCES_DIR"))
-    else:
-        from deepsearch_glm.andromeda_nlp import nlp_model
-
-        model = nlp_model()
-        RESOURCES_DIR = model.get_resources_path()
-    """
+    """Function to load pretrained NLP models"""
 
     resources_dir = get_resources_dir()
 
-    with open(f"{resources_dir}/models.json") as fr:
+    with open(f"{resources_dir}/models.json", "r", encoding="utf-8") as fr:
         models = json.load(fr)
 
     cos_url = models["object-store"]
@@ -116,7 +101,7 @@ def load_pretrained_nlp_models(force: bool = False, verbose: bool = False):
                 # print(f"downloading {os.path.basename(model_weights)} ... ", end="")
                 print(f"downloading {name} ... ", end="")
 
-            message = subprocess.run(cmd)
+            message = subprocess.run(cmd, check=True)
 
             if verbose:
                 print("done!")

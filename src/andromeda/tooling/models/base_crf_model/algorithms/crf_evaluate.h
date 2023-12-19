@@ -24,7 +24,7 @@ namespace andromeda_crf
     evaluater(std::filesystem::path model_file,
               std::string tokenizer_mode);
 
-    evaluater(std::shared_ptr<model_type> model);
+    evaluater(std::shared_ptr<model_type> model, bool verbose=false);
     
     ~evaluater();
 
@@ -40,6 +40,8 @@ namespace andromeda_crf
 
   private:
 
+    bool verbose;
+    
     std::string model_file;
     std::string tokenizer_mode;
 
@@ -58,6 +60,8 @@ namespace andromeda_crf
   
   evaluater::evaluater(std::filesystem::path model_file,
                        std::string tokenizer_mode):
+    verbose(false),
+
     model_file(model_file),
     tokenizer_mode(tokenizer_mode),
 
@@ -83,7 +87,9 @@ namespace andromeda_crf
       }
   }
 
-  evaluater::evaluater(std::shared_ptr<model_type> model):
+  evaluater::evaluater(std::shared_ptr<model_type> model, bool verbose):
+    verbose(verbose),
+
     model_file("null"),
     tokenizer_mode("null"),
     
@@ -147,7 +153,6 @@ namespace andromeda_crf
       }
 
     std::vector<std::vector<token_type> > samples={};
-
     
     if(validation_file.extension()==".txt")
       {
@@ -209,8 +214,11 @@ namespace andromeda_crf
 
         pred.predict(sample);
 
-        tabulate(sample);
-
+	if(verbose)
+	  {
+	    tabulate(sample);
+	  }
+	
 	bool correct=true;
         for(auto& token:sample)
           {

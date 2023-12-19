@@ -1,22 +1,28 @@
 #!/usr/bin/env python
+"""Module to analyse the output of the GLM on documents"""
 
 import argparse
 import copy
 import glob
 import json
-import os
-import textwrap
 
-import numpy as np
+# import numpy as np
 import pandas as pd
 from PIL import Image, ImageDraw
-from tabulate import tabulate
+
+# import os
+# import textwrap
+
+
+# from tabulate import tabulate
 
 # import andromeda_nlp
-from deepsearch_glm.andromeda_nlp import nlp_model
+# from deepsearch_glm.andromeda_nlp import nlp_model
 
 
 def parse_arguments():
+    """Function to parse arguments for `nlp_analyse_docs`"""
+
     parser = argparse.ArgumentParser(
         prog="nlp_analyse_docs",
         description="Analyse NLP on `Deep Search` documents ()",
@@ -40,25 +46,23 @@ examples of execution:
     )
 
     parser.add_argument(
-        "--mode",
+        "--page",
         required=False,
-        type=str,
-        default="all",
-        help="selection of what to show (default=all, example='page=0;refereces')",
+        type=int,
+        default=1,
+        help="page number)",
     )
 
     args = parser.parse_args()
 
     json_files = sorted(glob.glob(args.json))
 
-    return json_files, args.mode
-
-
-def extract_meta(doc):
-    return
+    return json_files, args.page
 
 
 def show_page(doc, page_num=1, show_orig=True):
+    """Function to display a page from the document (default is the first page)"""
+
     print(doc.keys())
 
     page_dims = doc["page-dimensions"]
@@ -68,13 +72,12 @@ def show_page(doc, page_num=1, show_orig=True):
     page_items = doc["page-elements"]
     print(page_items[0])
 
-    # FIXME: ineffecient but works ...
     df = pd.read_json(json.dumps(page_items), orient="records")
-    print(df)
+    # print(df)
 
     df_page = df[df["page"] == page_num]
 
-    print(df_dims[df_dims["page"] == page_num])
+    # print(df_dims[df_dims["page"] == page_num])
 
     ph = int(df_dims[df_dims["page"] == page_num]["height"])
     pw = int(df_dims[df_dims["page"] == page_num]["width"])
@@ -82,13 +85,12 @@ def show_page(doc, page_num=1, show_orig=True):
     # ph = int(df_dims[df_dims["page"]==page_num]["height"][0])
     # pw = int(df_dims[df_dims["page"]==page_num]["width"][0])
 
-    print("height: ", ph)
-    print("width: ", pw)
+    # print("height: ", ph)
+    # print("width: ", pw)
 
     df_page["bbox"] = df_page["bbox"].apply(
         lambda bbox: [bbox[0], ph - bbox[3], bbox[2], ph - bbox[1]]
     )
-    # df_page = df_page.apply(lambda row: [row["bbox"][0], ph-row["bbox"][3], row["bbox"][2], ph-row["bbox"][1]], axis=1)
 
     factor = 2 if show_orig else 1
 
@@ -133,120 +135,12 @@ def show_page(doc, page_num=1, show_orig=True):
     image.show()
 
 
-def extract_text(doc):
-    page_items = doc["page-elements"]
-    texts = doc["texts"]
-
-    print("\n\t TEXT: \n")
-
-    wrapper = textwrap.TextWrapper(width=70)
-
-    for item in doc["texts"]:
-        labels = []
-        for row in item["properties"]["data"]:
-            labels.append(row[item["properties"]["headers"].index("label")])
-
-        type_ = item["type"]
-        print(f"text: {type_}, labels: ", ", ".join(labels))
-        for line in wrapper.wrap(text=item["text"]):
-            print(f"\t{line}")
-
-        print("")
-    return
-
-
-def extract_sentences(doc):
-    df = pd.DataFrame(doc["instances"]["data"], columns=doc["instances"]["headers"])
-
-    entity_types = df["type"].value_counts()
-    print(entity_types)
-
-    sents = df[df["type"] == "sentence"]
-    print(sents)
-
-    return
-
-
-def extract_tables(doc):
-    wrapper = textwrap.TextWrapper(width=70)
-
-    print("\n\t TABLES: \n")
-
-    for i, item in enumerate(doc["tables"]):
-        print(f"#/tables/{i}: ", len(item["captions"]))
-        if len(item["captions"]) > 0:
-            for line in wrapper.wrap(text=item["captions"][0]["text"]):
-                print(f"\t{line}")
-
-    return
-
-
-def extract_figures(doc):
-    print("\n\t FIGURES: \n")
-
-    wrapper = textwrap.TextWrapper(width=70)
-
-    for i, item in enumerate(doc["figures"]):
-        print(f"#/figures/{i}", len(item["captions"]))
-        if len(item["captions"]) > 0:
-            for line in wrapper.wrap(text=item["captions"][0]["text"]):
-                print(f"\t{line}")
-
-    return
-
-
-def extract_references(doc):
-    print("\n\t REFERENCES: \n")
-
-    page_items = doc["page-elements"]
-    texts = doc["texts"]
-
-    df = pd.DataFrame(doc["instances"]["data"], columns=doc["instances"]["headers"])
-
-    wrapper = textwrap.TextWrapper(width=70)
-
-    for i, item in enumerate(doc["texts"]):
-        path = f"#/texts/{i}"
-
-        labels = []
-        for row in item["properties"]["data"]:
-            labels.append(row[item["properties"]["headers"].index("label")])
-
-        if "reference" in labels:
-            print(f"text: ")  # {type_}, labels: ", ",".join(labels))
-            for line in wrapper.wrap(text=item["text"]):
-                print(f"\t{line}")
-
-            refs = df[df["subj_path"] == path][
-                ["subj_path", "type", "subtype", "original"]
-            ]
-            print(refs)
-
-    return
-
-
 if __name__ == "__main__":
-    json_files, mode = parse_arguments()
+    json_files, page = parse_arguments()
 
     for json_file in json_files:
         print(f" --> reading {json_file}")
-        with open(json_file, "r") as fr:
+        with open(json_file, "r", encoding="utf-8") as fr:
             doc = json.load(fr)
 
-        if "page" in mode or mode == "all":
-            show_page(doc, page_num=1)
-
-        if "text" in mode or mode == "all":
-            extract_text(doc)
-
-        if "sentence" in mode or mode == "all":
-            extract_sentences(doc)
-
-        if "table" in mode or mode == "all":
-            extract_tables(doc)
-
-        if "figure" in mode or mode == "all":
-            extract_figures(doc)
-
-        if "reference" in mode or mode == "all":
-            extract_references(doc)
+        show_page(doc, page_num=page)

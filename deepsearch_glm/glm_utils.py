@@ -7,15 +7,13 @@ import datetime
 # import glob
 # import json
 import os
-
-# import textwrap
+import textwrap
 from typing import List
 
-from deepsearch_glm.andromeda_glm import glm_model
+from tabulate import tabulate
+
+from deepsearch_glm.andromeda_glm import glm_model, glm_query
 from deepsearch_glm.utils.ds_utils import get_scratch_dir
-
-# from tabulate import tabulate
-
 
 # import andromeda_nlp
 # import andromeda_glm
@@ -96,7 +94,7 @@ def create_glm_config_from_docs(
                 "keep-texts": True,
                 "keep-docs": True,
             },
-            "nlp-models": "conn;verb;term;abbreviation",
+            "nlp-models": nlp_models,
         },
         "producers": [
             {
@@ -127,3 +125,63 @@ def create_glm_from_docs(
     glm.create(config)
 
     return odir, glm
+
+
+def show_query_result(res, max_nodes=16):
+    """Function to show the result of the query"""
+
+    wrapper = textwrap.TextWrapper(width=50)
+
+    print(
+        "overview: \n",
+        tabulate(res["overview"]["data"], headers=res["overview"]["headers"]),
+        "\n",
+    )
+
+    for i, item in enumerate(res["result"]):
+        headers = item["nodes"]["headers"]
+        data = item["nodes"]["data"]
+
+        for j, row in enumerate(data):
+            text = row[headers.index("text")]
+            print("text: ", text)
+
+            data[j][headers.index("text")] = "\n".join(wrapper.wrap(text))
+
+        print(f"operation {i}: \n", tabulate(data[0:max_nodes], headers=headers), "\n")
+
+
+def expand_terms(terms, glm):
+    """Function to expand the terms"""
+
+    for term in terms:
+        print(term)
+
+        # qry = andromeda_glm.glm_query()
+        qry = glm_query()
+
+        qry.select({"nodes": [[term]]})
+        qry.filter_by({"mode": "node-flavor", "node-flavors": ["token"]})
+        # qry.filter_by({"mode": "node-flavor", "node-flavors":["term"]})
+
+        # flid = qry.get_last_flid()
+        qry.traverse({"name": "roots", "edge": "to-root"})
+        qry.traverse({"name": "tax-up", "edge": "tax-up"})
+        # qry.traverse({"edge":"from-root"})
+        # qry.traverse({"edge":"from-token"})
+        # qry.filter_by({"mode": "node-flavor", "node-flavors":["term"]})
+
+        # qry.filter_by({"mode": "contains", "contains-flid":flid})
+        # qry.traverse({"edge":"to-sent"})
+
+        qry.filter_by({"mode": "node-regex", "node-regex": [f".*{term}.*"]})
+
+        config = qry.to_config()
+        # print("query: ", json.dumps(config, indent=2))
+
+        res = glm.query(config)
+        if "status" in res and res["status"] == "success":
+            show_query_result(res)
+        else:
+            print(res)
+            # print(res["status"], ": ", res["message"])

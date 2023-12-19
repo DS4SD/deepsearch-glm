@@ -1,30 +1,21 @@
 #!/usr/bin/env python
-"""Module to train CRF models"""
+"""Module to create a CRF model (prepare data, train & evaluate)"""
 
 import argparse
-
-# import glob
 import json
 import os
 import random
 
-# import re
-# import subprocess
-import time
-
-# import matplotlib.pyplot as plt
-# import numpy as np
-# import pandas as pd
-# import textColor as tc
 import tqdm
+from tabulate import tabulate
 
-from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.nlp_utils import create_nlp_dir, init_nlp_model
-
-# from tabulate import tabulate
-
-
-# from deepsearch_glm.utils.ds_utils import convert_pdffiles
+from deepsearch_glm.nlp_utils import (
+    create_nlp_dir,
+    eval_crf,
+    get_max_items,
+    init_nlp_model,
+    train_crf,
+)
 
 
 def parse_arguments():
@@ -53,7 +44,7 @@ examples of execution:
         required=True,
         default="all",
         help="mode for training semantic model",
-        choices=["prepare", "train", "all"],
+        choices=["prepare", "train", "evaluate", "all"],
     )
 
     parser.add_argument(
@@ -78,6 +69,7 @@ examples of execution:
 
     args = parser.parse_args()
 
+    odir = None
     if args.output_dir is None:
         odir = create_nlp_dir()
 
@@ -94,10 +86,8 @@ examples of execution:
 def annotate_item(
     atem,
     item,
-    labels,
-    is_training_sample=True,
-    append_to_file=False,
     start_and_end_in_utf8=True,
+    debug=False,
 ):
     """Function to annotate the tokens of the string-item"""
 
@@ -140,15 +130,16 @@ def annotate_item(
             if char_i <= row_i[char_i_ind] and row_i[char_j_ind] <= char_j:
                 atem["word_tokens"]["data"][ri][-1] = lbl
 
-    """
-    print(text)
-    print(
-        "\n\n",
-        tabulate(atem["word_tokens"]["data"], headers=atem["word_tokens"]["headers"]),
-    )
-    """
+    if debug:
+        print(text)
+        print(
+            "\n\n",
+            tabulate(
+                atem["word_tokens"]["data"], headers=atem["word_tokens"]["headers"]
+            ),
+        )
 
-    btext = text.encode("utf-8")
+    # btext = text.encode("utf-8")
     # assert len(text)==len(btext)
 
     atem["annotated"] = True
@@ -156,62 +147,35 @@ def annotate_item(
     return atem
 
 
-def prepare_crf(rfile, ofile, max_items, ratio=0.9):
+def prepare_crf(rfile: str, ofile: str, max_items: int, ratio: float = 0.9):
     """Function to prepare the data (strings to token-array) with labels"""
 
     nlp_model = init_nlp_model("language", filters=["properties", "word_tokens"])
 
-    num_lines = sum(1 for _ in open(rfile))
-    if max_items != -1:
-        max_items = min(max_items, num_lines)
-    else:
-        max_items = num_lines
+    max_items = get_max_items(rfile, max_items)
 
-    refs = []
-
-    fr = open(rfile, "r")
-    fw = open(ofile, "w")
-
-    cnt = 0
+    fr = open(rfile, "r", encoding="utf-8")
+    fw = open(ofile, "w", encoding="utf-8")
 
     for i in tqdm.tqdm(range(0, max_items)):
         line = fr.readline().strip()
-        if line == None or len(line) == 0:
+        if line is None or len(line) == 0:
             break
 
         item = json.loads(line)
         atem = nlp_model.apply_on_text(item["text"])
 
-        atem = annotate_item(atem, item, labels=["chemicals"])
-
-        if random.random() < ratio:
-            atem["training-sample"] = True
-        else:
-            atem["training-sample"] = False
+        atem = annotate_item(atem, item)
+        atem["training-sample"] = random.random() < ratio
 
         if "annotated" in atem and atem["annotated"]:
             fw.write(json.dumps(atem) + "\n")
 
-        cnt += 1
+    fr.close()
+    fw.close()
 
 
-def train_crf(train_file, model_file, metrics_file):
-    """Function to train CRF model"""
-
-    model = nlp_model()
-
-    configs = model.get_train_configs()
-
-    for config in configs:
-        if config["mode"] == "train" and config["model"] == "reference":
-            config["files"]["model-file"] = model_file
-            config["files"]["train-file"] = train_file
-            config["files"]["metrics-file"] = metrics_file
-
-            model.train(config)
-
-
-def create_crf_model(mode, ifile, odir, max_items):
+def create_crf_model(mode: str, ifile: str, odir: str, max_items: int):
     """Function to create CRF model"""
 
     filename = os.path.basename(ifile)
@@ -222,12 +186,25 @@ def create_crf_model(mode, ifile, odir, max_items):
     crf_metrics_file = crf_model_file + ".metrics.txt"
 
     if mode in ["prepare", "all"]:
-        # prepare_crf(train_file, afile, max_items, is_training_sample=True, append_to_file=False)
-        # prepare_crf(test_file, afile, max_items, is_training_sample=False, append_to_file=True)
         prepare_crf(ifile, afile, max_items, ratio=0.9)
 
     if mode in ["train", "all"]:
-        train_crf(afile, crf_model_file, crf_metrics_file)
+        train_crf(
+            # model_name="reference",
+            model_name="custom_crf",
+            train_file=afile,
+            model_file=crf_model_file,
+            metrics_file=crf_metrics_file,
+        )
+
+    if mode in ["evaluate", "all"]:
+        eval_crf(
+            # model_name="reference",
+            model_name="custom_crf",
+            train_file=afile,
+            model_file=crf_model_file,
+            metrics_file=crf_metrics_file,
+        )
 
     return afile, crf_model_file, crf_metrics_file
 

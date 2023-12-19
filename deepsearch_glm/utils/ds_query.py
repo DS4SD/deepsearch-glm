@@ -2,6 +2,7 @@
 """Module to query Deep Search"""
 
 import argparse
+import sys
 
 import pandas as pd
 
@@ -56,15 +57,15 @@ if __name__ == "__main__":
 
     indices = ds_list_indices()
 
-    found = False
+    index_found = False
     for item in indices:
         if item["Index"] == index:
-            found = True
+            index_found = True
 
-    if not found:
+    if not index_found:
         print(pd.DataFrame(indices))
         print(f"index `{index}` not found")
-        exit(-1)
+        sys.exit(-1)
 
     else:
         odir = ds_index_query(index, query, odir, force=True)
