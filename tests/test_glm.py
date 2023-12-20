@@ -12,6 +12,8 @@ from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_mode
 
 
 def test_01_load_nlp_models():
+    print("\nstarting ...")
+
     models = load_pretrained_nlp_models()
     print(f"models: {models}")
 
@@ -20,8 +22,12 @@ def test_01_load_nlp_models():
     assert "name" in models
     assert "reference" in models
 
+    print("\n --> done test_01_load_nlp_models: ", end="")
+
 
 def test_02A_create_glm_from_doc():
+    print("\nstarting ...")
+
     sdir = "./tests/data/glm/test_01A"
 
     if GENERATE:
@@ -31,7 +37,7 @@ def test_02A_create_glm_from_doc():
         rdir = os.path.join(sdir, "glm_ref")
         odir = os.path.join(sdir, "glm_out")
 
-    model_names = "semantic;name;verb;term;abbreviation"
+    model_names = "semantic;name;conn;verb;term;abbreviation"
 
     json_files = glob.glob(os.path.join(sdir, "docs/*.json"))
 
@@ -45,22 +51,29 @@ def test_02A_create_glm_from_doc():
 
     for i, row_i in enumerate(ref_topo["node-count"]["data"]):
         row_j = out_topo["node-count"]["data"][i]
-        assert row_i == row_j
+        # assert row_i == row_j
+        if row_i != row_j:
+            print(row_i, " != ", row_j)
 
     for i, row_i in enumerate(ref_topo["edge-count"]["data"]):
         row_j = out_topo["edge-count"]["data"][i]
-        assert row_i == row_j
+        # assert row_i == row_j
+        if row_i != row_j:
+            print(row_i, " != ", row_j)
 
     assert ref_topo == out_topo
 
+    print("\n --> done test_02A_create_glm_from_doc: ", end="")
+
 
 def test_02B_load_glm():
+    print("\nstarting ...")
+
     idir = "./tests/data/glm/test_01A/glm_out"
 
     glm = load_glm(idir)
 
     out_topo = glm.get_topology()
-    # print(topo)
 
     with open(os.path.join(idir, "topology.json")) as fr:
         ref_topo = json.load(fr)
@@ -74,3 +87,5 @@ def test_02B_load_glm():
         assert row_i == row_j
 
     assert ref_topo == out_topo
+
+    print("\n --> done test_02B_load_glm: ", end="")
