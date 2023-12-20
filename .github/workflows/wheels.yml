@@ -56,6 +56,11 @@ jobs:
             platform: linux
             platform_id: manylinux_x86_64
 
+          - os: ubuntu-latest
+            python: 312
+            platform: linux
+            platform_id: manylinux_x86_64
+
           # MacOS x86_64
 
           - os: macos-latest
@@ -70,6 +75,11 @@ jobs:
 
           - os: macos-latest
             python: 310
+            platform: macos
+            platform_id: macosx_x86_64
+
+          - os: macos-latest
+            python: 311
             platform: macos
             platform_id: macosx_x86_64
 
@@ -99,6 +109,12 @@ jobs:
             python: 311
             platform: macos
             platform_id: macosx_arm64
+
+          - os: macos-latest
+            python: 312
+            platform: macos
+            platform_id: macosx_arm64
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
