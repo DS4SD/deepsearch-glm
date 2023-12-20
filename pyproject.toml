@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "deepsearch-glm"
-version = "0.9.0"
+version = "0.9.1"
 description = "Graph Language Models"
 authors = ["Peter Staar <taa@zurich.ibm.com>"]
 license = "MIT"
@@ -16,7 +16,6 @@ python = "^3.8"
 deepsearch-toolkit = "^0.31.0"
 textColor = "^3.0.1"
 tabulate = "^0.8.9"
-#numpy = "^1.25.0"
 numpy = "^1.24.4"
 pandas = "^2.0.3"
 matplotlib = "^3.7.1"
@@ -28,6 +27,65 @@ numerize = "^0.12"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.12.0"
+isort = "^5.13.2"
+mypy = "^1.7.1"
+pre-commit = "2.17.0"
+pylint = "^3.0.3"
+
+[tool.black]
+line-length = 88
+target-version = ["py38"]
+include = '\.pyi?$'
+#extend-exclude = """
+## Exclude generated API code
+#^/deepsearch/cps/apis/.+$
+#"""
+
+[tool.isort]
+profile = "black"
+line_length = 88
+#skip_glob = ["docs", "deepsearch/cps/apis"]
+py_version=38
+#known_first_party = ["cps"]
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+pretty = true
+# strict = true
+#no_implicit_optional = true
+python_version = 3.8
+disable_error_code = ["import-untyped"]
+
+#[[tool.mypy.overrides]]
+#module = "deepsearch_glm.andromeda_nlp"
+#ignore_errors = true
+
+#[[tool.mypy.overrides]]
+#module = "deepsearch_glm.andromeda_glm.*"
+#ignore_errors = true
+
+#[[tool.mypy.overrides]]
+#module = "pandas.*"
+#ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tabulate.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tqdm.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "textColor.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "matplotlib.*"
+ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry-core"]

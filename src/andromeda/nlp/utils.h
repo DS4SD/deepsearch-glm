@@ -25,7 +25,7 @@ namespace andromeda
 
     return ss.str();
   }
-
+  
   std::shared_ptr<base_nlp_model> to_trainable_model(model_name name)
   {
     std::shared_ptr<base_nlp_model> model=NULL;
@@ -46,6 +46,13 @@ namespace andromeda
 	}
 	break;
 
+      case CUSTOM_CRF:
+	{
+	  typedef nlp_model<ENT, CUSTOM_CRF> model_type;
+	  model = std::make_shared<model_type>();	  	  	  
+	}
+	break;
+	
       default:
 	{
 	  model = NULL;

@@ -10,5 +10,15 @@
 	{
 	    "materials": ["nlp.crf.materials.jsonl", "data_nlp/crf.materials.jsonl"]
 	}
-    }    
+    },
+
+    "services":
+    {
+	"anystyle":
+	{
+	    "token": "9fEhg+39p0J60Bs+WTTwTMcqqTFAUYoyjLlp8nEys4wnfgACn0IoqravX8Exsx/+2q1p4sU7636DR22xUeneLg==",
+	    "session": "9GFKMlFoJwbMV6W1Z37YFsG9nbXLqmGicXVzL4r5mn4SqTLcf0revMMFvAjfxcjqR8YBnj2M0fgTWBW12kK1KMFcOgZvZnwQv5lZZ3PQgPP9sait9WgoDR72BHqRpbPe0c1B6%2BNFtYE7aqpugLsTupqBuj%2B%2Fef0tbyd84wC61GkVA9Vtz2nSNC90hDliCre%2BZ2gQUc6runu6yt1M4xa0F8kM4Cxt2pN92XB8hRusqGNfsaCsw5JKdU%2FcDFtdh%2BYDSEBz6DjQFfJq81%2FTI%2F4ulku7mlv73vOC7ew%3D--o%2B2gjgNJqgCjYf4V--3mSN%2FKmNt68WTJsxBh9Bww%3D%3D",
+	    "agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
+	}
+    }
 }

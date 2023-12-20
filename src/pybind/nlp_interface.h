@@ -18,15 +18,14 @@ namespace andromeda_py
     
     nlohmann::json get_apply_configs();
     nlohmann::json get_train_configs();
-    
+
+    nlohmann::json prepare_data_for_train(nlohmann::json& config);
     nlohmann::json apply(nlohmann::json& config);
     nlohmann::json train(nlohmann::json& config);
+    nlohmann::json evaluate(nlohmann::json& config);
     
     nlohmann::json apply_on_text(std::string& text);    
     nlohmann::json apply_on_doc(nlohmann::json& doc);
-
-    nlohmann::json prepare_data_for_train(nlohmann::json& config);
-    nlohmann::json evaluate_model(nlohmann::json& config);    
     
   private:
 
@@ -343,19 +342,23 @@ namespace andromeda_py
     
     return result;
   }
-
-  nlohmann::json nlp_model::evaluate_model(nlohmann::json& config)
+  
+  nlohmann::json nlp_model::evaluate(nlohmann::json& config)
   {
+    LOG_S(INFO) << __FUNCTION__;
+    
     std::string model_name = "null";
     model_name = config.value("model", model_name);
     
     std::vector<std::shared_ptr<andromeda::base_nlp_model> > dep_models={};
-    andromeda::to_models(model_name, dep_models, true);
 
+    /*
+    andromeda::to_models(model_name, dep_models, true);
     if(dep_models.size()>0)
       {
 	dep_models.pop_back();
       }
+    */
     
     andromeda::model_name name = andromeda::to_modelname(model_name);
     std::shared_ptr<andromeda::base_nlp_model> model = andromeda::to_trainable_model(name);

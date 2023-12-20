@@ -37,6 +37,9 @@ namespace andromeda
 
     virtual bool evaluate(nlohmann::json args);
 
+    virtual bool evaluate_model(nlohmann::json args,
+				std::vector<std::shared_ptr<base_nlp_model> >& dep_models);
+    
   protected:
 
     std::vector<std::string> get_labels();
@@ -157,7 +160,7 @@ namespace andromeda
 	    
 	    for(int i=I0; i<I1; i++)
 	      {
-		LOG_S(INFO) << I0 << "\t" << i << "\t" << I1 << "\t" << clen;
+		//LOG_S(INFO) << I0 << "\t" << i << "\t" << I1 << "\t" << clen;
 		tokens.at(i) = sub_tokens.at(i-I0);
 	      }
 	  }
@@ -170,9 +173,12 @@ namespace andromeda
   {
     nlohmann::json config;
 
-    config["mode"] = "train";
-    config["model"] = get_key();
-
+    {
+      config["mode"] = "train";
+      config["model"] = get_key();
+      config["verbose"] = false;
+    }
+    
     nlohmann::json args;
     {
       args["epoch"] = epoch;
@@ -197,7 +203,7 @@ namespace andromeda
 
   bool base_crf_model::parse_config(nlohmann::json config)
   {
-    LOG_S(INFO) << __FUNCTION__;
+    //LOG_S(INFO) << __FUNCTION__;
 
     nlohmann::json args = config["args"];
     {
@@ -255,6 +261,7 @@ namespace andromeda
 
     model->save_to_file(model_file);
 
+    /*
     if(std::filesystem::exists(test_file))
       {
         andromeda_crf::evaluater evaluater(model);
@@ -265,14 +272,18 @@ namespace andromeda
         andromeda_crf::evaluater evaluater(model);
         evaluater.evaluate(train_file, metrics_file);
       }
-
+    */
+    
     return true;
   }
-
+  
   bool base_crf_model::evaluate(nlohmann::json config)
   {
-    LOG_S(INFO) << "starting to evaluate CRF ...";
+    LOG_S(INFO) << "starting to evaluate CRF (1) ...";
 
+    bool verbose = false;
+    verbose = config.value("verbose", verbose);
+    
     parse_config(config);
 
     model = std::make_shared<andromeda_crf::crf_model>();
@@ -281,18 +292,26 @@ namespace andromeda
 
     if(std::filesystem::exists(test_file))
       {
-        andromeda_crf::evaluater evaluater(model);
+        andromeda_crf::evaluater evaluater(model, verbose);
         evaluater.evaluate(test_file, metrics_file);
       }
     else if(train_file.ends_with(".jsonl"))
       {
-        andromeda_crf::evaluater evaluater(model);
+        andromeda_crf::evaluater evaluater(model, verbose);
         evaluater.evaluate(train_file, metrics_file);
       }
 
     return true;
   }
 
+  bool base_crf_model::evaluate_model(nlohmann::json args,
+				      std::vector<std::shared_ptr<base_nlp_model> >& dep_models)
+  {
+    LOG_S(INFO) << "starting to evaluate CRF (2) ...";
+
+    return evaluate(args);
+  }
+  
 }
 
 #endif
