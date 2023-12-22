@@ -24,8 +24,12 @@ namespace andromeda_py
     nlohmann::json train(nlohmann::json& config);
     nlohmann::json evaluate(nlohmann::json& config);
     
-    nlohmann::json apply_on_text(std::string& text);    
+    nlohmann::json apply_on_text(std::string& text);
     nlohmann::json apply_on_doc(nlohmann::json& doc);
+
+    bool apply_on_subj(nlp_text& subj);
+    //bool apply(nlp_document& text);
+    //nlohmann::json apply(nlp_document& text);    
     
   private:
 
@@ -503,6 +507,31 @@ namespace andromeda_py
     }
     
     return result;
+  }
+
+  bool nlp_model::apply_on_subj(nlp_text& subj)
+  {
+    auto ptr = subj.get_ptr();
+    
+    if(ptr==NULL)
+      {
+	return false;
+      }
+    
+    bool valid = ptr->set_tokens(char_normaliser, text_normaliser);
+    
+    if(valid)
+      {
+	for(auto& model:models)
+	  {
+	    model->apply(*ptr);
+	  }
+	ptr->sort();
+
+	return true;
+      }
+    
+    return false;
   }
   
 }

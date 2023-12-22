@@ -92,6 +92,10 @@ namespace andromeda
     void init_provs();
     void show_provs();
 
+    bool push_back(std::shared_ptr<subject<TEXT> > subj);
+    bool push_back(std::shared_ptr<subject<TABLE> > subj);
+    bool push_back(std::shared_ptr<subject<FIGURE> > subj);
+    
   private:
     
     void join_properties();
@@ -866,6 +870,22 @@ namespace andromeda
 	    capt->applied_models = this->applied_models;
 	  }
       }
+  }
+
+  bool subject<DOCUMENT>::push_back(std::shared_ptr<subject<TEXT> > subj)
+  {
+    texts.push_back(subj);
+    return true;
+  }
+  
+  bool subject<DOCUMENT>::push_back(std::shared_ptr<subject<TABLE> > subj)
+  {
+    return false;
+  }
+  
+  bool subject<DOCUMENT>::push_back(std::shared_ptr<subject<FIGURE> > subj)
+  {
+    return false;
   }
   
 }
