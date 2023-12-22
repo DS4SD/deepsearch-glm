@@ -49,6 +49,8 @@ namespace andromeda_py
   
   nlp_model::nlp_model():
     base_log::base_log(),
+    base_resources::base_resources(),
+
     config(nlohmann::json::object({})),
     
     order_text(false),
