@@ -76,6 +76,8 @@ namespace andromeda
 
     void clear_models();
 
+    void sort();
+    
     virtual nlohmann::json to_json(const std::set<std::string>& filters={}) = 0;
 
     virtual bool from_json(const nlohmann::json& item) = 0;
@@ -262,6 +264,13 @@ namespace andromeda
     return result;
   }
 
+  void base_subject::sort()
+  {
+    std::sort(properties.begin(), properties.end());
+    std::sort(instances.begin(), instances.end());
+    std::sort(relations.begin(), relations.end());
+  }
+  
   void base_subject::clear()
   {
     valid = false;

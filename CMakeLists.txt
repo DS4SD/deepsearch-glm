@@ -153,12 +153,15 @@ FetchContent_Declare(pybind11
 )
 FetchContent_MakeAvailable(pybind11)
 
+pybind11_add_module(andromeda_structs "${TOPLEVEL_PREFIX_PATH}/app/pybind_structs.cpp")
 pybind11_add_module(andromeda_nlp "${TOPLEVEL_PREFIX_PATH}/app/pybind_nlp.cpp")
 pybind11_add_module(andromeda_glm "${TOPLEVEL_PREFIX_PATH}/app/pybind_glm.cpp")
 
+target_compile_definitions(andromeda_structs PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
 target_compile_definitions(andromeda_nlp PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
 target_compile_definitions(andromeda_glm PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
 
+target_link_libraries(andromeda_structs PRIVATE nlp)
 target_link_libraries(andromeda_nlp PRIVATE nlp)
 target_link_libraries(andromeda_glm PRIVATE glm)
 
@@ -171,6 +174,7 @@ target_link_libraries(andromeda_glm PRIVATE glm)
 install(TARGETS nlp.exe DESTINATION bin)
 install(TARGETS glm.exe DESTINATION bin)
 
+install(TARGETS andromeda_structs DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
 install(TARGETS andromeda_nlp DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
 install(TARGETS andromeda_glm DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
 

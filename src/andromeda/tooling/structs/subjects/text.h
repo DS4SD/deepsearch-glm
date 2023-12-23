@@ -41,7 +41,7 @@ namespace andromeda
              std::shared_ptr<utils::char_normaliser> char_normaliser,
              std::shared_ptr<utils::text_normaliser> text_normaliser);
 
-    void sort();
+    //void sort();
 
     typename std::vector<base_instance>::iterator insts_beg(std::array<uint64_t, 2> char_rng);
     typename std::vector<base_instance>::iterator insts_end(std::array<uint64_t, 2> char_rng);
@@ -199,10 +199,7 @@ namespace andromeda
     return false;
   }
 
-  void subject<TEXT>::sort()
-  {
-    std::sort(instances.begin(), instances.end());
-  }
+ 
 
   typename std::vector<base_instance>::iterator subject<TEXT>::insts_beg(std::array<uint64_t, 2> char_rng)
   {

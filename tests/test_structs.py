@@ -3,7 +3,9 @@
 
 import json
 
-from deepsearch_glm.andromeda_nlp import nlp_document, nlp_table, nlp_text
+import pandas as pd
+
+from deepsearch_glm.andromeda_structs import nlp_document, nlp_table, nlp_text
 from deepsearch_glm.nlp_utils import init_nlp_model
 
 TEXTS = [
@@ -28,6 +30,10 @@ Civil War and the Spanish Civil War, whose end marked the end of the classical
 era of anarchism. In the last decades of the 20th and into the 21st century,
 the anarchist movement has been resurgent once more.""",
 ]
+
+
+def to_dataframe(obj):
+    return pd.DataFrame(obj["data"], columns=obj["headers"])
 
 
 def test_01A():
@@ -96,12 +102,17 @@ def test_03A():
     print(json.dumps(res, indent=2))
 
     model = init_nlp_model(
-        "language;semantic;sentence;term;verb;conn;geoloc;abbreviations"
+        "language;semantic;sentence;term;verb;conn;geoloc;abbreviation"
     )
-    model.apply_on_subj(subj)
+    model.apply_on_text(subj)
 
     res = subj.to_json(set([]))
-    print(json.dumps(res, indent=2))
+    print("keys: ", res.keys())
+
+    for key in ["properties", "instances", "relations"]:
+        if key in res:
+            df = to_dataframe(res[key])
+            print(df)
 
     assert True
 
@@ -115,15 +126,17 @@ def test_03C():
 
         subj.append_text(text_subj)
 
-    # res = subj.to_json(set([]))
-    # print(json.dumps(res, indent=2))
-
     model = init_nlp_model(
         "language;semantic;sentence;term;verb;conn;geoloc;abbreviation"
     )
-    model.apply_on_subj(subj)
+    model.apply_on_doc(subj)
 
     res = subj.to_json(set([]))
-    print(json.dumps(res, indent=2))
+    print("keys: ", res.keys())
+
+    for key in ["properties", "instances", "relations"]:
+        if key in res:
+            df = to_dataframe(res[key])
+            print(df)
 
     assert True
