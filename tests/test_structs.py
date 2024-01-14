@@ -126,6 +126,9 @@ def test_03C():
 
         subj.append_text(text_subj)
 
+    jdoc = subj.to_json(set())
+    print(json.dumps(jdoc, indent=2))
+
     model = init_nlp_model(
         "language;semantic;sentence;term;verb;conn;geoloc;abbreviation"
     )

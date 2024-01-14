@@ -31,6 +31,12 @@ namespace andromeda
 		 std::string name,
 		 std::string type);
 
+    prov_element(std::string item_ref,
+		 std::string self_ref,
+		 std::string name,
+		 std::string type,
+		 range_type char_range);
+    
     static std::vector<std::string> get_headers();
 
     val_type x0() const;// { return bbox.at(x0_ind); }
@@ -179,6 +185,31 @@ namespace andromeda
     bbox({0.0, 0.0, 0.0, 0.0}),
 
     char_range({0,0}),
+    coor_range({0,0})
+  {}
+
+  prov_element::prov_element(std::string item_ref,
+			     std::string self_ref,
+			     std::string name,
+			     std::string type,
+			     range_type rng):
+    pdforder_ind(-1),
+    maintext_ind(-1),
+
+    name(name),
+    type(type),
+    
+    item_ref(item_ref),
+    self_ref(self_ref),
+
+    ignore(false),
+    
+    page(0),
+
+    dims({0.0, 0.0}),
+    bbox({0.0, 0.0, 0.0, 0.0}),
+
+    char_range(rng),
     coor_range({0,0})
   {}
 

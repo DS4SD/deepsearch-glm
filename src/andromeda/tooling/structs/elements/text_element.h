@@ -30,7 +30,7 @@ namespace andromeda
 
     bool is_valid();
 
-    std::size_t get_len() const { return len; } // number-of-chars
+    std::size_t get_len() const { if(len!=text.size()) { LOG_S(WARNING) << "len: " << len << " != text.size(): " << text.size(); } return len; } // number-of-chars
     std::size_t get_dst() const { return dst; } // number-of-utf8-tokens
 
     bool is_text_valid() { return text_valid; }

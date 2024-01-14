@@ -5,6 +5,10 @@
 #define PCRE2_CODE_UNIT_WIDTH 8
 #endif
 
+#include <fmt/core.h>
+#include <fmt/chrono.h>
+#include <fmt/ranges.h>
+
 #include "pcre2.h"
 
 #ifndef LOGURU_WITH_STREAMS

@@ -41,14 +41,22 @@ namespace andromeda
     const static inline std::string prov_span_lbl = "span";
 
     const static inline std::set<std::string> texts_types = {"title",
-                                                             "subtitle-level-1", "paragraph",
+                                                             "subtitle-level-1", "subtitle-level-2", "subtitle-level-3",
+							     "paragraph", "text",
                                                              "formula", "equation"};
 
+    const static inline std::set<std::string> body_types = {"title",
+							    "subtitle-level-1", "subtitle-level-2", "subtitle-level-3",
+							    "paragraph", "text",
+							    "formula", "equation",
+							    "table", "figure"};
+    /*
     const static inline std::set<std::string> maintext_types = {"title",
                                                                 "subtitle-level-1", "paragraph",
                                                                 "formula", "equation",
                                                                 "table", "figure"};
-
+    */
+    
   public:
 
     subject();
@@ -228,7 +236,7 @@ namespace andromeda
       meta_text = nlohmann::json::array({});
 
       std::set<std::string> paths={};
-
+      
       for(auto& prov:provs)
         {
           std::string path = prov->get_item_ref();
@@ -240,7 +248,8 @@ namespace andromeda
           paths.insert(path);
 
           auto item = prov->to_json(true);
-          if(maintext_types.count(prov->get_type()))
+          //if(maintext_types.count(prov->get_type()))
+	  if(body_types.count(prov->get_type()))
             {
               body_text.push_back(item);
             }
@@ -874,18 +883,65 @@ namespace andromeda
 
   bool subject<DOCUMENT>::push_back(std::shared_ptr<subject<TEXT> > subj)
   {
-    texts.push_back(subj);
+    // we need to make a copy to ensure that we update the self-reference only on the copied struct
+    std::shared_ptr<subject<TEXT> > copy = std::make_shared<subject<TEXT> >(*subj);
+
+    std::string sref = fmt::format("#/{}/{}", texts_lbl, texts.size());
+    std::string pref = fmt::format("#/{}/{}", provs_lbl, provs.size());
+    std::string dloc = fmt::format("{}/#/{}/{}", dhash, texts_lbl, texts.size());
+    
+    range_type rng = {0, subj->get_len()};
+    auto prov = std::make_shared<prov_element>(sref, pref, "text", "text", rng);
+
+    copy->set_dloc(dloc);
+    copy->set_self_ref(sref);
+    
+    provs.push_back(prov);
+    texts.push_back(copy);
+
     return true;
   }
   
   bool subject<DOCUMENT>::push_back(std::shared_ptr<subject<TABLE> > subj)
   {
-    return false;
+    // we need to make a copy to ensure that we update the self-reference only on the copied struct
+    std::shared_ptr<subject<TABLE> > copy = std::make_shared<subject<TABLE> >(*subj);
+
+    std::string sref = fmt::format("#/{}/{}", tables_lbl, tables.size());
+    std::string pref = fmt::format("#/{}/{}", provs_lbl, provs.size());
+    std::string dloc = fmt::format("{}/#/{}/{}", dhash, tables_lbl, tables.size());
+    
+    range_type rng = {0, subj->num_rows()};
+    auto prov = std::make_shared<prov_element>(sref, pref, "table", "table", rng);
+    
+    copy->set_dloc(dloc);
+    copy->set_self_ref(sref);
+    
+    provs.push_back(prov);
+    tables.push_back(copy);
+
+    return true;
   }
   
   bool subject<DOCUMENT>::push_back(std::shared_ptr<subject<FIGURE> > subj)
   {
-    return false;
+    // we need to make a copy to ensure that we update the self-reference only on the copied struct
+    std::shared_ptr<subject<FIGURE> > copy = std::make_shared<subject<FIGURE> >(*subj);
+
+    std::string sref = fmt::format("#/{}/{}", figures_lbl, figures.size());
+    std::string pref = fmt::format("#/{}/{}", provs_lbl, provs.size());
+    std::string dloc = fmt::format("{}/#/{}/{}", dhash, figures_lbl, figures.size());
+
+    range_type rng = {0, 0};
+    auto prov = std::make_shared<prov_element>(sref, pref, "figure", "figure", rng);
+    
+    copy->set_dloc(dloc);
+    copy->set_self_ref(sref);
+    
+    provs.push_back(prov);
+    figures.push_back(copy);
+
+    return true;
   }
   
 }
