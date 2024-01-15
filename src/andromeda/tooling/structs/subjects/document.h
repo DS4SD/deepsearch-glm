@@ -72,8 +72,10 @@ namespace andromeda
 			   const std::vector<std::shared_ptr<prov_element> >& doc_provs);
 
     uint64_t get_hash() const { return doc_hash; }
-    std::string get_name() const { return doc_name; }
 
+    std::string get_name() const { return doc_name; }
+    void set_name(std::string);
+      
     std::filesystem::path get_filepath() { return filepath; }
     
     nlohmann::json& get_orig() { return orig; }    
@@ -397,20 +399,28 @@ namespace andromeda
     if(data.count("file-info") and
        data["file-info"].count("document-hash"))
       {
-        doc_name = data["file-info"].value("document-hash", doc_name);
-        doc_hash = utils::to_reproducible_hash(doc_name);
+	set_name(data["file-info"].value("document-hash", doc_name));
+        //doc_name = data["file-info"].value("document-hash", doc_name);
+        //doc_hash = utils::to_reproducible_hash(doc_name);
       }
     else
       {
         LOG_S(WARNING) << "no `file-info.document-hash detected ...`";
 
-        doc_name = filepath.c_str();
-        doc_hash = utils::to_reproducible_hash(doc_name);
+	set_name(filepath.c_str());
+        //doc_name = filepath.c_str();
+        //doc_hash = utils::to_reproducible_hash(doc_name);
       }
 
     base_subject::dloc = doc_name + "#";
   }
 
+  void subject<DOCUMENT>::set_name(std::string)
+  {
+    doc_name = name;
+    doc_hash = utils::to_reproducible_hash(doc_name);
+  }
+  
   void subject<DOCUMENT>::set_orig(const nlohmann::json& data)
   {
     orig = data;

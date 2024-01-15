@@ -135,7 +135,7 @@ def test_03C():
     model.apply_on_doc(subj)
 
     res = subj.to_json(set([]))
-    print("keys: ", res.keys())
+    # print("keys: ", res.keys())
 
     for key in ["properties", "instances", "relations"]:
         if key in res:
