@@ -399,7 +399,9 @@ namespace andromeda
     if(data.count("file-info") and
        data["file-info"].count("document-hash"))
       {
-	set_name(data["file-info"].value("document-hash", doc_name));
+	//std::string name = data["file-info"].value("document-hash", doc_name)
+	std::string name = data["file-info"]["document-hash"].get<std::string>();
+	set_name(name);
         //doc_name = data["file-info"].value("document-hash", doc_name);
         //doc_hash = utils::to_reproducible_hash(doc_name);
       }
@@ -407,18 +409,20 @@ namespace andromeda
       {
         LOG_S(WARNING) << "no `file-info.document-hash detected ...`";
 
-	set_name(filepath.c_str());
+	std::string name = filepath.c_str();
+	set_name(name);
         //doc_name = filepath.c_str();
         //doc_hash = utils::to_reproducible_hash(doc_name);
       }
-
-    base_subject::dloc = doc_name + "#";
   }
 
-  void subject<DOCUMENT>::set_name(std::string)
+  void subject<DOCUMENT>::set_name(std::string name)
   {
     doc_name = name;
     doc_hash = utils::to_reproducible_hash(doc_name);
+
+    base_subject::sref = "#";
+    base_subject::dloc = doc_name + "#";
   }
   
   void subject<DOCUMENT>::set_orig(const nlohmann::json& data)
@@ -895,20 +899,37 @@ namespace andromeda
   {
     // we need to make a copy to ensure that we update the self-reference only on the copied struct
     std::shared_ptr<subject<TEXT> > copy = std::make_shared<subject<TEXT> >(*subj);
-
+    
     std::string sref = fmt::format("#/{}/{}", texts_lbl, texts.size());
     std::string pref = fmt::format("#/{}/{}", provs_lbl, provs.size());
-    std::string dloc = fmt::format("{}/#/{}/{}", dhash, texts_lbl, texts.size());
-    
-    range_type rng = {0, subj->get_len()};
-    auto prov = std::make_shared<prov_element>(sref, pref, "text", "text", rng);
+    std::string dloc = fmt::format("{}/#/{}/{}", doc_name, texts_lbl, texts.size());
 
     copy->set_dloc(dloc);
     copy->set_self_ref(sref);
     
-    provs.push_back(prov);
-    texts.push_back(copy);
+    if(subj->provs.size()==0)
+      {
+	range_type rng = {0, subj->get_len()};
+	auto prov = std::make_shared<prov_element>(sref, pref, "text", "text", rng);
 
+	copy->provs.push_back(prov);
+	provs.push_back(prov);
+      }
+    else
+      {
+	for(auto prov:subj->provs)
+	  {
+	    std::shared_ptr<prov_element> copy_prov = std::make_shared<prov_element>(*prov);
+	    copy_prov->set_item_ref(sref);
+	    copy_prov->set_self_ref(pref);
+
+	    copy->provs.push_back(copy_prov);
+	    provs.push_back(prov);
+	  }
+      }
+        
+    texts.push_back(copy);
+    
     return true;
   }
   
@@ -916,18 +937,20 @@ namespace andromeda
   {
     // we need to make a copy to ensure that we update the self-reference only on the copied struct
     std::shared_ptr<subject<TABLE> > copy = std::make_shared<subject<TABLE> >(*subj);
-
+    
     std::string sref = fmt::format("#/{}/{}", tables_lbl, tables.size());
     std::string pref = fmt::format("#/{}/{}", provs_lbl, provs.size());
-    std::string dloc = fmt::format("{}/#/{}/{}", dhash, tables_lbl, tables.size());
+    std::string dloc = fmt::format("{}/#/{}/{}", doc_name, tables_lbl, tables.size());
     
     range_type rng = {0, subj->num_rows()};
     auto prov = std::make_shared<prov_element>(sref, pref, "table", "table", rng);
     
+    provs.push_back(prov);
+    
     copy->set_dloc(dloc);
     copy->set_self_ref(sref);
-    
-    provs.push_back(prov);
+    copy->provs.push_back(prov);
+        
     tables.push_back(copy);
 
     return true;
@@ -940,15 +963,17 @@ namespace andromeda
 
     std::string sref = fmt::format("#/{}/{}", figures_lbl, figures.size());
     std::string pref = fmt::format("#/{}/{}", provs_lbl, provs.size());
-    std::string dloc = fmt::format("{}/#/{}/{}", dhash, figures_lbl, figures.size());
+    std::string dloc = fmt::format("{}/#/{}/{}", doc_name, figures_lbl, figures.size());
 
     range_type rng = {0, 0};
     auto prov = std::make_shared<prov_element>(sref, pref, "figure", "figure", rng);
+
+    provs.push_back(prov);
     
     copy->set_dloc(dloc);
     copy->set_self_ref(sref);
+    copy->provs.push_back(prov);
     
-    provs.push_back(prov);
     figures.push_back(copy);
 
     return true;

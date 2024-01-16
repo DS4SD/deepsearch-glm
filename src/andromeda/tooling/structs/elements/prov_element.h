@@ -16,7 +16,7 @@ namespace andromeda
     const static inline int y0_ind = 1;
     const static inline int x1_ind = 2;
     const static inline int y1_ind = 3;
-
+    
   public:
     
     prov_element();
@@ -106,6 +106,7 @@ namespace andromeda
   private:
     
     ind_type pdforder_ind, maintext_ind;
+    //int pdforder_ind, maintext_ind;
     std::string name, type;
 
     //std::string path_to_;//, pref;
@@ -113,6 +114,7 @@ namespace andromeda
 
     bool ignore;
     ind_type page;
+    //int page;
     
     std::array<val_type, 2> dims; // (width, height) of page
     std::array<val_type, 4> bbox; // (x0, y0, x1, y1) with x0<x1 and y0<y1

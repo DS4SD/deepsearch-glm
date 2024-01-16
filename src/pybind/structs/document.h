@@ -10,21 +10,7 @@
 
 namespace andromeda_py
 {
-
-  std::string generateRandomHexString(int length) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, 15);
-    
-    std::stringstream ss;
-    for (int i = 0; i < length; ++i) {
-      int randomNibble = dis(gen);
-      ss << std::hex << randomNibble;
-    }
-    
-    return ss.str();
-  }
-  
+   
   /*
    *
    *
@@ -47,6 +33,10 @@ namespace andromeda_py
 
     bool append_text(nlp_text& subj);
     bool append_table(nlp_table& subj) { return false; }
+
+  private:
+
+    static std::string generate_random_name(int length=64);
     
   private:
 
@@ -56,13 +46,29 @@ namespace andromeda_py
   nlp_document::nlp_document():
     subj_ptr(std::make_shared<subject_type>())
   {
-    std::string name = generateRandomHexString(128);
+    std::string name = generate_random_name(64);
     subj_ptr->set_name(name);
   }
 
   nlp_document::~nlp_document()
   {}
 
+  std::string nlp_document::generate_random_name(int length)
+  {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 15);
+    
+    std::stringstream ss;
+    for (int i = 0; i < length; ++i)
+      {
+      int randomNibble = dis(gen);
+      ss << std::hex << randomNibble;
+    }
+    
+    return ss.str();
+  }
+  
   nlohmann::json nlp_document::to_json(std::set<std::string> filters)
   {
     if(subj_ptr==NULL)

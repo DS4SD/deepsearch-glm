@@ -26,6 +26,7 @@ namespace andromeda_py
     void clear();
     
     bool set_text(const std::string& ctext);
+    bool set_type(const std::string& ctype);
     
   private:
 
@@ -83,6 +84,11 @@ namespace andromeda_py
     return false;
   }
 
+  bool nlp_text::set_type(const std::string& ctype)
+  {
+    return subj_ptr->set_type(ctype);
+  }
+  
 }
 
 #endif
