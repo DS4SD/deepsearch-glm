@@ -4,8 +4,9 @@
 import json
 
 import pandas as pd
+from tabulate import tabulate
 
-from deepsearch_glm.andromeda_structs import nlp_document, nlp_table, nlp_text
+from deepsearch_glm.andromeda_structs import ds_document, ds_table, ds_text
 from deepsearch_glm.nlp_utils import init_nlp_model
 
 TEXTS = [
@@ -31,13 +32,25 @@ era of anarchism. In the last decades of the 20th and into the 21st century,
 the anarchist movement has been resurgent once more.""",
 ]
 
+TABLES = [
+    [
+        ["Year", "Company", "Revenue"],
+        ["2020", "XXX", "10B USD"],
+        ["2021", "XXX", "10B USD"],
+        ["2022", "XXX", "10B USD"],
+        ["2020", "YYY", "12B USD"],
+        ["2021", "YYY", "13B USD"],
+        ["2022", "YYY", "14B USD"],
+    ]
+]
+
 
 def to_dataframe(obj):
     return pd.DataFrame(obj["data"], columns=obj["headers"])
 
 
 def test_01A():
-    subj = nlp_text()
+    subj = ds_text()
     print(subj)
 
     res = subj.to_json(set([]))
@@ -47,7 +60,7 @@ def test_01A():
 
 
 def test_01B():
-    subj = nlp_table()
+    subj = ds_table()
 
     res = subj.to_json(set([]))
     print(res)
@@ -56,7 +69,7 @@ def test_01B():
 
 
 def test_01C():
-    subj = nlp_document()
+    subj = ds_document()
 
     res = subj.to_json(set([]))
     print(res)
@@ -65,8 +78,7 @@ def test_01C():
 
 
 def test_02A():
-    subj = nlp_text()
-    print(subj)
+    subj = ds_text()
 
     subj.set_text(TEXTS[0])
 
@@ -76,12 +88,21 @@ def test_02A():
     assert True
 
 
+def test_02B():
+    subj = ds_table()
+
+    subj.set_data(TABLES[0])
+    res = subj.to_json(set([]))
+
+    assert True
+
+
 def test_02C():
-    subj = nlp_document()
+    subj = ds_document()
     print(subj)
 
     for text in TEXTS:
-        text_subj = nlp_text()
+        text_subj = ds_text()
         text_subj.set_text(text)
 
         subj.append_text(text_subj)
@@ -93,13 +114,13 @@ def test_02C():
 
 
 def test_03A():
-    subj = nlp_text()
+    subj = ds_text()
     print(subj)
 
     subj.set_text(TEXTS[0])
 
     res = subj.to_json(set([]))
-    print(json.dumps(res, indent=2))
+    # print(json.dumps(res, indent=2))
 
     model = init_nlp_model(
         "language;semantic;sentence;term;verb;conn;geoloc;abbreviation"
@@ -107,6 +128,31 @@ def test_03A():
     model.apply_on_text(subj)
 
     res = subj.to_json(set([]))
+    print("keys: ", res.keys())
+
+    print(res["applied_models"])
+
+    for key in ["properties", "instances", "relations"]:
+        if key in res:
+            df = to_dataframe(res[key])
+            print(df)
+
+    assert True
+
+
+def test_03B():
+    subj = ds_table()
+
+    subj.set_data(TABLES[0])
+    res = subj.to_json(set([]))
+
+    model = init_nlp_model(
+        "language;semantic;sentence;term;verb;conn;geoloc;abbreviation"
+    )
+    model.apply_on_table(subj)
+
+    res = subj.to_json(set([]))
+    # res = subj.to_json(set(["word-tokens", "word_tokens", "properties", "instances", "relations"]))
     print("keys: ", res.keys())
 
     for key in ["properties", "instances", "relations"]:
@@ -118,13 +164,19 @@ def test_03A():
 
 
 def test_03C():
-    subj = nlp_document()
+    subj = ds_document()
 
     for text in TEXTS:
-        text_subj = nlp_text()
+        text_subj = ds_text()
         text_subj.set_text(text)
 
         subj.append_text(text_subj)
+
+    for table in TABLES:
+        table_subj = ds_table()
+        table_subj.set_data(table)
+
+        subj.append_table(table_subj)
 
     jdoc = subj.to_json(set())
     print(json.dumps(jdoc, indent=2))
@@ -135,7 +187,7 @@ def test_03C():
     model.apply_on_doc(subj)
 
     res = subj.to_json(set([]))
-    # print("keys: ", res.keys())
+    print("keys: ", res.keys())
 
     for key in ["properties", "instances", "relations"]:
         if key in res:

@@ -23,6 +23,8 @@ namespace andromeda
 
     virtual bool apply(subject<TEXT>& subj);
 
+    //virtual bool apply(subject<TABLE>& subj) { LOG_S(WARNING) << "apply nlp_model<ENT, TERM>"; return false; }
+
     virtual bool apply_on_table_data(subject<TABLE>& subj);
     
   private:
@@ -150,17 +152,13 @@ namespace andromeda
 
   bool nlp_model<ENT, TERM>::apply_on_table_data(subject<TABLE>& subj)
   {
-    //if(not satisfies_dependencies(subj, table_dependencies))
-    //{
-    //return false;
-    //}
-
     for(std::size_t i=0; i<subj.num_rows(); i++)
       {
 	for(std::size_t j=0; j<subj.num_cols(); j++)
 	  {	   	    
 	    if(subj(i,j).skip())
 	      {
+		//LOG_S(INFO) << "skipping: " << subj(i,j).get_text();
 		continue;
 	      }
 
@@ -171,6 +169,9 @@ namespace andromeda
 	    
 	    get_chunks(subj(i,j), single_exprs, single_chunks);	    
 
+	    //LOG_S(INFO) << andromeda::tabulate(subj(i,j).get_word_tokens(), subj(i,j).get_text());
+	    //LOG_S(INFO) << "chunks: " << single_chunks.size();
+	    
 	    add_instances(get_name(), subj, subj(i,j).get_coor(),
 			  subj(i,j).get_row_span(),
 			  subj(i,j).get_col_span(),

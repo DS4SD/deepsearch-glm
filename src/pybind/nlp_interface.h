@@ -27,9 +27,9 @@ namespace andromeda_py
     nlohmann::json apply_on_text(std::string& text);
     nlohmann::json apply_on_doc(nlohmann::json& doc);
 
-    bool apply_on_text(nlp_text& subj);
-    bool apply_on_table(nlp_table& subj);
-    bool apply_on_doc(nlp_document& subj);
+    bool apply_on_text(ds_text& subj);
+    bool apply_on_table(ds_table& subj);
+    bool apply_on_doc(ds_document& subj);
     
   private:
 
@@ -519,8 +519,12 @@ namespace andromeda_py
       {
 	return false;
       }
+
+    //LOG_S(INFO) << "nlp_model::apply_on_subj(std::shared_ptr<subj_type> ptr) set_tokens ...";
     
     bool valid = ptr->set_tokens(char_normaliser, text_normaliser);
+
+    //LOG_S(INFO) << "valid: " << valid;
     
     if(valid)
       {
@@ -536,19 +540,26 @@ namespace andromeda_py
     return false;
   }
   
-  bool nlp_model::apply_on_text(nlp_text& subj)
+  bool nlp_model::apply_on_text(ds_text& subj)
   {
     return apply_on_subj(subj.get_ptr());
   }
   
-  bool nlp_model::apply_on_table(nlp_table& subj)
+  bool nlp_model::apply_on_table(ds_table& subj)
   {
     return apply_on_subj(subj.get_ptr());
   }
   
-  bool nlp_model::apply_on_doc(nlp_document& subj)
+  bool nlp_model::apply_on_doc(ds_document& subj)
   {
-    return apply_on_subj(subj.get_ptr());
+    bool success = apply_on_subj(subj.get_ptr());
+
+    if(success)
+      {
+	success = subj.get_ptr()->finalise();
+      }
+
+    return success;
   }
   
 
