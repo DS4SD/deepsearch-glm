@@ -19,7 +19,7 @@ elseif(APPLE)
    #set(LIB_LINK json json_schema loguru cxxopts pcre2 fasttext utf8 andromeda_pos ${OPENSSL_LIBRARIES} ldap z)
    #set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 andromeda_pos ${OPENSSL_LIBRARIES} ldap z)
    #set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 ${OPENSSL_LIBRARIES} ldap z)
-   set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 ldap z)	
+   set(LIB_LINK fmt json loguru cxxopts pcre2 fasttext utf8 ldap z)	
 
    list(APPEND LIB_LINK ${FoundationLib} ${SystemConfigurationLib})
    
@@ -29,7 +29,7 @@ elseif(UNIX)
    #set(LIB_LINK json json_schema loguru cxxopts pcre2 fasttext utf8 andromeda_pos ${OPENSSL_LIBRARIES} z)
    #set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 andromeda_pos ${OPENSSL_LIBRARIES} z)
    #set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 ${OPENSSL_LIBRARIES} z)
-   set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 z)
+   set(LIB_LINK fmt json loguru cxxopts pcre2 fasttext utf8 z)
 
    list(APPEND LIB_LINK dl m pthread rt resolv)
 

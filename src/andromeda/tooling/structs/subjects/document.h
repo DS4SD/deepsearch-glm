@@ -41,14 +41,22 @@ namespace andromeda
     const static inline std::string prov_span_lbl = "span";
 
     const static inline std::set<std::string> texts_types = {"title",
-                                                             "subtitle-level-1", "paragraph",
+                                                             "subtitle-level-1", "subtitle-level-2", "subtitle-level-3",
+							     "paragraph", "text",
                                                              "formula", "equation"};
 
+    const static inline std::set<std::string> body_types = {"title",
+							    "subtitle-level-1", "subtitle-level-2", "subtitle-level-3",
+							    "paragraph", "text",
+							    "formula", "equation",
+							    "table", "figure"};
+    /*
     const static inline std::set<std::string> maintext_types = {"title",
                                                                 "subtitle-level-1", "paragraph",
                                                                 "formula", "equation",
                                                                 "table", "figure"};
-
+    */
+    
   public:
 
     subject();
@@ -64,8 +72,10 @@ namespace andromeda
 			   const std::vector<std::shared_ptr<prov_element> >& doc_provs);
 
     uint64_t get_hash() const { return doc_hash; }
-    std::string get_name() const { return doc_name; }
 
+    std::string get_name() const { return doc_name; }
+    void set_name(std::string);
+      
     std::filesystem::path get_filepath() { return filepath; }
     
     nlohmann::json& get_orig() { return orig; }    
@@ -92,6 +102,10 @@ namespace andromeda
     void init_provs();
     void show_provs();
 
+    bool push_back(std::shared_ptr<subject<TEXT> > subj);
+    bool push_back(std::shared_ptr<subject<TABLE> > subj);
+    bool push_back(std::shared_ptr<subject<FIGURE> > subj);
+    
   private:
     
     void join_properties();
@@ -224,7 +238,7 @@ namespace andromeda
       meta_text = nlohmann::json::array({});
 
       std::set<std::string> paths={};
-
+      
       for(auto& prov:provs)
         {
           std::string path = prov->get_item_ref();
@@ -236,7 +250,8 @@ namespace andromeda
           paths.insert(path);
 
           auto item = prov->to_json(true);
-          if(maintext_types.count(prov->get_type()))
+          //if(maintext_types.count(prov->get_type()))
+	  if(body_types.count(prov->get_type()))
             {
               body_text.push_back(item);
             }
@@ -384,20 +399,32 @@ namespace andromeda
     if(data.count("file-info") and
        data["file-info"].count("document-hash"))
       {
-        doc_name = data["file-info"].value("document-hash", doc_name);
-        doc_hash = utils::to_reproducible_hash(doc_name);
+	//std::string name = data["file-info"].value("document-hash", doc_name)
+	std::string name = data["file-info"]["document-hash"].get<std::string>();
+	set_name(name);
+        //doc_name = data["file-info"].value("document-hash", doc_name);
+        //doc_hash = utils::to_reproducible_hash(doc_name);
       }
     else
       {
         LOG_S(WARNING) << "no `file-info.document-hash detected ...`";
 
-        doc_name = filepath.c_str();
-        doc_hash = utils::to_reproducible_hash(doc_name);
+	std::string name = filepath.c_str();
+	set_name(name);
+        //doc_name = filepath.c_str();
+        //doc_hash = utils::to_reproducible_hash(doc_name);
       }
-
-    base_subject::dloc = doc_name + "#";
   }
 
+  void subject<DOCUMENT>::set_name(std::string name)
+  {
+    doc_name = name;
+    doc_hash = utils::to_reproducible_hash(doc_name);
+
+    base_subject::sref = "#";
+    base_subject::dloc = doc_name + "#";
+  }
+  
   void subject<DOCUMENT>::set_orig(const nlohmann::json& data)
   {
     orig = data;
@@ -866,6 +893,90 @@ namespace andromeda
 	    capt->applied_models = this->applied_models;
 	  }
       }
+  }
+
+  bool subject<DOCUMENT>::push_back(std::shared_ptr<subject<TEXT> > subj)
+  {
+    // we need to make a copy to ensure that we update the self-reference only on the copied struct
+    std::shared_ptr<subject<TEXT> > copy = std::make_shared<subject<TEXT> >(*subj);
+    
+    std::string sref = fmt::format("#/{}/{}", texts_lbl, texts.size());
+    std::string pref = fmt::format("#/{}/{}", provs_lbl, provs.size());
+    std::string dloc = fmt::format("{}/#/{}/{}", doc_name, texts_lbl, texts.size());
+
+    copy->set_dloc(dloc);
+    copy->set_self_ref(sref);
+    
+    if(subj->provs.size()==0)
+      {
+	range_type rng = {0, subj->get_len()};
+	auto prov = std::make_shared<prov_element>(sref, pref, "text", "text", rng);
+
+	copy->provs.push_back(prov);
+	provs.push_back(prov);
+      }
+    else
+      {
+	for(auto prov:subj->provs)
+	  {
+	    std::shared_ptr<prov_element> copy_prov = std::make_shared<prov_element>(*prov);
+	    copy_prov->set_item_ref(sref);
+	    copy_prov->set_self_ref(pref);
+
+	    copy->provs.push_back(copy_prov);
+	    provs.push_back(prov);
+	  }
+      }
+        
+    texts.push_back(copy);
+    
+    return true;
+  }
+  
+  bool subject<DOCUMENT>::push_back(std::shared_ptr<subject<TABLE> > subj)
+  {
+    // we need to make a copy to ensure that we update the self-reference only on the copied struct
+    std::shared_ptr<subject<TABLE> > copy = std::make_shared<subject<TABLE> >(*subj);
+    
+    std::string sref = fmt::format("#/{}/{}", tables_lbl, tables.size());
+    std::string pref = fmt::format("#/{}/{}", provs_lbl, provs.size());
+    std::string dloc = fmt::format("{}/#/{}/{}", doc_name, tables_lbl, tables.size());
+    
+    range_type rng = {0, subj->num_rows()};
+    auto prov = std::make_shared<prov_element>(sref, pref, "table", "table", rng);
+    
+    provs.push_back(prov);
+    
+    copy->set_dloc(dloc);
+    copy->set_self_ref(sref);
+    copy->provs.push_back(prov);
+        
+    tables.push_back(copy);
+
+    return true;
+  }
+  
+  bool subject<DOCUMENT>::push_back(std::shared_ptr<subject<FIGURE> > subj)
+  {
+    // we need to make a copy to ensure that we update the self-reference only on the copied struct
+    std::shared_ptr<subject<FIGURE> > copy = std::make_shared<subject<FIGURE> >(*subj);
+
+    std::string sref = fmt::format("#/{}/{}", figures_lbl, figures.size());
+    std::string pref = fmt::format("#/{}/{}", provs_lbl, provs.size());
+    std::string dloc = fmt::format("{}/#/{}/{}", doc_name, figures_lbl, figures.size());
+
+    range_type rng = {0, 0};
+    auto prov = std::make_shared<prov_element>(sref, pref, "figure", "figure", rng);
+
+    provs.push_back(prov);
+    
+    copy->set_dloc(dloc);
+    copy->set_self_ref(sref);
+    copy->provs.push_back(prov);
+    
+    figures.push_back(copy);
+
+    return true;
   }
   
 }

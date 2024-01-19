@@ -16,7 +16,7 @@ namespace andromeda
     const static inline int y0_ind = 1;
     const static inline int x1_ind = 2;
     const static inline int y1_ind = 3;
-
+    
   public:
     
     prov_element();
@@ -31,6 +31,12 @@ namespace andromeda
 		 std::string name,
 		 std::string type);
 
+    prov_element(std::string item_ref,
+		 std::string self_ref,
+		 std::string name,
+		 std::string type,
+		 range_type char_range);
+    
     static std::vector<std::string> get_headers();
 
     val_type x0() const;// { return bbox.at(x0_ind); }
@@ -100,6 +106,7 @@ namespace andromeda
   private:
     
     ind_type pdforder_ind, maintext_ind;
+    //int pdforder_ind, maintext_ind;
     std::string name, type;
 
     //std::string path_to_;//, pref;
@@ -107,6 +114,7 @@ namespace andromeda
 
     bool ignore;
     ind_type page;
+    //int page;
     
     std::array<val_type, 2> dims; // (width, height) of page
     std::array<val_type, 4> bbox; // (x0, y0, x1, y1) with x0<x1 and y0<y1
@@ -179,6 +187,31 @@ namespace andromeda
     bbox({0.0, 0.0, 0.0, 0.0}),
 
     char_range({0,0}),
+    coor_range({0,0})
+  {}
+
+  prov_element::prov_element(std::string item_ref,
+			     std::string self_ref,
+			     std::string name,
+			     std::string type,
+			     range_type rng):
+    pdforder_ind(-1),
+    maintext_ind(-1),
+
+    name(name),
+    type(type),
+    
+    item_ref(item_ref),
+    self_ref(self_ref),
+
+    ignore(false),
+    
+    page(0),
+
+    dims({0.0, 0.0}),
+    bbox({0.0, 0.0, 0.0, 0.0}),
+
+    char_range(rng),
     coor_range({0,0})
   {}
 

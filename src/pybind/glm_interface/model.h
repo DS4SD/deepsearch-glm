@@ -8,6 +8,7 @@
 namespace andromeda_py
 {
   class glm_model: public base_log,
+		   public base_resources,
 		   public andromeda::base_types,
                    public andromeda::glm::model_types
   {
@@ -24,7 +25,7 @@ namespace andromeda_py
     glm_model();
     ~glm_model();
 
-    void set_resource_dir(const std::string resources_dir);
+    //void set_resource_dir(const std::string resources_dir);
     
     void load_dir(const std::string root_dir);
     void save_dir(const std::string root_dir);
@@ -65,13 +66,16 @@ namespace andromeda_py
   };
 
   glm_model::glm_model():
-    base_log(),
+    base_log::base_log(),
+    base_resources::base_resources(),
+
     model(std::make_shared<glm_model_type>())
   {}
   
   glm_model::~glm_model()
   {}
 
+  /*
   void glm_model::set_resource_dir(const std::string resources_dir)
   {
     //andromeda::RESOURCES_DIR = resources_dir;
@@ -82,6 +86,7 @@ namespace andromeda_py
 	LOG_S(FATAL) << "resource-dir `" << resources_dir << "` is invalid!";
       }
   }
+  */
   
   void glm_model::load_dir(const std::string root_dir)
   {

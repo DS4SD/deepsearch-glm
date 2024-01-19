@@ -22,6 +22,7 @@ namespace andromeda
     typedef float    val_type;
     typedef uint32_t cnt_type;
     typedef uint64_t ind_type;
+    //typedef int64_t ind_type;
     
     typedef float  sval_type;
     typedef double dval_type;

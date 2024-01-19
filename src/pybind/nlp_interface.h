@@ -24,8 +24,12 @@ namespace andromeda_py
     nlohmann::json train(nlohmann::json& config);
     nlohmann::json evaluate(nlohmann::json& config);
     
-    nlohmann::json apply_on_text(std::string& text);    
+    nlohmann::json apply_on_text(std::string& text);
     nlohmann::json apply_on_doc(nlohmann::json& doc);
+
+    bool apply_on_text(nlp_text& subj);
+    bool apply_on_table(nlp_table& subj);
+    bool apply_on_doc(nlp_document& subj);
     
   private:
 
@@ -34,6 +38,9 @@ namespace andromeda_py
 
     void apply_docs(std::shared_ptr<andromeda::producer<andromeda::DOCUMENT> > producer,
 		    nlohmann::json& results);
+
+    template<typename subj_type>
+    bool apply_on_subj(std::shared_ptr<subj_type> ptr);
     
   private:
     
@@ -49,6 +56,8 @@ namespace andromeda_py
   
   nlp_model::nlp_model():
     base_log::base_log(),
+    base_resources::base_resources(),
+
     config(nlohmann::json::object({})),
     
     order_text(false),
@@ -502,7 +511,47 @@ namespace andromeda_py
     
     return result;
   }
+
+  template<typename subj_type>
+  bool nlp_model::apply_on_subj(std::shared_ptr<subj_type> ptr)
+  {    
+    if(ptr==NULL)
+      {
+	return false;
+      }
+    
+    bool valid = ptr->set_tokens(char_normaliser, text_normaliser);
+    
+    if(valid)
+      {
+	for(auto& model:models)
+	  {
+	    model->apply(*ptr);
+	  }
+	ptr->sort();
+
+	return true;
+      }
+    
+    return false;
+  }
   
+  bool nlp_model::apply_on_text(nlp_text& subj)
+  {
+    return apply_on_subj(subj.get_ptr());
+  }
+  
+  bool nlp_model::apply_on_table(nlp_table& subj)
+  {
+    return apply_on_subj(subj.get_ptr());
+  }
+  
+  bool nlp_model::apply_on_doc(nlp_document& subj)
+  {
+    return apply_on_subj(subj.get_ptr());
+  }
+  
+
 }
 
 #endif

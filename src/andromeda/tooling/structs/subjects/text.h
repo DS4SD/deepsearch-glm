@@ -32,6 +32,8 @@ namespace andromeda
     bool concatenate(std::shared_ptr<subject<TEXT> > other);
 
     bool set_text(const std::string& ctext);
+    bool set_type(const std::string& ctype);
+    
     bool set_data(const nlohmann::json& item);
 
     bool set_tokens(std::shared_ptr<utils::char_normaliser> char_normaliser,
@@ -41,7 +43,7 @@ namespace andromeda
              std::shared_ptr<utils::char_normaliser> char_normaliser,
              std::shared_ptr<utils::text_normaliser> text_normaliser);
 
-    void sort();
+    //void sort();
 
     typename std::vector<base_instance>::iterator insts_beg(std::array<uint64_t, 2> char_rng);
     typename std::vector<base_instance>::iterator insts_end(std::array<uint64_t, 2> char_rng);
@@ -156,6 +158,26 @@ namespace andromeda
     return text_element::is_text_valid();
   }
 
+  bool subject<TEXT>::set_type(const std::string& ctype)
+  {
+    if(provs.size()>0)
+      {
+	for(auto prov:provs)
+	  {
+	    prov->set_type(ctype);
+	  }
+      }
+    else
+      {
+	range_type rng = {0, get_len()};
+	auto prov = std::make_shared<prov_element>("#", "#", "text", ctype, rng);
+
+	provs.push_back(prov);
+      }
+
+    return true;
+  }
+  
   bool subject<TEXT>::set_data(const nlohmann::json& item)
   {
     base_subject::clear_models();
@@ -199,10 +221,7 @@ namespace andromeda
     return false;
   }
 
-  void subject<TEXT>::sort()
-  {
-    std::sort(instances.begin(), instances.end());
-  }
+ 
 
   typename std::vector<base_instance>::iterator subject<TEXT>::insts_beg(std::array<uint64_t, 2> char_rng)
   {

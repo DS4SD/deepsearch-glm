@@ -12,7 +12,8 @@ PYBIND11_MODULE(andromeda_glm, m) {
   pybind11::class_<andromeda_py::glm_model>(m, "glm_model")
     .def(pybind11::init())
 
-    .def("set_resource_dir", &andromeda_py::glm_model::set_resource_dir)
+    //.def("set_resource_dir", &andromeda_py::glm_model::set_resource_dir)
+    .def("get_resources_path", &andromeda_py::glm_model::get_resources_path)
     
     .def("from_dir", &andromeda_py::glm_model::load_dir)
     .def("to_dir", &andromeda_py::glm_model::save_dir)
