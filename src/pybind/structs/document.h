@@ -1,7 +1,7 @@
 //-*-C++-*-
 
-#ifndef PYBIND_ANDROMEDA_NLP_STRUCTS_DOCUMENT_H
-#define PYBIND_ANDROMEDA_NLP_STRUCTS_DOCUMENT_H
+#ifndef PYBIND_ANDROMEDA_DS_STRUCTS_DOCUMENT_H
+#define PYBIND_ANDROMEDA_DS_STRUCTS_DOCUMENT_H
 
 #include <iostream>
 #include <iomanip>
@@ -15,14 +15,14 @@ namespace andromeda_py
    *
    *
    */
-  class nlp_document
+  class ds_document
   {
     typedef andromeda::subject<andromeda::DOCUMENT> subject_type;
 
   public:
 
-    nlp_document();
-    ~nlp_document();
+    ds_document();
+    ~ds_document();
 
     nlohmann::json to_json(std::set<std::string> filters={});
     bool from_json(nlohmann::json& data);
@@ -31,8 +31,8 @@ namespace andromeda_py
     
     void clear();
 
-    bool append_text(nlp_text& subj);
-    bool append_table(nlp_table& subj) { return false; }
+    bool append_text(ds_text& subj);
+    bool append_table(ds_table& subj);
 
   private:
 
@@ -43,17 +43,17 @@ namespace andromeda_py
     std::shared_ptr<andromeda::subject<andromeda::DOCUMENT> > subj_ptr;
   };
 
-  nlp_document::nlp_document():
+  ds_document::ds_document():
     subj_ptr(std::make_shared<subject_type>())
   {
     std::string name = generate_random_name(64);
     subj_ptr->set_name(name);
   }
 
-  nlp_document::~nlp_document()
+  ds_document::~ds_document()
   {}
 
-  std::string nlp_document::generate_random_name(int length)
+  std::string ds_document::generate_random_name(int length)
   {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -69,7 +69,7 @@ namespace andromeda_py
     return ss.str();
   }
   
-  nlohmann::json nlp_document::to_json(std::set<std::string> filters)
+  nlohmann::json ds_document::to_json(std::set<std::string> filters)
   {
     if(subj_ptr==NULL)
       {
@@ -79,7 +79,7 @@ namespace andromeda_py
     return subj_ptr->to_json(filters);
   }
 
-  bool nlp_document::from_json(nlohmann::json& data)
+  bool ds_document::from_json(nlohmann::json& data)
   {
     if(subj_ptr==NULL)
       {
@@ -95,7 +95,7 @@ namespace andromeda_py
     return true;
   }
 
-  void nlp_document::clear()
+  void ds_document::clear()
   {
     if(subj_ptr!=NULL)
       {
@@ -103,7 +103,12 @@ namespace andromeda_py
       }
   }
 
-  bool nlp_document::append_text(nlp_text& subj)
+  bool ds_document::append_text(ds_text& subj)
+  {
+    return subj_ptr->push_back(subj.get_ptr());
+  }
+
+  bool ds_document::append_table(ds_table& subj)
   {
     return subj_ptr->push_back(subj.get_ptr());
   }

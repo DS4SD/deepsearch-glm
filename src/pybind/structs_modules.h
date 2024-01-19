@@ -8,27 +8,28 @@
 #include <pybind/base_resources.h>
 
 #include <pybind/structs.h>
-//#include <pybind/nlp_interface.h>
 
 PYBIND11_MODULE(andromeda_structs, m) {
 
-  pybind11::class_<andromeda_py::nlp_text>(m, "nlp_text")
+  pybind11::class_<andromeda_py::ds_text>(m, "ds_text")
     .def(pybind11::init())
-    .def("to_json", &andromeda_py::nlp_text::to_json)
-    .def("from_json", &andromeda_py::nlp_text::from_json)
-    .def("clear", &andromeda_py::nlp_text::clear)
-    .def("set_text", &andromeda_py::nlp_text::set_text);
+    .def("to_json", &andromeda_py::ds_text::to_json)
+    .def("from_json", &andromeda_py::ds_text::from_json)
+    .def("clear", &andromeda_py::ds_text::clear)
+    .def("set_text", &andromeda_py::ds_text::set_text);
 
-  pybind11::class_<andromeda_py::nlp_table>(m, "nlp_table")
+  pybind11::class_<andromeda_py::ds_table>(m, "ds_table")
     .def(pybind11::init())
-    .def("to_json", &andromeda_py::nlp_table::to_json)
-    .def("from_json", &andromeda_py::nlp_table::from_json)
-    .def("clear", &andromeda_py::nlp_table::clear);
+    .def("to_json", &andromeda_py::ds_table::to_json)
+    .def("from_json", &andromeda_py::ds_table::from_json)
+    .def("clear", &andromeda_py::ds_table::clear)
+    .def("set_data", &andromeda_py::ds_table::set_data);
   
-  pybind11::class_<andromeda_py::nlp_document>(m, "nlp_document")
+  pybind11::class_<andromeda_py::ds_document>(m, "ds_document")
     .def(pybind11::init())
-    .def("to_json", &andromeda_py::nlp_document::to_json)
-    .def("from_json", &andromeda_py::nlp_document::from_json)
-    .def("clear", &andromeda_py::nlp_document::clear)
-    .def("append_text", &andromeda_py::nlp_document::append_text);
+    .def("to_json", &andromeda_py::ds_document::to_json)
+    .def("from_json", &andromeda_py::ds_document::from_json)
+    .def("clear", &andromeda_py::ds_document::clear)
+    .def("append_text", &andromeda_py::ds_document::append_text)
+    .def("append_table", &andromeda_py::ds_document::append_table);
 }

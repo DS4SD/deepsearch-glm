@@ -25,7 +25,7 @@ namespace andromeda
     return utils::to_string(header, data);
   }
 
-  std::string tabulate(std::vector<word_token>& tokens, std::string& text)
+  std::string tabulate(std::vector<word_token>& tokens, std::string text)
   {
     std::vector<std::string> headers = word_token::HEADERS;
     std::vector<std::vector<std::string>> data={};

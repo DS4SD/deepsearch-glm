@@ -284,7 +284,8 @@ namespace andromeda
                   }
 
 		std::array<float, 4> bbox = {0.0, 0.0, 0.0, 0.0};
-		if(grid.at(i).at(j).count("bbox")==1 and grid.at(i).at(j).at("bbox").is_array())
+		if(grid.at(i).at(j).count("bbox")==1 and
+		   grid.at(i).at(j).at("bbox").is_array())
                   {
 		    auto& coor = grid.at(i).at(j).at("bbox");
 		    

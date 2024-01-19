@@ -23,7 +23,7 @@ namespace andromeda
     virtual model_name get_name() { return LINK; }
 
     virtual bool apply(subject<TEXT>& subj);
-    virtual bool apply(subject<TABLE>& subj) { return false; }
+    //virtual bool apply(subject<TABLE>& subj) { return false; }
 
   private:
 
