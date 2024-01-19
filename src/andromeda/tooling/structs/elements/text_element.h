@@ -30,8 +30,10 @@ namespace andromeda
 
     bool is_valid();
 
-    std::size_t get_len() const { return len; } // number-of-chars
-    std::size_t get_dst() const { return dst; } // number-of-utf8-tokens
+    //std::size_t get_len() const { if(len!=text.size()) { LOG_S(WARNING) << "len: " << len << " != text.size(): " << text.size(); } return len; } // number-of-chars
+    std::size_t get_len() const { return text.size(); } // number-of-chars
+    //std::size_t get_dst() const { return dst; } // number-of-utf8-tokens
+    std::size_t get_dst() const { return utf8::distance(text.c_str(), text.c_str()+text.size()); } // number-of-utf8-tokens
 
     bool is_text_valid() { return text_valid; }
     
@@ -90,15 +92,10 @@ namespace andromeda
     void contract_char_tokens();
     void contract_word_tokens();
 
-    //public:
-
   private:
     
     bool text_valid;
     uint64_t text_hash; // hash of normalised text
-
-    std::size_t len; // number-of-chars
-    std::size_t dst; // number-of-utf8-tokens
 
   protected:
 
@@ -124,9 +121,6 @@ namespace andromeda
   text_element::text_element():
     text_valid(true),
     text_hash(-1),
-    
-    len(0),
-    dst(0),
 
     orig(""),
     text(""),
@@ -190,9 +184,6 @@ namespace andromeda
   {
     text_valid = true;
     text_hash = -1;
-    
-    len=0;
-    dst=0;
 
     orig="";
     text="";
@@ -222,19 +213,15 @@ namespace andromeda
   {
     clear();
     
-    //LOG_S(INFO) << ctext << " -> " << orig << " -> " << text;
-    
     orig = utils::strip(ctext);
     text = orig;
-    
-    //LOG_S(INFO) << ctext << " -> " << orig << " -> " << text;
     
     if(orig.size()==0)
       {
         return false;
       }
     
-    len = orig.size();
+    auto len = orig.size();
     
     text_valid = utf8::is_valid(orig.c_str(), orig.c_str()+len);
     text_hash = utils::to_reproducible_hash(orig);
@@ -247,7 +234,7 @@ namespace andromeda
   {
     update_text(text_normaliser);
 
-    len = text.size();
+    auto len = text.size();
 
     text_valid = utf8::is_valid(text.c_str(), text.c_str()+len);
 
@@ -255,12 +242,10 @@ namespace andromeda
       {
         return text_valid;
       }
-
-    dst = utf8::distance(text.c_str(), text.c_str()+len);
-
+    
     set_chars(char_normaliser);
     //LOG_S(INFO) << tabulate(char_tokens);
-
+    
     set_tokens();
     //LOG_S(INFO) << tabulate(word_tokens);
 

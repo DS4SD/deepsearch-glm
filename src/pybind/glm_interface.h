@@ -5,6 +5,9 @@
 
 #include <pybind/base_log.h>
 
+#include <pybind/base_log.h>
+#include <pybind/base_resources.h>
+
 #include <pybind/glm_interface/query.h>
 #include <pybind/glm_interface/model.h>
 

@@ -57,6 +57,9 @@ namespace andromeda
 
     virtual ~base_subject() {}
 
+    std::string get_dloc();
+    void set_dloc(std::string dloc);
+    
     std::string get_self_ref();
     void set_self_ref(std::string sref);
     
@@ -76,6 +79,8 @@ namespace andromeda
 
     void clear_models();
 
+    void sort();
+    
     virtual nlohmann::json to_json(const std::set<std::string>& filters={}) = 0;
 
     virtual bool from_json(const nlohmann::json& item) = 0;
@@ -197,6 +202,16 @@ namespace andromeda
       }
   }
 
+  void base_subject::set_dloc(std::string dloc)
+  {
+    this->dloc = dloc;
+  }
+  
+  std::string base_subject::get_dloc()
+  {
+    return dloc;
+  }
+  
   void base_subject::set_self_ref(std::string sref)
   {
     this->sref = sref;
@@ -205,17 +220,6 @@ namespace andromeda
   std::string base_subject::get_self_ref()
   {
     return sref;
-    /*
-    if(dloc=="#")
-      {
-	return dloc;
-      }
-
-    auto parts = utils::split(dloc, "#");
-    assert(parts.size()==2);
-
-    return ("#"+parts.at(1));
-    */
   }
   
   bool base_subject::set_prov_refs(const nlohmann::json& data,
@@ -262,6 +266,13 @@ namespace andromeda
     return result;
   }
 
+  void base_subject::sort()
+  {
+    std::sort(properties.begin(), properties.end());
+    std::sort(instances.begin(), instances.end());
+    std::sort(relations.begin(), relations.end());
+  }
+  
   void base_subject::clear()
   {
     valid = false;
