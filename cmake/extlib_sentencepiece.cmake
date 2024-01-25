@@ -1,0 +1,28 @@
+cmake_minimum_required(VERSION 3.5)
+
+message(STATUS "entering in extlib_sentencepiece.cmake")
+
+include(ExternalProject)
+include(CMakeParseArguments)
+
+set(SENTENCEPIECE_URL https://github.com/google/sentencepiece.git)
+set(SENTENCEPIECE_TAG v0.1.99)
+
+ExternalProject_Add(extlib_sentencepiece
+    PREFIX extlib_sentencepiece
+
+    GIT_REPOSITORY ${SENTENCEPIECE_URL}
+    GIT_TAG ${SENTENCEPIECE_TAG}
+
+    UPDATE_COMMAND ""
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} -DCMAKE_CXX_FLAGS=-O3 -DSPM_BUILD_TEST=OFF -DSPM_ENABLE_SHARED=OFF -DSPM_ENABLE_TENSORFLOW_SHARED=OFF -DSPM_USE_BUILTIN_PROTOBUF=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=TRUE
+
+    INSTALL_DIR ${EXTERNALS_PREFIX_PATH}
+
+    BUILD_IN_SOURCE ON
+    LOG_DOWNLOAD ON
+    LOG_BUILD ON)
+
+add_library(sentencepiece STATIC IMPORTED)
+set_target_properties(sentencepiece PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libsentencepiece.a)
+add_dependencies(sentencepiece extlib_sentencepiece)
