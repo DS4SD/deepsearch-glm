@@ -117,4 +117,6 @@ namespace andromeda
 #include <andromeda/utils/normalisation/char_normalisation.h>
 #include <andromeda/utils/normalisation/text_normalisation.h>
 
+#include <andromeda/utils/normalisation/text_tokenizer.h>
+
 #include <andromeda/utils/interactive.h>

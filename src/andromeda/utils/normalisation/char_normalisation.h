@@ -37,9 +37,7 @@ namespace andromeda
 
     char_normaliser::char_normaliser(bool verbose)
     {
-      //initialise(andromeda::RESOURCES_DIR, verbose);
       initialise(glm_variables::get_resources_dir(), verbose);      
-
       //tabulate();
     }
 
