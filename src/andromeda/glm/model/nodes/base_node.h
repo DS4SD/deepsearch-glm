@@ -29,11 +29,11 @@ namespace andromeda
 
       const static inline std::string cnt_lbl = "counters";
 
-      const static inline std::string word_cnt_lbl = "total";
-      const static inline std::string sent_cnt_lbl = "sentence";
-      const static inline std::string text_cnt_lbl = "text";
-      const static inline std::string tabl_cnt_lbl = "table";
-      const static inline std::string fdoc_cnt_lbl = "document";
+      const static inline std::string word_cnt_lbl = "total-count";
+      const static inline std::string sent_cnt_lbl = "sentence-count";
+      const static inline std::string text_cnt_lbl = "text-count";
+      const static inline std::string tabl_cnt_lbl = "table-count";
+      const static inline std::string fdoc_cnt_lbl = "document-count";
       
       const static inline std::vector<std::string> headers = {hash_lbl, flvr_lbl, name_lbl,
 							      word_cnt_lbl, sent_cnt_lbl,
