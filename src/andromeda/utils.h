@@ -113,9 +113,9 @@ namespace andromeda
 #include <andromeda/utils/regex/pcre2_item.h>
 #include <andromeda/utils/regex/pcre2_expr.h>
 
-#include <andromeda/utils/normalisation/char_token.h>
-#include <andromeda/utils/normalisation/char_normalisation.h>
-#include <andromeda/utils/normalisation/text_normalisation.h>
+//#include <andromeda/utils/normalisation/char_token.h>
+//#include <andromeda/utils/normalisation/char_normalisation.h>
+//#include <andromeda/utils/normalisation/text_normalisation.h>
 
 #include <andromeda/utils/normalisation/text_tokenizer.h>
 

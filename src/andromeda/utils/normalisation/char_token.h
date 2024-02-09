@@ -1,5 +1,6 @@
 //-*-C++-*-
 
+/*
 #ifndef ANDROMEDA_UTILS_CHAR_TOKEN_H_
 #define ANDROMEDA_UTILS_CHAR_TOKEN_H_
 
@@ -49,3 +50,4 @@ namespace andromeda
 }
 
 #endif
+*/

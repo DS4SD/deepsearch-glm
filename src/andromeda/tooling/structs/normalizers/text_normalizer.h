@@ -1,6 +1,5 @@
 //-*-C++-*-
 
-/*
 #ifndef ANDROMEDA_UTILS_TEXT_NORMALISER_H_
 #define ANDROMEDA_UTILS_TEXT_NORMALISER_H_
 
@@ -218,4 +217,3 @@ namespace andromeda
 }
 
 #endif
-*/
