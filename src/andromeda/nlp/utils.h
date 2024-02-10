@@ -86,6 +86,14 @@ namespace andromeda
     
     switch(name)
       {
+	// TOK
+      case SPM:
+	{
+	  typedef nlp_model<TOK, SPM> model_type;
+	  model = std::make_shared<model_type>();	  	  
+	}
+	break;
+	
 	// POS
       case LAPOS:
 	{

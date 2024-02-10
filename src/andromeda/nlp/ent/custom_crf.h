@@ -27,8 +27,6 @@ namespace andromeda
     virtual model_name get_name() { return CUSTOM_CRF; }
 
     virtual bool apply(subject<TEXT>& subj);
-    //virtual bool apply(subject<TABLE>& subj) { return false; }
-    //virtual bool apply(subject<DOCUMENT>& subj);
 
   private:
 
@@ -37,9 +35,6 @@ namespace andromeda
     void run_model(subject<TEXT>& subj);
 
     void post_process(subject<TEXT>& subj);
-
-    //std::string normalise_name(std::string orig);
-    //void normalise_subject(subject<TEXT>& subj);
 
   private:
 

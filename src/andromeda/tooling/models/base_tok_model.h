@@ -105,8 +105,9 @@ namespace andromeda
   {
     std::vector<int> result={};
 
-    if(model.use_count())
+    if(model.use_count()==0)
       {
+	LOG_S(WARNING) << "no model is loaded in base_tok_model";
         return result;
       }
 
@@ -122,8 +123,9 @@ namespace andromeda
   {
     std::string result="";
 
-    if(model.use_count())
+    if(model.use_count()==0)
       {
+	LOG_S(WARNING) << "no model is loaded in base_tok_model";
         return result;
       }
 

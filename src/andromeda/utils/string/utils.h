@@ -120,7 +120,8 @@ namespace andromeda
       return ss.str();
     }
 
-    std::string to_string(std::vector<std::string> coll, char sep=';')
+    template<typename value_type>
+    std::string to_string(std::vector<value_type> coll, char sep=';')
     {
       std::stringstream ss;
       ss << "";

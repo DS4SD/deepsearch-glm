@@ -1,5 +1,6 @@
 //-*-C++-*-
 
+#include <andromeda/nlp/tok.h> // tokenizer
 #include <andromeda/nlp/pos.h> // part-of-speech
 #include <andromeda/nlp/cls.h> // classification
 #include <andromeda/nlp/ent.h> // entity
