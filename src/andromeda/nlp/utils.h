@@ -32,6 +32,13 @@ namespace andromeda
     
     switch(name)
       {
+      case SPM:
+	{
+	  typedef nlp_model<TOK, SPM> model_type;
+	  model = std::make_shared<model_type>();
+	}
+	break;
+	
       case SEMANTIC:
 	{
 	  typedef nlp_model<CLS, SEMANTIC> model_type;

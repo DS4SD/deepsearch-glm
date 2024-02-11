@@ -4,6 +4,7 @@
 #define ANDROMEDA_MODELS_BASE_TOK_MODEL_H_
 
 #include <sentencepiece_processor.h>
+#include <sentencepiece_trainer.h>
 
 namespace andromeda
 {
@@ -110,13 +111,71 @@ namespace andromeda
 
   nlohmann::json base_tok_model::create_train_config()
   {
-    nlohmann::json config;
+    nlohmann::json config = nlohmann::json::object({});
+    {
+      config["min-log-level"] = 2;
+      
+      config["model-name"] = "<name>";
+      config["model-type"] = "<dsefault:unigram, bpe, word or char>";
+
+      config["vocab-size"] = "<int:32000>";
+      config["input-file"] = "<text.txt>";
+
+      config["character-coverage"] = 0.9995;
+      config["number-of-threads"] = 1;
+
+      config["max-sentencepiece-length"] = 16;
+      config["max-sentence-length"] = 4096;
+
+      config["split-by-number"] = true;
+      config["split-digits"] = true;
+
+      config["control-symbols"] = nlohmann::json::array({});
+      config["user-symbols"] = nlohmann::json::array({});
+    }
+    
     return config;
   }
 
   bool base_tok_model::train(nlohmann::json config)
   {
-    return false;
+    std::string model_name = config["model-name"].get<std::string>();
+    std::size_t vocab_size = config["vocab-size"].get<std::size_t>();
+    std::string input_file = config["input-file"].get<std::string>();
+
+    std::stringstream ss;
+    ss << "--model_prefix=" << model_name
+       << "--vocab_size="   << vocab_size
+       << "--input="        << input_file;
+
+    if(config.count("min-log-level"))
+      {
+	ss << "--minloglevel=" << config.value("min-log-level", 2);
+      }
+
+    /*
+       << "--character_coverage" << char_cover
+       << "--num_threads"
+
+      
+       << "--model_type"
+       << "--max_sentencepiece_length"
+       << "--max_sentence_length"
+      
+       << "--split_by_number"
+       << "--split_digits"
+       << "--control_symbols"
+       << "--user_defined_symbols"
+    */
+
+    {
+      std::string cmd = ss.str();
+      LOG_S(INFO) << "start training with cmd = " << cmd;
+
+      sentencepiece::SentencePieceTrainer::Train(cmd);
+    }
+    
+    return true;
   }
   
   std::vector<int> base_tok_model::encode(const std::string& text)

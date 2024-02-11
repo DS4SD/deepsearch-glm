@@ -40,3 +40,7 @@ ExternalProject_Add(extlib_sentencepiece
 add_library(sentencepiece STATIC IMPORTED)
 set_target_properties(sentencepiece PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libsentencepiece.a)
 add_dependencies(sentencepiece extlib_sentencepiece)
+
+add_library(sentencepiece_train STATIC IMPORTED)
+set_target_properties(sentencepiece_train PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libsentencepiece_train.a)
+add_dependencies(sentencepiece_train extlib_sentencepiece)
