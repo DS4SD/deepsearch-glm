@@ -42,10 +42,28 @@ namespace andromeda
 
   protected:
 
+    /*   CONTROL   */
+
+    // returns the size of vocabs.
+    int get_num_tokens() { assert(model.use_count()>0); return model->GetPieceSize(); }  
+
+    // returns the vocab id of "foo"
+    int to_ind(std::string tok) { return model->PieceToId(tok); } 
+
+    // returns the string representation of id 10.
+    std::string to_token(int ind) { return model->IdToPiece(ind);}
+
+    // returns true if the given id is an unknown token. e.g., <unk>
+    bool is_unknown(int ind) { return model->IsUnknown(ind); }
+
+    // returns true if the given id is a control token. e.g., <s>, </s>
+    bool is_control(int ind) { return model->IsControl(ind); }
+    
     /*   PREDICT   */
 
     std::vector<int> encode(const std::string& text);
     std::string decode(const std::vector<int>& inds);
+    //std::string decode(int ind);
 
   private:
 
@@ -134,6 +152,24 @@ namespace andromeda
     return result;
   }
 
+  /*
+  std::string base_tok_model::decode(int ind)
+  {
+    std::string result="";
+
+    if(model.use_count()==0)
+      {
+	LOG_S(WARNING) << "no model is loaded in base_tok_model";
+        return result;
+      }
+
+    std::vector<int> inds = {ind};
+    model->Decode(inds, &result);
+
+    return result;
+  }
+  */
+  
 }
 
 #endif

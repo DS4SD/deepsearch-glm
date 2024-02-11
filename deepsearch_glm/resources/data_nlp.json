@@ -8,7 +8,10 @@
 
 	"crf":
 	{
-	    "materials": ["nlp.crf.materials.jsonl", "data_nlp/crf.materials.jsonl"]
+	    "materials": [
+		"nlp.crf.materials.jsonl",
+		"data_nlp/crf.materials.jsonl"
+	    ]
 	}
     },
 
