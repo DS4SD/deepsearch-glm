@@ -54,7 +54,7 @@ def get_reduced_instances(instances):
 
 
 def test_01_load_nlp_models():
-    models = load_pretrained_nlp_models()
+    models = load_pretrained_nlp_models(force=True, verbose=True)
     # print(f"models: {models}")
 
     assert "language" in models

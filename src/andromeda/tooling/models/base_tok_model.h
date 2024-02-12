@@ -110,29 +110,38 @@ namespace andromeda
 
   nlohmann::json base_tok_model::create_train_config()
   {
-    nlohmann::json config = nlohmann::json::object({});
+    nlohmann::json config;
+
     {
-      config["min-log-level"] = 2;
-
-      config["model-name"] = "<name>";
-      config["model-type"] = "<default:unigram, bpe, word or char>";
-
-      config["vocab-size"] = "<int:32000>";
-      config["input-file"] = "<text.txt>";
-
-      config["character-coverage"] = 0.9995;
-      config["number-of-threads"] = 1;
-
-      config["max-sentencepiece-length"] = 16;
-      config["max-sentence-length"] = 4096;
-
-      config["split-by-number"] = true;
-      config["split-digits"] = true;
-
-      config["control-symbols"] = nlohmann::json::array({});
-      config["user-symbols"] = nlohmann::json::array({});
+      config["mode"] = "train";
+      config["model"] = get_key();
+      config["verbose"] = false;
     }
+    
+    nlohmann::json args = nlohmann::json::object({});
+    {
+      args["min-log-level"] = 2;
 
+      args["model-name"] = "<name>";
+      args["model-type"] = "<default:unigram, bpe, word or char>";
+
+      args["vocab-size"] = "<int:32000>";
+      args["input-file"] = "<text.txt>";
+
+      args["character-coverage"] = 0.9995;
+      args["number-of-threads"] = 1;
+
+      args["max-sentencepiece-length"] = 16;
+      args["max-sentence-length"] = 4096;
+
+      args["split-by-number"] = true;
+      args["split-digits"] = true;
+
+      args["control-symbols"] = nlohmann::json::array({});
+      args["user-symbols"] = nlohmann::json::array({});
+    }
+    config["args"] = args;
+        
     return config;
   }
 
@@ -142,60 +151,62 @@ namespace andromeda
    */
   bool base_tok_model::train(nlohmann::json config)
   {
-    std::string model_name = config["model-name"].get<std::string>();
-    std::size_t vocab_size = config["vocab-size"].get<std::size_t>();
-    std::string input_file = config["input-file"].get<std::string>();
+    auto args = config["args"];
+    
+    std::string model_name = args["model-name"].get<std::string>();
+    std::size_t vocab_size = args["vocab-size"].get<std::size_t>();
+    std::string input_file = args["input-file"].get<std::string>();
 
     std::stringstream ss;
     ss << "--model_prefix=" << model_name
        << "--vocab_size="   << vocab_size
        << "--input="        << input_file;
 
-    if(config.count("model-type"))
+    if(args.count("model-type"))
       {
-        ss << "--model_type=" << config.value("model-type", "unigram");
+        ss << "--model_type=" << args.value("model-type", "unigram");
       }
 
-    if(config.count("min-log-level"))
+    if(args.count("min-log-level"))
       {
-        ss << "--minloglevel=" << config.value("min-log-level", 2);
+        ss << "--minloglevel=" << args.value("min-log-level", 2);
       }
 
-    if(config.count("character-coverage"))
+    if(args.count("character-coverage"))
       {
-        ss << "--character_coverage=" << config.value("character-coverage", 0.9995);
+        ss << "--character_coverage=" << args.value("character-coverage", 0.9995);
       }
 
 
-    if(config.count("number-of-threads"))
+    if(args.count("number-of-threads"))
       {
-        ss << "--num_threads=" << config.value("number-of-threads", 1);
+        ss << "--num_threads=" << args.value("number-of-threads", 1);
       }
 
-    if(config.count("max-sentencepiece-length"))
+    if(args.count("max-sentencepiece-length"))
       {
-        ss << "--max_sentencepiece_length=" << config.value("max-sentencepiece-length", 16);
+        ss << "--max_sentencepiece_length=" << args.value("max-sentencepiece-length", 16);
       }
 
-    if(config.count("max-sentence-length"))
+    if(args.count("max-sentence-length"))
       {
-        ss << "--max_sentence_length=" << config.value("max-sentence-length", 4096);
+        ss << "--max_sentence_length=" << args.value("max-sentence-length", 4096);
       }
 
-    if(config.count("split-by-number"))
+    if(args.count("split-by-number"))
       {
-        ss << "--split_by_number" << config.value("split-by-number", false);
+        ss << "--split_by_number" << args.value("split-by-number", false);
       }
 
-    if(config.count("split-digits"))
+    if(args.count("split-digits"))
       {
-        ss << "--split_digits" << config.value("split-digits", true);
+        ss << "--split_digits" << args.value("split-digits", true);
       }
 
-    if(config.count("control-symbols"))
+    if(args.count("control-symbols"))
       {
 	std::vector<std::string> syms = {};
-	syms = config.value("control-symbols", syms);
+	syms = args.value("control-symbols", syms);
 
 	if(syms.size()>0)
 	  {
@@ -213,10 +224,10 @@ namespace andromeda
 	  }
       }
     
-    if(config.count("user-symbols"))
+    if(args.count("user-symbols"))
       {
 	std::vector<std::string> syms = {};
-	syms = config.value("user-symbols", syms);
+	syms = args.value("user-symbols", syms);
 
 	if(syms.size()>0)
 	  {
