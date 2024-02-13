@@ -8,9 +8,12 @@
 
 	"crf":
 	{
+	    "wikipedia": [
+		"wiki.train.raw", "data_nlp/wiki.train.raw"
+	    ]
+	    
 	    "materials": [
-		"nlp.crf.materials.jsonl",
-		"data_nlp/crf.materials.jsonl"
+		"nlp.crf.materials.jsonl", "data_nlp/crf.materials.jsonl"
 	    ]
 	}
     },

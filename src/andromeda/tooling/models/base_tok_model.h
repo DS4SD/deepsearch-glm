@@ -151,6 +151,8 @@ namespace andromeda
    */
   bool base_tok_model::train(nlohmann::json config)
   {
+    LOG_S(INFO) << "config: " << config.dump(2);
+    
     auto args = config["args"];
     
     std::string model_name = args["model-name"].get<std::string>();
@@ -158,49 +160,49 @@ namespace andromeda
     std::string input_file = args["input-file"].get<std::string>();
 
     std::stringstream ss;
-    ss << "--model_prefix=" << model_name
-       << "--vocab_size="   << vocab_size
-       << "--input="        << input_file;
+    ss << " --model_prefix=" << model_name
+       << " --vocab_size="   << vocab_size
+       << " --input="        << input_file;
 
     if(args.count("model-type"))
       {
-        ss << "--model_type=" << args.value("model-type", "unigram");
+        ss << " --model_type=" << args.value("model-type", "unigram");
       }
 
     if(args.count("min-log-level"))
       {
-        ss << "--minloglevel=" << args.value("min-log-level", 2);
+        ss << " --minloglevel=" << args.value("min-log-level", 2);
       }
 
     if(args.count("character-coverage"))
       {
-        ss << "--character_coverage=" << args.value("character-coverage", 0.9995);
+        ss << " --character_coverage=" << args.value("character-coverage", 0.9995);
       }
 
 
     if(args.count("number-of-threads"))
       {
-        ss << "--num_threads=" << args.value("number-of-threads", 1);
+        ss << " --num_threads=" << args.value("number-of-threads", 1);
       }
 
     if(args.count("max-sentencepiece-length"))
       {
-        ss << "--max_sentencepiece_length=" << args.value("max-sentencepiece-length", 16);
+        ss << " --max_sentencepiece_length=" << args.value("max-sentencepiece-length", 16);
       }
 
     if(args.count("max-sentence-length"))
       {
-        ss << "--max_sentence_length=" << args.value("max-sentence-length", 4096);
+        ss << " --max_sentence_length=" << args.value("max-sentence-length", 4096);
       }
 
     if(args.count("split-by-number"))
       {
-        ss << "--split_by_number" << args.value("split-by-number", false);
+        ss << " --split_by_number=" << args.value("split-by-number", false);
       }
 
     if(args.count("split-digits"))
       {
-        ss << "--split_digits" << args.value("split-digits", true);
+        ss << " --split_digits=" << args.value("split-digits", true);
       }
 
     if(args.count("control-symbols"))
@@ -210,7 +212,7 @@ namespace andromeda
 
 	if(syms.size()>0)
 	  {
-	    ss << "--control_symbols=";
+	    ss << " --control_symbols=";
 
 	    for(int l=0; l<syms.size(); l++)
 	      {
@@ -231,7 +233,7 @@ namespace andromeda
 
 	if(syms.size()>0)
 	  {
-	    ss << "--user_defined_symbols=";
+	    ss << " --user_defined_symbols=";
 	    
 	    for(int l=0; l<syms.size(); l++)
 	      {

@@ -9,6 +9,7 @@ import os
 from tabulate import tabulate
 
 from deepsearch_glm.nlp_train_crf import create_crf_model
+from deepsearch_glm.nlp_train_tok import create_tok_model
 from deepsearch_glm.nlp_train_semantic import train_semantic
 from deepsearch_glm.nlp_utils import (
     extract_references_from_doc,
@@ -68,7 +69,7 @@ def test_02A():
     source = "./tests/data/texts/test_02A_text_01.jsonl"
     target = source
 
-    model = init_nlp_model("sentence;language;term")
+    model = init_nlp_model("spm;sentence;language;term")
 
     sres = model.apply_on_text("FeSe is a material.")
     sres = round_floats(sres)
@@ -585,7 +586,35 @@ def test_06C():
 
     assert True
 
+# download CRF data
+def test_07A():
+    verbose = True
 
+    done, data = load_pretrained_nlp_data(key="tok", force=False, verbose=verbose)
+
+    if verbose:
+        print(json.dumps(data, indent=2))
+
+    assert done    
+
+# train CRF
+def test_07B():
+    resources_dir = get_resources_dir()
+
+    txt_file = f"{resources_dir}/data_nlp/wiki.train.raw"
+    assert os.path.exists(txt_file)
+
+    model_type="unigram"
+    model_name="test-tokenizer-model"
+    
+    print(f"training on {txt_file}")
+    model_file = create_tok_model(
+        model_type=model_type, model_name=model_name, ifile=txt_file
+    )
+
+    assert os.path.exists(model_name+".model")
+    assert os.path.exists(model_name+".vocab")
+    
 """
 def test_05A_train_semantic():
 
