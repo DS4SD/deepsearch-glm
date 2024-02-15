@@ -1,20 +1,33 @@
 {
     "object-store": "https://ds4sd-public-artifacts.s3.eu-de.cloud-object-storage.appdomain.cloud",
 
-    "nlp":
+    "data":
+    {
+	"bucket": "ds4sd-public-artifacts",
+	"prefix": "deepsearch_glm/v1/data",
+
+	"text": {
+	    "arxiv-abstracts": ["text/arxiv-abstracts.jsonl" ,"data/text/arxiv-abstracts.jsonl"],
+	    "arxiv-abstracts-2020": ["text/arxiv-abstracts-2020.jsonl", "data/text/arxiv-abstracts-2020.jsonl"],
+	    "arxiv-abstracts-2020-txt": ["text/arxiv-abstracts-2020.txt", "data/text/arxiv-abstracts-2020.txt"],
+	    "arxiv-abstracts-2020-Jan": ["text/arxiv-abstracts-2020-Jan.jsonl", "data/text/arxiv-abstracts-2020-Jan.jsonl"],
+	    "arxiv-abstracts-2020-Jan-txt": ["text/arxiv-abstracts-2020-Jan.txt", "data/text/arxiv-abstracts-2020-Jan.txt"]
+	},
+
+	"crf":
+	{
+	    "materials": ["nlp/nlp.crf.materials.jsonl", "data/nlp/crf.materials.jsonl"]
+	}
+    },
+    
+    "nlp-":
     {
 	"bucket": "ds4sd-public-artifacts",
 	"prefix": "deepsearch_glm/v1/data/nlp",
 
 	"crf":
 	{
-	    "wikipedia": [
-		"wiki.train.raw", "data_nlp/wiki.train.raw"
-	    ]
-	    
-	    "materials": [
-		"nlp.crf.materials.jsonl", "data_nlp/crf.materials.jsonl"
-	    ]
+	    "materials": ["nlp.crf.materials.jsonl", "data/nlp/crf.materials.jsonl"]
 	}
     },
 

@@ -6,8 +6,6 @@ import json
 import os
 import subprocess
 
-# from deepsearch_glm.andromeda_nlp import nlp_model
-
 
 def get_resources_dir():
     """Function to obtain the resources-directory"""
@@ -23,25 +21,33 @@ def get_resources_dir():
     return resources_dir
 
 
-def load_pretrained_nlp_data(key: str, force: bool = False, verbose: bool = False):
+def list_training_data(key: str, force: bool = False, verbose: bool = False):
+    """Function to list the training data"""
+
+    return []
+    
+def load_training_data(data_type:str, data_name: str, force: bool = False, verbose: bool = False):
     """Function to load data to train NLP models"""
 
+    assert data_type in ["text", "crf"]
+
     resources_dir = get_resources_dir()
+    with open(f"{resources_dir}/data.json", "r", encoding="utf-8") as fr:
+        training_data = json.load(fr)
 
-    with open(f"{resources_dir}/data_nlp.json", "r", encoding="utf-8") as fr:
-        nlp_data = json.load(fr)
-
-    cos_url = nlp_data["object-store"]
-    cos_prfx = nlp_data["nlp"]["prefix"]
+    cos_url = training_data["object-store"]
+    cos_prfx = training_data["data"]["prefix"]
     cos_path = os.path.join(cos_url, cos_prfx)
-
+    
     cmds = {}
-    for name, files in nlp_data["nlp"][key].items():
-        source = os.path.join(cos_path, files[0])
-        target = os.path.join(resources_dir, files[1])
+    for name, files in training_data["data"][data_type].items():
 
-        cmd = ["curl", source, "-o", target, "-s"]
-        cmds[name] = cmd
+        if name == data_name:
+            source = os.path.join(cos_path, files[0])
+            target = os.path.join(resources_dir, files[1])
+            
+            cmd = ["curl", source, "-o", target, "-s"]
+            cmds[name] = cmd
 
     done = True
     data = {}
@@ -68,7 +74,7 @@ def load_pretrained_nlp_data(key: str, force: bool = False, verbose: bool = Fals
         else:
             print(f" -> missing {name}")
 
-    return done, data
+    return done, data        
 
 
 def load_pretrained_nlp_models(force: bool = False, verbose: bool = False):

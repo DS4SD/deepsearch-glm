@@ -151,7 +151,7 @@ namespace andromeda
    */
   bool base_tok_model::train(nlohmann::json config)
   {
-    LOG_S(INFO) << "config: " << config.dump(2);
+    //LOG_S(INFO) << "config: " << config.dump(2);
     
     auto args = config["args"];
     
@@ -249,7 +249,7 @@ namespace andromeda
 
     {
       std::string cmd = ss.str();
-      LOG_S(INFO) << "start training with cmd = " << cmd;
+      //LOG_S(INFO) << "start training with cmd = " << cmd;
 
       sentencepiece::SentencePieceTrainer::Train(cmd);
     }
