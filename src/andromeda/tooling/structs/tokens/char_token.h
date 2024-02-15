@@ -5,21 +5,13 @@
 
 namespace andromeda
 {
-  struct char_token: public base_types
+  class char_token: public base_types
   {
   public:
 
     const static inline std::vector<std::string> HEADERS = {"char_i", "char_j",
 							    "len", "char index",
 							    "unicode (dec)", "orig", "norm"};
-
-    /*
-    typedef uint64_t hash_type;
-    typedef uint32_t char_ind_type;
-
-    typedef uint64_t                index_type;
-    typedef std::array<uint64_t, 2> range_type;
-    */
     
     const static inline index_type DEFAULT_INDEX=-1;
 

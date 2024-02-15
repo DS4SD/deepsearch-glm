@@ -9,6 +9,7 @@ import os
 from tabulate import tabulate
 
 from deepsearch_glm.nlp_train_crf import create_crf_model
+from deepsearch_glm.nlp_train_tok import create_tok_model
 from deepsearch_glm.nlp_train_semantic import train_semantic
 from deepsearch_glm.nlp_utils import (
     extract_references_from_doc,
@@ -18,7 +19,9 @@ from deepsearch_glm.nlp_utils import (
 from deepsearch_glm.utils.ds_utils import to_legacy_document_format
 from deepsearch_glm.utils.load_pretrained_models import (
     get_resources_dir,
-    load_pretrained_nlp_data,
+    list_training_data,
+    load_training_data,
+    #load_pretrained_nlp_data,
     load_pretrained_nlp_models,
 )
 
@@ -54,7 +57,7 @@ def get_reduced_instances(instances):
 
 
 def test_01_load_nlp_models():
-    models = load_pretrained_nlp_models()
+    models = load_pretrained_nlp_models(force=True, verbose=True)
     # print(f"models: {models}")
 
     assert "language" in models
@@ -68,7 +71,7 @@ def test_02A():
     source = "./tests/data/texts/test_02A_text_01.jsonl"
     target = source
 
-    model = init_nlp_model("sentence;language;term")
+    model = init_nlp_model("spm;sentence;language;term")
 
     sres = model.apply_on_text("FeSe is a material.")
     sres = round_floats(sres)
@@ -503,7 +506,9 @@ def test_05A():
 def test_06A():
     verbose = False
 
-    done, data = load_pretrained_nlp_data(key="crf", force=False, verbose=verbose)
+    done, data = load_training_data(data_type="crf", data_name="materials",
+                                    force=False, verbose=verbose)
+    #done, data = load_pretrained_nlp_data(key="crf", force=False, verbose=verbose)
 
     if verbose:
         print(json.dumps(data, indent=2))
@@ -515,9 +520,9 @@ def test_06A():
 def test_06B():
     resources_dir = get_resources_dir()
 
-    # print(f"{resources_dir}/data_nlp/crf.*.jsonl")
-    crf_files = glob.glob(f"{resources_dir}/data_nlp/crf.*.jsonl")
-
+    crf_files = glob.glob(f"{resources_dir}/data/nlp/crf.*.jsonl")
+    assert len(crf_files)>0
+    
     # print(crf_files)
     for crf_file in crf_files:
         if crf_file.endswith(".annot.jsonl"):
@@ -585,7 +590,36 @@ def test_06C():
 
     assert True
 
+# download text data for tokenizers
+def test_07A():
+    verbose = True
 
+    done, data = load_training_data(data_type="text", data_name="arxiv-abstracts-2020-Jan-txt",
+                                    force=False, verbose=verbose)
+
+    if verbose:
+        print(json.dumps(data, indent=2))
+
+    assert done    
+
+# train tokenizer
+def test_07B():
+    resources_dir = get_resources_dir()
+
+    txt_file = f"{resources_dir}/data/text/arxiv-abstracts-2020-Jan.txt"
+    assert os.path.exists(txt_file)
+
+    model_type="unigram"
+    model_name="test-tokenizer-model"
+    
+    print(f"training on {txt_file}")
+    model_file = create_tok_model(
+        model_type=model_type, model_name=model_name, ifile=txt_file
+    )
+
+    assert os.path.exists(model_name+".model")
+    assert os.path.exists(model_name+".vocab")
+    
 """
 def test_05A_train_semantic():
 

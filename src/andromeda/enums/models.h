@@ -8,6 +8,7 @@ namespace andromeda
 
   enum model_type
     {
+     TOK=0, // tokenizer for strings
      POS=1, // part-of-speach (POS) tagging of text, table
      CLS=2, // classification of text, table
      ENT=3, // entity (with normalisation) in text, table
@@ -20,6 +21,9 @@ namespace andromeda
   // ordering is consistent
   enum model_name
     {
+     // TOK
+     SPM=64,
+     
      // POS
      LAPOS=128,
 
@@ -59,6 +63,9 @@ namespace andromeda
 
   const static std::vector<model_name> MODEL_NAMES =
     {
+     // TOK
+     SPM,
+     
      // POS
      LAPOS,
 
@@ -100,6 +107,9 @@ namespace andromeda
   {
     switch(name)
       {
+	// TOK
+      case SPM: return "SPM";
+	
         // POS
       case LAPOS: return "LAPOS";
 

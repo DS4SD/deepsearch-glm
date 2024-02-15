@@ -43,7 +43,7 @@ examples of execution:
         "--mode",
         required=True,
         default="all",
-        help="mode for training semantic model",
+        help="mode for training CRF model",
         choices=["prepare", "train", "evaluate", "all"],
     )
 

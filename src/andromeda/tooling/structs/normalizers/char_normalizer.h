@@ -1,5 +1,5 @@
 //-*-C++-*-
-/*
+
 #ifndef ANDROMEDA_UTILS_CHAR_NORMALISER_H_
 #define ANDROMEDA_UTILS_CHAR_NORMALISER_H_
 
@@ -210,6 +210,14 @@ namespace andromeda
 				  orig_ints, orig_str);//,
 				  //label);
 	    }
+	  /*
+	  else if(l==0)
+	    {
+	      tokens.emplace_back(-1, orig_str,
+				  orig_ints, orig_str,
+				  label);	      
+	    }
+	  */
 	  else
 	    {
 	      // we ignore the composed (multiple unicode characters) confusables.
@@ -221,6 +229,15 @@ namespace andromeda
           tokens.at(l).norm_ints = tokens.at(0).norm_ints;
           tokens.at(l).norm_str = tokens.at(0).norm_str;
 
+	  /*
+	  std::stringstream ss;
+	  for(auto _:tokens.at(l).norm_ints)
+	    ss << _ << "-";
+	  
+	  LOG_S(INFO) << "\t" << l << "\t"
+		      << "(" << tokens.at(l).orig_str << " ; " << tokens.at(l).orig_int << ") => "
+		      << "(" << tokens.at(l).norm_str << " ; " << ss.str() << ")";
+	  */
         }
     }
 
@@ -229,4 +246,3 @@ namespace andromeda
 }
 
 #endif
-*/

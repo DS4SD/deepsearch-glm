@@ -24,6 +24,8 @@
 	"bucket": "ds4sd-public-artifacts",
 	"prefix": "deepsearch_glm/v1/glm",
 
-	"trained-models": {}	
+	"trained-models": {
+
+	}	
     }    
 }
