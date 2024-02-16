@@ -91,7 +91,7 @@ namespace andromeda
     auto& wtokens = subj.get_word_tokens();
 
     std::vector<int> tinds={};
-    
+        
     std::string tmp="";
     for(index_type i=0; i<wtokens.size(); i++)
       {
@@ -117,7 +117,7 @@ namespace andromeda
 	
 	auto inds = this->encode(tmp);
 
-	LOG_S(INFO) << tmp << " => " << utils::to_string(inds);
+	//LOG_S(INFO) << tmp << " => " << utils::to_string(inds);
 	
 	// no preceeding space
 	if(i>0 and wtokens.at(i-1).get_rng().at(1)==wtokens.at(i-0).get_rng().at(0)) 
@@ -138,9 +138,17 @@ namespace andromeda
 	      }
 	  }
 	
-	LOG_S(INFO) << tmp << " => " << utils::to_string(inds);
+	//LOG_S(INFO) << tmp << " => " << utils::to_string(inds);
 	
 	wtokens.at(i).set_inds(inds);
+
+	std::vector<std::string> subws={};
+	for(auto ind:inds)
+	  {
+	    subws.push_back(this->to_token(ind));
+	  }
+	
+	wtokens.at(i).set_subws(subws);
 
 	for(auto ind:inds)
 	  {
@@ -148,10 +156,11 @@ namespace andromeda
 	  }
       }
 
-    {
-      LOG_S(INFO) << "original: " << text;
-    }
-    
+    //{
+    //LOG_S(INFO) << "original: " << text;
+    //}
+
+    /*
     {
       for(auto ind:tinds)
 	{
@@ -172,6 +181,7 @@ namespace andromeda
       auto text_ = this->decode(inds);
       LOG_S(INFO) << "spm: " << text_;
     }
+    */
     
     return true;
   }

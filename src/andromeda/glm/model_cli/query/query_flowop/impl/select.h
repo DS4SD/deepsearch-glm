@@ -248,7 +248,7 @@ namespace andromeda
 	      std::vector<hash_type> phashes={};
 	      for(const std::string& token:node)
 		{
-		  base_node bnode(node_names::TOKEN, token);
+		  base_node bnode(node_names::WORD_TOKEN, token);
 		  phashes.push_back(bnode.get_hash());
 		}
 	      

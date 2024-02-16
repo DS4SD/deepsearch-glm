@@ -21,11 +21,12 @@ namespace andromeda
       const static inline std::string DEFAULT_POS=word_token::DEFAULT_POS;
       const static inline std::string UNDEFINED_POS=word_token::UNDEF_POS;
 
-      const static inline flvr_type TOKEN = 0;
-      const static inline flvr_type SYNTX = 1;
+      const static inline flvr_type SUBW_TOKEN = 0;
+      const static inline flvr_type WORD_TOKEN = 1;
+      const static inline flvr_type SYNTX = 2;
 
-      const static inline flvr_type LABEL = 2;
-      //const static inline flvr_type SUBLABEL = 3;
+      const static inline flvr_type LABEL = 4;
+      const static inline flvr_type SUBLABEL = 5;
 
       const static inline flvr_type CONT = 8;  // contraction
       const static inline flvr_type CONN = 9;  // connector (eg `of a`, `with these`, etc)
@@ -78,9 +79,13 @@ namespace andromeda
       
       static inline std::map<flvr_type, std::string> to_name_map =
         {
-	 { TOKEN, "token"},
+	 { SUBW_TOKEN, "subw_token"},
+	 { WORD_TOKEN, "word_token"},
+
 	 { SYNTX, "syntax"},
+
 	 { LABEL, "label"},
+	 { SUBLABEL, "sublabel"},
 	 
          { CONT, "cont"},
 	 { CONN, "conn"},

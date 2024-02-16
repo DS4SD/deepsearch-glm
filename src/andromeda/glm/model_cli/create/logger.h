@@ -111,7 +111,7 @@ namespace andromeda
       auto curr_nodes = nodes.size();
       auto curr_edges = edges.size();
 
-      auto curr_tokens   = nodes.size(node_names::TOKEN);
+      auto curr_tokens   = nodes.size(node_names::WORD_TOKEN);
       auto curr_concepts = nodes.size(node_names::TERM);
       
       double lf_nodes = nodes.load_factor();

@@ -35,7 +35,9 @@ namespace andromeda
       {
 	std::string word = token.get_word();
 	std::string orig = token.get_orig(text);
-	std::vector<int> inds = token.get_inds();
+	
+	auto inds = token.get_inds();
+	auto subws = token.get_subws();
 	
 	word = utils::to_fixed_size(word, 48);
 	orig = utils::to_fixed_size(orig, 48);
@@ -47,7 +49,9 @@ namespace andromeda
 					 token.get_pos(),
 					 utils::to_string(token.get_tags()),
 					 (token.is_known()? "true":"false"),
-					 word, orig, utils::to_string(inds)};
+					 word, orig,
+					 utils::to_string(inds),
+					 utils::to_string(subws)};
 	
 	assert(row.size()==headers.size());
 	
@@ -74,7 +78,8 @@ namespace andromeda
 	std::string word = token.get_word();
 	std::string orig = token.get_orig(text);
 
-	std::vector<int> inds = token.get_inds();
+	auto inds = token.get_inds();
+	auto subws = token.get_subws();
 	
 	nlohmann::json row = nlohmann::json::array({});
 	{
@@ -94,6 +99,7 @@ namespace andromeda
 	  row.push_back(orig);
 
 	  row.push_back(inds);
+	  row.push_back(subws);
 	}
 
 	assert(row.size()==headers.size());
@@ -125,12 +131,14 @@ namespace andromeda
     std::size_t orig_ind = utils::index_of("original", headers);
 
     std::size_t inds_ind = utils::index_of("inds", headers);
+    std::size_t subws_ind = utils::index_of("subws", headers);
     
     const std::size_t mONE=-1;
     
     if(char_i_ind==mONE or char_j_ind==mONE or
        pos_ind==mONE or tag_ind==mONE or
-       text_ind==mONE or orig_ind==mONE or inds_ind==mONE)
+       text_ind==mONE or orig_ind==mONE or
+       inds_ind==mONE or subws_ind==mONE)
       {
 	LOG_S(ERROR) << "can not find the correct column index for word-token";
 	return false;
@@ -144,6 +152,7 @@ namespace andromeda
 	std::string text, orig, pos, tag;
 
 	std::vector<int> inds={};
+	std::vector<std::string> subws={};
 	
 	hash = row[hash_ind].get<hash_type>();
 	
@@ -161,8 +170,9 @@ namespace andromeda
 	utils::from_string(tag, tags);
 
 	inds = row[inds_ind].get<std::vector<int> >();
+	subws = row[subws_ind].get<std::vector<std::string> >();
 	
-	word_token wt(hash, char_i, char_j, pos, tags, known, text, inds);
+	word_token wt(hash, char_i, char_j, pos, tags, known, text, inds, subws);
 	tokens.push_back(wt);
       }
 

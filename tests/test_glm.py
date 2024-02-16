@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-GENERATE = False
+GENERATE = True
 
 import glob
 import json
@@ -37,8 +37,8 @@ def test_02A_create_glm_from_doc():
         rdir = os.path.join(sdir, "glm_ref")
         odir = os.path.join(sdir, "glm_out")
 
-    model_names = "semantic;name;conn;verb;term;abbreviation"
-
+    model_names = "spm;semantic;name;conn;verb;term;abbreviation"
+    
     json_files = glob.glob(os.path.join(sdir, "docs/*.json"))
 
     glm = create_glm_from_docs(odir, json_files, model_names)
