@@ -41,6 +41,9 @@ def test_02A_create_glm_from_doc():
     
     json_files = glob.glob(os.path.join(sdir, "docs/*.json"))
 
+    config = create_glm_config_from_docs(odir, json_files, model_names)
+    print(json.dumps(config, indent=2))
+    
     glm = create_glm_from_docs(odir, json_files, model_names)
 
     with open(os.path.join(rdir, "topology.json")) as fr:
