@@ -209,6 +209,8 @@ namespace andromeda
   
   bool nlp_model<POS, LAPOS>::apply(subject<TABLE>& subj)
   {
+    //LOG_S(INFO) << "nlp_model<POS, LAPOS>::apply(subject<TABLE>& subj)";
+    
     std::string lang="null";
     if(not check_dependency(table_dependencies, subj, lang))
       {
@@ -222,7 +224,7 @@ namespace andromeda
 	for(std::size_t j=0; j<subj.num_cols(); j++)
 	  {	    
 	    auto& word_tokens = subj(i,j).get_word_tokens();
-	  	    
+	    
 	    // initialise
 	    for(auto& word_token:word_tokens)
 	      {
@@ -245,6 +247,8 @@ namespace andromeda
 	    pos_model->predict(pos_tokens);
 	    
 	    post_process(word_tokens, pos_tokens, ptid_to_wtid);
+
+	    //LOG_S(INFO) << andromeda::tabulate(word_tokens, subj(i,j).get_text());
 	  }
       }
     

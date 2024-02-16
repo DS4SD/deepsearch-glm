@@ -5,6 +5,7 @@
 
 namespace andromeda
 {
+  
   namespace utils
   {
     template<typename value_type>
@@ -146,6 +147,7 @@ namespace andromeda
 
       return ss.str();
     }
+
   }
 
 }

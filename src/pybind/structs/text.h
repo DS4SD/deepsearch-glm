@@ -1,7 +1,7 @@
 //-*-C++-*-
 
-#ifndef PYBIND_ANDROMEDA_NLP_STRUCTS_TEXT_H
-#define PYBIND_ANDROMEDA_NLP_STRUCTS_TEXT_H
+#ifndef PYBIND_ANDROMEDA_DS_STRUCTS_TEXT_H
+#define PYBIND_ANDROMEDA_DS_STRUCTS_TEXT_H
 
 namespace andromeda_py
 {
@@ -9,14 +9,14 @@ namespace andromeda_py
    *
    *
    */
-  class nlp_text
+  class ds_text
   {
     typedef andromeda::subject<andromeda::TEXT> subject_type;
 
   public:
 
-    nlp_text();
-    ~nlp_text();
+    ds_text();
+    ~ds_text();
 
     nlohmann::json to_json(std::set<std::string> filters);
     bool from_json(nlohmann::json& data);
@@ -33,14 +33,14 @@ namespace andromeda_py
     std::shared_ptr<andromeda::subject<andromeda::TEXT> > subj_ptr;
   };
 
-  nlp_text::nlp_text():
+  ds_text::ds_text():
     subj_ptr(std::make_shared<subject_type>())
   {}
 
-  nlp_text::~nlp_text()
+  ds_text::~ds_text()
   {}
 
-  nlohmann::json nlp_text::to_json(std::set<std::string> filters)
+  nlohmann::json ds_text::to_json(std::set<std::string> filters)
   {
     if(subj_ptr==NULL)
       {
@@ -50,7 +50,7 @@ namespace andromeda_py
     return subj_ptr->to_json(filters);
   }
 
-  bool nlp_text::from_json(nlohmann::json& data)
+  bool ds_text::from_json(nlohmann::json& data)
   {
     if(subj_ptr==NULL)
       {
@@ -66,7 +66,7 @@ namespace andromeda_py
     return true;
   }
 
-  void nlp_text::clear()
+  void ds_text::clear()
   {
     if(subj_ptr!=NULL)
       {
@@ -74,7 +74,7 @@ namespace andromeda_py
       }
   }
   
-  bool nlp_text::set_text(const std::string& ctext)
+  bool ds_text::set_text(const std::string& ctext)
   {
     if(subj_ptr!=NULL)
       {
@@ -84,7 +84,7 @@ namespace andromeda_py
     return false;
   }
 
-  bool nlp_text::set_type(const std::string& ctype)
+  bool ds_text::set_type(const std::string& ctype)
   {
     return subj_ptr->set_type(ctype);
   }

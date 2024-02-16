@@ -91,6 +91,7 @@ include(cmake/extlib_fasttext.cmake)
 #include(cmake/extlib_utf8.svn.cmake)
 include(cmake/extlib_utf8.git.cmake)
 include(cmake/extlib_pybind11.cmake)
+include(cmake/extlib_sentencepiece.cmake)
 
 include(cmake/os_opts.cmake)
 

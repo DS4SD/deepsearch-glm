@@ -16,10 +16,12 @@
 #endif
 
 #include <loguru/loguru.cpp>
-
 #include <cxxopts.hpp>
 #include <nlohmann/json.hpp>
 //#include <nlohmann/json-schema.hpp>
 
 #include <utf8/utf8.h>
 #include <fasttext/fasttext.h>
+//#include <sentencepiece.pb.h>
+#include <sentencepiece_processor.h>
+#include <sentencepiece_trainer.h>

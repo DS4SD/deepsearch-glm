@@ -118,9 +118,9 @@ namespace andromeda
   {
     if(not satisfies_dependencies(subj))
       {
-        return false;
+	return false;
       }
-
+    
     for(auto& caption:subj.captions)
       {
         this->apply(*caption);
@@ -128,7 +128,7 @@ namespace andromeda
 
     this->apply_on_table_data(subj);
 
-    return true;
+    return update_applied_models(subj);
   }
   
   bool base_nlp_model::apply(subject<FIGURE>& subj)
@@ -144,16 +144,21 @@ namespace andromeda
       }
 
     this->apply_on_figure_data(subj);
-    
-    return true;
+
+    return update_applied_models(subj);
   }
   
   bool base_nlp_model::apply(subject<DOCUMENT>& subj)
   {
+    //LOG_S(INFO) << "applying " << to_string(get_name());
+    
     if(not satisfies_dependencies(subj))
       {
+	//LOG_S(INFO) << " -> not satisfied ...";
         return false;
       }
+
+    //LOG_S(INFO) << " -> satisfied ...";
     
     for(auto& text_ptr:subj.texts)
       {

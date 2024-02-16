@@ -218,8 +218,6 @@ namespace andromeda
 				       std::vector<range_type >& ranges_02,
 				       std::vector<pcre2_item>& chunks)
   {
-    
-    
     for(pcre2_item& chunk:chunks)
       {
 	std::vector<std::size_t> token_inds = get_indices(chunk.text);	

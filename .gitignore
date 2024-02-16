@@ -1,5 +1,7 @@
 ### Custom ###
 
+*.model
+*.vocab
 *.env
 *DS_Store
 *~
@@ -32,9 +34,6 @@ data/*/*/*.csv
 *.bin
 *.gz
 *.tar
-deepsearch_glm/resources/data_nlp/*.txt
-deepsearch_glm/resources/data_nlp/*.bin
-deepsearch_glm/resources/data_nlp/*.jsonl
 deepsearch_glm/resources/*/*/*.txt
 deepsearch_glm/resources/*/*/*.json
 deepsearch_glm/resources/*/*/*/*.txt

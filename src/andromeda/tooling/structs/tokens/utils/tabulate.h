@@ -25,7 +25,7 @@ namespace andromeda
     return utils::to_string(header, data);
   }
 
-  std::string tabulate(std::vector<word_token>& tokens, std::string& text)
+  std::string tabulate(std::vector<word_token>& tokens, std::string text)
   {
     std::vector<std::string> headers = word_token::HEADERS;
     std::vector<std::vector<std::string>> data={};
@@ -35,7 +35,8 @@ namespace andromeda
       {
 	std::string word = token.get_word();
 	std::string orig = token.get_orig(text);
-
+	std::vector<int> inds = token.get_inds();
+	
 	word = utils::to_fixed_size(word, 48);
 	orig = utils::to_fixed_size(orig, 48);
 	
@@ -46,7 +47,7 @@ namespace andromeda
 					 token.get_pos(),
 					 utils::to_string(token.get_tags()),
 					 (token.is_known()? "true":"false"),
-					 word, orig};
+					 word, orig, utils::to_string(inds)};
 	
 	assert(row.size()==headers.size());
 	
@@ -72,6 +73,8 @@ namespace andromeda
       {
 	std::string word = token.get_word();
 	std::string orig = token.get_orig(text);
+
+	std::vector<int> inds = token.get_inds();
 	
 	nlohmann::json row = nlohmann::json::array({});
 	{
@@ -89,6 +92,8 @@ namespace andromeda
 	  
 	  row.push_back(word);
 	  row.push_back(orig);
+
+	  row.push_back(inds);
 	}
 
 	assert(row.size()==headers.size());
@@ -119,11 +124,13 @@ namespace andromeda
     std::size_t text_ind = utils::index_of("word", headers);
     std::size_t orig_ind = utils::index_of("original", headers);
 
+    std::size_t inds_ind = utils::index_of("inds", headers);
+    
     const std::size_t mONE=-1;
     
     if(char_i_ind==mONE or char_j_ind==mONE or
        pos_ind==mONE or tag_ind==mONE or
-       text_ind==mONE or orig_ind==mONE)
+       text_ind==mONE or orig_ind==mONE or inds_ind==mONE)
       {
 	LOG_S(ERROR) << "can not find the correct column index for word-token";
 	return false;
@@ -136,6 +143,8 @@ namespace andromeda
 	bool known;
 	std::string text, orig, pos, tag;
 
+	std::vector<int> inds={};
+	
 	hash = row[hash_ind].get<hash_type>();
 	
 	char_i = row[char_i_ind].get<index_type>();
@@ -150,8 +159,10 @@ namespace andromeda
        	
 	std::set<std::string> tags={};
 	utils::from_string(tag, tags);
+
+	inds = row[inds_ind].get<std::vector<int> >();
 	
-	word_token wt(hash, char_i, char_j, pos, tags, known, text);
+	word_token wt(hash, char_i, char_j, pos, tags, known, text, inds);
 	tokens.push_back(wt);
       }
 

@@ -187,62 +187,6 @@ namespace andromeda
       prov_vec_type dilated_provs = provs; // deep-copy
       do_horizontal_dilation(provs, dilated_provs, up_map, dn_map);
       
-      /*
-      for(std::size_t i=0; i<dilated_provs.size(); i++)
-	{
-	  auto dilated_prov = dilated_provs.at(i);
-
-	  auto x0 = dilated_prov.x0();
-	  auto y0 = dilated_prov.y0();
-	  
-	  auto x1 = dilated_prov.x1();
-	  auto y1 = dilated_prov.y1();
-
-	  LOG_S(INFO) << "prov " << i << "\t"
-		      << int(x0) << ", " << int(y0) << ", " << int(x1) << ", " << int(y1);
-	  
-	  if(up_map.at(i).size()==1)
-	    {
-	      auto prov_up = provs.at(up_map.at(i).at(0));
-
-	      x0 = std::min(x0, prov_up.x0());
-	      x1 = std::max(x1, prov_up.x1());
-	    }
-
-	  if(dn_map.at(i).size()==1)
-	    {
-	      auto prov_dn = provs.at(dn_map.at(i).at(0));
-
-	      x0 = std::min(x0, prov_dn.x0());
-	      x1 = std::max(x1, prov_dn.x1());
-	    }
-
-	  dilated_prov.set_bbox(x0, y0, x1, y1);
-	  
-	  bool overlaps_with_rest=false;
-	  for(std::size_t j=0; j<provs.size(); j++)
-	    {
-	      if(i==j)
-		{
-		  continue;
-		}
-
-	      if(not overlaps_with_rest)
-		{
-		  overlaps_with_rest = provs.at(j).overlaps(dilated_prov);
-		}
-	    }
-	  
-	  if(not overlaps_with_rest)
-	    {
-	      // update
-	      dilated_provs.at(i).set_bbox(x0, y0, x1, y1);
-	      LOG_S(INFO) << "dilating " << i << "\t"
-			  << int(x0) << ", " << int(y0) << ", " << int(x1) << ", " << int(y1);
-	    }
-	}
-      */
-      
       // redo with dilated provs
       up_map={}, dn_map={};//, all_up_map={};
       init_ud_maps(dilated_provs, l2r_map, r2l_map, up_map, dn_map);//, all_up_map);
