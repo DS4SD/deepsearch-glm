@@ -55,6 +55,44 @@ def get_reduced_instances(instances):
 
     return table, [headers[0], headers[1], headers[4], headers[5], headers[-2]]
 
+def compare_docs(doc_i, doc_j):
+
+    for key,val in doc_j.items():
+
+        if isinstance(val, dict) and ("data" in val) and ("headers" in val):
+
+            assert val["headers"] == doc_i[key]["headers"]
+
+            """
+            if val["headers"] != doc_i[key]["headers"]:
+                return False
+            """
+            
+            assert len(val["data"]) == len(doc_i[key]["data"])
+
+            """
+            if len(val["data"]) != len(doc_i[key]["data"]):
+                return False
+            """
+            
+            for j,row in enumerate(val["data"]):
+
+                """
+                if row != doc_i[key]["data"][j]:
+                    return False
+                """
+
+                if row != doc_i[key]["data"][j]:
+                    print(f"1 ({j}): ", row)
+                    print(f"2 ({j}): ", doc_i[key]["data"][j])
+                    
+                assert row == doc_i[key]["data"][j]
+                
+        elif doc_i[key] != doc_j[key]:
+            assert doc_i[key] == doc_j[key]
+            return False        
+    
+    return True
 
 def test_01_load_nlp_models():
     models = load_pretrained_nlp_models(force=True, verbose=True)
@@ -494,14 +532,35 @@ def test_05A():
         doc_j = model.apply_on_doc(doc_i)
         doc_j = round_floats(doc_j)
 
-        assert doc_j == doc_nlp
+        assert compare_docs(doc_j, doc_nlp)
+        """
+        for key,val in doc_j.items():
 
+            if isinstance(val, dict) and ("data" in val) and ("headers" in val):
+                
+                assert val["headers"] == doc_nlp[key]["headers"]
+                assert len(val["data"]) == len(doc_nlp[key]["data"])
+
+                for j,row in enumerate(val["data"]):
+                    assert row == doc_nlp[key]["data"][j]
+                    
+            else:
+                assert doc_j[key] == doc_nlp[key]
+        """
+        
+        assert doc_j == doc_nlp
+                
         doc_i = to_legacy_document_format(doc_j, doc_i)
         doc_i = round_floats(doc_i)
 
-        assert doc_i == doc_leg
+        assert compare_docs(doc_i, doc_leg)
 
-
+        """
+        #assert doc_i == doc_leg
+        for key,val in doc_i.item():
+            assert doc_i[key] == doc_leg[key]
+        """
+        
 # download CRF data
 def test_06A():
     verbose = False

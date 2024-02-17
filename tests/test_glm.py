@@ -10,13 +10,13 @@ from deepsearch_glm import andromeda_glm
 from deepsearch_glm.glm_utils import create_glm_dir, \
     create_glm_config_from_docs,\
     create_glm_from_docs, \
-    load_glm
+    load_glm, read_nodes, read_edges
 from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
 
 
 def test_01_load_nlp_models():
-    print("\nstarting ...")
-
+    """Tests to determine if NLP models are available"""
+    
     models = load_pretrained_nlp_models()
     print(f"models: {models}")
 
@@ -25,12 +25,10 @@ def test_01_load_nlp_models():
     assert "name" in models
     assert "reference" in models
 
-    print("\n --> done test_01_load_nlp_models: ", end="")
-
 
 def test_02A_create_glm_from_doc():
-    print("\nstarting ...")
-
+    """Tests to determine if GLM creation work"""
+    
     sdir = "./tests/data/glm/test_01A"
 
     if GENERATE:
@@ -69,11 +67,9 @@ def test_02A_create_glm_from_doc():
 
     assert ref_topo == out_topo
 
-    print("\n --> done test_02A_create_glm_from_doc: ", end="")
-
 
 def test_02B_load_glm():
-    print("\nstarting ...")
+    """Tests to determine if GLM loading work"""
 
     idir = "./tests/data/glm/test_01A/glm_out"
 
@@ -93,4 +89,31 @@ def test_02B_load_glm():
 
     assert ref_topo == out_topo
 
-    print("\n --> done test_02B_load_glm: ", end="")
+
+def test_03A_query_glm():
+    """Tests to determine if GLM queries work"""
+    
+    idir = "./tests/data/glm/test_01A/glm_out"
+
+    nodes = read_nodes(os.path.join(idir, "nodes.csv"))
+    edges = read_nodes(os.path.join(idir, "edges.csv"))
+
+    print("\n\n nodes: \n")
+    print(nodes)
+
+    print("\n\n edges: \n")
+    print(edges)
+
+    subw_nodes = nodes[ nodes["name"]=="subw_token"]
+    print(subw_nodes)
+    
+    next_edge = edges[ (edges["hash_i"].isin(subw_nodes["hash"])) & (edges["hash_j"].isin(subw_nodes["hash"])) ]
+    print(next_edge)
+    #prev_edge = edges[ (edges["name"]=="prev") and (edges["hash_i"] in subw_nodes["hash"]) and (edges["hash_j"] in subw_nodes["hash"]) ]
+
+    
+    
+    #glm = load_glm(idir)
+    #out_topo = glm.get_topology()
+
+    

@@ -10,6 +10,8 @@ import os
 import textwrap
 from typing import List
 
+import pandas as pd
+
 from tabulate import tabulate
 
 from deepsearch_glm.andromeda_glm import glm_model, glm_query
@@ -53,6 +55,27 @@ def load_glm(idir: str):
 
     return glm
 
+def read_nodes(node_file: str):
+    """Function to read nodes from a GLM into a dataframe"""
+    
+    df = None
+
+    if node_file.endswith(".csv") and os.path.exists(node_file):
+        df = pd.read_csv(node_file)
+
+    return df
+
+
+def read_edges(edge_file: str):
+    """Function to read edges from a GLM into a dataframe"""
+    
+    df = None
+
+    if edge_file.endswith(".csv") and os.path.exists(edge_file):
+        df = pd.read_csv(edge_file)
+
+    return df
+
 
 def create_glm_config_from_docs(
     odir: str, json_files: List[str], nlp_models: str = "conn;verb;term;abbreviation"
@@ -64,7 +87,7 @@ def create_glm_config_from_docs(
             "load": {"root": odir},
             "save": {
                 "root": odir,
-                "write-CSV": False,
+                "write-CSV": True,
                 "write-JSON": False,
                 "write-path-text": False,
             },
@@ -72,7 +95,7 @@ def create_glm_config_from_docs(
         "create": {
             "enforce-max-size": False,
             "model": {"max-edges": 1e8, "max-nodes": 1e7},
-            "number-of-threads": 1,
+            "number-of-threads": 4,
             "worker": {
                 "local-reading-break": True,
                 "local-reading-range": [256, 2560],
