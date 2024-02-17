@@ -243,6 +243,7 @@ namespace andromeda
   {
     subject.set_tokens(char_normaliser, text_normaliser);
 
+    //LOG_S(INFO) << "#-models: " << models.size();
     for(auto& model:models)
       {
         model->apply(subject);

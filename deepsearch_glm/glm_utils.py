@@ -57,7 +57,7 @@ def load_glm(idir: str):
 def create_glm_config_from_docs(
     odir: str, json_files: List[str], nlp_models: str = "conn;verb;term;abbreviation"
 ):
-    """Function to create GLM."""
+    """Function to create GLM configuration"""
 
     config = {
         "IO": {
@@ -72,7 +72,7 @@ def create_glm_config_from_docs(
         "create": {
             "enforce-max-size": False,
             "model": {"max-edges": 1e8, "max-nodes": 1e7},
-            "number-of-threads": 4,
+            "number-of-threads": 1,
             "worker": {
                 "local-reading-break": True,
                 "local-reading-range": [256, 2560],

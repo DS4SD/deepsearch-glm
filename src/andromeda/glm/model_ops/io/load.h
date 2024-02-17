@@ -37,7 +37,6 @@ namespace andromeda
     private:
 
       std::filesystem::path model_path;
-      
 
       bool read_nodes_incremental;
       bool read_edges_incremental;
@@ -157,16 +156,18 @@ namespace andromeda
         std::size_t N=0;
         ifs.read((char*)&N, sizeof(N));
 
-	std::size_t D = N/100;
+	//std::size_t D = N/100;
 	
-        LOG_S(INFO) << "  #-nodes: " << N << " => start reading ...";
+        LOG_S(INFO) << "#-nodes: " << N << " => start reading ...";
         for(std::size_t i=0; i<N; i++)
           {
+	    /*
 	    if(((i%D)==0) or (i+1)==N)
 	      {
 		std::cout << "\r completion: " << std::fixed
 			  << 100*double(i+1)/double(N) << std::flush;
 	      }
+	    */
 	    
             base_node node;
             ifs >> node;

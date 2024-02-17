@@ -131,6 +131,8 @@ namespace andromeda
       if(models.size()==0)
 	{
 	  std::string model_expr="conn;verb;term;abbreviation";
+	  LOG_S(WARNING) << "falling back on default: " << model_expr;
+	  
 	  result[nlp_models_lbl] = model_expr;
 	}
       else

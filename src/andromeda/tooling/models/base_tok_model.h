@@ -29,9 +29,6 @@ namespace andromeda
     virtual bool apply(std::string& text, nlohmann::json& annots) { return false; }
 
     virtual bool apply(subject<TEXT>& subj) { return false; }
-    virtual bool apply(subject<TABLE>& subj) { return false; }
-
-    virtual bool apply(subject<DOCUMENT>& subj) { return false; }
 
     /*  CONFIG   */
 
@@ -151,8 +148,6 @@ namespace andromeda
    */
   bool base_tok_model::train(nlohmann::json config)
   {
-    //LOG_S(INFO) << "config: " << config.dump(2);
-    
     auto args = config["args"];
     
     std::string model_name = args["model-name"].get<std::string>();

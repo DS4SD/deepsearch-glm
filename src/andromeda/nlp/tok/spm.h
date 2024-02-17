@@ -16,8 +16,6 @@ namespace andromeda
   public:
 
     nlp_model();
-    
-    //~nlp_model();
 
     virtual std::set<model_name> get_dependencies() { return dependencies; }
 
@@ -85,7 +83,7 @@ namespace andromeda
 
   bool nlp_model<TOK, SPM>::apply(subject<TEXT>& subj)
   {
-    LOG_S(WARNING) << "bool nlp_model<TOK, SPM>::apply(subject<TEXT>& subj)";
+    //LOG_S(WARNING) << "bool nlp_model<TOK, SPM>::apply(subject<TEXT>& subj)";
     
     auto text = subj.get_text();
     auto& wtokens = subj.get_word_tokens();

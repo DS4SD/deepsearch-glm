@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 
-GENERATE = True
+GENERATE = False
 
 import glob
 import json
 import os
 
 from deepsearch_glm import andromeda_glm
-from deepsearch_glm.glm_utils import create_glm_dir, create_glm_from_docs, load_glm
+from deepsearch_glm.glm_utils import create_glm_dir, \
+    create_glm_config_from_docs,\
+    create_glm_from_docs, \
+    load_glm
 from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
 
 
@@ -75,7 +78,6 @@ def test_02B_load_glm():
     idir = "./tests/data/glm/test_01A/glm_out"
 
     glm = load_glm(idir)
-
     out_topo = glm.get_topology()
 
     with open(os.path.join(idir, "topology.json")) as fr:

@@ -242,6 +242,10 @@ namespace andromeda
       
       insert_nodes(nodes, tokens, subw_tok_hashes, word_tok_hashes, pos_hashes);
 
+      //LOG_S(INFO) << "#-tokens: " << tokens.size();
+      //LOG_S(INFO) << "#-subws: " << subw_tok_hashes.size();
+      //LOG_S(INFO) << "#-words: " << word_tok_hashes.size();
+      
       update_counters(TEXT, nodes, instances, subw_tok_hashes, text_hashes, table_hashes, docs_cnt);
       update_counters(TEXT, nodes, instances, word_tok_hashes, text_hashes, table_hashes, docs_cnt);
       update_counters(TEXT, nodes, instances, pos_hashes, text_hashes, table_hashes, docs_cnt);
