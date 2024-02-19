@@ -551,13 +551,18 @@ namespace andromeda
     {
       for(word_token& token:tokens)
         {
+	  auto sinds = token.get_inds();
 	  auto subws = token.get_subws();
-
+	  assert(sinds.size()==subws.size());
+	  
 	  std::string text = token.get_word();
           std::string pos  = token.get_pos();
 
-	  for(auto subw:subws)
+	  //for(auto subw:subws)
+	  for(int l=0; l<sinds.size(); l++)
 	    {
+	      std::string subw = subws.at(l)+"__"+std::to_string(sinds.at(l))+"__";
+	      
 	      auto& node = nodes.insert(node_names::SUBW_TOKEN, subw);
 	      subw_tok_hashes.push_back(node.get_hash());
 	    }

@@ -60,7 +60,6 @@ namespace andromeda
       nodes({}),
       hashes({})
     {
-      LOG_S(INFO);
       if((not config.is_null()) and
 	 (not from_config(config)))
 	{
@@ -128,7 +127,7 @@ namespace andromeda
 	  return false;
 	}
 
-      return true;//set_hashes_from_nodes();
+      return true;
     }
     
     query_flowop<SELECT>::query_flowop(flow_id_type flid, std::shared_ptr<model_type> model,
