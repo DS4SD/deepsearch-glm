@@ -163,21 +163,21 @@ namespace andromeda
     verbose(false),
     configuration(config),
     models(models),
-
+    
     char_normaliser(std::make_shared<utils::char_normaliser>(verbose)),
     text_normaliser(std::make_shared<utils::text_normaliser>(verbose)),
-
+    
     paths({}),
-
+    
     path_itr(paths.begin()),
     path_end(paths.end()),
-
+    
     curnum_docs(0),    
     maxnum_docs(-1),
     
     iformat("txt"),
     oformat("annot.txt"),
-
+    
     write_output(false),
     opath(null_opath)    
   {

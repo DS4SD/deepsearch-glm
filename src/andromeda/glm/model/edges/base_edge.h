@@ -18,10 +18,10 @@ namespace andromeda
       const static inline std::string hash_i_lbl = "hash_i";
       const static inline std::string hash_j_lbl = "hash_j";
 
-      const static inline std::string count_lbl = "total";
-      const static inline std::string prob_lbl = "prob";
+      const static inline std::string count_lbl = "total-count";
+      const static inline std::string prob_lbl = "probability";
       
-      const static inline std::vector<std::string> headers = {hash_lbl, flvr_lbl,
+      const static inline std::vector<std::string> headers = {hash_lbl, flvr_lbl, name_lbl,
 							      hash_i_lbl, hash_j_lbl,
 							      count_lbl, prob_lbl};
       

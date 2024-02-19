@@ -124,7 +124,7 @@ namespace andromeda
 	    auto op_3 = flow.add_traverse(edge_names::tax_up, op_0c->get_flid());
 	    op_3->get_nodeset()->set_name("tax-up");
 
-	    auto op_4a = flow.add_filter({node_names::TOKEN}, {op_3->get_flid()});
+	    auto op_4a = flow.add_filter({node_names::WORD_TOKEN}, {op_3->get_flid()});
 	    op_4a->get_nodeset()->set_name("tax-up tokens");
 
 	    auto op_4b = flow.add_filter({node_names::TERM}, {op_3->get_flid()});

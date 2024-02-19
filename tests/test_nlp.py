@@ -9,20 +9,19 @@ import os
 from tabulate import tabulate
 
 from deepsearch_glm.nlp_train_crf import create_crf_model
-from deepsearch_glm.nlp_train_tok import create_tok_model
 from deepsearch_glm.nlp_train_semantic import train_semantic
+from deepsearch_glm.nlp_train_tok import create_tok_model
 from deepsearch_glm.nlp_utils import (
     extract_references_from_doc,
     init_nlp_model,
     list_nlp_model_configs,
 )
 from deepsearch_glm.utils.ds_utils import to_legacy_document_format
-from deepsearch_glm.utils.load_pretrained_models import (
+from deepsearch_glm.utils.load_pretrained_models import (  # load_pretrained_nlp_data,
     get_resources_dir,
     list_training_data,
-    load_training_data,
-    #load_pretrained_nlp_data,
     load_pretrained_nlp_models,
+    load_training_data,
 )
 
 
@@ -54,6 +53,42 @@ def get_reduced_instances(instances):
             table.append([row[0], row[1], row[4], row[5], row[-2]])
 
     return table, [headers[0], headers[1], headers[4], headers[5], headers[-2]]
+
+
+def compare_docs(doc_i, doc_j):
+    for key, val in doc_j.items():
+        if isinstance(val, dict) and ("data" in val) and ("headers" in val):
+            assert val["headers"] == doc_i[key]["headers"]
+
+            """
+            if val["headers"] != doc_i[key]["headers"]:
+                return False
+            """
+
+            assert len(val["data"]) == len(doc_i[key]["data"])
+
+            """
+            if len(val["data"]) != len(doc_i[key]["data"]):
+                return False
+            """
+
+            for j, row in enumerate(val["data"]):
+                """
+                if row != doc_i[key]["data"][j]:
+                    return False
+                """
+
+                if row != doc_i[key]["data"][j]:
+                    print(f"1 ({j}): ", row)
+                    print(f"2 ({j}): ", doc_i[key]["data"][j])
+
+                assert row == doc_i[key]["data"][j]
+
+        elif doc_i[key] != doc_j[key]:
+            assert doc_i[key] == doc_j[key]
+            return False
+
+    return True
 
 
 def test_01_load_nlp_models():
@@ -494,21 +529,44 @@ def test_05A():
         doc_j = model.apply_on_doc(doc_i)
         doc_j = round_floats(doc_j)
 
+        assert compare_docs(doc_j, doc_nlp)
+        """
+        for key,val in doc_j.items():
+
+            if isinstance(val, dict) and ("data" in val) and ("headers" in val):
+                
+                assert val["headers"] == doc_nlp[key]["headers"]
+                assert len(val["data"]) == len(doc_nlp[key]["data"])
+
+                for j,row in enumerate(val["data"]):
+                    assert row == doc_nlp[key]["data"][j]
+                    
+            else:
+                assert doc_j[key] == doc_nlp[key]
+        """
+
         assert doc_j == doc_nlp
 
         doc_i = to_legacy_document_format(doc_j, doc_i)
         doc_i = round_floats(doc_i)
 
-        assert doc_i == doc_leg
+        assert compare_docs(doc_i, doc_leg)
+
+        """
+        #assert doc_i == doc_leg
+        for key,val in doc_i.item():
+            assert doc_i[key] == doc_leg[key]
+        """
 
 
 # download CRF data
 def test_06A():
     verbose = False
 
-    done, data = load_training_data(data_type="crf", data_name="materials",
-                                    force=False, verbose=verbose)
-    #done, data = load_pretrained_nlp_data(key="crf", force=False, verbose=verbose)
+    done, data = load_training_data(
+        data_type="crf", data_name="materials", force=False, verbose=verbose
+    )
+    # done, data = load_pretrained_nlp_data(key="crf", force=False, verbose=verbose)
 
     if verbose:
         print(json.dumps(data, indent=2))
@@ -521,8 +579,8 @@ def test_06B():
     resources_dir = get_resources_dir()
 
     crf_files = glob.glob(f"{resources_dir}/data/nlp/crf.*.jsonl")
-    assert len(crf_files)>0
-    
+    assert len(crf_files) > 0
+
     # print(crf_files)
     for crf_file in crf_files:
         if crf_file.endswith(".annot.jsonl"):
@@ -590,17 +648,23 @@ def test_06C():
 
     assert True
 
+
 # download text data for tokenizers
 def test_07A():
     verbose = True
 
-    done, data = load_training_data(data_type="text", data_name="arxiv-abstracts-2020-Jan-txt",
-                                    force=False, verbose=verbose)
+    done, data = load_training_data(
+        data_type="text",
+        data_name="arxiv-abstracts-2020-Jan-txt",
+        force=False,
+        verbose=verbose,
+    )
 
     if verbose:
         print(json.dumps(data, indent=2))
 
-    assert done    
+    assert done
+
 
 # train tokenizer
 def test_07B():
@@ -609,17 +673,18 @@ def test_07B():
     txt_file = f"{resources_dir}/data/text/arxiv-abstracts-2020-Jan.txt"
     assert os.path.exists(txt_file)
 
-    model_type="unigram"
-    model_name="test-tokenizer-model"
-    
+    model_type = "unigram"
+    model_name = "test-tokenizer-model"
+
     print(f"training on {txt_file}")
     model_file = create_tok_model(
         model_type=model_type, model_name=model_name, ifile=txt_file
     )
 
-    assert os.path.exists(model_name+".model")
-    assert os.path.exists(model_name+".vocab")
-    
+    assert os.path.exists(model_name + ".model")
+    assert os.path.exists(model_name + ".vocab")
+
+
 """
 def test_05A_train_semantic():
 

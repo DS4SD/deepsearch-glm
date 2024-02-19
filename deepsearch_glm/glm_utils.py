@@ -10,13 +10,11 @@ import os
 import textwrap
 from typing import List
 
+import pandas as pd
 from tabulate import tabulate
 
 from deepsearch_glm.andromeda_glm import glm_model, glm_query
 from deepsearch_glm.utils.ds_utils import get_scratch_dir
-
-# import andromeda_nlp
-# import andromeda_glm
 
 
 def create_glm_dir():
@@ -54,17 +52,39 @@ def load_glm(idir: str):
     return glm
 
 
+def read_nodes_in_dataframe(node_file: str):
+    """Function to read nodes from a GLM into a dataframe"""
+
+    df = None
+
+    if node_file.endswith(".csv") and os.path.exists(node_file):
+        df = pd.read_csv(node_file)
+
+    return df
+
+
+def read_edges_in_dataframe(edge_file: str):
+    """Function to read edges from a GLM into a dataframe"""
+
+    df = None
+
+    if edge_file.endswith(".csv") and os.path.exists(edge_file):
+        df = pd.read_csv(edge_file)
+
+    return df
+
+
 def create_glm_config_from_docs(
     odir: str, json_files: List[str], nlp_models: str = "conn;verb;term;abbreviation"
 ):
-    """Function to create GLM."""
+    """Function to create GLM configuration"""
 
     config = {
         "IO": {
             "load": {"root": odir},
             "save": {
                 "root": odir,
-                "write-CSV": False,
+                "write-CSV": True,
                 "write-JSON": False,
                 "write-path-text": False,
             },
@@ -130,6 +150,9 @@ def create_glm_from_docs(
 def show_query_result(res, max_nodes=16):
     """Function to show the result of the query"""
 
+    if ("status" not in res) or (res["status"] != "success"):
+        return
+
     wrapper = textwrap.TextWrapper(width=50)
 
     print(
@@ -144,44 +167,47 @@ def show_query_result(res, max_nodes=16):
 
         for j, row in enumerate(data):
             text = row[headers.index("text")]
-            print("text: ", text)
-
             data[j][headers.index("text")] = "\n".join(wrapper.wrap(text))
 
         print(f"operation {i}: \n", tabulate(data[0:max_nodes], headers=headers), "\n")
 
 
-def expand_terms(terms, glm):
+def expand_terms(glm: glm_model, term: str):
     """Function to expand the terms"""
 
-    for term in terms:
-        print(term)
+    # qry = andromeda_glm.glm_query()
+    qry = glm_query()
 
-        # qry = andromeda_glm.glm_query()
-        qry = glm_query()
-
+    if " " not in term:
         qry.select({"nodes": [[term]]})
-        qry.filter_by({"mode": "node-flavor", "node-flavors": ["token"]})
-        # qry.filter_by({"mode": "node-flavor", "node-flavors":["term"]})
+    else:
+        qry.select({"nodes": [term.split(" ")]})
 
-        # flid = qry.get_last_flid()
-        qry.traverse({"name": "roots", "edge": "to-root"})
-        qry.traverse({"name": "tax-up", "edge": "tax-up"})
-        # qry.traverse({"edge":"from-root"})
-        # qry.traverse({"edge":"from-token"})
-        # qry.filter_by({"mode": "node-flavor", "node-flavors":["term"]})
+    # qry.filter_by({"mode": "node-flavor", "node-flavors": ["word_token"]})
+    qry.filter_by({"mode": "node-flavor", "node-flavors": ["term"]})
 
-        # qry.filter_by({"mode": "contains", "contains-flid":flid})
-        # qry.traverse({"edge":"to-sent"})
+    # flid = qry.get_last_flid()
+    # qry.traverse({"name": "roots", "edge": "to-root"})
+    qry.traverse({"name": "tax-up", "edge": "tax-up"})
+    # qry.traverse({"edge":"from-root"})
+    # qry.traverse({"edge":"from-token"})
+    # qry.filter_by({"mode": "node-flavor", "node-flavors":["term"]})
 
-        qry.filter_by({"mode": "node-regex", "node-regex": [f".*{term}.*"]})
+    # qry.filter_by({"mode": "contains", "contains-flid":flid})
+    # qry.traverse({"edge":"to-sent"})
 
-        config = qry.to_config()
-        # print("query: ", json.dumps(config, indent=2))
+    qry.filter_by({"mode": "node-regex", "node-regex": [f".*{term}.*"]})
 
-        res = glm.query(config)
-        if "status" in res and res["status"] == "success":
-            show_query_result(res)
-        else:
-            print(res)
-            # print(res["status"], ": ", res["message"])
+    config = qry.to_config()
+    # print("query: ", json.dumps(config, indent=2))
+
+    res = glm.query(config)
+    """
+    if "status" in res and res["status"] == "success":
+        show_query_result(res)
+    else:
+        print(res)
+        # print(res["status"], ": ", res["message"])
+    """
+
+    return res

@@ -89,7 +89,7 @@ namespace andromeda
 		  std::string root_text_j = root_text_i.substr(0, root_text_i.size()-ending.size());
 		  root_text_j += itr->second;
 
-		  node_type token_j(node_names::TOKEN, root_text_j);
+		  node_type token_j(node_names::WORD_TOKEN, root_text_j);
 		  if(not nodes.has(token_j.get_hash()))
 		    {
 		      //LOG_S(WARNING) << " --> missing root token: " << root_text_i << " => " << root_text_j;    

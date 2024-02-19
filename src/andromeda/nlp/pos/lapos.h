@@ -178,29 +178,10 @@ namespace andromeda
 
     auto& wtokens = subj.get_word_tokens();
     auto& instances = subj.instances;
-
-    /*
-    // iterate over the sentences ...
-    for(auto& inst:instances)
-      {
-	//LOG_S(INFO) << "inst: " << to_key(inst.get_model())
-	//<< "\t" << SENTENCE << "\t" << inst.get_model()
-	//<< "\t" << inst.is_model(SENTENCE);
-	
-        if(not inst.is_model(SENTENCE))
-          {
-	    //LOG_S(WARNING) << " --> skipping inst ...";
-            continue;
-          }
-
-        pre_process(wtokens, inst.get_wtok_range(), pos_tokens, ptid_to_wtid);
-
-        pos_model->predict(pos_tokens);
-
-        post_process(wtokens, pos_tokens, ptid_to_wtid);
-      }
-    */
-
+    
+    //LOG_S(INFO) << "text: " << subj.get_text();
+    //LOG_S(INFO) << "#-wtokens: " << wtokens.size();
+    
     std::vector<range_type> sent_ranges={};
     for(auto& inst:instances)
       {
@@ -208,47 +189,16 @@ namespace andromeda
           {
 	    sent_ranges.push_back(inst.get_wtok_range());
 
-	    //LOG_S(INFO) << "sentence (" << inst.get_subtype() << ") : "
-	    //<< sent_ranges.back().at(0) << ", "
-	    //<< sent_ranges.back().at(1);
-          }
+	    /*
+	    LOG_S(INFO) << "sentence (" << inst.get_subtype() << ") : "
+			<< sent_ranges.back().at(0) << ", "
+			<< sent_ranges.back().at(1);
+	    */
+	  }
       }
-
-    /*
-    std::vector<range_type> ranges={};
-    for(auto& rng:sent_ranges)
-      {
-        if(ranges.size()==0 and rng.at(0)==0)
-          {
-	    ranges.push_back(rng);
-          }
-	else if(ranges.size()==0 and rng.at(0)>0)
-          {
-	    ranges.push_back({0, rng.at(0)});
-	    ranges.push_back(rng);
-          }
-	else if(ranges.back().at(1)==rng.at(0))
-          {
-	    ranges.push_back(rng);
-          }
-	else if(ranges.back().at(1)<rng.at(0))
-          {
-	    ranges.push_back({ranges.back().at(1), rng.at(0)});
-	    ranges.push_back(rng);
-          }	
-      }
-
-    if(ranges.size()>0 and ranges.back().at(1)<wtokens.size())
-      {
-	ranges.push_back({ranges.back().at(1), wtokens.size()});
-      }
-    */
     
-    //for(auto& rng:ranges)
     for(auto& rng:sent_ranges)
       {
-	//LOG_S(INFO) << "range: " << rng.at(0) << ", " << rng.at(1);
-	
         pre_process(wtokens, rng, pos_tokens, ptid_to_wtid);
 
         pos_model->predict(pos_tokens);
@@ -304,7 +254,6 @@ namespace andromeda
     
     return update_applied_models(subj);
   }
-
 
   void nlp_model<POS, LAPOS>::pre_process(const std::vector<word_token>& wtokens,
 					  const range_type rng,

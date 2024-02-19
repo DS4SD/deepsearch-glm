@@ -34,7 +34,7 @@ namespace andromeda
     virtual bool reset_pointer();
 
     virtual bool set_ofs(std::filesystem::path path);
-    
+
     /* next */
 
     virtual bool next(std::string& text, std::size_t& cnt);
@@ -71,7 +71,7 @@ namespace andromeda
 
     std::string key;
     std::size_t start_line, curr_line;
-    
+
     std::ifstream ifs;
     std::ofstream ofs;
   };
@@ -126,7 +126,7 @@ namespace andromeda
       config[base_producer::subject_lbl] = to_string(TEXT);
 
       config[maxnum_docs_lbl] = "<optional:int>";
-      
+
       config[iformat_lbl] = "<str:jsonl>";
       config[oformat_lbl] = "<str:annot.jsonl>";
 
@@ -134,7 +134,7 @@ namespace andromeda
       config[ipaths_lbl] = paths;
 
       config[write_output_lbl] = false;
-      
+
       config["key"] = "<optional:string>";
       config["start-line"] = "<optional:int>";
 
@@ -146,7 +146,7 @@ namespace andromeda
       config[base_producer::subject_lbl] = to_string(TEXT);
 
       config[maxnum_docs_lbl] = "<optional:int>";
-      
+
       config[iformat_lbl] = "jsonl";
       config[oformat_lbl] = "annot.jsonl";
 
@@ -157,7 +157,7 @@ namespace andromeda
 
       std::filesystem::path opath(paths.front().c_str());
       config[opath_lbl] = opath.parent_path();
-      
+
       config["key"] = "abstract";
       config["start-line"] = 0;
 
@@ -171,9 +171,9 @@ namespace andromeda
   {
     if(not base_producer::initialise(config))
       {
-	return false;
+        return false;
       }
-    
+
     key = base_producer::configuration.value("key", key);
     start_line = base_producer::configuration.value("start-line", start_line);
 
@@ -183,7 +183,7 @@ namespace andromeda
   bool producer<TEXT>::reset_pointer()
   {
     curr_line = 0;
-    
+
     path_itr = paths.begin();
     path_end = paths.end();
 
@@ -209,36 +209,36 @@ namespace andromeda
 
     base_producer::write_output = true;
     ofs.open(path.c_str(), std::ofstream::out);
-    
+
     return ofs.good();
   }
-  
+
   bool producer<TEXT>::next(std::string& text,
-                                 std::size_t& cnt)
+                            std::size_t& cnt)
   {
     if(cnt++>=maxnum_docs)
       {
-	static bool show=true;
-	if(show)
-	  {
-	    show=false;
-	    LOG_S(WARNING) << "count is exceeding max-count: " << cnt
-			   << " versus " << maxnum_docs;
-	  }
-	
+        static bool show=true;
+        if(show)
+          {
+            show=false;
+            LOG_S(WARNING) << "count is exceeding max-count: " << cnt
+                           << " versus " << maxnum_docs;
+          }
+
         return false;
       }
 
     //LOG_S(INFO) << "(path_itr==path_end): " << (path_itr==path_end);
-    
+
     std::string line;
     while(not (ifs.is_open() and std::getline(ifs, line)))
       {
-	//LOG_S(INFO) << "file open: " << ifs.is_open() << " -> " << line;
-	
+        //LOG_S(INFO) << "file open: " << ifs.is_open() << " -> " << line;
+
         if(path_itr==paths.end())
           {
-	    //LOG_S(WARNING) << "path_itr==paths.end()";
+            //LOG_S(WARNING) << "path_itr==paths.end()";
             return false;
           }
         else if(ifs.is_open())
@@ -248,16 +248,16 @@ namespace andromeda
           }
         else
           {
-	    //LOG_S(INFO) << "opening for reading: " << (path_itr->c_str());
+            //LOG_S(INFO) << "opening for reading: " << (path_itr->c_str());
             ifs.open(path_itr->c_str(), std::ifstream::in);
 
-	    std::filesystem::path outfile;
-	    if(get_output_file(outfile))
-	      {
-		LOG_S(WARNING) << "writing to: " << outfile.c_str();		
-		ofs.open(outfile.c_str(), std::ofstream::out);
-	      }
-	    
+            std::filesystem::path outfile;
+            if(get_output_file(outfile))
+              {
+                LOG_S(WARNING) << "writing to: " << outfile.c_str();
+                ofs.open(outfile.c_str(), std::ofstream::out);
+              }
+
             curr_line=0;
           }
       }
@@ -304,7 +304,7 @@ namespace andromeda
   }
 
   bool producer<TEXT>::next(paragraph_type& subject,
-                                 std::size_t& cnt)
+                            std::size_t& cnt)
   {
     if(read(subject, cnt))
       {
@@ -315,8 +315,10 @@ namespace andromeda
   }
 
   bool producer<TEXT>::read(paragraph_type& subject,
-                                 std::size_t& cnt)
+                            std::size_t& cnt)
   {
+    subject.clear();
+    
     std::string line;
     if(next(line, cnt) and subject.set_text(line))
       {
@@ -347,7 +349,7 @@ namespace andromeda
       }
 
     subject.finalise();
-    
+
     return true;
   }
 

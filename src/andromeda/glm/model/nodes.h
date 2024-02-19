@@ -91,7 +91,7 @@ namespace andromeda
 
     bool glm_nodes::is_consistent()
     {
-      LOG_S(INFO);
+      //LOG_S(INFO);
 
       std::size_t tot=0;
       std::set<hash_type> hashes={};
@@ -167,7 +167,7 @@ namespace andromeda
 
       for(std::string name:node_names::TOKEN_NAMES)	
 	{
-	  auto& node = this->insert(node_names::TOKEN, name);
+	  auto& node = this->insert(node_names::WORD_TOKEN, name);
 	  node_names::to_hash[name] = node.get_hash();
 	}
       

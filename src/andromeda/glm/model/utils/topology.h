@@ -267,88 +267,12 @@ namespace andromeda
 
         LOG_S(INFO) << "edge table: \n" << utils::to_string(edges_header, edges_table, 21);
       }
-
-      /*
-        {
-        paths_header = {"flavor", "path-name", "count"};
-
-        for(auto lb:lower_bound)
-        {
-        paths_header.push_back(std::to_string(lb));
-        }
-
-        std::vector<std::size_t> total(paths_header.size(), 0);
-
-        paths_table={};
-        for(auto itr=path_counts.begin(); itr!=path_counts.end(); itr++)
-        {
-        std::size_t ind=2;
-        total.at(ind++) += itr->second;
-
-        std::vector<std::string> row = { std::to_string(itr->first),
-        path_flavors.at(itr->first),
-        to_string(itr->second)};
-
-        for(auto lb:lower_bound)
-        {
-        key_type key(itr->first, lb);
-
-        auto itr = path_count_stats.find(key);
-        row.push_back(to_string(itr->second));
-
-        total.at(ind++) += itr->second;
-        }
-
-        paths_table.push_back(row);
-        }
-
-        {
-        std::vector<std::string>
-        row_0(paths_header.size(), ""),
-        row_1(paths_header.size(), ""),
-        cum_0(paths_header.size(), ""),
-        cum_1(paths_header.size(), "");
-
-        row_0.at(0) = "total (cnt)";
-        row_1.at(0) = "total (%)";
-        cum_0.at(0) = "cumul (cnt)";
-        cum_1.at(0) = "cumul (%)";
-
-        row_0.at(2) = to_string(total.at(2));
-        row_1.at(2) = to_string(1.0);
-        cum_0.at(2) = to_string(total.at(2));
-        cum_1.at(2) = to_string(1.0);
-
-        std::size_t cumul=0;
-        for(std::size_t i=3; i<total.size(); i++)
-        {
-        cumul += total.at(i);
-
-        double cnt_percent = double(total.at(i))/double(total.at(2));
-        double cum_percent = double(cumul)/double(total.at(2));
-
-        row_0.at(i) = to_string(total.at(i));
-        row_1.at(i) = to_string(cnt_percent);
-        cum_0.at(i) = to_string(cumul);
-        cum_1.at(i) = to_string(cum_percent);
-        }
-
-        paths_table.push_back(row_0);
-        paths_table.push_back(row_1);
-        //paths_table.push_back(cum_0);
-        paths_table.push_back(cum_1);
-        }
-
-        LOG_S(INFO) << "path table: \n" << utils::to_string(paths_header, paths_table, 21);
-        }
-      */
     }
 
     std::ofstream& glm_topology::to_txt(std::ofstream& ofs)
     {
       ofs << "node-count table: \n" << utils::to_string(nodes_header, nodes_table);
       ofs << "edge-count table: \n" << utils::to_string(edges_header, edges_table);
-      //ofs << "edge-count table: \n" << utils::to_string(paths_header, paths_table);
 
       return ofs;
     }

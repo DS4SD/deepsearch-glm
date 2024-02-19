@@ -325,8 +325,8 @@ namespace andromeda
 
         std::ofstream ofs(edges_file_csv.c_str());
 
-        ofs << "name" << ","
-            << "flavor" << ","
+        ofs << "flavor" << ","
+	    << "name" << ","
             << "hash_i" << ","
             << "hash_j" << ","
 	  //<< "ind_i" << ","

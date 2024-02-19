@@ -29,11 +29,11 @@ namespace andromeda
 
       const static inline std::string cnt_lbl = "counters";
 
-      const static inline std::string word_cnt_lbl = "total";
-      const static inline std::string sent_cnt_lbl = "sentence";
-      const static inline std::string text_cnt_lbl = "text";
-      const static inline std::string tabl_cnt_lbl = "table";
-      const static inline std::string fdoc_cnt_lbl = "document";
+      const static inline std::string word_cnt_lbl = "total-count";
+      const static inline std::string sent_cnt_lbl = "sentence-count";
+      const static inline std::string text_cnt_lbl = "text-count";
+      const static inline std::string tabl_cnt_lbl = "table-count";
+      const static inline std::string fdoc_cnt_lbl = "document-count";
       
       const static inline std::vector<std::string> headers = {hash_lbl, flvr_lbl, name_lbl,
 							      word_cnt_lbl, sent_cnt_lbl,
@@ -221,7 +221,7 @@ namespace andromeda
     {
       for(std::string ptext:path)
         {
-          base_node node(node_names::TOKEN, ptext);
+          base_node node(node_names::WORD_TOKEN, ptext);
           nodes_ptr->push_back(node.get_hash());
         }
 
@@ -270,9 +270,11 @@ namespace andromeda
         {
           switch(flvr)
             {
-            case node_names::TOKEN:
+	    case node_names::SUBW_TOKEN:
+            case node_names::WORD_TOKEN:
             case node_names::SYNTX:	      
             case node_names::LABEL:
+	    case node_names::SUBLABEL:
               {
                 std::string item = "__"+node_names::to_name(flvr)+"_"+*text_ptr.get()+"__";
                 hash = utils::to_reproducible_hash(item);
@@ -361,7 +363,7 @@ namespace andromeda
       
       switch(flvr)
 	{
-	case node_names::TOKEN:
+	case node_names::WORD_TOKEN:
 	  {
 	    path.push_back(hash);
 	  }

@@ -93,7 +93,8 @@ namespace andromeda
       model->configure(config, true);
 
       auto& nlp_models = model->get_parameters().models;
-
+      LOG_S(INFO) << "#-models: " << nlp_models.size();
+      
       std::vector<std::shared_ptr<base_producer> > producers;
       andromeda::to_producers(config, nlp_models, producers);
 

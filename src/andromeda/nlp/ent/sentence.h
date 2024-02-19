@@ -104,6 +104,12 @@ namespace andromeda
 	    range_type ctok_range = subj.get_char_token_range(char_range);
 	    range_type wtok_range = subj.get_word_token_range(char_range);
 
+	    // skip sentences with 0 words ...
+	    if(wtok_range[0]==wtok_range[1])
+	      {
+		continue;
+	      }
+	      
 	    std::string sent = orig.substr(char_range[0], char_range[1]-char_range[0]); 
 	    
 	    subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
@@ -201,6 +207,12 @@ namespace andromeda
 	
 	range_type ctok_range = subj.get_char_token_range(char_range);
 	range_type wtok_range = subj.get_word_token_range(char_range);
+
+	// skip sentences with 0 words ...
+	if(wtok_range[0]==wtok_range[1])
+	  {
+	    continue;
+	  }
 	
 	std::string sent = orig.substr(char_range[0], char_range[1]-char_range[0]); 
 

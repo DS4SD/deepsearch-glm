@@ -94,9 +94,10 @@ namespace andromeda
       PCRE2_UCHAR buffer[256];
       pcre2_get_error_message(errorcode, buffer, sizeof(buffer));
 
-      LOG_S(FATAL) << "PCRE2 compilation for `" << type << ", " << subtype << "` "
+      LOG_S(ERROR) << "PCRE2 compilation for `" << type << ", " << subtype << "` "
 		   << "failed at offset " << (int)erroroffset << ": " << buffer
 		   << " with expr: `" << expr_ << "`";
+      return false;
     }
 
     match_data = pcre2_match_data_create_from_pattern(re, NULL);

@@ -436,7 +436,13 @@ namespace andromeda
         }
       else if(not done())
 	{
-          LOG_S(WARNING) << "could not finish executing the flow ...";	  
+          LOG_S(WARNING) << "could not finish executing the flow ...";
+
+	  int cnt=0;
+	  for(auto& op:ops)
+	    {
+	      LOG_S(INFO) << "\t" << cnt++ << ": " << op->is_done();
+	    }
 	}
       else
 	{

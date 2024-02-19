@@ -41,7 +41,8 @@ namespace andromeda
 
       void insert_nodes(nodes_type& nodes,
                         std::vector<word_token>& tokens,
-                        std::vector<hash_type>& tok_hashes,
+                        std::vector<hash_type>& subw_tok_hashes,
+			std::vector<hash_type>& word_tok_hashes,
                         std::vector<hash_type>& pos_hashes);
 
       void update_counters(subject_name name, nodes_type& nodes,
@@ -236,21 +237,27 @@ namespace andromeda
 
       update_tokens(tokens, instances);
 
-      std::vector<hash_type> tok_hashes={}, pos_hashes={};
+      std::vector<hash_type> subw_tok_hashes={}, word_tok_hashes={}, pos_hashes={};
       std::set<hash_type> text_hashes={}, table_hashes={};
       
-      insert_nodes(nodes, tokens, tok_hashes, pos_hashes);
+      insert_nodes(nodes, tokens, subw_tok_hashes, word_tok_hashes, pos_hashes);
 
-      update_counters(TEXT, nodes, instances, tok_hashes, text_hashes, table_hashes, docs_cnt);
+      //LOG_S(INFO) << "#-tokens: " << tokens.size();
+      //LOG_S(INFO) << "#-subws: " << subw_tok_hashes.size();
+      //LOG_S(INFO) << "#-words: " << word_tok_hashes.size();
+      
+      update_counters(TEXT, nodes, instances, subw_tok_hashes, text_hashes, table_hashes, docs_cnt);
+      update_counters(TEXT, nodes, instances, word_tok_hashes, text_hashes, table_hashes, docs_cnt);
       update_counters(TEXT, nodes, instances, pos_hashes, text_hashes, table_hashes, docs_cnt);
 
-      insert_edges(tok_hashes, pos_hashes, edges);
+      insert_edges(word_tok_hashes, pos_hashes, edges);
 
-      insert_edges(parameters.padding, edges, tok_hashes);
+      insert_edges(parameters.padding, edges, subw_tok_hashes);
+      insert_edges(parameters.padding, edges, word_tok_hashes);
       insert_edges(parameters.padding, edges, pos_hashes);
 
       insert_begin_and_end_of_paths(tokens, instances, relations,
-                                    nodes, edges, tok_hashes);
+                                    nodes, edges, word_tok_hashes);
 
       std::map<hash_type, hash_type> ehash_to_node={};
       
@@ -263,7 +270,7 @@ namespace andromeda
         {
           insert_concatenation_paths(tokens, instances, relations,
                                      nodes, edges, 
-                                     tok_hashes, rng_to_conc);
+                                     word_tok_hashes, rng_to_conc);
 
           update_counters(nodes, instances, rng_to_conc, docs_cnt);
         }
@@ -272,7 +279,7 @@ namespace andromeda
         {
           insert_conn_paths(tokens, instances, relations,
                             nodes, edges, 
-                            tok_hashes, rng_to_conn);
+                            word_tok_hashes, rng_to_conn);
 
           update_counters(nodes, instances, rng_to_conn, docs_cnt);
         }
@@ -281,7 +288,7 @@ namespace andromeda
         {
           insert_term_paths(tokens, instances, relations,
                             nodes, edges, 
-                            tok_hashes, rng_to_term,
+                            word_tok_hashes, rng_to_term,
 			    ehash_to_node, doc_hash);
 
           update_counters(nodes, instances, rng_to_term, docs_cnt);
@@ -291,7 +298,7 @@ namespace andromeda
         {
           insert_verb_paths(tokens, instances, relations,
                             nodes, edges, 
-                            tok_hashes, rng_to_verb,
+                            word_tok_hashes, rng_to_verb,
 			    ehash_to_node);
 
           update_counters(nodes, instances, rng_to_verb, docs_cnt);
@@ -304,14 +311,14 @@ namespace andromeda
           insert_padding_for_conn_verb_term(parameters.padding,
                                             instances,
                                             nodes, edges,
-                                            tok_hashes, sent_hashes,
+                                            word_tok_hashes, sent_hashes,
                                             rng_to_conn, rng_to_term, rng_to_verb);
         }
 
       if(parameters.keep_sents)
         {
           insert_sentences(instances, nodes, edges,
-                           tok_hashes, sent_hashes,
+                           word_tok_hashes, sent_hashes,
                            rng_to_conn, rng_to_term, rng_to_verb);
         }
 
@@ -381,13 +388,13 @@ namespace andromeda
 	      //LOG_S(INFO) << "(i, j): " << i << ", " << j;
 	      //LOG_S(INFO) << andromeda::tabulate(tokens, subj(i,j).text);
 	      
-	      std::vector<hash_type> tok_hashes={}, pos_hashes={};//, sent_hashes={};
-	      insert_nodes(nodes, tokens, tok_hashes, pos_hashes);
+	      std::vector<hash_type> subw_tok_hashes={}, word_tok_hashes={}, pos_hashes={};//, sent_hashes={};
+	      insert_nodes(nodes, tokens, subw_tok_hashes, word_tok_hashes, pos_hashes);
 
-	      update_counters(TABLE, nodes, instances, tok_hashes, text_cnt, tabl_cnt, docs_cnt);
+	      update_counters(TABLE, nodes, instances, word_tok_hashes, text_cnt, tabl_cnt, docs_cnt);
 	      update_counters(TABLE, nodes, instances, pos_hashes, text_cnt, tabl_cnt, docs_cnt);
 
-	      insert_edges(tok_hashes, pos_hashes, edges);
+	      insert_edges(word_tok_hashes, pos_hashes, edges);
       
 	      std::vector<hash_type> node_term_hashes={};
       
@@ -407,7 +414,7 @@ namespace andromeda
 		      std::vector<hash_type> term_hashes={};
 		      for(std::size_t i=rng[0]; i<rng[1]; i++)
 			{
-			  term_hashes.push_back(tok_hashes.at(i));
+			  term_hashes.push_back(word_tok_hashes.at(i));
 			}
 		      
 		      base_node tmp(node_names::TERM, term_hashes);
@@ -538,17 +545,31 @@ namespace andromeda
 
     void model_creator::insert_nodes(nodes_type& nodes,
                                      std::vector<word_token>& tokens,
-                                     std::vector<hash_type>& tok_hashes,
+				     std::vector<hash_type>& subw_tok_hashes,
+                                     std::vector<hash_type>& word_tok_hashes,
                                      std::vector<hash_type>& pos_hashes)
     {
       for(word_token& token:tokens)
         {
-          std::string text = token.get_word();
+	  auto sinds = token.get_inds();
+	  auto subws = token.get_subws();
+	  assert(sinds.size()==subws.size());
+	  
+	  std::string text = token.get_word();
           std::string pos  = token.get_pos();
 
+	  //for(auto subw:subws)
+	  for(int l=0; l<sinds.size(); l++)
+	    {
+	      std::string subw = subws.at(l)+"__"+std::to_string(sinds.at(l))+"__";
+	      
+	      auto& node = nodes.insert(node_names::SUBW_TOKEN, subw);
+	      subw_tok_hashes.push_back(node.get_hash());
+	    }
+	  
           {
-            auto& node = nodes.insert(node_names::TOKEN, text);
-            tok_hashes.push_back(node.get_hash());
+            auto& node = nodes.insert(node_names::WORD_TOKEN, text);
+            word_tok_hashes.push_back(node.get_hash());
           }
 
           {
@@ -800,7 +821,7 @@ namespace andromeda
               std::vector<hash_type> cont_hashes={};
               for(std::string& part:parts)
                 {
-                  auto& node = nodes.insert(node_names::TOKEN, part);
+                  auto& node = nodes.insert(node_names::WORD_TOKEN, part);
                   cont_hashes.push_back(node.get_hash());
                 }
 

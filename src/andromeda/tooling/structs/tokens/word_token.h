@@ -22,7 +22,8 @@ namespace andromeda
     const static inline std::vector<std::string> HEADERS = {"hash", "char_i", "char_j",
 							    "word-index",
 							    "pos", "tag", "known",
-							    "word", "original", "inds"};
+							    "word", "original",
+							    "inds", "subws"};
 
     const static inline std::string DEFAULT="__default__";
     
@@ -53,16 +54,11 @@ namespace andromeda
     word_token(index_type i, index_type j,
                std::string word, std::string pos,
 	       std::set<std::string> tags);
-
-    /*
-    word_token(hash_type hash, index_type i, index_type j,
-               std::string word, std::string pos,
-	       std::set<std::string> tags);    
-    */
     
     word_token(hash_type hash, index_type i, index_type j,
 	       std::string pos, std::set<std::string> tags, bool known,
-	       std::string word, std::vector<int> inds);
+	       std::string word,
+	       std::vector<int> inds, std::vector<std::string> subw);
     
     bool has_default_pos() { return DEFAULT_POS==pos; }
     bool has_default_word() { return DEFAULT_WORD==word; }
@@ -79,6 +75,7 @@ namespace andromeda
     std::set<std::string> get_tags() const { return tags; } // tags
 
     std::vector<int> get_inds() const { return inds; }
+    std::vector<std::string> get_subws() const { return subws; }
     
     void set_word(std::string word);    
     void set_pos(std::string pos);
@@ -86,6 +83,7 @@ namespace andromeda
     void set_known(bool known);
 
     void set_inds(std::vector<int> inds) { this->inds = inds; }
+    void set_subws(std::vector<std::string> subws) { this->subws = subws; }
     
     bool has_tag(std::string tag) const;
     bool is_known();
@@ -94,7 +92,7 @@ namespace andromeda
     word_token get_pos_token();
 
   private:
-
+    
     void verify();
 
   private:
@@ -108,7 +106,9 @@ namespace andromeda
     bool known; // not out-of-vocabulary
     
     std::set<std::string> tags;
+
     std::vector<int> inds;
+    std::vector<std::string> subws;
   };
 
   word_token::word_token(std::string word):
@@ -120,7 +120,9 @@ namespace andromeda
     known(false),    
 
     tags({}),
-    inds({})
+
+    inds({}),
+    subws({})
   {
     verify();
   }
@@ -135,7 +137,9 @@ namespace andromeda
     known(false),
     
     tags({}),
-    inds({})
+
+    inds({}),
+    subws({})
   {
     verify();
   }
@@ -151,7 +155,9 @@ namespace andromeda
     known(false),    
     
     tags({}),
-    inds({})
+
+    inds({}),
+    subws({})
   {
     verify();
   }  
@@ -166,7 +172,9 @@ namespace andromeda
     known(false),    
     
     tags({}),
-    inds({})
+
+    inds({}),
+    subws({})
   {
     verify();
   }
@@ -182,7 +190,9 @@ namespace andromeda
     known(false),    
 
     tags({}),
-    inds({})
+
+    inds({}),
+    subws({})
   {
     verify();
   }
@@ -198,14 +208,17 @@ namespace andromeda
     known(false),    
 
     tags(tags),
-    inds({})
+
+    inds({}),
+    subws({})
   {
     verify();
   }
 
   word_token::word_token(hash_type hash, index_type i, index_type j,
 			 std::string pos, std::set<std::string> tags, bool known,
-			 std::string word, std::vector<int> inds):
+			 std::string word,
+			 std::vector<int> inds, std::vector<std::string> subws):
     hash(hash),
     rng({i,j}),
     
@@ -214,7 +227,9 @@ namespace andromeda
     known(known),
 
     tags(tags),
-    inds(inds)
+
+    inds(inds),
+    subws(subws)
   {
     verify();
   }    
@@ -232,7 +247,7 @@ namespace andromeda
 	pos = UNDEF_POS;
       }
   }
-
+  
   void word_token::set_word(std::string word)
   {
     this->word = word;

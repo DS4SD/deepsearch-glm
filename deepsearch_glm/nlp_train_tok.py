@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Module to create a CRF model (prepare data, train & evaluate)"""
+"""Module to create a Tokenizer model (train)"""
 
 import argparse
 import json
@@ -9,26 +9,21 @@ import random
 import tqdm
 from tabulate import tabulate
 
-from deepsearch_glm.nlp_utils import (
-    train_tok
-)
+from deepsearch_glm.nlp_utils import train_tok
+
 
 def parse_arguments():
-    """Function to parse arguments for `nlp_train_crf`"""
+    """Function to parse arguments for `nlp_train_tok`"""
 
     parser = argparse.ArgumentParser(
-        prog="nlp_train_crf",
-        description="train CRF model",
+        prog="nlp_train_tok",
+        description="train Tokenizer (SentencePiece) model",
         epilog="""
 examples of execution: 
 
 1. end-to-end example to train CRF:
 
-    poetry run python ./deepsearch_glm/nlp_train_crf.py -m all --input-file <filename> --output-dir <models-directory>'
-
-2. end-to-end example to train CRF with limited samples:
-
-    poetry run python ./deepsearch_glm/nlp_train_crf.py -m all --input-file <filename> --output-dir <models-directory> --max-items 1000'
+    poetry run python ./deepsearch_glm/nlp_train_tok.py -t unigram -n <name> --input-file <filename>
 """,
         formatter_class=argparse.RawTextHelpFormatter,
     )
@@ -48,10 +43,11 @@ examples of execution:
         required=True,
         type=str,
         default="./trained-tokenizer",
-        help="name of the output-model"
+        help="name of the output-model",
     )
-    
+
     parser.add_argument(
+        "-i",
         "--input-file",
         required=True,
         type=str,
@@ -65,11 +61,12 @@ examples of execution:
 
 
 def create_tok_model(model_type: str, model_name: str, ifile: str):
+    """Create a new tokenizer from a text-file"""
 
     train_tok(model_type, model_name, ifile)
-    
+
 
 if __name__ == "__main__":
     mtype, mname, ifile = parse_arguments()
 
-    create_crf_model(mode, ifile, odir, max_items)
+    create_tok_model(mtype, mname, ifile)
