@@ -7,15 +7,20 @@ import json
 import os
 
 from deepsearch_glm import andromeda_glm
-from deepsearch_glm.glm_utils import create_glm_dir, \
-    create_glm_config_from_docs,\
-    create_glm_from_docs, \
-    load_glm, read_nodes_in_dataframe, read_edges_in_dataframe, \
-    show_query_result, expand_terms
+from deepsearch_glm.glm_utils import (
+    create_glm_config_from_docs,
+    create_glm_dir,
+    create_glm_from_docs,
+    expand_terms,
+    load_glm,
+    read_edges_in_dataframe,
+    read_nodes_in_dataframe,
+    show_query_result,
+)
 from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
 
-def get_dirs():
 
+def get_dirs():
     sdir = "./tests/data/glm/test_01A"
 
     if GENERATE:
@@ -23,13 +28,14 @@ def get_dirs():
         odir = os.path.join(sdir, "glm_ref")
     else:
         rdir = os.path.join(sdir, "glm_ref")
-        odir = os.path.join(sdir, "glm_out")    
+        odir = os.path.join(sdir, "glm_out")
 
     return sdir, rdir, odir
-        
+
+
 def test_01_load_nlp_models():
     """Tests to determine if NLP models are available"""
-    
+
     models = load_pretrained_nlp_models()
     print(f"models: {models}")
 
@@ -41,16 +47,16 @@ def test_01_load_nlp_models():
 
 def test_02A_create_glm_from_doc():
     """Tests to determine if GLM creation work"""
-    
+
     sdir, rdir, odir = get_dirs()
-    
+
     model_names = "spm;semantic;name;conn;verb;term;abbreviation"
-    
+
     json_files = glob.glob(os.path.join(sdir, "docs/*.json"))
 
     config = create_glm_config_from_docs(odir, json_files, model_names)
     print(json.dumps(config, indent=2))
-    
+
     glm = create_glm_from_docs(odir, json_files, model_names)
 
     with open(os.path.join(rdir, "topology.json")) as fr:
@@ -77,10 +83,10 @@ def test_02A_create_glm_from_doc():
 def test_02B_load_glm():
     """Tests to determine if GLM loading work"""
 
-    #idir = "./tests/data/glm/test_01A/glm_out"
+    # idir = "./tests/data/glm/test_01A/glm_out"
 
     sdir, rdir, odir = get_dirs()
-    
+
     glm = load_glm(odir)
     out_topo = glm.get_topology()
 
@@ -100,13 +106,13 @@ def test_02B_load_glm():
 
 def test_03A_query_glm():
     """Tests to determine if GLM queries work"""
-    
-    #idir = "./tests/data/glm/test_01A/glm_out"
+
+    # idir = "./tests/data/glm/test_01A/glm_out"
 
     sdir, rdir, odir = get_dirs()
-    
+
     nodes = read_nodes_in_dataframe(os.path.join(odir, "nodes.csv"))
-    #edges = read_edges_in_dataframe(os.path.join(odir, "edges.csv"))
+    # edges = read_edges_in_dataframe(os.path.join(odir, "edges.csv"))
 
     """
     subw_nodes = nodes[ nodes["name"]=="subw_token"]
@@ -119,20 +125,15 @@ def test_03A_query_glm():
 
     glm = load_glm(odir)
     out_topo = glm.get_topology()
-    
-    terms = nodes[ nodes["name"]=="term"]
-    #print("terms: \n", terms)
 
-    cnt=0
-    for i,row in terms.iterrows():
-        
+    terms = nodes[nodes["name"] == "term"]
+    # print("terms: \n", terms)
+
+    cnt = 0
+    for i, row in terms.iterrows():
         res = expand_terms(glm, row["nodes-text"])
         show_query_result(res)
 
         cnt += 1
-        if cnt>=100:
+        if cnt >= 100:
             break
-        
-        
-
-    

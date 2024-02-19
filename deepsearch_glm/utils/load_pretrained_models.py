@@ -25,8 +25,11 @@ def list_training_data(key: str, force: bool = False, verbose: bool = False):
     """Function to list the training data"""
 
     return []
-    
-def load_training_data(data_type:str, data_name: str, force: bool = False, verbose: bool = False):
+
+
+def load_training_data(
+    data_type: str, data_name: str, force: bool = False, verbose: bool = False
+):
     """Function to load data to train NLP models"""
 
     assert data_type in ["text", "crf"]
@@ -38,14 +41,13 @@ def load_training_data(data_type:str, data_name: str, force: bool = False, verbo
     cos_url = training_data["object-store"]
     cos_prfx = training_data["data"]["prefix"]
     cos_path = os.path.join(cos_url, cos_prfx)
-    
+
     cmds = {}
     for name, files in training_data["data"][data_type].items():
-
         if name == data_name:
             source = os.path.join(cos_path, files[0])
             target = os.path.join(resources_dir, files[1])
-            
+
             cmd = ["curl", source, "-o", target, "-s"]
             cmds[name] = cmd
 
@@ -74,7 +76,7 @@ def load_training_data(data_type:str, data_name: str, force: bool = False, verbo
         else:
             print(f" -> missing {name}")
 
-    return done, data        
+    return done, data
 
 
 def load_pretrained_nlp_models(force: bool = False, verbose: bool = False):

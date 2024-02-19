@@ -205,10 +205,15 @@ def eval_crf(model_name: str, train_file: str, model_file: str, metrics_file: st
         print(json.dumps(configs, indent=2))
         sys.exit(-1)
 
-        
-def train_tok(model_type: str, model_name: str, ifile: str,
-              vocab_size: int=4096, 
-              control_symbols: List[str]=[], user_symbols: List[str]=[]):
+
+def train_tok(
+    model_type: str,
+    model_name: str,
+    ifile: str,
+    vocab_size: int = 4096,
+    control_symbols: List[str] = [],
+    user_symbols: List[str] = [],
+):
     """Train a new tokenizer model"""
 
     model = nlp_model()
@@ -222,13 +227,14 @@ def train_tok(model_type: str, model_name: str, ifile: str,
             config["args"]["model-type"] = model_type
             config["args"]["model-name"] = model_name
             config["args"]["vocab-size"] = vocab_size
-            
+
             model.train(config)
             was_trained = True
 
     if not was_trained:
         print(json.dumps(configs, indent=2))
         sys.exit(-1)
+
 
 # To train a FST model with HPO, one can use
 #
