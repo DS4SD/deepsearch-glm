@@ -245,6 +245,7 @@ namespace andromeda
       //LOG_S(INFO) << "#-tokens: " << tokens.size();
       //LOG_S(INFO) << "#-subws: " << subw_tok_hashes.size();
       //LOG_S(INFO) << "#-words: " << word_tok_hashes.size();
+
       
       update_counters(TEXT, nodes, instances, subw_tok_hashes, text_hashes, table_hashes, docs_cnt);
       update_counters(TEXT, nodes, instances, word_tok_hashes, text_hashes, table_hashes, docs_cnt);
@@ -553,12 +554,15 @@ namespace andromeda
         {
 	  auto sinds = token.get_inds();
 	  auto subws = token.get_subws();
-	  assert(sinds.size()==subws.size());
 	  
 	  std::string text = token.get_word();
           std::string pos  = token.get_pos();
 
-	  //for(auto subw:subws)
+	  //LOG_S(INFO) << "text: " << text << ", pos: " << pos
+	  //<< "#-subw: " << subws.size()
+	  //<< "#-inds: " << sinds.size();
+	  
+	  assert(sinds.size()==subws.size());
 	  for(int l=0; l<sinds.size(); l++)
 	    {
 	      std::string subw = subws.at(l)+"__"+std::to_string(sinds.at(l))+"__";
@@ -709,7 +713,7 @@ namespace andromeda
     void model_creator::insert_edges(int padding, edges_type& edges,
                                      std::vector<hash_type>& hashes)
     {
-      if(padding>0)
+      if(padding>0 and hashes.size()>0)
         {
           edges.insert(edge_names::next, beg_text_hash, hashes.front(), false);
           edges.insert(edge_names::next, hashes.back(), end_text_hash, false);
