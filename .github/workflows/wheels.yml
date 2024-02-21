@@ -184,8 +184,8 @@ jobs:
           /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
           echo "step 1"
           ls -l wheelhouse
-          #/Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_12_0_arm64 ./wheelhouse/*.whl
-          /Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_12_0_arm64 ./wheelhouse/deepsearch_glm-0.12.2-cp${{matrix.python}}-cp${{matrix.python}}-macosx_12_0_x86_64.whl
+          /Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_12_0_arm64 ./wheelhouse/*.whl
+          #/Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_12_0_arm64 ./wheelhouse/deepsearch_glm-0.12.2-cp${{matrix.python}}-cp${{matrix.python}}-macosx_12_0_x86_64.whl
           echo "step 2"
           ls -l wheelhouse
           rm ./wheelhouse/*x86_64.whl
