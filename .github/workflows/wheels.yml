@@ -175,7 +175,7 @@ jobs:
           CIBW_SKIP: "pp* *-musllinux_* *_i686* *x86_64* *_s390*"
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           CIBW_BUILD_VERBOSITY: 3
-          #ARCHFLAGS=-arch arm64
+          ARCHFLAGS: -arch arm64
         run: |
           /Users/runner/.local/bin/poetry run python --version
           /Users/runner/.local/bin/poetry add cibuildwheel wheel
