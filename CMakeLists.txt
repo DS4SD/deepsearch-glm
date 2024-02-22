@@ -50,7 +50,12 @@ message(STATUS "  cmake path: " ${CMAKE_MODULE_PATH})
 message(STATUS "cmake system: " ${CMAKE_SYSTEM_PROCESSOR})
 #message(STATUS " python path: " ${})
 
-set(ENV_ARCHFLAGS $ENV{ARCHFLAGS})
+if(UNIX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+    set(ENV_ARCHFLAGS "-march=x86-64")
+else()
+    set(ENV_ARCHFLAGS $ENV{ARCHFLAGS})
+endif()
+
 message(STATUS "arch flags: " ${ENV_ARCHFLAGS})
 
 #add_compile_options(${ARCHFLAGS})
