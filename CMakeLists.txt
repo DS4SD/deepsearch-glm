@@ -50,6 +50,9 @@ message(STATUS "  cmake path: " ${CMAKE_MODULE_PATH})
 message(STATUS "cmake system: " ${CMAKE_SYSTEM_PROCESSOR})
 #message(STATUS " python path: " ${})
 
+message(STATUS "arch flags: " ${ARCHFLAGS})
+add_compile_options(${ARCHFLAGS})
+
 # ************************
 # ***  cxx-flags       ***
 # ************************
