@@ -329,7 +329,7 @@ def resolve_item(paths, obj):
         return None
 
 
-def to_legacy_document_format(doc_glm, doc_leg):
+def to_legacy_document_format(doc_glm, doc_leg={}):
     """Convert Document object (with `body`) to its legacy format (with `main-text`)"""
 
     doc_leg["main-text"] = []

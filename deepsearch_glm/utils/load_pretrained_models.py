@@ -44,6 +44,7 @@ def load_training_data(
 
     cmds = {}
     for name, files in training_data["data"][data_type].items():
+        print(name)
         if name == data_name:
             source = os.path.join(cos_path, files[0])
             target = os.path.join(resources_dir, files[1])
@@ -56,6 +57,7 @@ def load_training_data(
 
     for name, cmd in cmds.items():
         data_file = cmd[3]
+        print(data_file)
 
         if force or (not os.path.exists(data_file)):
             if verbose:

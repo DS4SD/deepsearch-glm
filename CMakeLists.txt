@@ -47,7 +47,8 @@ message(STATUS "    top path: " ${TOPLEVEL_PREFIX_PATH})
 message(STATUS "    lib path: " ${EXTERNALS_PREFIX_PATH})
 message(STATUS "install path: " ${CMAKE_INSTALL_PREFIX})
 message(STATUS "  cmake path: " ${CMAKE_MODULE_PATH})
-message(STATUS " python path: " ${})
+message(STATUS "cmake system: " ${CMAKE_SYSTEM_PROCESSOR})
+#message(STATUS " python path: " ${})
 
 # ************************
 # ***  cxx-flags       ***
@@ -173,8 +174,8 @@ target_link_libraries(andromeda_glm PRIVATE glm)
 
 # add the install targets
 
-install(TARGETS nlp.exe DESTINATION bin)
-install(TARGETS glm.exe DESTINATION bin)
+#install(TARGETS nlp.exe DESTINATION bin)
+#install(TARGETS glm.exe DESTINATION bin)
 
 install(TARGETS andromeda_structs DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
 install(TARGETS andromeda_nlp DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
