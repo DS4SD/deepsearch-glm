@@ -174,8 +174,8 @@ target_link_libraries(andromeda_glm PRIVATE glm)
 
 # add the install targets
 
-install(TARGETS nlp.exe DESTINATION bin)
-install(TARGETS glm.exe DESTINATION bin)
+#install(TARGETS nlp.exe DESTINATION bin)
+#install(TARGETS glm.exe DESTINATION bin)
 
 install(TARGETS andromeda_structs DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
 install(TARGETS andromeda_nlp DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
