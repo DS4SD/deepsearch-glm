@@ -9,7 +9,7 @@ include(CMakeParseArguments)
 set(FASTTEXT_URL https://github.com/PeterStaar-IBM/fastText.git)
 #set(FASTTEXT_TAG v0.9.2)
 
-set(CXX_FLAGS "-O3 ${ENV_ARCHFLAGS}")
+set(CXX_FLAGS "${ENV_ARCHFLAGS} -O3")
 
 ExternalProject_Add(extlib_fasttext
     PREFIX extlib_fasttext
