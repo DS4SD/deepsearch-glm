@@ -19,7 +19,7 @@ ExternalProject_Add(extlib_fmt
     UPDATE_COMMAND ""
     CMAKE_ARGS \\
     -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} \\
-    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} \\
+    -DCMAKE_CXX_FLAGS=${CMAKE_LIB_FLAGS} \\
     -DFMT_LIB_DIR=lib \\
     -DFMT_TEST=OFF \\
     -DFMT_DOC=OFF \\
