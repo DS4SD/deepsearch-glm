@@ -8,6 +8,8 @@ include(CMakeParseArguments)
 set(SENTENCEPIECE_URL https://github.com/google/sentencepiece.git)
 set(SENTENCEPIECE_TAG v0.1.99)
 
+message(STATUS "arch flags in spm: " ${ENV_ARCHFLAGS})
+
 ExternalProject_Add(extlib_sentencepiece
     PREFIX extlib_sentencepiece
 
@@ -18,7 +20,7 @@ ExternalProject_Add(extlib_sentencepiece
     CMAKE_ARGS \\
     -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} \\
     -DCMAKE_INSTALL_LIBDIR=lib \\
-    -DCMAKE_CXX_FLAGS=-O3 \\
+    -DCMAKE_CXX_FLAGS=-O3 ${ENV_ARCHFLAGS}\\
     -DSPM_BUILD_TEST=OFF \\
     -DSPM_COVERAGE=OFF \\
     -DSPM_ENABLE_NFKC_COMPILE=OFF \\
