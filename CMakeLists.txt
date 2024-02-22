@@ -50,8 +50,11 @@ message(STATUS "  cmake path: " ${CMAKE_MODULE_PATH})
 message(STATUS "cmake system: " ${CMAKE_SYSTEM_PROCESSOR})
 #message(STATUS " python path: " ${})
 
-message(STATUS "arch flags: " ${ARCHFLAGS})
+set(ENV_ARCHFLAGS $ENV{ARCHFLAGS})
+message(STATUS "arch flags: " ${ENV_ARCHFLAGS})
+
 add_compile_options(${ARCHFLAGS})
+message(STATUS "compile options: " ${COMPILE_OPTIONS})
 
 # ************************
 # ***  cxx-flags       ***
