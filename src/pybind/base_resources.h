@@ -25,7 +25,7 @@ namespace andromeda_py
   {
     set_resources_path();
   }
-
+  
   std::string base_resources::get_resources_path()
   {
     return andromeda::glm_variables::get_resources_dir(true);

@@ -9,19 +9,28 @@ import os
 from deepsearch_glm import andromeda_glm
 from deepsearch_glm.glm_utils import (
     create_glm_config_from_docs,
+    create_glm_config_from_texts,
     create_glm_dir,
+    create_glm_from_config,
     create_glm_from_docs,
+    create_glm_from_texts,
     expand_terms,
     load_glm,
     read_edges_in_dataframe,
     read_nodes_in_dataframe,
     show_query_result,
 )
-from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
+from deepsearch_glm.utils.load_pretrained_models import (
+    load_pretrained_nlp_models,
+    load_training_data,
+)
 
 
-def get_dirs():
-    sdir = "./tests/data/glm/test_01A"
+def get_dirs(test_name: str):
+    # sdir = "./tests/data/glm/test_01A"
+
+    sdir = os.path.join("./tests/data/glm", test_name)
+    os.makedirs(sdir, exist_ok=True)
 
     if GENERATE:
         rdir = os.path.join(sdir, "glm_ref")
@@ -33,7 +42,7 @@ def get_dirs():
     return sdir, rdir, odir
 
 
-def test_01_load_nlp_models():
+def test_01A_load_nlp_models():
     """Tests to determine if NLP models are available"""
 
     models = load_pretrained_nlp_models()
@@ -45,19 +54,33 @@ def test_01_load_nlp_models():
     assert "reference" in models
 
 
+def test_01B_load_data():
+    """Tests to determine if data are available"""
+
+    done, models = load_training_data(
+        data_type="text",
+        data_name="arxiv-abstracts-2020-Jan",
+        force=False,
+        verbose=True,
+    )
+
+    print(f"models: {models}")
+    assert done
+
+
 def test_02A_create_glm_from_doc():
     """Tests to determine if GLM creation work"""
 
-    sdir, rdir, odir = get_dirs()
+    sdir, rdir, odir = get_dirs(test_name="test_01A")
 
     model_names = "spm;semantic;name;conn;verb;term;abbreviation"
 
     json_files = glob.glob(os.path.join(sdir, "docs/*.json"))
 
-    config = create_glm_config_from_docs(odir, json_files, model_names)
-    print(json.dumps(config, indent=2))
+    # config = create_glm_config_from_docs(odir, json_files, model_names)
+    # print(json.dumps(config, indent=2))
 
-    glm = create_glm_from_docs(odir, json_files, model_names)
+    glm = create_glm_from_docs(odir, json_files, model_names, export_csv=True)
 
     with open(os.path.join(rdir, "topology.json")) as fr:
         ref_topo = json.load(fr)
@@ -84,8 +107,7 @@ def test_02B_load_glm():
     """Tests to determine if GLM loading work"""
 
     # idir = "./tests/data/glm/test_01A/glm_out"
-
-    sdir, rdir, odir = get_dirs()
+    sdir, rdir, odir = get_dirs(test_name="test_01A")
 
     glm = load_glm(odir)
     out_topo = glm.get_topology()
@@ -104,15 +126,32 @@ def test_02B_load_glm():
     assert ref_topo == out_topo
 
 
+def test_02C_create_glm_from_texts():
+    """Tests to determine if GLM creation work from texts"""
+
+    sdir, rdir, odir = get_dirs(test_name="test_02C")
+
+    model_names = "spm;semantic;name;conn;verb;term;abbreviation"
+
+    # json_files = glob.glob(os.path.join(sdir, "docs/*.json"))
+    json_files = ["deepsearch_glm/resources/data/text/arxiv-abstracts-2020-Jan.jsonl"]
+
+    config = create_glm_config_from_texts(odir, json_files, model_names)
+
+    # print(json.dumps(config, indent=2))
+    config["producers"][0]["key"] = "abstract"
+
+    glm = create_glm_from_config(config)
+
+
 def test_03A_query_glm():
     """Tests to determine if GLM queries work"""
 
     # idir = "./tests/data/glm/test_01A/glm_out"
-
-    sdir, rdir, odir = get_dirs()
+    sdir, rdir, odir = get_dirs(test_name="test_01A")
 
     nodes = read_nodes_in_dataframe(os.path.join(odir, "nodes.csv"))
-    # edges = read_edges_in_dataframe(os.path.join(odir, "edges.csv"))
+    edges = read_edges_in_dataframe(os.path.join(odir, "edges.csv"))
 
     """
     subw_nodes = nodes[ nodes["name"]=="subw_token"]
@@ -135,5 +174,5 @@ def test_03A_query_glm():
         show_query_result(res)
 
         cnt += 1
-        if cnt >= 100:
+        if cnt >= 5:
             break

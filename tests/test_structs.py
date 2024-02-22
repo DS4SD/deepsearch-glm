@@ -8,6 +8,7 @@ from tabulate import tabulate
 
 from deepsearch_glm.andromeda_structs import ds_document, ds_table, ds_text
 from deepsearch_glm.nlp_utils import init_nlp_model
+from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
 
 TEXTS = [
     """Anarchism is a political philosophy and movement that is sceptical
@@ -47,6 +48,15 @@ TABLES = [
 
 def to_dataframe(obj):
     return pd.DataFrame(obj["data"], columns=obj["headers"])
+
+
+def test_0A_load_nlp_models():
+    models = load_pretrained_nlp_models(force=True, verbose=True)
+
+    assert "language" in models
+    assert "semantic" in models
+    assert "name" in models
+    assert "reference" in models
 
 
 def test_01A():
