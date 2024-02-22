@@ -159,7 +159,9 @@ def create_glm_from_docs(
     glm = glm_model()
     glm.set_loglevel("WARNING")
 
-    config = create_glm_config_from_docs(odir, json_files, nlp_models, export_csv=False)
+    config = create_glm_config_from_docs(
+        odir, json_files, nlp_models, export_csv=export_csv
+    )
     glm.create(config)
 
     return odir, glm
