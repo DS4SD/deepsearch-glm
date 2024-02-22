@@ -8,6 +8,8 @@ include(CMakeParseArguments)
 set(FMT_URL https://github.com/fmtlib/fmt.git)
 set(FMT_TAG 10.2.1)
 
+message(STATUS "extlib_fmt cxx-flags: " ${CMAKE_CXX_FLAGS})
+
 ExternalProject_Add(extlib_fmt
     PREFIX extlib_fmt
 
