@@ -9,6 +9,8 @@ include(CMakeParseArguments)
 set(FASTTEXT_URL https://github.com/PeterStaar-IBM/fastText.git)
 #set(FASTTEXT_TAG v0.9.2)
 
+set(CXX_FLAGS "-O3 ${ENV_ARCHFLAGS}")
+
 ExternalProject_Add(extlib_fasttext
     PREFIX extlib_fasttext
 
@@ -22,7 +24,7 @@ ExternalProject_Add(extlib_fasttext
 
     CMAKE_ARGS \\
     -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} \\
-    -DCMAKE_CXX_FLAGS="-O3 ${ENV_ARCHFLAGS}"
+    -DCMAKE_CXX_FLAGS=${CXX_FLAGS}
     
     #-DCMAKE_CXX_FLAGS=-O3
 

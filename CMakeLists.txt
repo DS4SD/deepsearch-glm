@@ -53,8 +53,8 @@ message(STATUS "cmake system: " ${CMAKE_SYSTEM_PROCESSOR})
 set(ENV_ARCHFLAGS $ENV{ARCHFLAGS})
 message(STATUS "arch flags: " ${ENV_ARCHFLAGS})
 
-add_compile_options(${ARCHFLAGS})
-message(STATUS "compile options: " ${COMPILE_OPTIONS})
+#add_compile_options(${ARCHFLAGS})
+#message(STATUS "compile options: " ${COMPILE_OPTIONS})
 
 # ************************
 # ***  cxx-flags       ***
