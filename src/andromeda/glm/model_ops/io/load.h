@@ -221,7 +221,7 @@ namespace andromeda
         ifs.read((char*)&N, sizeof(N));
 	
         LOG_S(INFO) << "  #-edges: " << N;
-	std::size_t D = N/1000;
+	//std::size_t D = N/1000;
 
 	LOG_S(INFO) << "  reading edges:";
         for(std::size_t i=0; i<N; i++)
