@@ -74,8 +74,22 @@ def read_edges_in_dataframe(edge_file: str):
     return df
 
 
+def create_glm_from_config(config: dict):
+    """Function to create config to create GLM"""
+
+    glm = glm_model()
+    glm.set_loglevel("WARNING")
+
+    glm.create(config)
+
+    return config["IO"]["save"]["root"], glm
+
+
 def create_glm_config_from_docs(
-    odir: str, json_files: List[str], nlp_models: str = "conn;verb;term;abbreviation"
+    odir: str,
+    json_files: List[str],
+    nlp_models: str = "conn;verb;term;abbreviation",
+    export_csv=True,
 ):
     """Function to create GLM configuration"""
 
@@ -84,7 +98,7 @@ def create_glm_config_from_docs(
             "load": {"root": odir},
             "save": {
                 "root": odir,
-                "write-CSV": True,
+                "write-CSV": export_csv,
                 "write-JSON": False,
                 "write-path-text": False,
             },
@@ -135,13 +149,97 @@ def create_glm_config_from_docs(
 
 
 def create_glm_from_docs(
-    odir: str, json_files: List[str], nlp_models: str = "conn;verb;term;abbreviation"
+    odir: str,
+    json_files: List[str],
+    nlp_models: str = "conn;verb;term;abbreviation",
+    export_csv=False,
 ):
     """Function to create GLM from documents."""
 
-    config = create_glm_config_from_docs(odir, json_files, nlp_models)
+    glm = glm_model()
+    glm.set_loglevel("WARNING")
+
+    config = create_glm_config_from_docs(odir, json_files, nlp_models, export_csv=False)
+    glm.create(config)
+
+    return odir, glm
+
+
+def create_glm_config_from_texts(
+    odir: str,
+    json_files: List[str],
+    nlp_models: str = "conn;verb;term;abbreviation",
+    export_csv=True,
+):
+    """Function to create GLM configuration"""
+
+    config = {
+        "IO": {
+            "load": {"root": odir},
+            "save": {
+                "root": odir,
+                "write-CSV": export_csv,
+                "write-JSON": False,
+                "write-path-text": False,
+            },
+        },
+        "create": {
+            "enforce-max-size": False,
+            "model": {"max-edges": 1e8, "max-nodes": 1e7},
+            "number-of-threads": 4,
+            "worker": {
+                "local-reading-break": True,
+                "local-reading-range": [256, 2560],
+                "max-edges": 1e7,
+                "max-nodes": 1e6,
+            },
+            "write-nlp-output": False,
+        },
+        "mode": "create",
+        "parameters": {
+            "glm-padding": 1,
+            "glm-paths": {
+                "keep-concatenation": True,
+                "keep-connectors": True,
+                "keep-terms": True,
+                "keep-verbs": True,
+                "keep-sentences": True,
+                "keep-tables": True,
+                "keep-texts": True,
+                "keep-docs": True,
+            },
+            "nlp-models": nlp_models,
+        },
+        "producers": [
+            {
+                "input-format": "jsonl",
+                "input-max-documents": 1e9,
+                "input-paths": json_files,
+                "key": "text",
+                "output": False,
+                "output-format": "annot.jsonl",
+                "output-path": os.path.join(odir, "annots"),
+                "start-line": 0,
+                "subject-type": "TEXT",
+            },
+        ],
+    }
+
+    return config
+
+
+def create_glm_from_texts(
+    odir: str,
+    json_files: List[str],
+    nlp_models: str = "conn;verb;term;abbreviation",
+    export_csv=True,
+):
+    """Function to create GLM from texts in JSONL-files."""
 
     glm = glm_model()
+    glm.set_loglevel("WARNING")
+
+    config = create_glm_config_from_texts(odir, json_files, nlp_models, export_csv)
     glm.create(config)
 
     return odir, glm

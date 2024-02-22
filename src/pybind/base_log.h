@@ -3,6 +3,8 @@
 #ifndef PYBIND_ANDROMEDA_BASE_LOG_H
 #define PYBIND_ANDROMEDA_BASE_LOG_H
 
+#include <loguru.hpp>
+
 namespace andromeda_py
 {
   
@@ -11,10 +13,14 @@ namespace andromeda_py
   public:
 
     base_log();
+
+    bool set_loglevel(std::string level);
   };
   
   base_log::base_log()
   {
+    loguru::g_stderr_verbosity = loguru::Verbosity_WARNING;
+    
     /*
     std::string symbol="-v";
     std::string verbosity="WARNING";
@@ -29,6 +35,31 @@ namespace andromeda_py
     */
   }
 
+  bool base_log::set_loglevel(std::string level)
+  {
+    if(level=="INFO")
+      {
+	loguru::g_stderr_verbosity = loguru::Verbosity_INFO;
+      }
+    else if(level=="WARNING")
+      {
+	loguru::g_stderr_verbosity = loguru::Verbosity_WARNING;
+      }
+    else if(level=="ERROR")
+      {
+	loguru::g_stderr_verbosity = loguru::Verbosity_ERROR;
+      }
+    else
+      {
+	loguru::g_stderr_verbosity = loguru::Verbosity_WARNING;
+	return false;
+      }
+
+    return true;
+  }
+  
+
+  
 }
 
 #endif
