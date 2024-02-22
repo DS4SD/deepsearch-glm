@@ -77,10 +77,10 @@ def test_02A_create_glm_from_doc():
 
     json_files = glob.glob(os.path.join(sdir, "docs/*.json"))
 
-    config = create_glm_config_from_docs(odir, json_files, model_names)
+    # config = create_glm_config_from_docs(odir, json_files, model_names)
     # print(json.dumps(config, indent=2))
 
-    glm = create_glm_from_docs(odir, json_files, model_names)
+    glm = create_glm_from_docs(odir, json_files, model_names, export_csv=True)
 
     with open(os.path.join(rdir, "topology.json")) as fr:
         ref_topo = json.load(fr)
@@ -151,7 +151,7 @@ def test_03A_query_glm():
     sdir, rdir, odir = get_dirs(test_name="test_01A")
 
     nodes = read_nodes_in_dataframe(os.path.join(odir, "nodes.csv"))
-    # edges = read_edges_in_dataframe(os.path.join(odir, "edges.csv"))
+    edges = read_edges_in_dataframe(os.path.join(odir, "edges.csv"))
 
     """
     subw_nodes = nodes[ nodes["name"]=="subw_token"]

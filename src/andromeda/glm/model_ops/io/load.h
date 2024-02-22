@@ -226,10 +226,10 @@ namespace andromeda
 	LOG_S(INFO) << "  reading edges:";
         for(std::size_t i=0; i<N; i++)
           {
-	    if(((i%D)==0) or (i+1)==N)
-	      {
-		std::cout << "\r completion: " << std::fixed << 100*double(i+1)/double(N) << std::flush;
-	      }
+	    //if(((i%D)==0) or (i+1)==N)
+	    //{
+	    //std::cout << "\r completion: " << std::fixed << 100*double(i+1)/double(N) << std::flush;
+	    //}
 	    
 	    base_edge edge;
             ifs >> edge;

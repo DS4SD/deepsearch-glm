@@ -47,7 +47,8 @@ message(STATUS "    top path: " ${TOPLEVEL_PREFIX_PATH})
 message(STATUS "    lib path: " ${EXTERNALS_PREFIX_PATH})
 message(STATUS "install path: " ${CMAKE_INSTALL_PREFIX})
 message(STATUS "  cmake path: " ${CMAKE_MODULE_PATH})
-message(STATUS " python path: " ${})
+message(STATUS "cmake system: " ${CMAKE_SYSTEM_PROCESSOR})
+#message(STATUS " python path: " ${})
 
 # ************************
 # ***  cxx-flags       ***
