@@ -49,6 +49,10 @@ def to_dataframe(obj):
     return pd.DataFrame(obj["data"], columns=obj["headers"])
 
 
+def test_0A_load_nlp_models():
+    models = load_pretrained_nlp_models(force=True, verbose=True)
+
+
 def test_01A():
     subj = ds_text()
     print(subj)
