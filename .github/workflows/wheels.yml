@@ -169,7 +169,7 @@ jobs:
         if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_arm64'}}
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
-          #CIBW_ARCHS: arm64
+          CIBW_ARCHS: arm64
           CIBW_ARCHS_MACOS: arm64
           CIBW_PLATFORM: macos
           CIBW_SKIP: "pp* *-musllinux_* *_i686* *x86_64* *_s390*"

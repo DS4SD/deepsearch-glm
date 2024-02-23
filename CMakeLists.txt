@@ -54,13 +54,14 @@ message(STATUS "cmake system: " ${CMAKE_SYSTEM_PROCESSOR})
 #if(UNIX)
 #set(ENV_ARCHFLAGS "-march=x86-64")
 #else()
-set(ENV_ARCHFLAGS $ENV{ARCHFLAGS})
+
 #endif()
 
-message(STATUS "arch flags: " ${ENV_ARCHFLAGS})
+set(ENV_ARCH $ENV{CIBW_ARCHS})
+message(STATUS "cibw arch: " ${ENV_ARCH})
 
-#add_compile_options(${ARCHFLAGS})
-#message(STATUS "compile options: " ${COMPILE_OPTIONS})
+set(ENV_ARCHFLAGS $ENV{ARCHFLAGS})
+message(STATUS "arch flags: " ${ENV_ARCHFLAGS})
 
 # ************************
 # ***  cxx-flags       ***
