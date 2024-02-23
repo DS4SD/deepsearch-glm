@@ -8,6 +8,8 @@ include(CMakeParseArguments)
 set(FMT_URL https://github.com/fmtlib/fmt.git)
 set(FMT_TAG 10.2.1)
 
+message(STATUS "extlib_fmt cxx-flags: " ${CMAKE_CXX_FLAGS})
+
 ExternalProject_Add(extlib_fmt
     PREFIX extlib_fmt
 
@@ -15,7 +17,17 @@ ExternalProject_Add(extlib_fmt
     GIT_TAG ${FMT_TAG}
 
     UPDATE_COMMAND ""
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} -DCMAKE_CXX_FLAGS=-O3 -DFMT_LIB_DIR=lib -DFMT_TEST=OFF -DFMT_DOC=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=TRUE  #-DFMT_INSTALL=OFF 
+    CMAKE_ARGS \\
+    -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} \\
+    -DCMAKE_CXX_FLAGS=${CMAKE_LIB_FLAGS} \\
+    -DFMT_LIB_DIR=lib \\
+    -DFMT_TEST=OFF \\
+    -DFMT_DOC=OFF \\
+    -DCMAKE_POSITION_INDEPENDENT_CODE=TRUE
+
+    #-DCMAKE_CXX_FLAGS=${ENV_ARCHFLAGS};-O3 \\
+    #-DCMAKE_CXX_FLAGS=-O3 \\
+    #-DFMT_INSTALL=OFF 
 
     INSTALL_DIR ${EXTERNALS_PREFIX_PATH}
 

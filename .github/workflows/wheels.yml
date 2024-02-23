@@ -169,22 +169,27 @@ jobs:
         if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_arm64'}}
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
-          #CIBW_ARCHS: arm64
+          CIBW_ARCHS: arm64
           CIBW_ARCHS_MACOS: arm64
           CIBW_PLATFORM: macos
           CIBW_SKIP: "pp* *-musllinux_* *_i686* *x86_64* *_s390*"
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           CIBW_BUILD_VERBOSITY: 3
+          ARCHFLAGS: -arch arm64
         run: |
           /Users/runner/.local/bin/poetry run python --version
           /Users/runner/.local/bin/poetry add cibuildwheel wheel
           #/Users/runner/.local/bin/poetry install
           cat ./pyproject.toml
           /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
+          echo "step 1"
           ls -l wheelhouse
           /Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_12_0_arm64 ./wheelhouse/*.whl
+          #/Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_12_0_arm64 ./wheelhouse/deepsearch_glm-0.12.2-cp${{matrix.python}}-cp${{matrix.python}}-macosx_12_0_x86_64.whl
+          echo "step 2"
           ls -l wheelhouse
-          rm ./wheelhouse/*x86_64.whl 
+          rm ./wheelhouse/*x86_64.whl
+          echo "step 3"
           ls -l wheelhouse
           /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
           mkdir ./dist

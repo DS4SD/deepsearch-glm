@@ -50,6 +50,19 @@ message(STATUS "  cmake path: " ${CMAKE_MODULE_PATH})
 message(STATUS "cmake system: " ${CMAKE_SYSTEM_PROCESSOR})
 #message(STATUS " python path: " ${})
 
+# AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+#if(UNIX)
+#set(ENV_ARCHFLAGS "-march=x86-64")
+#else()
+
+#endif()
+
+set(ENV_ARCH $ENV{CIBW_ARCHS})
+message(STATUS "cibw arch: " ${ENV_ARCH})
+
+set(ENV_ARCHFLAGS $ENV{ARCHFLAGS})
+message(STATUS "arch flags: " ${ENV_ARCHFLAGS})
+
 # ************************
 # ***  cxx-flags       ***
 # ************************
@@ -57,12 +70,15 @@ message(STATUS "cmake system: " ${CMAKE_SYSTEM_PROCESSOR})
 set(CMAKE_CXX_STANDARD          20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -Ofast -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -Ofast -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O2 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O1 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O0 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -g3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -g3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' -arch arm64")
+
+set(CMAKE_LIB_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ${ENV_ARCHFLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ${ENV_ARCHFLAGS}")
 
 message(STATUS "cxx-compiler: " ${CMAKE_CXX_COMPILER})
 message(STATUS "cxx-flags   : " ${CMAKE_CXX_FLAGS})
