@@ -59,6 +59,13 @@ namespace andromeda
 	  model = std::make_shared<model_type>();	  	  	  
 	}
 	break;
+
+      case CUSTOM_SPM:
+	{
+	  typedef nlp_model<TOK, CUSTOM_SPM> model_type;
+	  model = std::make_shared<model_type>();	  	  	  
+	}
+	break;
 	
       default:
 	{
@@ -195,6 +202,13 @@ namespace andromeda
 	}
 	break;	
 
+      case CUSTOM_SPM:
+	{
+	  typedef nlp_model<TOK, CUSTOM_SPM> model_type;
+	  model = std::make_shared<model_type>(desc);	  	  	  
+	}
+	break;
+	
       case CUSTOM_CRF:
 	{
 	  typedef nlp_model<ENT, CUSTOM_CRF> model_type;

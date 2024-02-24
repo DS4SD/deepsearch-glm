@@ -685,6 +685,19 @@ def test_07B():
     assert os.path.exists(model_name + ".vocab")
 
 
+# load custom tokenizer
+def test_07C():
+    model_name = "test-tokenizer-model"
+    model_file = f"{model_name}.model"
+
+    assert os.path.exists(model_file)
+
+    model = init_nlp_model(
+        f"language;custom_spm({model_name}:{model_file})",
+        filters=["properties", "instances"],
+    )
+
+
 """
 def test_05A_train_semantic():
 

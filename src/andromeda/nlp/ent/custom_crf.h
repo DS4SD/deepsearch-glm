@@ -41,7 +41,6 @@ namespace andromeda
     const static inline std::set<model_name> dependencies = {};
 
     std::string custom_name, custom_file;
-    
     std::filesystem::path model_file;
   };
 

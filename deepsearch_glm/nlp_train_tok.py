@@ -63,7 +63,7 @@ examples of execution:
 def create_tok_model(model_type: str, model_name: str, ifile: str):
     """Create a new tokenizer from a text-file"""
 
-    train_tok(model_type, model_name, ifile)
+    return train_tok(model_type, model_name, ifile)
 
 
 if __name__ == "__main__":
