@@ -49,6 +49,7 @@ namespace andromeda
      REFERENCE=601,
 
      CUSTOM_CRF=666,
+     CUSTOM_SPM=667,
      
      // POS-patterns
      CONN=700,
@@ -90,6 +91,7 @@ namespace andromeda
      SENTENCE,
      REFERENCE,
 
+     CUSTOM_SPM,
      CUSTOM_CRF,
           
      // POS-patterns
@@ -137,6 +139,7 @@ namespace andromeda
 	//case LOCATION: return "LOCATION";
 	//case ORGANISATION: return "ORGANISATION";
 
+      case CUSTOM_SPM: return "CUSTOM_SPM";
       case CUSTOM_CRF: return "CUSTOM_CRF";
 	
       case CONN: return "CONN";
@@ -155,6 +158,11 @@ namespace andromeda
   {
     std::string uname = utils::to_upper(utils::strip(name));
 
+    if(uname.starts_with(to_string(CUSTOM_SPM)))
+      {
+	return CUSTOM_SPM;
+      }
+    
     if(uname.starts_with(to_string(CUSTOM_CRF)))
       {
 	return CUSTOM_CRF;

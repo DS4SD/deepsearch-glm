@@ -57,11 +57,16 @@ def list_nlp_model_configs():
     return configs
 
 
-def init_nlp_model(model_names: str = "language;term", filters: List[str] = []):
+def init_nlp_model(
+    model_names: str = "language;term",
+    filters: List[str] = [],
+    loglevel: str = "WARNING",
+):
     """Function to initialise NLP models"""
 
     # model = andromeda_nlp.nlp_model()
     model = nlp_model()
+    model.set_loglevel(loglevel)
 
     configs = model.get_apply_configs()
     # print(json.dumps(configs, indent=2))
@@ -228,12 +233,14 @@ def train_tok(
             config["args"]["model-name"] = model_name
             config["args"]["vocab-size"] = vocab_size
 
-            model.train(config)
-            was_trained = True
+            was_trained = model.train(config)
+            break
 
     if not was_trained:
         print(json.dumps(configs, indent=2))
         sys.exit(-1)
+
+    return was_trained, config
 
 
 # To train a FST model with HPO, one can use

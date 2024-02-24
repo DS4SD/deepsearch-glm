@@ -41,12 +41,14 @@ def load_glm_config(idir: str):
     return config
 
 
-def load_glm(idir: str):
+def load_glm(idir: str, loglevel: str = "WARNING"):
     """Function to load GLM"""
 
     config = load_glm_config(idir)
 
     glm = glm_model()
+    glm.set_loglevel(loglevel)
+
     glm.load(config)
 
     return glm
@@ -74,11 +76,11 @@ def read_edges_in_dataframe(edge_file: str):
     return df
 
 
-def create_glm_from_config(config: dict):
+def create_glm_from_config(config: dict, loglevel: str = "WARNING"):
     """Function to create config to create GLM"""
 
     glm = glm_model()
-    glm.set_loglevel("WARNING")
+    glm.set_loglevel(loglevel)
 
     glm.create(config)
 

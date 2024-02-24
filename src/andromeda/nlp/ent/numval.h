@@ -104,6 +104,12 @@ namespace andromeda
       pcre2_expr expr(this->get_key(), "fval", R"((?<value>((\-)?(\d+(\.|\,)\d+)\s*(\-+)?\s*((\-)?\d+(\.|\,)\d+))))");
       exprs.push_back(expr);
     }
+
+    // floating value range `4.5-8` 
+    {
+      pcre2_expr expr(this->get_key(), "fval", R"((?<value>((\-)?(\d+(\.|\,)\d+)\s*(\-+)?\s*((\-)?\d+))))");
+      exprs.push_back(expr);
+    }
     
     // floating value 3.14
     {
