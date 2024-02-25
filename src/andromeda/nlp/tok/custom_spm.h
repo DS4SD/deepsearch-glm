@@ -23,6 +23,13 @@ namespace andromeda
     virtual model_type get_type() { return TOK; }
     virtual model_name get_name() { return CUSTOM_SPM; }
 
+    virtual std::string get_key() {
+      std::stringstream ss;
+      ss << to_key(this->get_name()) << "(" << custom_name << ":" << custom_file << ")";
+      
+      return ss.str();
+    }
+    
     virtual bool apply(subject<TEXT>& subj);
 
   private:
@@ -51,7 +58,7 @@ namespace andromeda
     SPACE_IND(-1),
     ind_without_space({})
   {
-    pcre2_expr expr("custom-crf", "", R"(custom_spm\((?P<name>([a-zA-Z\-]+))\:(?P<file>(.+))\))");
+    pcre2_expr expr("custom-spm", "", R"(custom_spm\((?P<name>([a-zA-Z\-]+))\:(?P<file>(.+))\))");
     
     pcre2_item item;
     if(expr.match(desc, item))
@@ -77,7 +84,7 @@ namespace andromeda
       }
     else
       {
-	LOG_S(ERROR) << "could not initialise custom-crf with desc: " << desc;
+	LOG_S(ERROR) << "could not initialise custom-spm with desc: " << desc;
       }
     
     this->load(model_file, false);
