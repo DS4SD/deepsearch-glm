@@ -26,6 +26,13 @@ namespace andromeda
     virtual model_type get_type() { return ENT; }
     virtual model_name get_name() { return CUSTOM_CRF; }
 
+    virtual std::string get_key() {
+      std::stringstream ss;
+      ss << to_key(this->get_name()) << "(" << custom_name << ":" << custom_file << ")";
+      
+      return ss.str();
+    }
+    
     virtual bool apply(subject<TEXT>& subj);
 
   private:

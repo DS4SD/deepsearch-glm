@@ -176,7 +176,8 @@ def train_crf(model_name: str, train_file: str, model_file: str, metrics_file: s
 
     was_trained = False
     for config in configs:
-        if config["mode"] == "train" and config["model"] == model_name:
+        if config["mode"] == "train" and config["model"].startswith("custom_crf"):
+            config["files"]["model-name"] = model_name
             config["files"]["model-file"] = model_file
             config["files"]["train-file"] = train_file
             config["files"]["metrics-file"] = metrics_file
@@ -198,7 +199,8 @@ def eval_crf(model_name: str, train_file: str, model_file: str, metrics_file: st
 
     was_trained = False
     for config in configs:
-        if config["mode"] == "train" and config["model"] == model_name:
+        if config["mode"] == "train" and config["model"].startswith("custom_crf"):
+            config["files"]["model-name"] = model_name
             config["files"]["model-file"] = model_file
             config["files"]["train-file"] = train_file
             config["files"]["metrics-file"] = metrics_file
