@@ -13,6 +13,8 @@ namespace andromeda
 					    std::set<typename query_baseop::flow_id_type> deps,
 					    const nlohmann::json& config)
     {
+      //LOG_S(INFO) << "config: " << config.dump(2);
+      
       std::shared_ptr<query_baseop> op(NULL);
       
       switch(flop)

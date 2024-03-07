@@ -95,6 +95,8 @@ namespace andromeda
 
     bool query_flowop<SUBGRAPH>::from_config(const nlohmann::json& config)
     {
+      query_baseop::set_output_parameters(config);
+      
       nlohmann::json params = config;
       if(config.count(parameters_lbl))
 	{

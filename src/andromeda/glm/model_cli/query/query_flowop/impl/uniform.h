@@ -14,14 +14,6 @@ namespace andromeda
 
       typedef query_baseop baseop_type;
 
-      //typedef typename baseop_type::index_type index_type;
-      //typedef typename baseop_type::value_type value_type;
-
-      //typedef typename baseop_type::flow_id_type flow_id_type;
-
-      //typedef typename baseop_type::glm_node_type glm_node_type;
-      //typedef typename baseop_type::qry_node_type qry_node_type;
-
       typedef typename baseop_type::results_type results_type;
 
     public:
@@ -72,6 +64,8 @@ namespace andromeda
     
     bool query_flowop<UNIFORM>::from_config(const nlohmann::json& config)
     {
+      query_baseop::set_output_parameters(config);
+      
       try
 	{
 	  const nlohmann::json& params = config.at(parameters_lbl);

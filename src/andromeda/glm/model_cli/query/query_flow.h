@@ -215,6 +215,8 @@ namespace andromeda
     template<typename model_type>
     bool query_flow<model_type>::from_config(const nlohmann::json& config)
     {
+      //LOG_S(INFO) << "config: " << config.dump(2);
+      
       if(config.count(flow_lbl)==0 or
 	 (not config[flow_lbl].is_array()))
 	{
@@ -289,10 +291,10 @@ namespace andromeda
 
           data.push_back(row);
         }
-
+      
       std::stringstream capt;
       capt << "TTS [msec]: " << delta_t.count();
-
+      
       LOG_S(INFO) << utils::to_string(capt.str(), header, data);
     }
 

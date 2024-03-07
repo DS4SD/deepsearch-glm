@@ -115,12 +115,14 @@ namespace andromeda
 
     bool query_flowop<FILTER>::from_config(const nlohmann::json& config)
     {
+      query_baseop::set_output_parameters(config);
+      
       nlohmann::json params = config;
       if(config.count(parameters_lbl))
         {
           params = config.at(parameters_lbl);
         }
-
+      
       mode = "undef";
       if(params.count(flavors_lbl))
         {

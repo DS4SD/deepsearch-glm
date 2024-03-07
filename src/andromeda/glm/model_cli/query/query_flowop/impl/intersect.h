@@ -17,12 +17,6 @@ namespace andromeda
       query_flowop(std::shared_ptr<model_type> model,
 		   flow_id_type flid, std::set<flow_id_type> dependencies,
 		   const nlohmann::json& config);
-
-      /*
-      query_flowop(flow_id_type flid,
-                   std::shared_ptr<model_type> model,
-                   std::set<flow_id_type> sources);
-      */
       
       virtual ~query_flowop();
 
@@ -67,6 +61,8 @@ namespace andromeda
     
     bool query_flowop<INTERSECT>::from_config(const nlohmann::json& config)
     {
+      query_baseop::set_output_parameters(config);
+            
       nlohmann::json params = config;
       if(config.count(parameters_lbl))
 	{
@@ -76,11 +72,6 @@ namespace andromeda
       try
 	{
 	  mode = params.value("mode", mode);
-	  
-	  //const nlohmann::json& params = config.at(parameters_lbl);
-	  //sources = params["sources"].get<std::set<flow_id_type> >();
-
-	  
 	}
       catch(std::exception& exc)
 	{
@@ -91,17 +82,6 @@ namespace andromeda
       return true;
     }
 
-    /*
-    query_flowop<INTERSECT>::query_flowop(flow_id_type flid,
-                                          std::shared_ptr<model_type> model,
-                                          std::set<flow_id_type> sources):
-      query_baseop(model, NAME, flid, sources),
-      sources(sources)
-    {
-      LOG_S(INFO) << to_string(NAME);
-    }
-    */
-    
     query_flowop<INTERSECT>::~query_flowop()
     {}
 
