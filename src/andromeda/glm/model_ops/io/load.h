@@ -155,20 +155,10 @@ namespace andromeda
 	
         std::size_t N=0;
         ifs.read((char*)&N, sizeof(N));
-
-	//std::size_t D = N/100;
 	
         LOG_S(INFO) << "#-nodes: " << N << " => start reading ...";
         for(std::size_t i=0; i<N; i++)
           {
-	    /*
-	    if(((i%D)==0) or (i+1)==N)
-	      {
-		std::cout << "\r completion: " << std::fixed
-			  << 100*double(i+1)/double(N) << std::flush;
-	      }
-	    */
-	    
             base_node node;
             ifs >> node;
 
@@ -181,16 +171,8 @@ namespace andromeda
 		nodes.push_back(node);
 	      }
 	  }
-	std::cout << "\n";
       }
 
-      /*
-      {
-	auto& nodes = model_ptr->get_nodes();
-	LOG_S(INFO) << "modes are consistent: " << (nodes.is_consistent()? "true":"false");
-      }
-      */
-      
       {
         auto& edges = model_ptr->get_edges();
         edges.clear();
@@ -202,6 +184,8 @@ namespace andromeda
         std::size_t M=0;
         ifs.read((char*)&M, sizeof(M));
 
+	LOG_S(INFO) << "#-flavor-edges: " << M;
+	
 	std::map<flvr_type, std::pair<std::size_t, bool> > overview;
         for(std::size_t i=0; i<M; i++)
 	  {
@@ -216,25 +200,15 @@ namespace andromeda
 	    overview[flvr] = std::pair<std::size_t, bool>(K,sorted);
 	  }
 	
-        std::size_t N=0;
-	
+        std::size_t N=0;	
         ifs.read((char*)&N, sizeof(N));
 	
-        LOG_S(INFO) << "  #-edges: " << N;
-	//std::size_t D = N/1000;
-
-	LOG_S(INFO) << "  reading edges:";
+        LOG_S(INFO) << "#-edges: " << N << " => start reading ...";
         for(std::size_t i=0; i<N; i++)
           {
-	    //if(((i%D)==0) or (i+1)==N)
-	    //{
-	    //std::cout << "\r completion: " << std::fixed << 100*double(i+1)/double(N) << std::flush;
-	    //}
-	    
 	    base_edge edge;
             ifs >> edge;
 
-	    //edges.push_back(edge, false);
 	    if(read_edges_incremental)
 	      {
 		edges.insert(edge, false);		
@@ -244,9 +218,6 @@ namespace andromeda
 		edges.push_back(edge, read_edges_incremental);
 	      }	    
           }
-	std::cout << "\n";
-
-	//edges.init_hashmap();
 	
 	for(auto itr=overview.begin(); itr!=overview.end(); itr++)
 	  {

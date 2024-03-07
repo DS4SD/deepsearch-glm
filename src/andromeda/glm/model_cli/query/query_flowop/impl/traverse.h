@@ -75,6 +75,8 @@ namespace andromeda
     
     bool query_flowop<TRAVERSE>::from_config(const nlohmann::json& config)
     {
+      query_baseop::set_output_parameters(config);
+      
       nlohmann::json params = config;
       if(config.count(parameters_lbl))
 	{
@@ -96,17 +98,6 @@ namespace andromeda
       return true;
     }    
 
-    /*
-    query_flowop<TRAVERSE>::query_flowop(flow_id_type flid,
-                                         std::shared_ptr<model_type> model,
-                                         short edge_flavor, flow_id_type source_id):
-      query_baseop(model, NAME, flid, {source_id}),
-
-      edge_flavor(edge_flavor),
-      source_id(source_id)
-    {}
-    */
-    
     query_flowop<TRAVERSE>::~query_flowop()
     {}
 

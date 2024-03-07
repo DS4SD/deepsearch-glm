@@ -15,9 +15,6 @@ namespace andromeda
 
       typedef query_baseop baseop_type;
 
-      //typedef typename baseop_type::model_type model_type;
-      //typedef typename baseop_type::results_type results_type;
-
     public:
 
       query_flowop(std::shared_ptr<model_type> model,
@@ -94,6 +91,8 @@ namespace andromeda
     
     bool query_flowop<SELECT>::from_config(const nlohmann::json& config)
     {
+      query_baseop::set_output_parameters(config);
+      
       nlohmann::json params = config;
       if(config.count(parameters_lbl))
 	{

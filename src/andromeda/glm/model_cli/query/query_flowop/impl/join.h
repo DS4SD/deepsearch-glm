@@ -18,12 +18,6 @@ namespace andromeda
 		   flow_id_type id, std::set<flow_id_type> dependencies,
 		   const nlohmann::json& config);
 
-      /*
-      query_flowop(flow_id_type id,
-                   std::shared_ptr<model_type> model,
-                   std::set<flow_id_type> sources);
-      */
-      
       virtual ~query_flowop();
 
       virtual nlohmann::json to_config();// { return nlohmann::json::object({}); }
@@ -68,6 +62,8 @@ namespace andromeda
     
     bool query_flowop<JOIN>::from_config(const nlohmann::json& config)
     {
+      query_baseop::set_output_parameters(config);
+            
       nlohmann::json params = config;
       if(config.count(parameters_lbl))
 	{
@@ -77,9 +73,6 @@ namespace andromeda
       try
 	{
 	  mode = params.value("mode", mode);
-	  
-	  //const nlohmann::json& params = config.at(parameters_lbl);
-	  //sources = params["sources"].get<std::set<flow_id_type> >();
 	}
       catch(std::exception& exc)
 	{
@@ -90,15 +83,6 @@ namespace andromeda
       return true;
     }    
 
-    /*
-    query_flowop<JOIN>::query_flowop(flow_id_type flid,
-                                     std::shared_ptr<model_type> model,
-                                     std::set<flow_id_type> sources):
-      query_baseop(model, NAME, flid, sources),
-      sources(sources)
-    {}
-    */
-    
     query_flowop<JOIN>::~query_flowop()
     {}
 

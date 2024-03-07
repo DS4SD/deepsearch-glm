@@ -53,6 +53,8 @@ namespace andromeda
       virtual nlohmann::json to_config();
       virtual bool from_config(const nlohmann::json& config);
 
+      bool set_output_parameters(const nlohmann::json& config);
+      
       bool is_done() { return done; }
 
       flow_op_type get_flop() { return flop; }
@@ -145,6 +147,8 @@ namespace andromeda
 
     bool query_baseop::from_config(const nlohmann::json& config)
     {
+      //LOG_S(INFO) << "from-config: " << config.dump(2);
+      
       try
 	{
 	  done = false;
@@ -168,10 +172,26 @@ namespace andromeda
 	  LOG_S(ERROR) << exc.what();
 	  return false;
 	}
-    
+      
       return true;
     }
 
+    bool query_baseop::set_output_parameters(const nlohmann::json& config)
+    {
+      if(config.count(output_lbl))
+	{
+	  ind_nodes = config[output_lbl].value(ind_nodes_lbl, ind_nodes);
+	  ind_edges = config[output_lbl].value(ind_edges_lbl, ind_edges);
+	  
+	  num_nodes = config[output_lbl].value(num_nodes_lbl, num_nodes);
+	  num_edges = config[output_lbl].value(num_edges_lbl, num_edges);	  	      
+
+	  return true;
+	}
+
+      return false;
+    }
+    
     void query_baseop::set_t0()
     {
       t0 = std::chrono::system_clock::now();
