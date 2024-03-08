@@ -103,8 +103,11 @@ namespace andromeda
     }        
     
     {
+      //single_exprs.emplace_back(this->get_key(), "single-term",
+      //R"(((JJ|NN)(S|P|PS)?\{(\d+)\})+(NN(S|P|PS)?\{(\d+)\}))");
+
       single_exprs.emplace_back(this->get_key(), "single-term",
-				R"(((JJ|NN)(S|P|PS)?\{(\d+)\})+(NN(S|P|PS)?\{(\d+)\}))");
+				R"(((JJ|NN)(S|P|PS)?\{(\d+)\})((JJ|NN|\:)(S|P|PS)?\{(\d+)\})*(NN(S|P|PS)?\{(\d+)\}))");
     }
 
     /*

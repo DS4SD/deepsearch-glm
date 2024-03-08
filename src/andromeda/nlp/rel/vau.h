@@ -60,6 +60,13 @@ namespace andromeda
 	LOG_S(ERROR) << "Failed to open file: " << units_file.c_str();
 	return false;
       }
+
+    units = {
+      {"/", "/"},
+      {"^", "^"},
+      {"^{-1}", "^{-1}"},
+      {"**", "**"},
+    };
     
     std::string line;
     while (std::getline(ifs, line))
@@ -110,30 +117,40 @@ namespace andromeda
 
 	if(inst.is_model(NUMVAL) and wtok_rng.at(1)<wtokens.size())
 	  {
-	    auto& wtok = wtokens.at(wtok_rng.at(1));
+	    range_type unit_wtok_range = {
+	      wtok_rng.at(1),
+	      wtok_rng.at(1)
+	    };
 
-	    range_type unit_wtok_range = {wtok_rng.at(1), wtok_rng.at(1)};
-	    	      
-	    std::string word = wtok.get_word();
-	    auto itr = units.find(word);
-	    
-	    if(itr!=units.end() and itr->first==word)
+	    while(true)
 	      {
-		unit_wtok_range.at(1) += 1;
+		auto& wtok = wtokens.at(unit_wtok_range.at(1));
+		
+		std::string word = wtok.get_word();
+		auto itr = units.find(word);
+		
+		if(itr!=units.end() and itr->first==word)
+		  {
+		    unit_wtok_range.at(1) += 1;
+		  }
+		else
+		  {
+		    break;
+		  }
 	      }
-
+	    
 	    if((unit_wtok_range.at(1)-unit_wtok_range.at(0))>0)
 	      {
 		range_type unit_char_range = {
-		  wtokens.at(unit_wtok_range.at(0)).get_rng(0),
-		  wtokens.at(unit_wtok_range.at(1)).get_rng(1)
+		  wtokens.at(unit_wtok_range.at(0)+0).get_rng(0),
+		  wtokens.at(unit_wtok_range.at(1)-1).get_rng(1)
 		};
 		
 		std::string orig = subj.from_char_range(unit_char_range);
 		std::string name = subj.from_char_range(unit_char_range);
 		
 		instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
-				       VAU, "__unit__",
+				       VAU, "unit",
 				       name, orig,
 				       unit_char_range, unit_char_range, unit_wtok_range);
 		
@@ -143,9 +160,6 @@ namespace andromeda
 	      }
 	  }
       }
-
-    
-	  
     
     return false;
   }
