@@ -242,6 +242,13 @@ namespace andromeda
 	  typedef nlp_model<REL, ABBREVIATION> model_type;
 	  model = std::make_shared<model_type>();	  
 	}
+	break;
+
+      case VAU:
+	{
+	  typedef nlp_model<REL, VAU> model_type;
+	  model = std::make_shared<model_type>();	  
+	}
 	break;	
 	
       default:
