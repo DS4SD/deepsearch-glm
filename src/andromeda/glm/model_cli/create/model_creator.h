@@ -205,9 +205,9 @@ namespace andromeda
     {
       auto& nodes = model_ptr->get_nodes();
       auto& edges = model_ptr->get_edges();
-
+      
       auto& parameters = model_ptr->get_parameters();
-
+      
       hash_type text_hash = -1;
       if(parameters.keep_texts)
 	{
@@ -224,9 +224,11 @@ namespace andromeda
 	  text_hash = text_node.get_hash();
 	  //LOG_S(INFO) << "inserted node: " << doc_path;
 	}
+
+      subj.contract_wtokens_from_instances(NUMVAL);
       
       std::vector<word_token>& tokens = subj.get_word_tokens();
-
+      
       std::vector<base_instance>& instances = subj.instances;
       std::vector<base_relation>& relations = subj.relations;
 
@@ -234,18 +236,17 @@ namespace andromeda
         {
            return;
         }
-
+      
       update_tokens(tokens, instances);
-
+      
       std::vector<hash_type> subw_tok_hashes={}, word_tok_hashes={}, pos_hashes={};
       std::set<hash_type> text_hashes={}, table_hashes={};
       
       insert_nodes(nodes, tokens, subw_tok_hashes, word_tok_hashes, pos_hashes);
-
+      
       //LOG_S(INFO) << "#-tokens: " << tokens.size();
       //LOG_S(INFO) << "#-subws: " << subw_tok_hashes.size();
       //LOG_S(INFO) << "#-words: " << word_tok_hashes.size();
-
       
       update_counters(TEXT, nodes, instances, subw_tok_hashes, text_hashes, table_hashes, docs_cnt);
       update_counters(TEXT, nodes, instances, word_tok_hashes, text_hashes, table_hashes, docs_cnt);
@@ -509,6 +510,9 @@ namespace andromeda
     void model_creator::update_tokens(std::vector<word_token>& tokens,
                                       std::vector<base_instance>& instances)
     {
+      //LOG_S(INFO) << "original tokens: \n" << andromeda::tabulate(tokens);
+      //LOG_S(INFO) << "instances: \n" << andromeda::tabulate(instances);
+      
       for(auto& inst:instances)
         {
           auto rng = inst.get_wtok_range();
@@ -542,6 +546,8 @@ namespace andromeda
           else
             {}
         }
+      
+      //LOG_S(INFO) << " -> updated: \n" << andromeda::tabulate(tokens);
     }
 
     void model_creator::insert_nodes(nodes_type& nodes,
