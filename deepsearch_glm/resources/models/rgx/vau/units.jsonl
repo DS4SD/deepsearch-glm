@@ -1,3 +1,7 @@
+{"unit": "thousand", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
+{"unit": "million", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
+{"unit": "billion", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
+{"unit": "s", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
 {"unit": "moles", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
 {"unit": "%", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
 {"unit": "K", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
@@ -54,6 +58,7 @@
 {"unit": "yr", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
 {"unit": "percent", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
 {"unit": "G", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
+{"unit": "g", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
 {"unit": "ps", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
 {"unit": "ns", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
 {"unit": "kg", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
@@ -740,6 +745,7 @@
 {"unit": "muR\\", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
 {"unit": "megaseconds", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
 {"unit": "\\rsun", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
+{"unit": "\\msun", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
 {"unit": "Tev", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
 {"unit": "GOPs", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}
 {"unit": "kilometres", "si-unit": null, "si-factor": null, "base-unit": null, "base-factor": null, "description": null}

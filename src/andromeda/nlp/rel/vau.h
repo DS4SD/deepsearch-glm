@@ -36,6 +36,9 @@ namespace andromeda
     std::filesystem::path units_file;
 
     std::map<std::string, std::string> units;
+    std::map<std::string, std::string> symbols;
+    std::map<std::string, std::string> obrackets;
+    std::map<std::string, std::string> cbrackets;
     
     //pcre2_expr filter_01, filter_02;
   };
@@ -44,7 +47,10 @@ namespace andromeda
 
   nlp_model<REL, VAU>::nlp_model():
     units_file(get_rgx_dir() / "vau/units.jsonl"),
-    units({})
+    units({}),
+    symbols({}),
+    obrackets({}),
+    cbrackets({})
   {
     initialise();
   }
@@ -61,11 +67,29 @@ namespace andromeda
 	return false;
       }
 
-    units = {
+    symbols = {
+      {"*", "*"},
       {"/", "/"},
       {"^", "^"},
-      {"^{-1}", "^{-1}"},
-      {"**", "**"},
+      {"-", "-"}
+    };
+
+    for(int l=0; l<10; l++)
+      {
+	std::string key = std::to_string(l);
+	std::string val = std::to_string(l);
+	
+	symbols[key] = val;
+      }
+
+    obrackets = {
+      {"{", "("},
+      {"(", "("},
+    };
+
+    cbrackets = {
+      {"}", ")"},
+      {")", ")"},
     };
     
     std::string line;
@@ -84,7 +108,7 @@ namespace andromeda
 	  }
 
 	std::string key = data["unit"];
-	std::string val = ""; // FIXME
+	std::string val = data["unit"];
 
 	units[key] = val;
       }
@@ -122,15 +146,36 @@ namespace andromeda
 	      wtok_rng.at(1)
 	    };
 
+	    bool found_unit=false;
+	    int balance=0;
 	    while(true)
 	      {
 		auto& wtok = wtokens.at(unit_wtok_range.at(1));
 		
 		std::string word = wtok.get_word();
-		auto itr = units.find(word);
+
+		auto unit_itr = units.find(word);
+		auto s_itr = symbols.find(word);
+		auto o_itr = obrackets.find(word);
+		auto c_itr = cbrackets.find(word);
 		
-		if(itr!=units.end() and itr->first==word)
+		if(unit_itr!=units.end() and unit_itr->first==word)
 		  {
+		    found_unit = true;
+		    unit_wtok_range.at(1) += 1;
+		  }
+		else if(s_itr!=units.end() and s_itr->first==word)
+		  {
+		    unit_wtok_range.at(1) += 1;
+		  }
+		else if(o_itr!=units.end() and o_itr->first==word)
+		  {
+		    balance += 1;
+		    unit_wtok_range.at(1) += 1;
+		  }
+		else if(c_itr!=units.end() and c_itr->first==word and balance>0)
+		  {
+		    balance -= 1;
 		    unit_wtok_range.at(1) += 1;
 		  }
 		else
@@ -138,8 +183,29 @@ namespace andromeda
 		    break;
 		  }
 	      }
+
+	    /*
+	    while((unit_wtok_range.at(1)-unit_wtok_range.at(0))>0 and balance<0 and found_unit)
+	      {
+		auto& wtok = wtokens.at(unit_wtok_range.at(1)-1);
+
+		std::string word = wtok.get_word();
+
+		auto c_itr = cbrackets.find(word);
+		if(c_itr!=units.end() and c_itr->first==word)
+		  {
+		    balance += 1;
+		    unit_wtok_range.at(1) -= 1;
+		  }
+		else
+		  {
+		    break;
+		  }
+	      }
+	    */
 	    
-	    if((unit_wtok_range.at(1)-unit_wtok_range.at(0))>0)
+	    if((unit_wtok_range.at(1)-unit_wtok_range.at(0))>0 and
+	       found_unit and balance==0)
 	      {
 		range_type unit_char_range = {
 		  wtokens.at(unit_wtok_range.at(0)+0).get_rng(0),

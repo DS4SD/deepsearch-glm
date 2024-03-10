@@ -16,7 +16,8 @@ namespace andromeda
     typedef std::array<table_index_type, 2> table_coor_type;
     typedef std::array<table_index_type, 2> table_range_type;
     
-    typedef  int16_t flvr_type;
+    //typedef  int16_t flvr_type;
+    typedef uint16_t flvr_type;
     typedef uint64_t hash_type;
     
     typedef float    val_type;
