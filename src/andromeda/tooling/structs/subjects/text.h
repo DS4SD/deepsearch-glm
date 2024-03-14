@@ -283,9 +283,22 @@ namespace andromeda
         if(inst.is_model(model) and
            inst.get_wtok_range(0)<inst.get_wtok_range(1))
           {
+	    std::vector<int> inds={};
+	    std::vector<std::string> subws={};
+
+	    for(index_type i=inst.get_wtok_range(0); i<inst.get_wtok_range(1); i++)
+	      {
+		auto _inds = word_tokens.at(i).get_inds();
+		inds.insert(inds.end(), _inds.begin(), _inds.end());
+
+		auto _subws = word_tokens.at(i).get_subws();
+		subws.insert(subws.end(), _subws.begin(), _subws.end());
+	      }
+	    
             candidates.emplace_back(inst.get_wtok_range(0),
                                     inst.get_wtok_range(1),
-                                    inst.get_name());
+                                    inst.get_name(),
+				    inds, subws);
           }
       }
 
@@ -310,10 +323,28 @@ namespace andromeda
         if(inst.is_model(name) and
            inst.is_subtype(subtype))
           {
+	    std::vector<int> inds={};
+	    std::vector<std::string> subws={};
+
+	    for(index_type i=inst.get_wtok_range(0); i<inst.get_wtok_range(1); i++)
+	      {
+		auto _inds = word_tokens.at(i).get_inds();
+		inds.insert(inds.end(), _inds.begin(), _inds.end());
+
+		auto _subws = word_tokens.at(i).get_subws();
+		subws.insert(subws.end(), _subws.begin(), _subws.end());
+	      }
+	    
+            candidates.emplace_back(inst.get_wtok_range(0),
+                                    inst.get_wtok_range(1),
+                                    inst.get_name(),
+				    inds, subws);
+	    /*
             candidates.emplace_back(inst.get_wtok_range(0),
                                     inst.get_wtok_range(1),
                                     inst.get_name());
-          }
+	    */
+	  }
       }
 
     apply_wtoken_contractions(candidates);

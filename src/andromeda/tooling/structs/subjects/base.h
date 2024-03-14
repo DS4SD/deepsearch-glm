@@ -75,6 +75,10 @@ namespace andromeda
     subject_name get_name() const { return name; }
     hash_type get_hash() const { return hash; }
 
+    std::vector<base_property>& get_properties() { return properties; }
+    std::vector<base_instance>& get_instances() { return instances; }
+    std::vector<base_relation>& get_relations() { return relations; }
+    
     void clear();
 
     void clear_models();

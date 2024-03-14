@@ -58,7 +58,8 @@ namespace andromeda
      
      // REL
      ABBREVIATION=1000,
-
+     VAU=1001,
+     
      NULL_MODEL=-1
     };
 
@@ -90,7 +91,7 @@ namespace andromeda
      
      SENTENCE,
      REFERENCE,
-
+     
      CUSTOM_SPM,
      CUSTOM_CRF,
           
@@ -101,7 +102,8 @@ namespace andromeda
      
      // REL
      ABBREVIATION,
-
+     VAU,
+     
      NULL_MODEL					 
   };
   
@@ -147,13 +149,14 @@ namespace andromeda
       case VERB: return "VERB";
 
       case ABBREVIATION: return "ABBREVIATION";
-
+      case VAU: return "VAU";
+	
       case NULL_MODEL: return "NULL";
       }
-
+    
     return "UNKNOWN_NLP_MODEL";
   }
-
+  
   model_name to_modelname(std::string name)
   {
     std::string uname = utils::to_upper(utils::strip(name));

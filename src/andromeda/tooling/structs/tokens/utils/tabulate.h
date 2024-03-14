@@ -25,6 +25,41 @@ namespace andromeda
     return utils::to_string(header, data);
   }
 
+  std::string tabulate(std::vector<word_token>& tokens)
+  {
+    std::vector<std::string> headers = word_token::HEADERS;
+    std::vector<std::vector<std::string>> data={};
+
+    std::size_t cnt=0;
+    for(auto& token:tokens)
+      {
+	std::string word = token.get_word();
+	std::string orig = "-";
+	
+	auto inds = token.get_inds();
+	auto subws = token.get_subws();
+	
+	word = utils::to_fixed_size(word, 48);
+		
+	std::vector<std::string> row = { std::to_string(token.get_hash()),
+					 std::to_string(token.get_rng(0)),
+					 std::to_string(token.get_rng(1)),
+					 std::to_string(cnt++),
+					 token.get_pos(),
+					 utils::to_string(token.get_tags()),
+					 (token.is_known()? "true":"false"),
+					 word, orig,
+					 utils::to_string(inds),
+					 utils::to_string(subws)};
+	
+	assert(row.size()==headers.size());
+	
+	data.push_back(row);
+      }
+    
+    return utils::to_string(headers, data);
+  }
+  
   std::string tabulate(std::vector<word_token>& tokens, std::string text)
   {
     std::vector<std::string> headers = word_token::HEADERS;

@@ -30,7 +30,9 @@ namespace andromeda
 
     bool apply_regex(subject<TEXT>& subj);
     
-    bool contract_regex(subject<TEXT>& subj);
+    //bool contract_regex(subject<TEXT>& subj);
+
+    bool detect_compound_numvals(subject<TEXT>& subj);
     
   private:
 
@@ -145,6 +147,8 @@ namespace andromeda
     
     apply_regex(subj);
 
+    detect_compound_numvals(subj);
+    
     //subj.show();
 
     // FIXME
@@ -195,6 +199,79 @@ namespace andromeda
       }
 
     return update_applied_models(subj);
+  }
+
+  bool nlp_model<ENT, NUMVAL>::detect_compound_numvals(subject<TEXT>& subj)
+  {
+    std::string text = subj.get_text();
+    
+    auto& instances = subj.get_instances();
+    std::sort(instances.begin(), instances.end());
+
+    std::vector<std::size_t> indices={};
+    for(std::size_t i=0; i<instances.size(); i++)
+      {
+	if(instances.at(i).is_model(NUMVAL))
+	  {
+	    indices.push_back(i);
+	  }
+      }
+
+    std::set<std::string> conns = {"+-", "pm", "x", "times"};
+    
+    std::vector<std::size_t> to_be_deleted={};
+    for(std::size_t l=0; l+1<indices.size(); l++)
+      {
+	auto& inst_i = instances.at(indices.at(l+0));
+	auto& inst_j = instances.at(indices.at(l+1));
+
+	index_type i0 = inst_i.get_char_range(0);
+	index_type i1 = inst_i.get_char_range(1);
+	
+	index_type j0 = inst_j.get_char_range(0);
+	index_type j1 = inst_j.get_char_range(1);
+
+	if(j0-i1<10)
+	  {
+	    std::string inter = text.substr(i1, j0-i1);
+	    //LOG_S(WARNING) << "inter 1: " << inter;
+	    inter = utils::replace(inter, " ", "");
+	    inter = utils::replace(inter, "\\", "");
+	    inter = utils::replace(inter, "/", "");
+
+	    //LOG_S(WARNING) << "inter 2: " << inter;
+	    
+	    if(conns.contains(inter))
+	      {
+		range_type char_range = {i0, j1};
+
+		auto ctok_range = subj.get_char_token_range(char_range);
+		auto wtok_range = subj.get_word_token_range(char_range);
+		
+		std::string orig = subj.from_char_range(char_range);
+		std::string name = subj.from_ctok_range(ctok_range);
+
+		//LOG_S(WARNING) << "contracted new numval: " << name;
+		subj.instances.emplace_back(subj.get_hash(), TEXT, subj.get_self_ref(),
+					    NUMVAL, "fsci",
+					    name, orig, 
+					    char_range, ctok_range, wtok_range);
+
+		to_be_deleted.push_back(l+0);
+		to_be_deleted.push_back(l+1);
+
+		l += 1;
+	      }
+	  }
+      }
+
+    for(auto itr=to_be_deleted.rbegin(); itr!=to_be_deleted.rend(); itr++)
+      {
+	auto ind = *itr;
+	instances.erase(instances.begin()+ind);
+      }
+    
+    return true;
   }
   
   bool nlp_model<ENT, NUMVAL>::apply_on_table_data(subject<TABLE>& subj)

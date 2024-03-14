@@ -7,10 +7,32 @@ namespace andromeda
 {
   class text_element: public base_types
   {
+  protected:
+
+    //typedef std::tuple<index_type, index_type, std::string> candidate_type;
+    struct replacement_token
+    {
+      replacement_token(index_type word_ind_0,
+			index_type word_ind_1,
+			std::string word,
+			std::vector<int> inds,
+			std::vector<std::string> subws):
+	word_ind_0(word_ind_0),
+	word_ind_1(word_ind_1),
+	word(word),
+	inds(inds),
+	subws(subws)
+      {}
+      
+      index_type word_ind_0, word_ind_1;
+      std::string word;
+      std::vector<int> inds;
+      std::vector<std::string> subws;
+    };
+    typedef replacement_token candidate_type;
+
   public:
-
-    typedef std::tuple<index_type, index_type, std::string> candidate_type;
-
+    
     const static inline std::string text_lbl = "text";
     const static inline std::string orig_lbl = "orig";
 
@@ -43,6 +65,7 @@ namespace andromeda
     const word_token& get_wtoken(std::size_t i) const { return word_tokens.at(i); }
 
     std::vector<word_token>& get_word_tokens() { return word_tokens; }
+    //
 
     void init_pos() { for(auto& wtoken:word_tokens) { wtoken.set_pos(word_token::UNDEF_POS); } }
 
@@ -483,8 +506,8 @@ namespace andromeda
     // To ensure we do not go out of bounds, we remove these candidates.
     for(auto itr=candidates.begin(); itr!=candidates.end(); )
       {
-        std::size_t wtok_beg = std::get<0>(*itr);
-        std::size_t wtok_end = std::get<1>(*itr);
+        std::size_t wtok_beg = itr->word_ind_0; //std::get<0>(*itr);
+        std::size_t wtok_end = itr->word_ind_1; //std::get<1>(*itr);
 
         if(wtok_beg>=wtok_end)
           {
@@ -500,11 +523,11 @@ namespace andromeda
               [](const candidate_type& lhs,
                  const candidate_type& rhs)
               {
-                std::size_t lhs_0 = std::get<0>(lhs);
-                std::size_t lhs_1 = std::get<1>(lhs);
+                std::size_t lhs_0 = lhs.word_ind_0; //std::get<0>(lhs);
+                std::size_t lhs_1 = lhs.word_ind_1; //std::get<1>(lhs);
 
-                std::size_t rhs_0 = std::get<0>(rhs);
-                std::size_t rhs_1 = std::get<1>(rhs);
+                std::size_t rhs_0 = rhs.word_ind_0; //std::get<0>(rhs);
+                std::size_t rhs_1 = rhs.word_ind_1; //std::get<1>(rhs);
 
                 if(lhs_0==rhs_0)
                   {
@@ -516,11 +539,9 @@ namespace andromeda
 
     for(auto& candidate:candidates)
       {
-        std::size_t ind_0 = std::get<0>(candidate);
-        std::size_t ind_1 = std::get<1>(candidate);
-        std::string word = std::get<2>(candidate);
-
-        //LOG_S(WARNING) << ind_0 << "-" << ind_1 << ": " << word;
+        std::size_t ind_0 = candidate.word_ind_0; //std::get<0>(candidate);
+        std::size_t ind_1 = candidate.word_ind_1; //std::get<1>(candidate);
+        std::string word = candidate.word; //std::get<2>(candidate);
 
         bool overlapping=false;
         for(auto ind=ind_0; ind<ind_1; ind++)
@@ -544,6 +565,9 @@ namespace andromeda
                                end.get_rng(1),
                                word);
 
+	  token_new.set_inds(candidate.inds);
+	  token_new.set_subws(candidate.subws);
+	  
           word_tokens.at(ind_0) = token_new;
         }
 

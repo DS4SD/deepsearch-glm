@@ -15,7 +15,6 @@ namespace andromeda
       typedef query_baseop baseop_type;
 
       typedef typename baseop_type::flow_id_type flow_id_type;
-
       typedef typename baseop_type::results_type results_type;
 
     public:
@@ -26,7 +25,7 @@ namespace andromeda
 
       query_flowop(std::shared_ptr<model_type> model,
 		   flow_id_type flid, std::set<flow_id_type> dependencies,
-		   short edge_type);
+		   flvr_type edge_type);
 
       virtual ~query_flowop();
 
