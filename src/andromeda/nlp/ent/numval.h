@@ -234,12 +234,12 @@ namespace andromeda
 	if(j0-i1<10)
 	  {
 	    std::string inter = text.substr(i1, j0-i1);
-	    LOG_S(WARNING) << "inter 1: " << inter;
+	    //LOG_S(WARNING) << "inter 1: " << inter;
 	    inter = utils::replace(inter, " ", "");
 	    inter = utils::replace(inter, "\\", "");
 	    inter = utils::replace(inter, "/", "");
 
-	    LOG_S(WARNING) << "inter 2: " << inter;
+	    //LOG_S(WARNING) << "inter 2: " << inter;
 	    
 	    if(conns.contains(inter))
 	      {
@@ -251,7 +251,7 @@ namespace andromeda
 		std::string orig = subj.from_char_range(char_range);
 		std::string name = subj.from_ctok_range(ctok_range);
 
-		LOG_S(WARNING) << "contracted new numval: " << name;
+		//LOG_S(WARNING) << "contracted new numval: " << name;
 		subj.instances.emplace_back(subj.get_hash(), TEXT, subj.get_self_ref(),
 					    NUMVAL, "fsci",
 					    name, orig, 
