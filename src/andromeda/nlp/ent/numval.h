@@ -186,7 +186,7 @@ namespace andromeda
 
 		    std::string orig = subj.from_char_range(char_range);
 		    //std::string name = subj.from_ctok_range(ctok_range);
-		    std::string name = subj.from_ctok_range(char_range);
+		    std::string name = subj.from_char_range(char_range);
 		    
 		    subj.instances.emplace_back(subj.get_hash(), TEXT, subj.get_self_ref(),
 						NUMVAL, expr.get_subtype(),
