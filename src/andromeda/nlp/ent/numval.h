@@ -147,6 +147,8 @@ namespace andromeda
     
     apply_regex(subj);
 
+    //subj.show();
+    
     detect_compound_numvals(subj);
     
     //subj.show();
@@ -183,7 +185,8 @@ namespace andromeda
 		    auto wtok_range = subj.get_word_token_range(char_range);
 
 		    std::string orig = subj.from_char_range(char_range);
-		    std::string name = subj.from_ctok_range(ctok_range);
+		    //std::string name = subj.from_ctok_range(ctok_range);
+		    std::string name = subj.from_char_range(char_range);
 		    
 		    subj.instances.emplace_back(subj.get_hash(), TEXT, subj.get_self_ref(),
 						NUMVAL, expr.get_subtype(),
@@ -217,7 +220,7 @@ namespace andromeda
 	  }
       }
 
-    std::set<std::string> conns = {"+-", "pm", "x", "times"};
+    std::set<std::string> conns = {"", "+-", "pm", "x", "times"};
     
     std::vector<std::size_t> to_be_deleted={};
     for(std::size_t l=0; l+1<indices.size(); l++)
