@@ -36,6 +36,7 @@ namespace andromeda
     std::filesystem::path units_file;
 
     std::map<std::string, std::string> units;
+    std::map<std::string, std::string> numbers;
     std::map<std::string, std::string> symbols;
     std::map<std::string, std::string> obrackets;
     std::map<std::string, std::string> cbrackets;
@@ -48,6 +49,7 @@ namespace andromeda
   nlp_model<REL, VAU>::nlp_model():
     units_file(get_rgx_dir() / "vau/units.jsonl"),
     units({}),
+    numbers({}),
     symbols({}),
     obrackets({}),
     cbrackets({})
@@ -74,12 +76,13 @@ namespace andromeda
       {"-", "-"}
     };
 
+    numbers = {};
     for(int l=0; l<10; l++)
       {
 	std::string key = std::to_string(l);
 	std::string val = std::to_string(l);
 	
-	symbols[key] = val;
+	numbers[key] = val;
       }
 
     obrackets = {
@@ -119,25 +122,20 @@ namespace andromeda
 
   bool nlp_model<REL, VAU>::apply(subject<TEXT>& subj)
   {
+    //subj.show();
+    
     auto& wtokens = subj.get_word_tokens();
-
-    //std::vector<base_instances> unit_instances = {};
 
     auto& instances = subj.get_instances();
     auto& relations = subj.get_relations();
     
-    std::size_t instances_len = instances.size();
-
-    for(std::size_t l=0; l<instances_len; l++)
+    std::vector<base_instance> unit_instances={};
+    
+    for(std::size_t l=0; l<instances.size(); l++)
       {
 	auto& inst = instances.at(l);
-	//auto crng = inst.get_char_range();
 
-	//auto ctok_rng = inst.get_ctok_range();	    
 	auto wtok_rng = inst.get_wtok_range();	    
-
-	auto name = inst.get_name();
-	auto orig = inst.get_orig();
 
 	if(inst.is_model(NUMVAL) and wtok_rng.at(1)<wtokens.size())
 	  {
@@ -148,13 +146,14 @@ namespace andromeda
 
 	    bool found_unit=false;
 	    int balance=0;
-	    while(true)
+	    while(unit_wtok_range.at(1)<wtokens.size())
 	      {
 		auto& wtok = wtokens.at(unit_wtok_range.at(1));
 		
 		std::string word = wtok.get_word();
 
 		auto unit_itr = units.find(word);
+		auto n_itr = numbers.find(word);
 		auto s_itr = symbols.find(word);
 		auto o_itr = obrackets.find(word);
 		auto c_itr = cbrackets.find(word);
@@ -164,16 +163,20 @@ namespace andromeda
 		    found_unit = true;
 		    unit_wtok_range.at(1) += 1;
 		  }
-		else if(s_itr!=units.end() and s_itr->first==word)
+		else if(n_itr!=numbers.end() and n_itr->first==word)
 		  {
 		    unit_wtok_range.at(1) += 1;
 		  }
-		else if(o_itr!=units.end() and o_itr->first==word)
+		else if(s_itr!=symbols.end() and s_itr->first==word)
+		  {
+		    unit_wtok_range.at(1) += 1;
+		  }
+		else if(o_itr!=obrackets.end() and o_itr->first==word)
 		  {
 		    balance += 1;
 		    unit_wtok_range.at(1) += 1;
 		  }
-		else if(c_itr!=units.end() and c_itr->first==word and balance>0)
+		else if(c_itr!=cbrackets.end() and c_itr->first==word and balance>0)
 		  {
 		    balance -= 1;
 		    unit_wtok_range.at(1) += 1;
@@ -182,19 +185,20 @@ namespace andromeda
 		  {
 		    break;
 		  }
+		//LOG_S(INFO) << "adding " << word;
 	      }
-
-	    /*
-	    while((unit_wtok_range.at(1)-unit_wtok_range.at(0))>0 and balance<0 and found_unit)
+	    
+	    // omit trailing open brackets ...
+	    while((unit_wtok_range.at(1)-unit_wtok_range.at(0))>0 and balance>0)
 	      {
 		auto& wtok = wtokens.at(unit_wtok_range.at(1)-1);
 
 		std::string word = wtok.get_word();
-
-		auto c_itr = cbrackets.find(word);
-		if(c_itr!=units.end() and c_itr->first==word)
+		auto o_itr = obrackets.find(word);
+		
+		if(o_itr!=obrackets.end() and o_itr->first==word)
 		  {
-		    balance += 1;
+		    balance -= 1;
 		    unit_wtok_range.at(1) -= 1;
 		  }
 		else
@@ -202,8 +206,25 @@ namespace andromeda
 		    break;
 		  }
 	      }
-	    */
 	    
+	    // omit trailing symbols ...
+	    while((unit_wtok_range.at(1)-unit_wtok_range.at(0))>0)
+	      {
+		auto& wtok = wtokens.at(unit_wtok_range.at(1)-1);
+
+		std::string word = wtok.get_word();
+		auto s_itr = symbols.find(word);
+		
+		if(s_itr!=symbols.end() and s_itr->first==word)
+		  {
+		    unit_wtok_range.at(1) -= 1;
+		  }
+		else
+		  {
+		    break;
+		  }
+	      }
+
 	    if((unit_wtok_range.at(1)-unit_wtok_range.at(0))>0 and
 	       found_unit and balance==0)
 	      {
@@ -214,20 +235,40 @@ namespace andromeda
 		
 		std::string orig = subj.from_char_range(unit_char_range);
 		std::string name = subj.from_char_range(unit_char_range);
+
+		//LOG_S(WARNING) << "keeping unit: " << orig;
 		
-		instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
-				       VAU, "unit",
-				       name, orig,
-				       unit_char_range, unit_char_range, unit_wtok_range);
-		
-		auto& unit_inst = instances.back();
+		auto& unit_inst = unit_instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
+							      VAU, "unit",
+							      name, orig,
+							      unit_char_range, unit_char_range, unit_wtok_range);
 		
 		relations.emplace_back("has-unit", 1.0, inst, unit_inst);
 	      }
+	    /*
+	    else if((unit_wtok_range.at(1)-unit_wtok_range.at(0))>0)
+	      {
+		range_type unit_char_range = {
+		  wtokens.at(unit_wtok_range.at(0)+0).get_rng(0),
+		  wtokens.at(unit_wtok_range.at(1)-1).get_rng(1)
+		};
+		
+		std::string orig = subj.from_char_range(unit_char_range);
+
+		LOG_S(WARNING) << "ignoring unit: " << orig;
+	      }
+	    */
+	    else
+	      {}
 	  }
       }
+
+    for(auto& unit_inst:unit_instances)
+      {
+	instances.push_back(unit_inst);
+      }
     
-    return false;
+    return true;
   }
 
   bool nlp_model<REL, VAU>::apply(subject<TABLE>& subj)

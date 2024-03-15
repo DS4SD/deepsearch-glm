@@ -240,6 +240,8 @@ namespace andromeda
 
     wtok_range_match(true)
   {
+    //LOG_S(WARNING) << "copy constructor " << __FILE__ << ":" << __LINE__;
+    
     assert(char_range[0]<=char_range[1]);
     assert(ctok_range[0]<=ctok_range[1]);
     assert(wtok_range[0]<=wtok_range[1]);

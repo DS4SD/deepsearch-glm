@@ -132,7 +132,15 @@ namespace andromeda
 
     name_i(inst_i.get_name()),
     name_j(inst_j.get_name())
-  {}
+  {
+    /*
+    LOG_S(INFO) << name << "\t" << conf << "\t("
+		<< hash_i << ", "
+		<< hash_j << ") => ["
+		<< name_i << ", "
+		<< name_j << "]"; 
+    */
+  }
 
   bool operator<(const base_relation& lhs, const base_relation& rhs)
   {
