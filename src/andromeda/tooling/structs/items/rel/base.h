@@ -148,7 +148,7 @@ namespace andromeda
       {
 	if(lhs.hash_i==rhs.hash_i)
 	  {
-	    return (rhs.hash_i<rhs.hash_j);
+	    return (lhs.hash_j<rhs.hash_j);
 	  }
 	else
 	  {

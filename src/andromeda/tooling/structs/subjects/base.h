@@ -272,8 +272,13 @@ namespace andromeda
 
   void base_subject::sort()
   {
+    //LOG_S(INFO) << __FILE__ << ":" << __LINE__ << " -> sort properties";
     std::sort(properties.begin(), properties.end());
+
+    //LOG_S(INFO) << __FILE__ << ":" << __LINE__ << " -> sort instances";
     std::sort(instances.begin(), instances.end());
+
+    //LOG_S(INFO) << __FILE__ << ":" << __LINE__ << " -> sort relations";
     std::sort(relations.begin(), relations.end());
   }
   

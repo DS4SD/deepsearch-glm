@@ -167,10 +167,17 @@ def extract_references_from_doc(doc):
     return results
 
 
-def train_crf(model_name: str, train_file: str, model_file: str, metrics_file: str):
+def train_crf(
+    model_name: str,
+    train_file: str,
+    model_file: str,
+    metrics_file: str,
+    loglevel: str = "WARNING",
+):
     """Function to train CRF model"""
 
     model = nlp_model()
+    model.set_loglevel(loglevel)
 
     configs = model.get_train_configs()
 
@@ -190,10 +197,17 @@ def train_crf(model_name: str, train_file: str, model_file: str, metrics_file: s
         sys.exit(-1)
 
 
-def eval_crf(model_name: str, train_file: str, model_file: str, metrics_file: str):
+def eval_crf(
+    model_name: str,
+    train_file: str,
+    model_file: str,
+    metrics_file: str,
+    loglevel: str = "WARNING",
+):
     """Function to train CRF model"""
 
     model = nlp_model()
+    model.set_loglevel(loglevel)
 
     configs = model.get_train_configs()
 
@@ -220,10 +234,12 @@ def train_tok(
     vocab_size: int = 4096,
     control_symbols: List[str] = [],
     user_symbols: List[str] = [],
+    loglevel: str = "WARNING",
 ):
     """Train a new tokenizer model"""
 
     model = nlp_model()
+    model.set_loglevel(loglevel)
 
     configs = model.get_train_configs()
 
