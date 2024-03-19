@@ -40,8 +40,6 @@ namespace andromeda
     std::map<std::string, std::string> symbols;
     std::map<std::string, std::string> obrackets;
     std::map<std::string, std::string> cbrackets;
-    
-    //pcre2_expr filter_01, filter_02;
   };
 
   const std::set<model_name> nlp_model<REL, VAU>::dependencies = {NUMVAL};
@@ -72,8 +70,10 @@ namespace andromeda
     symbols = {
       {"*", "*"},
       {"/", "/"},
+      {"\\", "\\"},
       {"^", "^"},
-      {"-", "-"}
+      {"-", "-"},
+      {"$", "$"}
     };
 
     numbers = {};
@@ -123,6 +123,8 @@ namespace andromeda
   bool nlp_model<REL, VAU>::apply(subject<TEXT>& subj)
   {
     //subj.show();
+
+    std::string text = subj.get_text();
     
     auto& wtokens = subj.get_word_tokens();
 
@@ -137,7 +139,16 @@ namespace andromeda
 
 	auto wtok_rng = inst.get_wtok_range();	    
 
-	if(inst.is_model(NUMVAL) and wtok_rng.at(1)<wtokens.size())
+	bool keep = true;
+	auto i0 = wtok_rng.at(0);
+	if(i0>0 and
+	   'a'<=text.at(i0-1) and text.at(i0-1)<='z' and
+	   'A'<=text.at(i0-1) and text.at(i0-1)<='Z')
+	  {
+	    keep = false;
+	  }
+	
+	if(keep and inst.is_model(NUMVAL) and wtok_rng.at(1)<wtokens.size())
 	  {
 	    range_type unit_wtok_range = {
 	      wtok_rng.at(1),
@@ -185,7 +196,8 @@ namespace andromeda
 		  {
 		    break;
 		  }
-		//LOG_S(INFO) << "adding " << word;
+
+		LOG_S(INFO) << "adding " << word;
 	      }
 	    
 	    // omit trailing open brackets ...
@@ -215,7 +227,7 @@ namespace andromeda
 		std::string word = wtok.get_word();
 		auto s_itr = symbols.find(word);
 		
-		if(s_itr!=symbols.end() and s_itr->first==word)
+		if(s_itr!=symbols.end() and s_itr->first==word and s_itr->first!="$")
 		  {
 		    unit_wtok_range.at(1) -= 1;
 		  }

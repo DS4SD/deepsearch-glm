@@ -220,6 +220,7 @@ namespace andromeda
 	  }
       }
 
+    std::set<std::string> repls = {" ", "\\", "/", "$"};
     std::set<std::string> conns = {"", "+-", "pm", "x", "times"};
     
     std::vector<std::size_t> to_be_deleted={};
@@ -237,11 +238,19 @@ namespace andromeda
 	if(j0-i1<10)
 	  {
 	    std::string inter = text.substr(i1, j0-i1);
+
 	    //LOG_S(WARNING) << "inter 1: " << inter;
+	    for(auto repl:repls)
+	      {
+		inter = utils::replace(inter, repl, "");
+	      }
+	    
+	    /*
 	    inter = utils::replace(inter, " ", "");
 	    inter = utils::replace(inter, "\\", "");
 	    inter = utils::replace(inter, "/", "");
-
+	    inter = utils::replace(inter, "$", "");
+	    */
 	    //LOG_S(WARNING) << "inter 2: " << inter;
 	    
 	    if(conns.contains(inter))
