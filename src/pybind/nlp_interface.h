@@ -429,6 +429,8 @@ namespace andromeda_py
 	ss << "text is not UTF8 compliant";
       }
 
+    //LOG_S(INFO) << "starting to sort";
+    
     paragraph.sort();
 
     std::set<std::string> subj_filters = {};
@@ -436,6 +438,8 @@ namespace andromeda_py
       {
 	subj_filters = config.value("subject-filters", subj_filters);
       }
+
+    //LOG_S(INFO) << "to json ...";
     
     nlohmann::json result = paragraph.to_json(subj_filters);
     {

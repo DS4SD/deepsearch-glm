@@ -141,6 +141,7 @@ namespace andromeda
 
 	bool keep = true;
 	auto i0 = wtok_rng.at(0);
+		
 	if(i0>0 and
 	   'a'<=text.at(i0-1) and text.at(i0-1)<='z' and
 	   'A'<=text.at(i0-1) and text.at(i0-1)<='Z')
@@ -197,7 +198,7 @@ namespace andromeda
 		    break;
 		  }
 
-		LOG_S(INFO) << "adding " << word;
+		//LOG_S(INFO) << "adding " << word;
 	      }
 	    
 	    // omit trailing open brackets ...
@@ -275,6 +276,7 @@ namespace andromeda
 	  }
       }
 
+    //LOG_S(INFO) << "adding relations";
     for(auto& unit_inst:unit_instances)
       {
 	instances.push_back(unit_inst);
