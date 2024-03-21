@@ -10,6 +10,7 @@
 	{
 	    "part-of-speech": ["crf_pos_model_en.bin", "models/crf/part-of-speech/crf_pos_model_en.bin"],
 	    "reference": ["crf_reference.bin", "models/crf/reference/crf_reference.bin"],
+	    "material": ["crf_material.bin", "models/crf/ucmi/crf_material.bin"],
 	    
 	    "language": ["fst_language.bin", "models/fasttext/language/fst_language.bin"],
 	    "name": ["fst_person_name.bin", "models/fasttext/person-name/fst_person_name.bin"],

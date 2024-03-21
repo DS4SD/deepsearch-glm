@@ -215,6 +215,14 @@ namespace andromeda
 	  model = std::make_shared<model_type>(desc);	  	  	  
 	}
 	break;
+
+	// UCMI-CUSTOM_CRF:
+      case MATERIAL: 
+	{
+	  typedef nlp_model<ENT, MATERIAL> model_type;
+	  model = std::make_shared<model_type>();	  	  	  
+	}
+	break;
 	
       case CONN:
 	{

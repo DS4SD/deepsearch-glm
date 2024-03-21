@@ -12,12 +12,15 @@ namespace andromeda
     typedef typename word_token::range_type range_type;
 
     const static inline std::string TAG = "__"+to_string(CUSTOM_CRF)+"__";
+
+    const static inline std::set<std::string> ignored_labels
+    = {"null", "none", "undef", "__undef__"};
     
   public:
 
-
     nlp_model();
     nlp_model(std::string desc);
+    nlp_model(std::string name, std::string file, std::filesystem::path model_file);
 
     ~nlp_model();
 
@@ -35,7 +38,7 @@ namespace andromeda
     
     virtual bool apply(subject<TEXT>& subj);
 
-  private:
+  protected:
 
     bool initialise();
 
@@ -43,7 +46,7 @@ namespace andromeda
 
     void post_process(subject<TEXT>& subj);
 
-  private:
+  protected:
 
     const static inline std::set<model_name> dependencies = {};
 
@@ -87,6 +90,16 @@ namespace andromeda
       }
   }
 
+  nlp_model<ENT, CUSTOM_CRF>::nlp_model(std::string name,
+					std::string file,
+					std::filesystem::path model_file):
+    custom_name(name),
+    custom_file(file),
+    model_file(model_file)
+  {
+    initialise();
+  }
+  
   nlp_model<ENT, CUSTOM_CRF>::~nlp_model()
   {}
 
@@ -187,7 +200,8 @@ namespace andromeda
     
     for(const auto& label:labels)
       {
-	if(label=="null")
+	//if(label=="null")
+	if(ignored_labels.count(label))
 	  {
 	    continue;
 	  }
@@ -226,8 +240,10 @@ namespace andromeda
             std::string name = subj.from_ctok_range(ctok_range);
             	    
             subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
-					CUSTOM_CRF, label,
-                                        name, orig,
+					//CUSTOM_CRF, label,
+					this->get_name(), label,
+
+					name, orig,
                                         char_range, ctok_range, wtok_range);
           }
       }
