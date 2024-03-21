@@ -18,9 +18,9 @@ namespace andromeda
     
   public:
 
-
     nlp_model();
     nlp_model(std::string desc);
+    nlp_model(std::string name, std::string file, std::filesystem::path model_file);
 
     ~nlp_model();
 
@@ -38,7 +38,7 @@ namespace andromeda
     
     virtual bool apply(subject<TEXT>& subj);
 
-  private:
+  protected:
 
     bool initialise();
 
@@ -46,7 +46,7 @@ namespace andromeda
 
     void post_process(subject<TEXT>& subj);
 
-  private:
+  protected:
 
     const static inline std::set<model_name> dependencies = {};
 
@@ -90,6 +90,16 @@ namespace andromeda
       }
   }
 
+  nlp_model<ENT, CUSTOM_CRF>::nlp_model(std::string name,
+					std::string file,
+					std::filesystem::path model_file):
+    custom_name(name),
+    custom_file(file),
+    model_file(model_file)
+  {
+    initialise();
+  }
+  
   nlp_model<ENT, CUSTOM_CRF>::~nlp_model()
   {}
 

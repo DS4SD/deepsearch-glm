@@ -59,6 +59,9 @@ namespace andromeda
      // REL
      ABBREVIATION=1000,
      VAU=1001,
+
+     // derived from CUSTOM_CRF
+     MATERIAL=2000,
      
      NULL_MODEL=-1
     };
@@ -94,7 +97,9 @@ namespace andromeda
      
      CUSTOM_SPM,
      CUSTOM_CRF,
-          
+
+     MATERIAL,
+     
      // POS-patterns
      CONN,
      TERM,
@@ -143,6 +148,8 @@ namespace andromeda
 
       case CUSTOM_SPM: return "CUSTOM_SPM";
       case CUSTOM_CRF: return "CUSTOM_CRF";
+	
+      case MATERIAL: return "MATERIAL";
 	
       case CONN: return "CONN";
       case TERM: return "TERM";
