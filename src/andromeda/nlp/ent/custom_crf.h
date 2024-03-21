@@ -12,6 +12,9 @@ namespace andromeda
     typedef typename word_token::range_type range_type;
 
     const static inline std::string TAG = "__"+to_string(CUSTOM_CRF)+"__";
+
+    const static inline std::set<std::string> ignored_labels
+    = {"null", "none", "undef", "__undef__"};
     
   public:
 
@@ -187,7 +190,8 @@ namespace andromeda
     
     for(const auto& label:labels)
       {
-	if(label=="null")
+	//if(label=="null")
+	if(ignored_labels.count(label))
 	  {
 	    continue;
 	  }
