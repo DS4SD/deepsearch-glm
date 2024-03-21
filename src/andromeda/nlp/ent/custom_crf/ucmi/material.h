@@ -18,6 +18,8 @@ namespace andromeda
     virtual model_type get_type() { return ENT; }
     virtual model_name get_name() { return MATERIAL; }
 
+    virtual std::string get_key() { return to_key(MATERIAL); }
+    
     //virtual bool apply(std::string& text, nlohmann::json& annots);
 
     //virtual bool apply(subject<TEXT>& subj);
