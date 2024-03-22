@@ -56,6 +56,42 @@ namespace andromeda
 
     post_process_bio(subj);
 
+    // final filter ...
+    {
+      std::set<std::string> filters = {"...", "---"};
+      
+      auto& instances = subj.get_instances();
+      for(auto itr=instances.begin(); itr!=instances.end(); )
+	{
+	  if(itr->is_model(MATERIAL))
+	    {
+	      std::string name = itr->get_name();
+
+	      bool keep=true;
+	      for(std::string filter:filters)
+		{
+		  if(utils::contains(name, filter))
+		    {
+		      keep=false;
+		    }
+		}
+
+	      if(not keep)
+		{
+		  itr = instances.erase(itr);
+		}
+	      else
+		{
+		  itr++;
+		}
+	    }
+	  else
+	    {
+	      itr++;
+	    }
+	}
+    }
+    
     return true;
   }
 

@@ -410,7 +410,7 @@ namespace andromeda
 	std::string label = itr->first;
         auto& ranges = itr->second;
 
-	LOG_S(INFO) << label << ": " << ranges.size();
+	//LOG_S(INFO) << label << ": " << ranges.size();
 	
         std::size_t ind=0;
         while(ind<ranges.size())
@@ -438,7 +438,7 @@ namespace andromeda
             std::string orig = subj.from_char_range(char_range);
             std::string name = subj.from_ctok_range(ctok_range);
 
-	    LOG_S(INFO) << "inserting " << label << "\t" << name;
+	    //LOG_S(INFO) << "inserting " << label << "\t" << name;
 	    
             subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
 					this->get_name(), label,
@@ -448,7 +448,6 @@ namespace andromeda
       }
 
   }
-
   
 }
 
