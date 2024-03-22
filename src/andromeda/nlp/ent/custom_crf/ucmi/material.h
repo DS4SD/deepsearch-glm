@@ -22,7 +22,7 @@ namespace andromeda
     
     //virtual bool apply(std::string& text, nlohmann::json& annots);
 
-    //virtual bool apply(subject<TEXT>& subj);
+    virtual bool apply(subject<TEXT>& subj);
     //virtual bool apply_on_table_data(subject<TABLE>& subj);
 
   private:
@@ -36,7 +36,6 @@ namespace andromeda
 
   nlp_model<ENT, MATERIAL>::nlp_model():
     nlp_model<ENT, CUSTOM_CRF>()
-  //nlp_model<ENT, CUSTOM_CRF>("material", "crf_material.bin", get_crf_dir() / "ucmi/crf_material.bin")
   {
     nlp_model<ENT, CUSTOM_CRF>::custom_name = "material";
     nlp_model<ENT, CUSTOM_CRF>::custom_file = "material.bin";
@@ -44,6 +43,20 @@ namespace andromeda
     nlp_model<ENT, CUSTOM_CRF>::model_file = get_crf_dir() / "ucmi/crf_material.bin";
     
     nlp_model<ENT, CUSTOM_CRF>::initialise();
+  }
+
+  bool nlp_model<ENT, MATERIAL>::apply(subject<TEXT>& subj)
+  {
+    if(not satisfies_dependencies(subj))
+      {
+        return false;
+      }
+
+    run_model(subj);
+
+    post_process_bio(subj);
+
+    return true;
   }
 
 }

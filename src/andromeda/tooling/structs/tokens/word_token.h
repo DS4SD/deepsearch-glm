@@ -80,6 +80,7 @@ namespace andromeda
     void set_word(std::string word);    
     void set_pos(std::string pos);
     void set_tag(std::string tag);
+    void remove_tag(std::string tag);
     void set_known(bool known);
 
     void set_inds(std::vector<int> inds) { this->inds = inds; }
@@ -267,6 +268,11 @@ namespace andromeda
   void word_token::set_tag(std::string tag)
   {
     this->tags.insert(tag);
+  }
+
+  void word_token::remove_tag(std::string tag)
+  {
+    this->tags.erase(tag);
   }
 
   bool word_token::has_tag(std::string tag) const

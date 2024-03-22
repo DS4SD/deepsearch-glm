@@ -40,12 +40,20 @@ namespace andromeda
 
   protected:
 
+    bool is_null_label(std::string label);
+    
     bool initialise();
 
     void run_model(subject<TEXT>& subj);
 
     void post_process(subject<TEXT>& subj);
 
+    // if the tokens are annotated with B-/I-/O format
+    void post_process_bio(subject<TEXT>& subj);
+
+    void identify_missing_I(subject<TEXT>& subj);
+    void identify_rogue_I(subject<TEXT>& subj);
+    
   protected:
 
     const static inline std::set<model_name> dependencies = {};
@@ -114,6 +122,19 @@ namespace andromeda
     return true;
   }
 
+  bool nlp_model<ENT, CUSTOM_CRF>::is_null_label(std::string label)
+  {
+    for(auto& ignored_label:ignored_labels)
+      {
+	if(utils::contains(label, ignored_label))
+	  {
+	    return true;
+	  }
+      }
+    
+    return false;
+  }
+  
   bool nlp_model<ENT, CUSTOM_CRF>::apply(subject<TEXT>& subj)
   {
     //LOG_S(INFO) << __FILE__ << ":" << __LINE__ << "\t" << subj.get_text();
@@ -249,6 +270,185 @@ namespace andromeda
       }
 
   }
+
+  void nlp_model<ENT, CUSTOM_CRF>::identify_missing_I(subject<TEXT>& subj)
+  {
+    auto& wtokens = subj.get_word_tokens();
+
+    // update wrongly identified O (1 O between two I-)
+    for(std::size_t l=1; l+1<wtokens.size(); l++)
+      {
+	auto& wtoken = wtokens.at(l);
+
+	std::string tag_l = "";
+	for(auto& wtoken_tag:wtoken.get_tags())
+	  {
+	    if(wtoken_tag.starts_with(TAG))
+	      {
+		tag_l = wtoken_tag;
+	      }
+	  }
+
+	std::string tag_lm1 = "";
+	for(auto& wtoken_tag:wtokens.at(l-1).get_tags())
+	  {
+	    if(wtoken_tag.starts_with(TAG))
+	      {
+		tag_lm1 = wtoken_tag;
+	      }
+	  }
+
+	std::string tag_lp1 = "";
+	for(auto& wtoken_tag:wtokens.at(l+1).get_tags())
+	  {
+	    if(wtoken_tag.starts_with(TAG))
+	      {
+		tag_lp1 = wtoken_tag;
+	      }
+	  }
+
+	if((tag_lm1.starts_with(TAG+"B_") or tag_lm1.starts_with(TAG+"I_")) and
+	   //((not tag_l.starts_with(TAG+"B_")) and (not tag_l.starts_with(TAG+"I_"))) and
+	   (is_null_label(tag_l)) and
+	   (tag_lp1.starts_with(TAG+"I_")))
+	  {
+	    //LOG_S(WARNING) << tag_l << "\t" << ": updating to " << tag_lp1;
+	    
+	    wtokens.at(l).remove_tag(tag_l);
+	    wtokens.at(l).set_tag(tag_lp1);
+	  }
+	else
+	  {
+	    //LOG_S(INFO) << tag_l << "\t" << ": keep as is ";
+	  }
+      }
+  }
+  
+  void nlp_model<ENT, CUSTOM_CRF>::identify_rogue_I(subject<TEXT>& subj)
+  {
+    auto& wtokens = subj.get_word_tokens();
+    
+    // remove rogue I- (that follow a __undef__)
+    for(std::size_t l=0; l+1<wtokens.size(); l++)
+      {
+	auto& wtoken = wtokens.at(l);
+
+	std::string tag_l = "";
+	for(auto& wtoken_tag:wtoken.get_tags())
+	  {
+	    if(wtoken_tag.starts_with(TAG))
+	      {
+		tag_l = wtoken_tag;
+	      }
+	  }
+
+	std::string tag_lp1 = "";
+	for(auto& wtoken_tag:wtokens.at(l+1).get_tags())
+	  {
+	    if(wtoken_tag.starts_with(TAG))
+	      {
+		tag_lp1 = wtoken_tag;
+	      }
+	  }
+	
+	if((is_null_label(tag_l)) and
+	   (tag_lp1.starts_with(TAG+"I_")))
+	  {
+	    //LOG_S(WARNING) << tag_l << "\t" << ": updating to " << tag_lp1;
+	    
+	    wtokens.at(l+1).remove_tag(tag_lp1);
+	    wtokens.at(l+1).set_tag(tag_l);
+	  }
+	else
+	  {
+	    //LOG_S(INFO) << tag_l << "\t" << ": keep as is ";
+	  }
+      }
+  }
+  
+  void nlp_model<ENT, CUSTOM_CRF>::post_process_bio(subject<TEXT>& subj)
+  {
+    identify_missing_I(subj);
+
+    identify_rogue_I(subj);
+    
+    auto& wtokens = subj.get_word_tokens();
+    
+    //std::map<std::string, std::vector<std::array<std::size_t, 2> > > labels_to_crng={};
+    std::map<std::string, std::vector<typename word_token::range_type> > labels_to_crng={};
+
+    for(std::size_t l=0; l<wtokens.size(); l++)
+      {
+        auto& wtoken = wtokens.at(l);
+
+        for(auto& wtoken_tag:wtoken.get_tags())
+          {
+            if(wtoken_tag.starts_with(TAG))
+              {
+                auto label = wtoken_tag;
+		label = utils::replace(label, TAG+"B_", "");
+		label = utils::replace(label, TAG+"I_", "");
+		label = utils::replace(label, TAG, "");
+
+                auto itr = labels_to_crng.find(label);
+
+                if(itr==labels_to_crng.end())
+                  {
+                    labels_to_crng[label]={};
+                  }
+
+		if(not is_null_label(label))
+		  {
+		    labels_to_crng.at(label).push_back(wtoken.get_rng());
+		  }
+	      }
+          }
+      }
+    
+    for(auto itr=labels_to_crng.begin(); itr!=labels_to_crng.end(); itr++)
+      {
+	std::string label = itr->first;
+        auto& ranges = itr->second;
+
+	LOG_S(INFO) << label << ": " << ranges.size();
+	
+        std::size_t ind=0;
+        while(ind<ranges.size())
+          {
+            range_type char_range = ranges.at(ind++);
+
+            while(ind<ranges.size())
+              {
+                auto rng = ranges.at(ind);
+                if(rng[0]-char_range[1]<=1)
+                  {
+                    char_range[1] = rng[1];
+                  }
+                else
+                  {
+                    break;
+                  }
+
+                ind += 1;
+              }
+
+            auto ctok_range = subj.get_char_token_range(char_range);
+            auto wtok_range = subj.get_word_token_range(char_range);
+
+            std::string orig = subj.from_char_range(char_range);
+            std::string name = subj.from_ctok_range(ctok_range);
+
+	    LOG_S(INFO) << "inserting " << label << "\t" << name;
+	    
+            subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
+					this->get_name(), label,
+					name, orig,
+                                        char_range, ctok_range, wtok_range);
+          }
+      }
+
+  }
+
   
 }
 
