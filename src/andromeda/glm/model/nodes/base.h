@@ -32,6 +32,7 @@ namespace andromeda
       const static inline flvr_type CONN = 9;  // connector (eg `of a`, `with these`, etc)
       const static inline flvr_type TERM = 10;  // term
       const static inline flvr_type VERB = 11;  // verb
+      const static inline flvr_type INST = 12;  // inst
       
       const static inline flvr_type SENT = 16; // sentence
 
@@ -91,6 +92,7 @@ namespace andromeda
 	 { CONN, "conn"},
 	 { TERM, "term"},
 	 { VERB, "verb"},
+	 { INST, "inst"},
 
 	 { SENT, "sentence"},
 	 
@@ -168,7 +170,7 @@ namespace andromeda
 		
 	return result;
       }      
-	
+      
       static inline std::map<std::string, word_token> to_token =
         {
          { UNKNOWN      , word_token(DEFAULT_WORD, DEFAULT_POS)},

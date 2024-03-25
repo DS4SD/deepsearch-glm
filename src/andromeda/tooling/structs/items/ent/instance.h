@@ -138,6 +138,7 @@ namespace andromeda
 
     bool is_in(subject_name sn) const { return (sn==subj_name);}
     bool is_model(model_name mt) const { return (mt==model_type);}
+    bool is_type(std::string t) const { return (t==to_key(model_type));}
     bool is_subtype(std::string st) const { return (st==model_subtype);}
 
     range_type get_char_range() const { return char_range; }
