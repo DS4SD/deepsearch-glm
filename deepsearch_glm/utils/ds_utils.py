@@ -10,6 +10,7 @@ import re
 import subprocess
 
 import deepsearch as ds
+import pandas as pd
 from deepsearch.cps.client.components.elastic import ElasticDataCollectionSource
 
 # from deepsearch.cps.client.components.queries import RunQueryError
@@ -340,6 +341,13 @@ def to_legacy_document_format(doc_glm, doc_leg={}):
     doc_leg["footnotes"] = []
     doc_leg["equations"] = []
 
+    if "properties" in doc_glm:
+        props = pd.DataFrame(
+            doc_glm["properties"]["data"], columns=doc_glm["properties"]["headers"]
+        )
+    else:
+        props = pd.DataFrame()
+
     for pelem in doc_glm["page-elements"]:
         ptype = pelem["type"]
         span_i = pelem["span"][0]
@@ -483,10 +491,19 @@ def to_legacy_document_format(doc_glm, doc_leg={}):
         elif "text" in obj:
             text = obj["text"][span_i:span_j]
 
+            type_label = pelem["type"]
+            name_label = pelem["name"]
+            if len(props) > 0 and type_label == "paragraph":
+                prop = props[
+                    (props["type"] == "semantic") & (props["subj_path"] == iref)
+                ]
+                if len(prop) == 1 and prop.iloc[0]["confidence"] > 0.85:
+                    name_label = prop.iloc[0]["label"]
+
             pitem = {
                 "text": text,
-                "name": pelem["name"],
-                "type": pelem["type"],
+                "name": name_label,  # pelem["name"],
+                "type": type_label,  # pelem["type"],
                 "prov": [
                     {
                         "bbox": pelem["bbox"],
