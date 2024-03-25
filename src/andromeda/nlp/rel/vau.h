@@ -250,6 +250,55 @@ namespace andromeda
 		std::string name = subj.from_char_range(unit_char_range);
 
 		//LOG_S(WARNING) << "keeping unit: " << orig;
+
+		// normalisation
+		{
+		  name = utils::replace(name, "{", "(");
+		  name = utils::replace(name, "}", ")");
+		  name = utils::replace(name, "\\", "");
+
+		  std::vector<std::string> start = {"-", "$"};
+		  while(true)
+		    {
+		      bool updated=false;
+		      for(std::string c:start)
+			{
+			  if(name.starts_with(c))
+			    {
+			      name = name.substr(c.size(), name.size()-c.size());
+			      name = utils::strip(name);
+
+			      updated = true;
+			    }
+			}
+
+		      if(updated)
+			{
+			  break;
+			}
+		    }
+
+		  std::vector<std::string> endings = {"-", "$"};
+		  while(true)
+		    {
+		      bool updated=false;
+		      for(std::string c:endings)
+			{
+			  if(name.ends_with(c))
+			    {
+			      name = name.substr(0, name.size()-c.size());
+			      name = utils::strip(name);
+
+			      updated = true;
+			    }
+			}
+
+		      if(updated)
+			{
+			  break;
+			}
+		    }
+		}
 		
 		auto& unit_inst = unit_instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
 							      VAU, "unit",

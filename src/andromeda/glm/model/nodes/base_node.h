@@ -231,13 +231,13 @@ namespace andromeda
     base_node::base_node(flvr_type flavor, const std::vector<hash_type>& path):
       flvr(flavor),
       hash(node_names::UNKNOWN_HASH),
-
+      
       word_cnt(0),
       sent_cnt(0),
       text_cnt(0),
       tabl_cnt(0),
       fdoc_cnt(0),
-
+      
       text_ptr(NULL),
 
       nodes_ptr(std::make_shared<std::vector<hash_type> >(path)),
