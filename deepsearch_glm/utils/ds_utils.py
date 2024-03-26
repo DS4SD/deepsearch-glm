@@ -330,7 +330,7 @@ def resolve_item(paths, obj):
         return None
 
 
-def to_legacy_document_format(doc_glm, doc_leg={}):
+def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
     """Convert Document object (with `body`) to its legacy format (with `main-text`)"""
 
     doc_leg["main-text"] = []
@@ -493,7 +493,7 @@ def to_legacy_document_format(doc_glm, doc_leg={}):
 
             type_label = pelem["type"]
             name_label = pelem["name"]
-            if len(props) > 0 and type_label == "paragraph":
+            if update_name_label and len(props) > 0 and type_label == "paragraph":
                 prop = props[
                     (props["type"] == "semantic") & (props["subj_path"] == iref)
                 ]
