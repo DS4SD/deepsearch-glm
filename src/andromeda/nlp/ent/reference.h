@@ -92,7 +92,7 @@ namespace andromeda
         this->apply(*paragraph);
       }
 
-    return true;
+    return update_applied_models(doc);
   }
 
   bool nlp_model<ENT, REFERENCE>::apply(subject<TEXT>& subj)
@@ -129,7 +129,7 @@ namespace andromeda
 
     post_process(subj);
 
-    return true;
+    return update_applied_models(subj);
   }
 
   void nlp_model<ENT, REFERENCE>::run_model(subject<TEXT>& subj)
