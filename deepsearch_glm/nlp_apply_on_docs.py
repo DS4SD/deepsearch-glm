@@ -12,7 +12,11 @@ import pandas as pd
 from tabulate import tabulate
 
 from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.utils.ds_utils import convert_pdffiles, to_legacy_document_format
+from deepsearch_glm.utils.ds_utils import (
+    convert_pdffiles,
+    to_legacy_document_format,
+    to_xml_format,
+)
 
 
 def parse_arguments():
@@ -94,6 +98,14 @@ examples of execution:
         help="enforce old legacy format",
     )
 
+    parser.add_argument(
+        "--xml",
+        required=False,
+        type=bool,
+        default=False,
+        help="enforce xml format",
+    )
+
     args = parser.parse_args()
 
     pdf = args.pdf
@@ -119,6 +131,7 @@ examples of execution:
         args.filters,
         args.force_convert,
         args.legacy,
+        args.xml,
     )
 
 
@@ -184,6 +197,7 @@ if __name__ == "__main__":
         filters,
         force_convert,
         legacy,
+        xml,
     ) = parse_arguments()
 
     if len(pdf_files) > 0:
@@ -225,3 +239,12 @@ if __name__ == "__main__":
 
             with open(nlp_file, "w", encoding="utf-8") as fw:
                 fw.write(json.dumps(doc_i, indent=2))
+
+        if xml:
+            doc_xmlstr = to_xml_format(doc_j, normalised_pagedim=100)
+
+            nlp_file = json_file.replace(".json", ".xml.json")
+            print(f"writing  models {nlp_file}")
+
+            with open(nlp_file, "w", encoding="utf-8") as fw:
+                fw.write(doc_xmlstr)
