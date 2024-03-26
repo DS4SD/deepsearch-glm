@@ -9,6 +9,7 @@
     "numval",
     "parenthesis",
     "quote",
+    "reference",
     "semantic",
     "sentence",
     "term"
