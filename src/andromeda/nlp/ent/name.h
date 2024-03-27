@@ -73,7 +73,21 @@ namespace andromeda
   }
 
   bool nlp_model<ENT, NAME>::initialise_regex()
-  {  
+  {
+    // `xxx yyy of kkk lll and iii jjj`
+    {
+      pcre2_expr expr(this->get_key(), "specialised-name",
+		      R"((?P<name>(([A-Z][a-z]+)\s+)+(of\s+)([A-Z][a-z]+)+(and\s+)([A-Z][a-z]+\s+)*)([A-Z][a-z]+))");
+      exprs.push_back(expr);
+    }
+    
+    // `xxx yyy of kkk lll`
+    {
+      pcre2_expr expr(this->get_key(), "specialised-name",
+		      R"((?P<name>(([A-Z][a-z]+)\s+)+(of\s+)([A-Z][a-z]+\s+)*)([A-Z][a-z]+))");
+      exprs.push_back(expr);
+    }
+    
     // `Jan H. Wernick`
     {
       pcre2_expr expr(this->get_key(), "person-name",
@@ -116,6 +130,19 @@ namespace andromeda
       exprs.push_back(expr);
     }    
 
+    // `Jan H Wernick`
+    {
+      pcre2_expr expr(this->get_key(), "person-name",
+		      R"((?P<name>(([A-Z][a-z]+)\s+)+(([A-Z])\s+)+([A-Z][a-z]+)+))");
+      exprs.push_back(expr);
+    }
+
+    // `Jan Wernick`
+    {
+      pcre2_expr expr(this->get_key(), "person-name",
+		      R"((?P<name>(([A-Z][a-z]+)\s+)+([A-Z][a-z]+)+))");
+      exprs.push_back(expr);
+    }
     
     return true;
   }
@@ -190,9 +217,9 @@ namespace andromeda
 		    if(keep)
 		      {
 			subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
-						   NAME, expr.get_subtype(),
-						   name, orig, 
-						   char_range, ctok_range, wtok_range);
+						    NAME, expr.get_subtype(),
+						    name, orig, 
+						    char_range, ctok_range, wtok_range);
 		      }
 		    else
 		      {

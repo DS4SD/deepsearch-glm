@@ -74,10 +74,12 @@ namespace andromeda
 
     subject_name get_name() const { return name; }
     hash_type get_hash() const { return hash; }
-
+    
     std::vector<base_property>& get_properties() { return properties; }
     std::vector<base_instance>& get_instances() { return instances; }
     std::vector<base_relation>& get_relations() { return relations; }
+
+    std::vector<std::string> get_property_labels(model_name name); 
     
     void clear();
 
@@ -224,6 +226,20 @@ namespace andromeda
   std::string base_subject::get_self_ref()
   {
     return sref;
+  }
+
+  std::vector<std::string> base_subject::get_property_labels(model_name name)
+  {
+    std::vector<std::string> labels={};
+    for(auto& prop:properties)
+      {
+	if(prop.is_model(name))
+	  {
+	    labels.push_back(prop.get_label());
+	  }
+      }
+    
+    return labels;
   }
   
   bool base_subject::set_prov_refs(const nlohmann::json& data,

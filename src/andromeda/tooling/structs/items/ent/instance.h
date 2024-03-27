@@ -289,7 +289,7 @@ namespace andromeda
     assert(ctok_range[0]<ctok_range[1]);
     assert(wtok_range[0]<=wtok_range[1]);
 
-    assert(subj_name==TEXT);
+    assert(subj_name==TEXT or subj_name==DOCUMENT);
     assert(subj_path!="");
 
     initialise_hashes();
