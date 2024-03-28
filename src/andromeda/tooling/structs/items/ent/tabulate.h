@@ -70,7 +70,7 @@ namespace andromeda
         ss << "\ninstances: " << instances.size() << "\n";
         return ss.str();
       }
-    else if(instances.at(0).is_in(TEXT))
+    else if(instances.at(0).is_in(TEXT) or instances.at(0).is_in(DOCUMENT))
       {
         headers = base_instance::short_text_headers();
       }

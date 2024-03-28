@@ -581,107 +581,66 @@ namespace andromeda
 
   bool subject<DOCUMENT>::finalise_instances()
   {
-    //LOG_S(INFO) << "#-instances: " << instances.size();
+    // only keep the DOCUMENT instances ...
     
-    instances.clear();
-
-    //LOG_S(INFO) << "#-instances: " << instances.size();
-
+    for(auto itr=instances.begin(); itr!=instances.end(); )
+      {
+	if(itr->is_subject(DOCUMENT))
+	  {
+	    itr++;
+	  }
+	else
+	  {
+	    itr = instances.erase(itr);
+	  }
+      }
+    
+    //instances.clear();
+    
     for(auto& subj:texts)
       {
-	//LOG_S(INFO) << "#-instances " << subj->get_self_ref() << ": " << subj->instances.size();
-	
-        for(auto& ent:subj->instances)
+        for(auto& inst:subj->instances)
           {
-	    instances.push_back(ent);
-
-	    //if(ent.get_subj_path()=="")
-	    //{
-	    //LOG_S(INFO) << ent.to_json().dump();
-	    //}
+	    instances.push_back(inst);
           }
       }
-    //LOG_S(INFO) << " texts #-instances: " << instances.size();
     
     for(auto& subj:tables)
       {
-	//LOG_S(INFO) << "#-instances " << subj->get_self_ref() << ": " << subj->instances.size();
-        for(auto& ent:subj->instances)
+        for(auto& inst:subj->instances)
           {
-	    instances.push_back(ent);
-
-	    //if(ent.get_subj_path()=="")
-	    //{
-	    //LOG_S(INFO) << " => " << ent.to_json().dump();
-	    //}	    
+	    instances.push_back(inst);
           }
 
         for(auto& capt:subj->captions)
           {
-	    //LOG_S(INFO) << "#-instances " << capt->get_self_ref() << ": " << capt->instances.size();
-	    
-            for(auto& ent:capt->instances)
+            for(auto& inst:capt->instances)
               {
-		instances.push_back(ent);
-
-		//if(ent.get_subj_path()=="")
-		//{
-		//LOG_S(INFO) << ent.to_json().dump();
-		//}
+		instances.push_back(inst);
               }
           }
       }
-    //LOG_S(INFO) << "tables #-instances: " << instances.size();
     
     for(auto& subj:figures)
       {
-	//LOG_S(INFO) << "#-instances " << subj->get_self_ref() << ": " << subj->instances.size();
-	
-        for(auto& ent:subj->instances)
+        for(auto& inst:subj->instances)
           {
-	    instances.push_back(ent);
+	    instances.push_back(inst);
           }
 
         for(auto& capt:subj->captions)
           {
-	    //LOG_S(INFO) << "#-instances " << capt->get_self_ref() << ": " << capt->instances.size();
-	    
-            for(auto& ent:capt->instances)
+            for(auto& inst:capt->instances)
               {
-		instances.push_back(ent);
+		instances.push_back(inst);
               }
           }
       }
-    //LOG_S(INFO) << "figures #-instances: " << instances.size();
-    
-    //for(auto& ent:instances)      
-    //{
-    //if(ent.get_subj_path()=="")
-    //{
-    //LOG_S(INFO) << ent.to_json().dump();	
-    //}
-    //}
-    
-    //LOG_S(INFO) << "#-instances: " << instances.size();
     
     std::sort(instances.begin(), instances.end());
-
-    /*
-    for(std::size_t l=0; l+1<instances.size(); l++)
-      {
-	if(instances.at(l)==instances.at(l+1))
-	  {
-	  //LOG_S(INFO) << l;
-	    //LOG_S(INFO) << instances.at(l+0).to_json().dump();
-	    //LOG_S(INFO) << instances.at(l+1).to_json().dump();
-	  }
-      }
-    */
     
     auto itr = std::unique(instances.begin(), instances.end());
     instances.erase(itr, instances.end());
-    
-    //LOG_S(INFO) << "#-instances: " << instances.size();    
 
     return true;
   }

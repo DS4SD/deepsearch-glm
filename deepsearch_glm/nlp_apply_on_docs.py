@@ -148,6 +148,7 @@ def init_nlp_model(models: str, filters: List[str] = []):
     config["subject-filters"] = filters
 
     model.initialise(config)
+    model.set_loglevel("INFO")
 
     return model
 
@@ -178,7 +179,10 @@ def show_doc(doc_j):
         inst = pd.DataFrame(
             doc_j["instances"]["data"], columns=doc_j["instances"]["headers"]
         )
-        print("instances: \n\n", inst)
+        print("instances: \n\n", inst.to_string())
+
+        meta = inst[inst["type"] == "metadata"]
+        print("meta: \n\n", meta)
 
         terms = inst[inst["type"] == "term"]
         print("terms: \n\n", terms)
@@ -222,7 +226,7 @@ if __name__ == "__main__":
         print("applying models ... ", end="")
         doc_j = model.apply_on_doc(doc_i)
 
-        print(doc_j.keys())
+        # print(doc_j.keys())
         show_doc(doc_j)
 
         nlp_file = json_file.replace(".json", ".nlp.json")

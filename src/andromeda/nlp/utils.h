@@ -257,7 +257,14 @@ namespace andromeda
 	  typedef nlp_model<REL, VAU> model_type;
 	  model = std::make_shared<model_type>();	  
 	}
-	break;	
+	break;
+
+      case METADATA:
+	{
+	  typedef nlp_model<REC, METADATA> model_type;
+	  model = std::make_shared<model_type>();	  
+	}
+	break;		
 	
       default:
 	{
