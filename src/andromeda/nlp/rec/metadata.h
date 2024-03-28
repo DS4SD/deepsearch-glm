@@ -65,11 +65,11 @@ namespace andromeda
   {
     if(not is_scientific_paper(subj))
       {
-        LOG_S(WARNING) << "document is NOT scientific report!";
+        //LOG_S(WARNING) << "document is NOT scientific report!";
         return false;
       }
 
-    LOG_S(WARNING) << "document is scientific report!";
+    //LOG_S(WARNING) << "document is scientific report!";
 
     find_title(subj);
 
@@ -79,15 +79,18 @@ namespace andromeda
 
     find_abstract(subj);
 
+    //LOG_S(INFO) << "done with metadata ...";
+
     return update_applied_models(subj);
   }
 
   bool nlp_model<REC, METADATA>::is_scientific_paper(subject<DOCUMENT>& subj)
   {
+    //LOG_S(INFO);
+
     bool detected_abstract=false;
     bool detected_introduction=false;
 
-    //for(auto& tsubj:subj.texts)
     for(int tind=0; tind<subj.texts.size(); tind++)
       {
         auto& tsubj = subj.texts.at(tind);
@@ -118,37 +121,46 @@ namespace andromeda
           }
       }
 
+    //LOG_S(INFO) << abstract_ind << ", " << introduction_ind << "\n";
+
     return (detected_abstract or detected_introduction);
   }
 
   bool nlp_model<REC, METADATA>::find_title(subject<DOCUMENT>& subj)
   {
+    //LOG_S(INFO) << __FUNCTION__;
+
     std::string title="";
 
     bool first_metadata = true;
 
-    for(int tind=0; tind<abstract_ind; tind++)
+    int cut_off=0;
+    if(abstract_ind!=-1)
+      {
+        cut_off = abstract_ind;
+      }
+    else if(introduction_ind!=-1)
+      {
+        cut_off = introduction_ind;
+      }
+    else
+      {}
+
+    title_ind = -1;
+    for(int tind=0; tind<cut_off; tind++)
       {
         auto& tsubj = subj.texts.at(tind);
 
-        //auto& provs = tsubj->get_provs();
-
         std::vector<std::string> semlabels = subj.texts.at(tind)->get_property_labels(SEMANTIC);
-
-        //LOG_S(INFO) << "text: " << tind << "\n"
-        //std::cout << provs.at(0)->get_type() << std::setw(24)
-        //<< provs.at(0)->get_name() << std::setw(24)
-        //<< subj.texts.at(tind)->get_property_labels(SEMANTIC).at(0) << std::setw(24)
-        //<< subj.texts.at(tind)->get_text() << "\n";
-        //std::cout << tabulate(tsubj->get_properties()) << "\n\n";
-        //std::cout << tabulate(tsubj->get_instances()) << "\n\n";
 
         if(tind>0 and
            (std::find(semlabels.begin(), semlabels.end(), "meta-data")!=semlabels.end()) and
            first_metadata)
           {
+            title_ind = tind-1;
+
             first_metadata = false;
-            title = tsubj->get_text();
+            title = subj.texts.at(tind-1)->get_text();
 
             range_type char_range = {0, title.size()};
 
@@ -160,24 +172,12 @@ namespace andromeda
                                           title, title,
                                           char_range, ctok_range, wtok_range);
 
-	    
-            range_type rng = {0, 1};
-	    /*
-	    base_instance inst(subj.get_hash(), DOCUMENT, subj.get_self_ref(),
-			       METADATA, "title",
-			       title, title,
-			       rng, rng, rng);
+            subj.instances.emplace_back(subj.get_hash(), DOCUMENT, tsubj->get_self_ref(),
+                                         METADATA, "title",
+                                         title, title,
+                                         char_range, ctok_range, wtok_range);
 
-	    subj.instances.push_back(inst);
-	    */
-	    
-	    subj.instances.emplace_back(subj.get_hash(), DOCUMENT, subj.get_self_ref(),
-                                        METADATA, "title",
-                                        title, title,
-                                        rng, rng, rng);
-	    
-	    
-            title_ind = tind;
+            //LOG_S(INFO) << "found title: " << title;
 
             break;
           }
@@ -188,24 +188,45 @@ namespace andromeda
 
   bool nlp_model<REC, METADATA>::find_authors(subject<DOCUMENT>& subj)
   {
-    for(int tind=title_ind+1; tind<introduction_ind; tind++)
+    //LOG_S(INFO) << __FUNCTION__;
+
+    int cut_off=0;
+    if(abstract_ind!=-1)
+      {
+        cut_off = abstract_ind;
+      }
+    else if(introduction_ind!=-1)
+      {
+        cut_off = introduction_ind;
+      }
+    else
+      {}
+
+    //LOG_S(INFO) << title_ind << "\t" << cut_off;
+
+    for(int tind=title_ind+1; tind<cut_off; tind++)
       {
         auto& tsubj = subj.texts.at(tind);
-
+        //LOG_S(INFO) << tind << "\t" << tsubj->get_text();
+	
         auto& insts = tsubj->get_instances();
-
+	
         for(auto& inst:insts)
           {
+            //LOG_S(INFO) << inst.get_subtype() << "\t" << inst.get_name() << "\t";
             if(inst.is_model(NAME) and inst.is_subtype("person-name"))
               {
                 std::string name = inst.get_name();
                 std::string orig = inst.get_orig();
-		
-                range_type rng = {0, 1};
-                subj.instances.emplace_back(subj.get_hash(), DOCUMENT, subj.get_self_ref(),
+
+                //LOG_S(INFO) << " --> author: " << name;
+                
+                subj.instances.emplace_back(subj.get_hash(), DOCUMENT, tsubj->get_self_ref(), inst.get_conf(),
                                             METADATA, "author",
                                             name, orig,
-                                            rng, rng, rng);
+                                            inst.get_char_range(),
+					    inst.get_ctok_range(),
+					    inst.get_wtok_range());
               }
           }
       }
@@ -215,27 +236,50 @@ namespace andromeda
 
   bool nlp_model<REC, METADATA>::find_affiliations(subject<DOCUMENT>& subj)
   {
+    //LOG_S(INFO) << __FUNCTION__;
+
     return true;
   }
 
   bool nlp_model<REC, METADATA>::find_abstract(subject<DOCUMENT>& subj)
   {
+    //LOG_S(INFO) << __FUNCTION__;
+
     std::string abstract="";
-    for(int tind=abstract_ind; tind<introduction_ind; tind++)
+    if(abstract_ind!=-1 and introduction_ind==-1)
       {
-        abstract += subj.texts.at(tind-1)->get_text();
+        abstract = subj.texts.at(abstract_ind)->get_text();
       }
+    else if(abstract_ind!=-1 and introduction_ind!=-1)
+      {
+        for(int tind=abstract_ind; tind<introduction_ind; tind++)
+          {
+	    std::string text = subj.texts.at(tind)->get_text();
+	    
+	    text = utils::replace(text, " ", "");
+	    text = utils::to_lower(text);
+	
+	    if(not text.ends_with("abstract"))
+	      {
+		abstract += subj.texts.at(tind)->get_text();
+		abstract += " ";
+	      }
+	  }
+      }
+    else
+      {}
 
-    range_type rng = {0, 1};
-    subj.instances.emplace_back(subj.get_hash(), DOCUMENT, subj.get_self_ref(),
-                                METADATA, "abstract",
-                                abstract, abstract,
-                                rng, rng, rng);
-
+    if(abstract.size()>0)
+      {
+        range_type rng = {0, abstract.size()};
+        subj.instances.emplace_back(subj.get_hash(), DOCUMENT, subj.get_self_ref(),
+                                    METADATA, "abstract",
+                                    abstract, abstract,
+                                    rng, rng, rng);
+      }
+    
     return true;
   }
-
-
 
 }
 
