@@ -582,6 +582,7 @@ namespace andromeda
   bool subject<DOCUMENT>::finalise_instances()
   {
     // only keep the DOCUMENT instances ...
+    
     for(auto itr=instances.begin(); itr!=instances.end(); )
       {
 	if(itr->is_subject(DOCUMENT))
@@ -593,6 +594,8 @@ namespace andromeda
 	    itr = instances.erase(itr);
 	  }
       }
+    
+    //instances.clear();
     
     for(auto& subj:texts)
       {

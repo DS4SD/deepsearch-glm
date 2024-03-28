@@ -473,7 +473,8 @@ namespace andromeda
               wtok_range_match,
               name, orig});
         }
-
+	break;
+	  
       case DOCUMENT:
         {
           row = nlohmann::json::array({to_key(model_type), model_subtype,

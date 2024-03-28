@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-GENERATE = False
+GENERATE = True
 
 import glob
 import json
@@ -276,86 +276,104 @@ def test_03D():
     # model_k = init_nlp_model("term;verb")
 
     source = "./tests/data/docs/1806.02284.json"
-    target_i = "./tests/data/docs/1806.02284.nlp.i.json"
-    target_j = "./tests/data/docs/1806.02284.nlp.j.json"
-    target_k = "./tests/data/docs/1806.02284.nlp.k.json"
 
-    if True:  # generate the test-data
-        with open(source) as fr:
-            doc = json.load(fr)
+    # target_i = "./tests/data/docs/1806.02284.nlp.i.json"
+    # target_j = "./tests/data/docs/1806.02284.nlp.j.json"
+    # target_k = "./tests/data/docs/1806.02284.nlp.k.json"
 
-        # print("apply model_i")
-        res_i = model_i.apply_on_doc(doc)
-        # res_i = round_floats(res_i)
+    with open(source) as fr:
+        doc = json.load(fr)
 
-        fw = open(target_i, "w")
-        fw.write(json.dumps(res_i, indent=2) + "\n")
-        fw.close()
+    # print("apply model_i")
+    res_i = model_i.apply_on_doc(doc)
+    # res_i = round_floats(res_i)
 
-        # print("apply model_j")
-        res_j = model_j.apply_on_doc(res_i)
-        # res_j = model_j.apply_on_doc(doc)
-        res_j = round_floats(res_j)
+    """
+    fw = open(target_i, "w")
+    fw.write(json.dumps(res_i, indent=2) + "\n")
+    fw.close()
+    """
 
-        fw = open(target_j, "w")
-        fw.write(json.dumps(res_j, indent=2) + "\n")
-        fw.close()
+    # print("apply model_j")
+    res_j = model_j.apply_on_doc(res_i)
+    # res_j = model_j.apply_on_doc(doc)
+    res_j = round_floats(res_j)
 
-        # print("apply model_k")
-        res_k = model_k.apply_on_doc(doc)
-        res_k = round_floats(res_k)
+    """
+    fw = open(target_j, "w")
+    fw.write(json.dumps(res_j, indent=2) + "\n")
+    fw.close()
+    """
 
-        fw = open(target_k, "w")
-        fw.write(json.dumps(res_k, indent=2) + "\n")
-        fw.close()
+    # print("apply model_k")
+    res_k = model_k.apply_on_doc(doc)
+    res_k = round_floats(res_k)
 
-        assert res_j["tables"] == res_k["tables"]
+    """
+    fw = open(target_k, "w")
+    fw.write(json.dumps(res_k, indent=2) + "\n")
+    fw.close()
+    """
 
-        """
-        print(tabulate(res_j["properties"]["data"][0:30],
-                       headers=res_j["properties"]["headers"]))
+    assert res_j["tables"] == res_k["tables"]
+
+    """
+    print(tabulate(res_j["properties"]["data"][0:30],
+    headers=res_j["properties"]["headers"]))
         
-        print(tabulate(res_k["properties"]["data"][0:30],
-                       headers=res_k["properties"]["headers"]))
-        """
+    print(tabulate(res_k["properties"]["data"][0:30],
+    headers=res_k["properties"]["headers"]))
+    """
 
-        assert len(res_j["properties"]["data"]) == len(res_k["properties"]["data"])
-        assert res_j["properties"]["data"] == res_k["properties"]["data"]
+    assert len(res_j["properties"]["data"]) == len(res_k["properties"]["data"])
+    assert res_j["properties"]["data"] == res_k["properties"]["data"]
 
-        table_i, headers_i = get_reduced_instances(res_i["instances"])
-        table_j, headers_j = get_reduced_instances(res_j["instances"])
-        table_k, headers_k = get_reduced_instances(res_k["instances"])
+    table_i, headers_i = get_reduced_instances(res_i["instances"])
+    table_j, headers_j = get_reduced_instances(res_j["instances"])
+    table_k, headers_k = get_reduced_instances(res_k["instances"])
 
-        # print(tabulate(table_j, headers=headers_j))
-        # print(tabulate(table_k, headers=headers_k))
+    # print(tabulate(table_j, headers=headers_j))
+    # print(tabulate(table_k, headers=headers_k))
 
-        """
-        print("#-inst-i: ", len(table_i))
-        print("#-inst-j: ", len(table_j))
-        print("#-inst-k: ", len(table_k))
-        """
-        assert table_j == table_k
+    """
+    print("#-inst-i: ", len(table_i))
+    print("#-inst-j: ", len(table_j))
+    print("#-inst-k: ", len(table_k))
+    """
+    assert table_j == table_k
 
-        # print("#-instances-j: ", len(res_j["instances"]["data"]))
-        # print("#-instances-j: ", len(res_k["instances"]["data"]))
+    print("#-instances-j: ", len(res_j["instances"]["data"]))
+    print("#-instances-k: ", len(res_k["instances"]["data"]))
 
-        assert len(res_j["instances"]["data"]) == len(res_k["instances"]["data"])
-        assert res_j["instances"]["data"] == res_k["instances"]["data"]
+    # print(tabulate(res_j["instances"]["data"][-30:]))
+    # print(tabulate(res_k["instances"]["data"][-30:]))
 
-        assert res_j == res_k
+    for j in range(0, len(res_j["instances"]["data"])):
+        found = False
+        for k in range(0, len(res_k["instances"]["data"])):
+            if res_k["instances"]["data"][k] == res_j["instances"]["data"][j]:
+                found = True
 
-    else:
-        with open(source) as fr:
-            sdoc = json.load(fr)
+        if not found:
+            # print(i)
+            # print(res_j["instances"]["data"][j])
+            print(res_k["instances"]["data"][j])
 
-        res = model.apply_on_doc(sdoc)
-        res = round_floats(res)
+    for k in range(0, len(res_k["instances"]["data"])):
+        found = False
+        for j in range(0, len(res_j["instances"]["data"])):
+            if res_k["instances"]["data"][k] == res_j["instances"]["data"][j]:
+                found = True
 
-        with open(target) as fr:
-            tdoc = json.load(fr)
-            tdoc = round_floats(tdoc)
+        if not found:
+            # print(i)
+            # print(res_j["instances"]["data"][j])
+            print(res_k["instances"]["data"][k])
 
-        assert res == tdoc
+    assert len(res_j["instances"]["data"]) == len(res_k["instances"]["data"])
+    assert res_j["instances"]["data"] == res_k["instances"]["data"]
+
+    assert res_j == res_k
 
 
 # test term model

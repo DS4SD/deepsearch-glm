@@ -1114,6 +1114,27 @@
         "1"
       ],
       [
+        "name",
+        "person-name",
+        16535999405521191333,
+        "TEXT",
+        "#/figures/0/captions/0",
+        1.0,
+        12638008641667971393,
+        5262094554613714878,
+        null,
+        null,
+        54,
+        79,
+        54,
+        79,
+        11,
+        14,
+        true,
+        "Corpus Conversion Service",
+        "Corpus Conversion Service"
+      ],
+      [
         "sentence",
         "proper",
         16535999405521191333,
@@ -3193,8 +3214,8 @@
         "Peter W J Staar, Michele Dolfi, Christoph Auer, Costas Bekas"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         8770494724746327817,
         "TEXT",
         "#/texts/2",
@@ -3214,8 +3235,8 @@
         "Peter W J Staar"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         8770494724746327817,
         "TEXT",
         "#/texts/2",
@@ -3235,8 +3256,8 @@
         "Michele Dolfi"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         8770494724746327817,
         "TEXT",
         "#/texts/2",
@@ -3256,8 +3277,8 @@
         "Christoph Auer"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         8770494724746327817,
         "TEXT",
         "#/texts/2",
@@ -4747,8 +4768,8 @@
         "called"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         17999848460847860039,
         "TEXT",
         "#/texts/8",
@@ -6824,6 +6845,27 @@
         true,
         "ACM Reference Format",
         "ACM Reference Format"
+      ],
+      [
+        "name",
+        "person-name",
+        14387482728083328702,
+        "TEXT",
+        "#/texts/9",
+        1.0,
+        15144047512629673246,
+        10499708310506898031,
+        null,
+        null,
+        4,
+        20,
+        4,
+        20,
+        1,
+        3,
+        true,
+        "Reference Format",
+        "Reference Format"
       ],
       [
         "reference",
@@ -10774,8 +10816,8 @@
         "called"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         3749305213430885773,
         "TEXT",
         "#/texts/12",
@@ -14974,8 +15016,8 @@
         "Since"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         7935233310532930917,
         "TEXT",
         "#/texts/16",
@@ -25621,8 +25663,8 @@
         "3.2"
       ],
       [
-        "sentence",
-        "improper",
+        "name",
+        "specialised-name",
         15403141463083979171,
         "TEXT",
         "#/texts/28",
@@ -25642,67 +25684,25 @@
         "Parsing of Documents"
       ],
       [
-        "term",
-        "single-term",
+        "sentence",
+        "improper",
         15403141463083979171,
         "TEXT",
         "#/texts/28",
         1.0,
-        8106352039449712482,
-        16094475553600658489,
+        11915167694096606959,
+        5182733670794307620,
         null,
         null,
         4,
-        11,
+        24,
         4,
-        11,
+        24,
         3,
-        4,
-        true,
-        "Parsing",
-        "Parsing"
-      ],
-      [
-        "conn",
-        "single-conn",
-        15403141463083979171,
-        "TEXT",
-        "#/texts/28",
-        1.0,
-        15441160910541485670,
-        6638874286081294738,
-        null,
-        null,
-        12,
-        14,
-        12,
-        14,
-        4,
-        5,
-        true,
-        "of",
-        "of"
-      ],
-      [
-        "term",
-        "single-term",
-        15403141463083979171,
-        "TEXT",
-        "#/texts/28",
-        1.0,
-        2908675737836410520,
-        13985897290952550496,
-        null,
-        null,
-        15,
-        24,
-        15,
-        24,
-        5,
         6,
         true,
-        "Documents",
-        "Documents"
+        "Parsing of Documents",
+        "Parsing of Documents"
       ],
       [
         "sentence",
@@ -38284,12 +38284,12 @@
         "Machine Learning: Training models & Applying models"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         4695688617288377564,
         "TEXT",
         "#/texts/39",
-        1.0,
+        0.99,
         13278563109182224937,
         14007099678725931642,
         null,
@@ -61216,8 +61216,8 @@
         "of the"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         3904142170608486950,
         "TEXT",
         "#/texts/65",
@@ -61447,8 +61447,8 @@
         "title"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         6410818076508661508,
         "TEXT",
         "#/texts/66",
@@ -61888,6 +61888,27 @@
         "IBM Research Rueschlikon"
       ],
       [
+        "name",
+        "person-name",
+        6410818076508661508,
+        "TEXT",
+        "#/texts/66",
+        1.0,
+        13511118351290025305,
+        13949303405429529508,
+        null,
+        null,
+        235,
+        255,
+        231,
+        251,
+        60,
+        62,
+        true,
+        "Research Rueschlikon",
+        "Research Rueschlikon"
+      ],
+      [
         "geoloc",
         "country",
         6410818076508661508,
@@ -61972,8 +61993,8 @@
         "authors"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         6410818076508661508,
         "TEXT",
         "#/texts/66",
@@ -61993,8 +62014,8 @@
         "Peter W J Staar"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         6410818076508661508,
         "TEXT",
         "#/texts/66",
@@ -62014,8 +62035,8 @@
         "Michele Dolfi"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         6410818076508661508,
         "TEXT",
         "#/texts/66",
@@ -62035,8 +62056,8 @@
         "Christoph Auer"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         6410818076508661508,
         "TEXT",
         "#/texts/66",
@@ -68375,6 +68396,27 @@
         true,
         "Message Broker RabbitMQ",
         "Message Broker RabbitMQ"
+      ],
+      [
+        "name",
+        "person-name",
+        11194226403360998426,
+        "TEXT",
+        "#/texts/75",
+        1.0,
+        11217893073254038012,
+        10294853586703434593,
+        null,
+        null,
+        160,
+        181,
+        160,
+        181,
+        29,
+        31,
+        true,
+        "Message Broker Rabbit",
+        "Message Broker Rabbit"
       ],
       [
         "expression",
@@ -75872,6 +75914,27 @@
         true,
         "IBM Cloud Private",
         "IBM Cloud Private"
+      ],
+      [
+        "name",
+        "person-name",
+        9031137420247852045,
+        "TEXT",
+        "#/texts/83",
+        0.99,
+        10544699468713700908,
+        16419928618030910283,
+        null,
+        null,
+        141,
+        154,
+        141,
+        154,
+        27,
+        29,
+        true,
+        "Cloud Private",
+        "Cloud Private"
       ],
       [
         "numval",
@@ -86941,8 +87004,8 @@
         "Roxana Istrate and Matthieu Mottet"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         15983582675278266440,
         "TEXT",
         "#/texts/97",
@@ -86962,8 +87025,8 @@
         "Roxana Istrate"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         15983582675278266440,
         "TEXT",
         "#/texts/97",
@@ -87319,12 +87382,12 @@
         "by the"
       ],
       [
-        "term",
-        "single-term",
+        "name",
+        "person-name",
         12711351442546714716,
         "TEXT",
         "#/texts/98",
-        1.0,
+        0.9,
         4312908239263712749,
         12629609910975902459,
         null,
