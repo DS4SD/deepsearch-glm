@@ -62,6 +62,9 @@ namespace andromeda
 
      // derived from CUSTOM_CRF
      MATERIAL=2000,
+
+     // REC
+     METADATA=3000,
      
      NULL_MODEL=-1
     };
@@ -108,6 +111,9 @@ namespace andromeda
      // REL
      ABBREVIATION,
      VAU,
+
+     // REC
+     METADATA,
      
      NULL_MODEL					 
   };
@@ -157,6 +163,8 @@ namespace andromeda
 
       case ABBREVIATION: return "ABBREVIATION";
       case VAU: return "VAU";
+
+      case METADATA: return "METADATA";
 	
       case NULL_MODEL: return "NULL";
       }

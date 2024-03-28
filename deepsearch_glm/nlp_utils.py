@@ -123,6 +123,16 @@ def print_on_shell(text, result):
             print(tc.yellow(f"{_}:"), " null\n\n")
 
 
+def extract_metadata_from_doc(doc):
+    """Function to extract metadata from document"""
+
+    df = pd.DataFrame(doc["instances"]["data"], columns=doc["instances"]["headers"])
+
+    metadata = df[df["type"] == "metadata"]
+
+    return metadata
+
+
 def extract_texts_from_doc(doc):
     """Function to extract texts from document"""
 
