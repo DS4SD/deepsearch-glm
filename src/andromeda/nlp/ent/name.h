@@ -73,7 +73,28 @@ namespace andromeda
   }
 
   bool nlp_model<ENT, NAME>::initialise_regex()
-  {  
+  {
+    // `xxx yyy of kkk lll and iii jjj`
+    {
+      pcre2_expr expr(this->get_key(), "specialised-name",
+		      R"((?P<name>(([A-Z][a-z]+)\s+)+(of\s+)([A-Z][a-z]+\s+)+(and\s+)([A-Z][a-z]+\s+)*)([A-Z][a-z]+))");
+      exprs.push_back(expr);
+    }
+    
+    // `xxx yyy of kkk lll`
+    {
+      pcre2_expr expr(this->get_key(), "specialised-name",
+		      R"((?P<name>(([A-Z][a-z]+)\s+)+(of\s+)([A-Z][a-z]+\s+)*([A-Z][a-z]+)))");
+      exprs.push_back(expr);
+    }
+
+    // `xxx yyy for kkk lll`
+    {
+      pcre2_expr expr(this->get_key(), "specialised-name",
+		      R"((?P<name>(([A-Z][a-z]+)\s+)+(for\s+)([A-Z][a-z]+\s+)*([A-Z][a-z]+)))");
+      exprs.push_back(expr);
+    }
+    
     // `Jan H. Wernick`
     {
       pcre2_expr expr(this->get_key(), "person-name",
@@ -116,6 +137,19 @@ namespace andromeda
       exprs.push_back(expr);
     }    
 
+    // `Jan H Wernick`
+    {
+      pcre2_expr expr(this->get_key(), "person-name",
+		      R"((?P<name>(([A-Z][a-z]+)\s+)+(([A-Z])\s+)+([A-Z][a-z]+)+))");
+      exprs.push_back(expr);
+    }
+
+    // `Jan Wernick`
+    {
+      pcre2_expr expr(this->get_key(), "person-name",
+		      R"((?P<name>(([A-Z][a-z]+)\s+)+([A-Z][a-z]+)+))");
+      exprs.push_back(expr);
+    }
     
     return true;
   }
@@ -172,31 +206,39 @@ namespace andromeda
 		    
 		    name = utils::strip(name);
 
+		    double conf=1.0;
+		    std::string subtype = expr.get_subtype();
+		    
 		    bool keep=true;
 		    if(expr.get_subtype()=="person-name")
 		      {
-			double conf=1.e-3;
+			double conf_=1.e-3;
 			std::string label="undef";
 			
-			if(this->classify(name, label, conf))
+			if(this->classify(name, label, conf_))
 			  {
-			    if(label=="expr" or conf<0.9)
+			    if(label=="expr" or conf_<0.85)
 			      {
-				keep = false;
+				subtype = label;
+				//keep = false;
+			      }
+			    else
+			      {
+				conf = conf_;
 			      }
 			  }
 		      }
 
 		    if(keep)
 		      {
-			subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(),
-						   NAME, expr.get_subtype(),
-						   name, orig, 
-						   char_range, ctok_range, wtok_range);
+			subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(), conf,
+						    NAME, subtype, //expr.get_subtype(),
+						    name, orig, 
+						    char_range, ctok_range, wtok_range);
 		      }
 		    else
 		      {
-			//LOG_S(WARNING) << "skipping: " << name << " (" << orig << ")";
+			//LOG_S(WARNING) << "skipping (conf=" << conf << "): " << name << " (" << orig << ")";
 		      }
 		    
 		    utils::mask(text, item.rng);

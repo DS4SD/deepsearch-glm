@@ -10,6 +10,7 @@ import re
 import subprocess
 
 import deepsearch as ds
+import pandas as pd
 from deepsearch.cps.client.components.elastic import ElasticDataCollectionSource
 
 # from deepsearch.cps.client.components.queries import RunQueryError
@@ -329,7 +330,7 @@ def resolve_item(paths, obj):
         return None
 
 
-def to_legacy_document_format(doc_glm, doc_leg={}):
+def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
     """Convert Document object (with `body`) to its legacy format (with `main-text`)"""
 
     doc_leg["main-text"] = []
@@ -339,6 +340,13 @@ def to_legacy_document_format(doc_glm, doc_leg={}):
     doc_leg["page-footers"] = []
     doc_leg["footnotes"] = []
     doc_leg["equations"] = []
+
+    if "properties" in doc_glm:
+        props = pd.DataFrame(
+            doc_glm["properties"]["data"], columns=doc_glm["properties"]["headers"]
+        )
+    else:
+        props = pd.DataFrame()
 
     for pelem in doc_glm["page-elements"]:
         ptype = pelem["type"]
@@ -483,10 +491,19 @@ def to_legacy_document_format(doc_glm, doc_leg={}):
         elif "text" in obj:
             text = obj["text"][span_i:span_j]
 
+            type_label = pelem["type"]
+            name_label = pelem["name"]
+            if update_name_label and len(props) > 0 and type_label == "paragraph":
+                prop = props[
+                    (props["type"] == "semantic") & (props["subj_path"] == iref)
+                ]
+                if len(prop) == 1 and prop.iloc[0]["confidence"] > 0.85:
+                    name_label = prop.iloc[0]["label"]
+
             pitem = {
                 "text": text,
-                "name": pelem["name"],
-                "type": pelem["type"],
+                "name": name_label,  # pelem["name"],
+                "type": type_label,  # pelem["type"],
                 "prov": [
                     {
                         "bbox": pelem["bbox"],
@@ -508,3 +525,84 @@ def to_legacy_document_format(doc_glm, doc_leg={}):
             doc_leg["main-text"].append(pitem)
 
     return doc_leg
+
+
+def to_xml_format(doc_glm, normalised_pagedim: int = -1):
+    result = "<document>\n"
+
+    page_dims = pd.DataFrame()
+    if "page-dimensions":
+        page_dims = pd.DataFrame(doc_glm["page-dimensions"])
+
+    for pelem in doc_glm["page-elements"]:
+        ptype = pelem["type"]
+        span_i = pelem["span"][0]
+        span_j = pelem["span"][1]
+
+        if "iref" not in pelem:
+            # print(json.dumps(pelem, indent=2))
+            continue
+
+        iref = pelem["iref"]
+
+        page = pelem["page"]
+        bbox = pelem["bbox"]
+
+        x0 = bbox[0]
+        y0 = bbox[1]
+        x1 = bbox[2]
+        y1 = bbox[3]
+
+        if normalised_pagedim > 0 and len(page_dims[page_dims["page"] == page]) > 0:
+            page_width = page_dims[page_dims["page"] == page].iloc[0]["width"]
+            page_height = page_dims[page_dims["page"] == page].iloc[0]["height"]
+
+            rx0 = float(x0) / float(page_width) * normalised_pagedim
+            rx1 = float(x1) / float(page_width) * normalised_pagedim
+
+            ry0 = float(y0) / float(page_height) * normalised_pagedim
+            ry1 = float(y1) / float(page_height) * normalised_pagedim
+
+            x0 = max(0, min(normalised_pagedim, round(rx0)))
+            x1 = max(0, min(normalised_pagedim, round(rx1)))
+
+            y0 = max(0, min(normalised_pagedim, round(ry0)))
+            y1 = max(0, min(normalised_pagedim, round(ry1)))
+
+        elif normalised_pagedim > 0 and len(page_dims[page_dims["page"] == page]) == 0:
+            print(f"ERROR: no page dimensions for page {page}")
+
+        if re.match("#/figures/(\\d+)/captions/(.+)", iref):
+            # print(f"skip {iref}")
+            continue
+
+        if re.match("#/tables/(\\d+)/captions/(.+)", iref):
+            # print(f"skip {iref}")
+            continue
+
+        path = iref.split("/")
+        obj = resolve_item(path, doc_glm)
+
+        if obj is None:
+            print(f"warning: undefined {path}")
+            continue
+
+        if ptype == "figure":
+            result += f"<figure bbox=[{x0}, {y0}, {x1}, {y1}]></figure>\n"
+
+        elif ptype == "table":
+            result += f"<table bbox=[{x0}, {y0}, {x1}, {y1}]></table>\n"
+
+        elif "text" in obj:
+            text = obj["text"][span_i:span_j]
+            text_type = pelem["type"]
+
+            result += (
+                f"<{text_type} bbox=[{x0}, {y0}, {x1}, {y1}]>{text}</{text_type}>\n"
+            )
+        else:
+            continue
+
+    result += "</document>"
+
+    return result

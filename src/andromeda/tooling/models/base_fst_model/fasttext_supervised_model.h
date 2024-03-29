@@ -83,7 +83,7 @@ namespace andromeda
     
     std::string model_file, metrics_file, config_file;
     
-    std::string train_file, validate_file, test_file;
+    std::string data_file;//, train_file, validate_file, test_file;
     
     std::string fasttext_train_file,
       fasttext_validation_file;
@@ -119,9 +119,10 @@ namespace andromeda
     metrics_file("<undefined>"),
     config_file("<undefined>"),
 
-    train_file("<undefined>"),
-    validate_file("<undefined>"),
-    test_file("<undefined>"),
+    data_file("<undefined>"),
+    //train_file("<undefined>"),
+    //validate_file("<undefined>"),
+    //test_file("<undefined>"),
     
     fasttext_train_file("<fasttext_train_file>"),
     fasttext_validation_file("<fasttext_validation_file>"),
@@ -174,19 +175,22 @@ namespace andromeda
 
   bool fasttext_supervised_model::save(std::filesystem::path ofile)
   {
-    //LOG_S(INFO) << __FUNCTION__;
-    
     std::string model_name = ofile.string();
+
+    if(model_name.ends_with(".bin"))
+      {
+	model_name = utils::replace(model_name, ".bin", "");
+      }
     
     LOG_S(INFO) << "fasttext model save to " << model_name << ".bin";
-    model->saveModel(model_name + ".bin");
-    
+    model->saveModel(model_name);
+    	
     LOG_S(INFO) << "fasttext vectors save to " << model_name << ".vec";
-    model->saveVectors(model_name + ".vec");
+    model->saveVectors(model_name);
 
-    //LOG_S(INFO) << "fasttext output save to " << model_name << ".out";
-    //model->saveOutput(model_name + ".out");
-
+    //LOG_S(INFO) << "fasttext vectors save to " << model_out;
+    //model->saveOutput(model_name);
+    
     return true;
   }
   
@@ -219,9 +223,10 @@ namespace andromeda
 
     nlohmann::json files;
     {
-      files["train-file"] = "<filename>";
-      files["validate-file"] = "<filename>";
-      files["test-file"] = "<filename>";
+      files["data-file"] = "<filename>";
+      //files["train-file"] = "<filename>";
+      //files["validate-file"] = "<filename>";
+      //files["test-file"] = "<filename>";
 
       files["model-file"] = "<filename>";
       files["metrics-file"] = "<filename>";
@@ -239,7 +244,7 @@ namespace andromeda
     auto hpo_args = config["hpo"];
     auto train_args = config["args"];
 
-    auto train_files = config["files"];    
+    auto files = config["files"];    
 
     for(auto itr:hpo_args.items())
       {
@@ -270,13 +275,14 @@ namespace andromeda
     
     // files
     {
-      train_file = train_files.value("train-file", "null");
-
-      validate_file = train_files.value("validate-file", "null");
-      test_file = train_files.value("test-file", "null");
+      data_file = files.value("data-file", "null");
       
-      model_file = train_files.value("model-file", "null");
-      metrics_file = train_files.value("metrics-file", "null");    
+      //train_file = train_files.value("train-file", "null");
+      //validate_file = train_files.value("validate-file", "null");
+      //test_file = train_files.value("test-file", "null");
+      
+      model_file = files.value("model-file", "null");
+      metrics_file = files.value("metrics-file", "null");    
 
       if(metrics_file=="null")
 	{
@@ -285,8 +291,8 @@ namespace andromeda
       
       config_file = model_file+".config.json";
 
-      fasttext_train_file = train_file+".fasttext.train.txt";
-      fasttext_validation_file = train_file+".fasttext.validate.txt";
+      fasttext_train_file = data_file+".fasttext.train.txt";
+      fasttext_validation_file = data_file+".fasttext.validate.txt";
     }
 
     return true;
@@ -395,10 +401,10 @@ namespace andromeda
   {
     LOG_S(INFO) << __FUNCTION__;
     
-    std::ifstream ifs(train_file.c_str());
+    std::ifstream ifs(data_file.c_str());
     if(not ifs.good())
       {
-	LOG_S(ERROR) << "could not read from file: " << train_file;
+	LOG_S(ERROR) << "could not read from file: " << data_file;
 	return 0;
       }
 
@@ -423,7 +429,7 @@ namespace andromeda
     std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
     std::uniform_real_distribution<> dis(0.0, 1.0);
     
-    LOG_S(INFO) << "start reading from file: " << train_file;
+    LOG_S(INFO) << "start reading from file: " << data_file;
 
     auto char_normaliser = text_element::create_char_normaliser(false);
     auto text_normaliser = text_element::create_text_normaliser(false);
@@ -452,7 +458,7 @@ namespace andromeda
 	      {
 		dep_model->apply(subj);
 	      }
-		
+	    
 	    good = this->preprocess(subj, text);
 	  }
 	else if(item.count("label") and item.count("data"))
@@ -480,13 +486,12 @@ namespace andromeda
 	    ofs_eval << "__label__" << label << " " << text << "\n";
 	    eval_samples.push_back({label, text});
 	  }
-
       }
 
     LOG_S(INFO) << "read successfully: #-train: " << train_samples.size() << ", #-val: " << eval_samples.size();
 
-    //LOG_S(INFO) << "fasttext train-file: " << fasttext_train_file;
-    //LOG_S(INFO) << "fasttext validation-file: " << fasttext_validation_file; 
+    LOG_S(INFO) << "fasttext train-file: " << fasttext_train_file;
+    LOG_S(INFO) << "fasttext validation-file: " << fasttext_validation_file; 
 
     return true;    
   }
@@ -496,10 +501,10 @@ namespace andromeda
   {
     LOG_S(INFO) << __FUNCTION__;
     
-    std::ifstream ifs(train_file.c_str());
+    std::ifstream ifs(data_file.c_str());
     if(not ifs.good())
       {
-	LOG_S(ERROR) << "could not read from file: " << train_file;
+	LOG_S(ERROR) << "could not read from file: " << data_file;
 	return 0;
       }
 
@@ -510,7 +515,7 @@ namespace andromeda
     std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
     std::uniform_real_distribution<> dis(0.0, 1.0);
     
-    LOG_S(INFO) << "start reading from file: " << train_file;
+    LOG_S(INFO) << "start reading from file: " << data_file;
 
     auto char_normaliser = text_element::create_char_normaliser(false);
     auto text_normaliser = text_element::create_text_normaliser(false);

@@ -23,6 +23,8 @@ namespace andromeda
 
     bool is_valid() { return (base_subject::valid and text_element::is_text_valid()); }
 
+    std::vector<std::shared_ptr<prov_element> >& get_provs() { return provs; }
+    
     virtual nlohmann::json to_json(const std::set<std::string>& filters);
 
     virtual bool from_json(const nlohmann::json& data);

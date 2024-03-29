@@ -12,7 +12,11 @@ import pandas as pd
 from tabulate import tabulate
 
 from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.utils.ds_utils import convert_pdffiles, to_legacy_document_format
+from deepsearch_glm.utils.ds_utils import (
+    convert_pdffiles,
+    to_legacy_document_format,
+    to_xml_format,
+)
 
 
 def parse_arguments():
@@ -94,6 +98,14 @@ examples of execution:
         help="enforce old legacy format",
     )
 
+    parser.add_argument(
+        "--xml",
+        required=False,
+        type=bool,
+        default=False,
+        help="enforce xml format",
+    )
+
     args = parser.parse_args()
 
     pdf = args.pdf
@@ -119,6 +131,7 @@ examples of execution:
         args.filters,
         args.force_convert,
         args.legacy,
+        args.xml,
     )
 
 
@@ -135,6 +148,7 @@ def init_nlp_model(models: str, filters: List[str] = []):
     config["subject-filters"] = filters
 
     model.initialise(config)
+    model.set_loglevel("INFO")
 
     return model
 
@@ -165,7 +179,10 @@ def show_doc(doc_j):
         inst = pd.DataFrame(
             doc_j["instances"]["data"], columns=doc_j["instances"]["headers"]
         )
-        print("instances: \n\n", inst)
+        print("instances: \n\n", inst.to_string())
+
+        meta = inst[inst["type"] == "metadata"]
+        print("meta: \n\n", meta)
 
         terms = inst[inst["type"] == "term"]
         print("terms: \n\n", terms)
@@ -184,6 +201,7 @@ if __name__ == "__main__":
         filters,
         force_convert,
         legacy,
+        xml,
     ) = parse_arguments()
 
     if len(pdf_files) > 0:
@@ -208,7 +226,7 @@ if __name__ == "__main__":
         print("applying models ... ", end="")
         doc_j = model.apply_on_doc(doc_i)
 
-        print(doc_j.keys())
+        # print(doc_j.keys())
         show_doc(doc_j)
 
         nlp_file = json_file.replace(".json", ".nlp.json")
@@ -225,3 +243,12 @@ if __name__ == "__main__":
 
             with open(nlp_file, "w", encoding="utf-8") as fw:
                 fw.write(json.dumps(doc_i, indent=2))
+
+        if xml:
+            doc_xmlstr = to_xml_format(doc_j, normalised_pagedim=100)
+
+            nlp_file = json_file.replace(".json", ".xml.json")
+            print(f"writing  models {nlp_file}")
+
+            with open(nlp_file, "w", encoding="utf-8") as fw:
+                fw.write(doc_xmlstr)

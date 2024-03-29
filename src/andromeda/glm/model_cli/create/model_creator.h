@@ -252,6 +252,7 @@ namespace andromeda
 
       {
 	std::vector<std::pair<std::string, std::string> > instance_types = {
+	  {"name", ""},
 	  {"vau", "unit"}//,
 	  //{"material", ""}
 	};
@@ -624,28 +625,27 @@ namespace andromeda
 					 std::vector<base_instance>& instances,
 					 std::vector<std::pair<std::string, std::string> >& instance_types,
 					 std::map<std::string, std::map<range_type, hash_type> >& inst_rngs)
-    {
-
-      
+    {      
       for(auto inst_type:instance_types)
 	{
 	  std::string type = inst_type.first;
-	  std::string subtype = inst_type.second;
-
+	  
 	  base_node node_type(node_names::LABEL, type);
 	  nodes.insert(node_type, true);
-
-	  base_node node_subtype(node_names::LABEL, subtype);
-	  nodes.insert(node_subtype, true);	  
-
-	  std::string key = type+"-"+subtype;
-	  inst_rngs[key] = {};
 	  
 	  for(base_instance& inst:instances)
 	    {
-	      if(inst.is_type(type) and
-		 (subtype.size()==0 or inst.is_subtype(subtype)))
+	      if((inst.is_type(type)) and
+		 (inst_type.second.size()==0 or inst.is_subtype(inst_type.second)))
 		{
+		  std::string subtype = inst.get_subtype();
+		  
+		  std::string key = type+"-"+subtype;
+		  if(inst_rngs.count(key)==0)
+		    {
+		      inst_rngs[key] = {};
+		    }
+		  
 		  auto rng = inst.get_wtok_range();
 		  
 		  std::vector<hash_type> hashes={};
@@ -660,10 +660,16 @@ namespace andromeda
 		  inst_rngs.at(key)[rng] = node.get_hash();
 		  
 		  edges.insert(edge_names::to_label, node.get_hash(), node_type.get_hash(), false);
-		  edges.insert(edge_names::to_label, node.get_hash(), node_subtype.get_hash(), false);
-
 		  edges.insert(edge_names::from_label, node_type.get_hash(), node.get_hash(), false);
-		  edges.insert(edge_names::from_label, node_subtype.get_hash(), node.get_hash(), false);
+
+		  if(subtype.size()!=0)
+		    {
+		      base_node node_subtype(node_names::LABEL, subtype);
+		      nodes.insert(node_subtype, true);	  
+
+		      edges.insert(edge_names::to_label, node.get_hash(), node_subtype.get_hash(), false);
+		      edges.insert(edge_names::from_label, node_subtype.get_hash(), node.get_hash(), false);
+		    }
 		}
 	    }
 	}
