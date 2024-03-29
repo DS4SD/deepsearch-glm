@@ -9,12 +9,19 @@ import os
 from tabulate import tabulate
 
 from deepsearch_glm.nlp_train_crf import create_crf_model
-from deepsearch_glm.nlp_train_semantic import train_semantic
+
+# from deepsearch_glm.nlp_train_semantic import train_semantic
 from deepsearch_glm.nlp_train_tok import create_tok_model
 from deepsearch_glm.nlp_utils import (
+    eval_crf,
+    eval_fst,
     extract_references_from_doc,
     init_nlp_model,
     list_nlp_model_configs,
+    prepare_data_for_fst_training,
+    train_crf,
+    train_fst,
+    train_tok,
 )
 from deepsearch_glm.utils.ds_utils import to_legacy_document_format
 from deepsearch_glm.utils.load_pretrained_models import (  # load_pretrained_nlp_data,
@@ -716,10 +723,53 @@ def test_07C():
     )
 
 
-"""
-def test_05A_train_semantic():
+# download text data for fst-classifier
+def test_08A():
+    verbose = True
 
-    train_semantic("prepare", "./tests/data/train/semantic", autotune=True, duration=60, modelsize="1M")
+    done, data = load_training_data(
+        data_type="fst",
+        data_name="names-classifier-small",
+        force=False,
+        verbose=verbose,
+    )
 
-    train_semantic("train", "./tests/data/train/semantic", autotune=True, duration=60, modelsize="1M")
-"""
+    if verbose:
+        print(json.dumps(data, indent=2))
+
+    assert done
+
+
+# train fst-classifier
+def test_08B():
+    resources_dir = get_resources_dir()
+
+    data_file = f"{resources_dir}/data/nlp/nlp.fst.names-classifier.small.jsonl"
+    assert os.path.exists(data_file)
+
+    prepare_data_for_fst_training(data_file=data_file, loglevel="INFO")
+
+    model_file = data_file + ".fst_model.bin"
+    metrics_file = data_file + ".fst_metrics.txt"
+
+    train_fst(
+        data_file=data_file,
+        model_file=model_file,
+        metrics_file=metrics_file,
+        ngram=3,
+        duration=60,
+        autotune=True,
+        modelsize="1M",
+        loglevel="INFO",
+    )
+
+    assert os.path.exists(model_file)
+
+    eval_fst(
+        data_file=data_file,
+        model_file=model_file,
+        metrics_file=metrics_file,
+        loglevel="INFO",
+    )
+
+    assert os.path.exists(metrics_file)

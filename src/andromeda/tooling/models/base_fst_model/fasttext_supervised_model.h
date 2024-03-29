@@ -183,10 +183,10 @@ namespace andromeda
       }
     
     LOG_S(INFO) << "fasttext model save to " << model_name << ".bin";
-    model->saveModel(model_name);
+    model->saveModel(model_name+".bin");
     	
     LOG_S(INFO) << "fasttext vectors save to " << model_name << ".vec";
-    model->saveVectors(model_name);
+    model->saveVectors(model_name+".vec");
 
     //LOG_S(INFO) << "fasttext vectors save to " << model_out;
     //model->saveOutput(model_name);
