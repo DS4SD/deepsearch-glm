@@ -19,8 +19,11 @@ namespace andromeda
   public:
 
     nlp_model();
+    
     nlp_model(std::string desc);
-    nlp_model(std::string name, std::string file, std::filesystem::path model_file);
+    
+    nlp_model(std::string name, std::string file,
+	      std::filesystem::path model_file);
 
     ~nlp_model();
 
@@ -94,7 +97,7 @@ namespace andromeda
       }
     else
       {
-	LOG_S(ERROR) << "could not initialise custom-crf with desc: " << desc;
+	LOG_S(WARNING) << "could not initialise custom-crf with desc: " << desc;
       }
   }
 

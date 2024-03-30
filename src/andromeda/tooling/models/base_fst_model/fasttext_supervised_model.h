@@ -81,7 +81,7 @@ namespace andromeda
     std::set<std::string> explicit_hpo_parameters;
     std::set<std::string> explicit_train_parameters;
     
-    std::string model_file, metrics_file, config_file;
+    std::string model_file, metrics_file;//, config_file;
     
     std::string data_file;//, train_file, validate_file, test_file;
     
@@ -117,7 +117,7 @@ namespace andromeda
     
     model_file("<undefined>"),
     metrics_file("<undefined>"),
-    config_file("<undefined>"),
+    //config_file("<undefined>"),
 
     data_file("<undefined>"),
     //train_file("<undefined>"),
@@ -289,7 +289,7 @@ namespace andromeda
 	  metrics_file = model_file+".metrics.txt";
 	}
       
-      config_file = model_file+".config.json";
+      //config_file = model_file+".config.json";
 
       fasttext_train_file = data_file+".fasttext.train.txt";
       fasttext_validation_file = data_file+".fasttext.validate.txt";
@@ -358,9 +358,6 @@ namespace andromeda
   
   bool fasttext_supervised_model::preprocess(const subject<TEXT>& subj, std::string& text)
   {
-    //auto& wtokens = subj.word_tokens;
-    //LOG_S(INFO) << "tokens: \n\n" << tabulate(wtokens); 
-    
     std::stringstream ss;
 
     std::size_t MAX = 256;

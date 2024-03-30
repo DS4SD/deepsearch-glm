@@ -314,22 +314,12 @@ def prepare_data_for_fst_training(
     # print(json.dumps(configs, indent=2))
 
     for config in configs:
-        if config["mode"] == "train" and config["model"] == "semantic":
-            config["args"] = {}
-            # config["hpo"]["autotune"] = autotune
-            # config["hpo"]["duration"] = duration
-            # config["hpo"]["modelsize"] = modelsize
+        # print(" => ", config["model"])
 
-            # config["args"]["n-gram"] = ngram
+        if config["mode"] == "train" and config["model"].startswith("custom_fst"):
+            config["args"] = {}
 
             config["files"]["data-file"] = data_file
-            # config["files"]["test-file"] = test_file
-            # config["files"]["validate-file"] = validation_file
-
-            # config["files"]["model-file"] = model_file
-            # config["files"]["metrics-file"] = metrics_file
-
-            # print(json.dumps(config, indent=2))
             model.prepare_data_for_train(config)
 
 
@@ -361,7 +351,7 @@ def train_fst(
     # print(json.dumps(configs, indent=2))
 
     for config in configs:
-        if config["mode"] == "train" and config["model"] == "semantic":
+        if config["mode"] == "train" and config["model"].startswith("custom_fst"):
             config["args"] = {}
             config["hpo"]["autotune"] = autotune
             config["hpo"]["duration"] = duration
@@ -393,7 +383,7 @@ def eval_fst(
     # print(json.dumps(configs, indent=2))
 
     for config in configs:
-        if config["mode"] == "train" and config["model"] == "semantic":
+        if config["mode"] == "train" and config["model"].startswith("custom_fst"):
             config["args"] = {}
 
             config["files"]["data-file"] = data_file
