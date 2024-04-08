@@ -251,12 +251,13 @@ namespace andromeda
   bool nlp_model<CLS, SEMANTIC>::preprocess(const subject<TABLE>& subj, std::string& text)
   {
     std::stringstream ss;
-    for(std::size_t i=0; i<subj.data.size(); i++)
+    //for(std::size_t i=0; i<subj.data.size(); i++)
+    for(std::size_t i=0; i<subj.num_rows(); i++)
       {
-        auto& row = subj.data.at(i);
-        for(std::size_t j=0; j<row.size(); j++)
+        //auto& row = subj.data.at(i);
+        for(std::size_t j=0; j<subj.num_cols(); j++)
           {
-            ss << row.at(j).get_text() << "; ";
+            ss << subj.at(i,j).get_text() << "; ";
           }
       }
 

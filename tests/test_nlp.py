@@ -99,7 +99,7 @@ def compare_docs(doc_i, doc_j):
 
 
 def test_01_load_nlp_models():
-    models = load_pretrained_nlp_models(force=True, verbose=True)
+    models = load_pretrained_nlp_models(force=False, verbose=True)
     # print(f"models: {models}")
 
     assert "language" in models

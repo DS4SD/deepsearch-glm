@@ -38,7 +38,7 @@ namespace andromeda
     
   private:
 
-    const static inline std::set<model_name> dependencies = {};
+    const static inline std::set<model_name> dependencies = {NUMVAL};
 
     std::filesystem::path model_file;
   };
@@ -70,16 +70,49 @@ namespace andromeda
   bool nlp_model<CLS, LANGUAGE>::preprocess(const subject<TABLE>& subj, std::string& text)
   {
     std::stringstream ss;
-    for(std::size_t i=0; i<subj.data.size(); i++)
+
+    for(auto& capt:subj.get_captions())
       {
-	auto& row = subj.data.at(i);	
-	for(std::size_t j=0; j<row.size(); j++)
+	std::string text = capt->get_text();
+	ss << text << "\n";
+      }
+    
+    for(index_type i=0; i<subj.num_rows(); i++)
+      {
+	for(index_type j=0; j<subj.num_cols(); j++)
 	  {
-	    ss << row.at(j).get_text() << "; ";
+	    std::string text = subj.at(i,j).get_text();
+
+	    for(auto& ent:subj.instances)
+	      {
+		if(ent.is_model(NUMVAL) and
+		   ent.get_coor(0)==i and
+		   ent.get_coor(1)==j )
+		  {
+		    utils::mask(text, ent.get_char_range());
+		  }
+	      }
+
+	    text = utils::replace(text, "  ", " ");
+	    text = utils::strip(text);
+
+	    if(text.size()>0)
+	      {
+		if(j+1<subj.num_cols())
+		  {
+		    ss << text << ", ";
+		  }
+		else
+		  {
+		    ss << text << "\n";
+		  }
+	      }
 	  }
       }
 
     text = ss.str();
+    //LOG_S(WARNING) << "table: \n\n" << text;
+    
     return true;
   }
     
@@ -234,6 +267,38 @@ namespace andromeda
 	para->applied_models.insert(get_key());
       }
 
+    for(uint64_t ind=0; ind<subj.tables.size(); ind++)
+      {
+	auto& table = subj.tables.at(ind);
+	
+	if(not preprocess(*table, text))
+	  {
+	    continue; // skip
+	  }
+	
+	if(not classify(text, label, conf))
+	  {
+	    continue; // skip
+	  }
+
+	{
+	  if(lang_mapping.count(label)==1)
+	    {
+	      lang_mapping.at(label) += text.size();
+	      total += text.size();
+	    }
+	  else
+	    {
+	      lang_mapping[label] = text.size();
+	      total += text.size();
+	    }
+	}
+	
+	table->properties.emplace_back(table->get_hash(), TABLE, table->get_self_ref(),
+				       get_name(), label, conf);
+	table->applied_models.insert(get_key());
+      }
+    
     base_property prop(subj.get_hash(), DOCUMENT, "#",
 		       get_name(), "null", 0.0);
     for(auto itr=lang_mapping.begin(); itr!=lang_mapping.end(); itr++)
