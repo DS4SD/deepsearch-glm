@@ -51,7 +51,7 @@ def to_dataframe(obj):
 
 
 def test_0A_load_nlp_models():
-    models = load_pretrained_nlp_models(force=True, verbose=True)
+    models = load_pretrained_nlp_models(force=False, verbose=True)
 
     assert "language" in models
     assert "semantic" in models

@@ -45,7 +45,7 @@ def get_dirs(test_name: str):
 def test_01A_load_nlp_models():
     """Tests to determine if NLP models are available"""
 
-    models = load_pretrained_nlp_models()
+    models = load_pretrained_nlp_models(force=False, verbose=True)
     print(f"models: {models}")
 
     assert "language" in models

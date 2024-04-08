@@ -234,6 +234,38 @@ namespace andromeda
 	para->applied_models.insert(get_key());
       }
 
+    for(uint64_t ind=0; ind<subj.tables.size(); ind++)
+      {
+	auto& table = subj.tables.at(ind);
+	
+	if(not preprocess(*table, text))
+	  {
+	    continue; // skip
+	  }
+	
+	if(not classify(text, label, conf))
+	  {
+	    continue; // skip
+	  }
+
+	{
+	  if(lang_mapping.count(label)==1)
+	    {
+	      lang_mapping.at(label) += text.size();
+	      total += text.size();
+	    }
+	  else
+	    {
+	      lang_mapping[label] = text.size();
+	      total += text.size();
+	    }
+	}
+	
+	table->properties.emplace_back(table->get_hash(), TABLE, table->get_self_ref(),
+				       get_name(), label, conf);
+	table->applied_models.insert(get_key());
+      }
+    
     base_property prop(subj.get_hash(), DOCUMENT, "#",
 		       get_name(), "null", 0.0);
     for(auto itr=lang_mapping.begin(); itr!=lang_mapping.end(); itr++)
