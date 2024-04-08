@@ -53,12 +53,26 @@ namespace andromeda
     uint64_t get_hash() const { return hash; }
     std::string get_text() const;
 
-    uint64_t num_rows() const { return nrows; }
+    uint64_t num_rows() const { assert(data.size()==nrows); return nrows; }
     uint64_t num_cols() const { return ncols; }
 
-    table_element_type& operator()(std::array<uint64_t,2> coor) { return data.at(coor.at(0)).at(coor.at(1)); }
-    table_element_type& operator()(uint64_t i, uint64_t j) { return data.at(i).at(j); }
+    const std::vector<std::shared_ptr<prov_element> >& get_provs() const { return provs; }
 
+    const std::vector<std::shared_ptr<subject<TEXT> > >& get_captions() const { return captions; }
+    const std::vector<std::shared_ptr<subject<TEXT> > >& get_footnotes() const { return footnotes; }
+    const std::vector<std::shared_ptr<subject<TEXT> > >& get_mentions() const { return mentions; }
+
+    const std::vector<std::vector<table_element_type> >& get_data() const { return data; }
+
+    template<typename ind_type>
+    table_element_type& operator()(std::array<ind_type,2> coor) { return data.at(coor.at(0)).at(coor.at(1)); }
+    
+    template<typename ind_type>
+    table_element_type& operator()(ind_type i, ind_type j) { return data.at(i).at(j); }
+
+    template<typename ind_type>
+    const table_element_type& at(ind_type i, ind_type j) const { return data.at(i).at(j); }
+    
   private:
 
     void set_hash();
@@ -78,7 +92,10 @@ namespace andromeda
     std::vector<std::shared_ptr<subject<TEXT> > > footnotes;
     std::vector<std::shared_ptr<subject<TEXT> > > mentions;
 
+  private:
+    
     uint64_t nrows, ncols;
+
     std::vector<std::vector<table_element_type> > data;
   };
 
