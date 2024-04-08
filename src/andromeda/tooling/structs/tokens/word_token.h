@@ -33,6 +33,8 @@ namespace andromeda
     const static inline std::string UNDEF_POS="__undef__";
     const static inline std::string UNDEF_TAG="";
 
+    const static inline std::string SPACE="▁";
+    
   public:
 
     word_token(std::string word);
@@ -59,16 +61,20 @@ namespace andromeda
 	       std::string pos, std::set<std::string> tags, bool known,
 	       std::string word,
 	       std::vector<int> inds, std::vector<std::string> subw);
+
+    const static std::string get_space() { return SPACE; }
     
     bool has_default_pos() { return DEFAULT_POS==pos; }
     bool has_default_word() { return DEFAULT_WORD==word; }
 
+    bool get_start_with_space() { return start_with_space; }
+    
     hash_type get_hash() const { return hash; }
     
     range_type get_rng() const { return rng; };
     index_type get_rng(index_type l) const { return rng[l]; };
 
-    std::string get_word() const { return word; }
+    std::string get_word(bool include_space=false, std::string space=SPACE) const;// { return word; }
     std::string get_orig(const std::string& text) const { return text.substr(rng[0], rng[1]-rng[0]); }
 
     std::string get_pos() const { return pos; } // part-of-speech
@@ -83,6 +89,8 @@ namespace andromeda
     void remove_tag(std::string tag);
     void set_known(bool known);
 
+    void set_start_with_space(bool val) { start_with_space = val;}
+    
     void set_inds(std::vector<int> inds) { this->inds = inds; }
     void set_subws(std::vector<std::string> subws) { this->subws = subws; }
     
@@ -105,6 +113,7 @@ namespace andromeda
     std::string pos; // part-of-speech
 
     bool known; // not out-of-vocabulary
+    bool start_with_space;
     
     std::set<std::string> tags;
 
@@ -118,8 +127,10 @@ namespace andromeda
 
     word(word),
     pos(UNDEF_POS),
-    known(false),    
 
+    known(false),    
+    start_with_space(false),
+    
     tags({}),
 
     inds({}),
@@ -135,8 +146,10 @@ namespace andromeda
 
     word(word),
     pos(UNDEF_POS),
-    known(false),
     
+    known(false),
+    start_with_space(false),
+
     tags({}),
 
     inds({}),
@@ -153,7 +166,9 @@ namespace andromeda
 
     word(word),
     pos(UNDEF_POS),
+
     known(false),    
+    start_with_space(false),
     
     tags({}),
 
@@ -170,8 +185,10 @@ namespace andromeda
 
     word(word),
     pos(pos),
-    known(false),    
     
+    known(false),    
+    start_with_space(false),
+
     tags({}),
 
     inds({}),
@@ -188,8 +205,10 @@ namespace andromeda
 
     word(word),
     pos(pos),
-    known(false),    
 
+    known(false),    
+    start_with_space(false),
+    
     tags({}),
 
     inds({}),
@@ -206,8 +225,10 @@ namespace andromeda
 
     word(word),
     pos(pos),
-    known(false),    
 
+    known(false),    
+    start_with_space(false),
+    
     tags(tags),
 
     inds({}),
@@ -224,8 +245,10 @@ namespace andromeda
     rng({i,j}),
     
     word(word),
-    pos(pos),    
+    pos(pos),
+    
     known(known),
+    start_with_space(false),
 
     tags(tags),
 
@@ -278,6 +301,16 @@ namespace andromeda
   bool word_token::has_tag(std::string tag) const
   {
     return ((this->tags.count(tag))>0);
+  }
+
+  std::string word_token::get_word(bool include_space, std::string space) const
+  {
+    if(include_space and start_with_space)
+      {
+	return space+word;
+      }
+
+    return word;
   }
   
   word_token word_token::get_word_token()

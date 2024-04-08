@@ -336,10 +336,10 @@ def train_fst(
     data_file: str,
     model_file: str,
     metrics_file: str,
-    ngram=3,
     autotune=True,
     duration=360,
     modelsize="1M",
+    ngram=None,
     loglevel: str = "WARNING",
 ):
     """Function to train fasttext classifier"""
@@ -357,11 +357,8 @@ def train_fst(
             config["hpo"]["duration"] = duration
             config["hpo"]["modelsize"] = modelsize
 
-            config["args"]["n-gram"] = ngram
-
-            # config["files"]["train-file"] = train_file
-            # config["files"]["test-file"] = test_file
-            # config["files"]["validate-file"] = validation_file
+            if ngram != None:
+                config["args"]["n-gram"] = ngram
 
             config["files"]["data-file"] = data_file
             config["files"]["model-file"] = model_file

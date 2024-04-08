@@ -12,7 +12,6 @@ namespace andromeda
 
   public:
 
-    //nlp_model(std::filesystem::path resources_dir);
     nlp_model();
     ~nlp_model();
 
@@ -77,7 +76,7 @@ namespace andromeda
     // `xxx yyy of kkk lll and iii jjj`
     {
       pcre2_expr expr(this->get_key(), "specialised-name",
-		      R"((?P<name>(([A-Z][a-z]+)\s+)+(of\s+)([A-Z][a-z]+\s+)+(and\s+)([A-Z][a-z]+\s+)*)([A-Z][a-z]+))");
+		      R"((?P<name>(([A-Z][a-z]+)\s+)+(of\s+)([A-Z][a-z]+\s+)+(and\s+)([A-Z][a-z]+\s+)*([A-Z][a-z]+)))");
       exprs.push_back(expr);
     }
     
@@ -94,6 +93,13 @@ namespace andromeda
 		      R"((?P<name>(([A-Z][a-z]+)\s+)+(for\s+)([A-Z][a-z]+\s+)*([A-Z][a-z]+)))");
       exprs.push_back(expr);
     }
+
+    // `Wernick, H., `
+    {
+      pcre2_expr expr(this->get_key(), "person-name-v2",
+		      R"((?P<name>(([A-Z][a-z]+)(\,\s+)(([A-Z]\.)\s{0,1})+))(\,|$))");
+      exprs.push_back(expr);
+    }
     
     // `Jan H. Wernick`
     {
@@ -102,10 +108,12 @@ namespace andromeda
       exprs.push_back(expr);
     }
 
+    
     // `J. E. Kunzler`
     {
       pcre2_expr expr(this->get_key(), "person-name",
-		      R"((?P<name>(([A-Z][a-z]+)\s+)*(([A-Z]\.)\s+){1,}([A-Z][a-z]+)+))");
+		      //R"((?P<name>(([A-Z][a-z]+)\s+)*(([A-Z]\.)\s+){1,}([A-Z][a-z]+)+))");
+		      R"((?P<name>(([A-Z][a-z]+)\s+)*(([A-Z]\.)\s+){1,}([A-Z][a-z]+\s+)*([A-Z][a-z]+)))");
       exprs.push_back(expr);
     }
 
@@ -133,7 +141,7 @@ namespace andromeda
     // `U.S.`, `B.P.B.`
     {
       pcre2_expr expr(this->get_key(), "abbreviation-name",
-		      R"((?P<name>(([A-Z]\.){2,})))");
+		      R"((?P<name>(([A-Z]\.\s*){2,})))");
       exprs.push_back(expr);
     }    
 

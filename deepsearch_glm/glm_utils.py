@@ -60,7 +60,17 @@ def read_nodes_in_dataframe(node_file: str):
     df = None
 
     if node_file.endswith(".csv") and os.path.exists(node_file):
-        df = pd.read_csv(node_file)
+        df = pd.read_csv(
+            node_file,
+            dtype={
+                "hash": "UInt64",
+                "total-count": "UInt64",
+                "sentence-count": "UInt64",
+                "text-count": "UInt64",
+                "table-count": "UInt64",
+                "document-count": "UInt64",
+            },
+        )
 
     return df
 
@@ -71,7 +81,9 @@ def read_edges_in_dataframe(edge_file: str):
     df = None
 
     if edge_file.endswith(".csv") and os.path.exists(edge_file):
-        df = pd.read_csv(edge_file)
+        df = pd.read_csv(
+            edge_file, dtype={"hash": "UInt64", "hash_i": "UInt64", "hash_j": "UInt64"}
+        )
 
     return df
 
@@ -313,3 +325,55 @@ def expand_terms(glm: glm_model, term: str):
     """
 
     return res
+
+
+def propagate(
+    nodes_df: pd.DataFrame,
+    edges_df: pd.DataFrame,
+    node_itype: str,
+    node_otype: str,
+    node_name: str,
+    edge_name: str,
+):
+    node = nodes_df[(nodes_df["name"] == node_itype) & (nodes_df["text"] == node_name)]
+
+    edges = edges_df[
+        (edges_df["name"] == edge_name) & (edges_df["hash_i"].isin(node["hash"]))
+    ]
+
+    result = nodes_df[
+        (nodes_df["name"] == node_otype) & (nodes_df["hash"].isin(edges["hash_j"]))
+    ]
+
+    return result
+
+    """
+    print("nodes: ", nodes_file)
+    nodes = pd.read_csv(nodes_file)
+
+    print("edges: ", edges_file)
+    edges = pd.read_csv(edges_file)
+
+    print(nodes)
+    print(edges)
+
+    hist = nodes["name"].value_counts()
+    print(hist)
+    
+    hist = nodes[nodes["name"]=="label"]["text"].value_counts()
+    print(hist)
+
+    for subtype in ["expr", "person-name", "person-group", "vau"]:
+        print(f"label {subtype}")
+        
+        label_node = nodes[(nodes["name"]=="label") & (nodes["text"]==subtype)]
+        print(label_node)
+            
+        from_label = edges[(edges["name"]=="from-label") & (edges["hash_i"].isin(label_node["hash"]))]
+        print(from_label)
+        
+        exprs = nodes[(nodes["name"]=="inst") & (nodes["hash"].isin(from_label["hash_j"]))]
+        print(exprs)
+        
+        exprs.to_csv(f"data_names/data_{mode}_{subtype}.csv", index=False)
+    """

@@ -251,11 +251,14 @@ namespace andromeda
       }
 
       {
+	/*
 	std::vector<std::pair<std::string, std::string> > instance_types = {
 	  {"name", ""},
 	  {"vau", "unit"}//,
 	  //{"material", ""}
 	};
+	*/
+	auto instance_types = parameters.insts;
 	std::map<std::string, std::map<range_type, hash_type> > insts_rngs = {};
       
 	insert_instances(nodes, edges, word_tok_hashes, instances, instance_types, insts_rngs);
@@ -591,7 +594,7 @@ namespace andromeda
 	  auto sinds = token.get_inds();
 	  auto subws = token.get_subws();
 	  
-	  std::string text = token.get_word();
+	  std::string text = token.get_word(true);
           std::string pos  = token.get_pos();
 
 	  //LOG_S(INFO) << "text: " << text << ", pos: " << pos

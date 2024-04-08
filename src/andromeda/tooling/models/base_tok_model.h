@@ -174,7 +174,6 @@ namespace andromeda
         ss << " --character_coverage=" << args.value("character-coverage", 0.9995);
       }
 
-
     if(args.count("number-of-threads"))
       {
         ss << " --num_threads=" << args.value("number-of-threads", 1);
