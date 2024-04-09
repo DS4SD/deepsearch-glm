@@ -248,6 +248,6 @@ jobs:
           ls -l ./dist
           /home/runner/.local/bin/poetry publish --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
-      - uses: actions/upload-artifact@v4
-        with:
-          path: ./wheelhouse/*.whl
+      #- uses: actions/upload-artifact@v4
+      #  with:
+      #    path: ./wheelhouse/*.whl
