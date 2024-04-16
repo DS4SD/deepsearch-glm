@@ -8,6 +8,7 @@
 
 #include <andromeda/tooling/models/base_fst_model.h>
 #include <andromeda/tooling/models/base_fst_model/fasttext_supervised_model.h>
+#include <andromeda/tooling/models/base_fst_model/fasttext_unsupervised_model.h>
 
 #include <andromeda/tooling/models/base_rgx_model.h>
 #include <andromeda/tooling/models/base_dct_model.h>
