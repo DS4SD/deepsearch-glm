@@ -17,13 +17,6 @@ from deepsearch_glm.andromeda_nlp import nlp_model
 from deepsearch_glm.nlp_utils import create_nlp_dir, init_nlp_model
 from deepsearch_glm.utils.ds_utils import ds_index_query
 
-# import re
-# import time
-
-
-# from deepsearch_glm.nlp_utils import create_nlp_dir, init_nlp_model, print_on_shell
-# from deepsearch_glm.utils.ds_utils import convert_pdffiles, ds_index_query
-
 
 def parse_arguments():
     """Function to parse arguments for `nlp_train_semantic`"""
