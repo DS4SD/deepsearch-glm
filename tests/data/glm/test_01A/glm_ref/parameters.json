@@ -10,5 +10,6 @@
     "keep-texts": true,
     "keep-verbs": true
   },
+  "instances": "",
   "nlp-models": "spm;numval;link;semantic;name;language;cite;quote;parenthesis;expression;sentence;lapos;conn;verb;term;abbreviation"
 }

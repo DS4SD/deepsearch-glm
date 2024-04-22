@@ -107,7 +107,6 @@ namespace andromeda
 		      R"((?P<name>(([A-Z][a-z]+)\s+)+(([A-Z]\.)\s+)+([A-Z][a-z]+)+))");
       exprs.push_back(expr);
     }
-
     
     // `J. E. Kunzler`
     {
@@ -228,7 +227,7 @@ namespace andromeda
 			    if(label=="expr" or conf_<0.85)
 			      {
 				subtype = label;
-				//keep = false;
+				keep = false;
 			      }
 			    else
 			      {
@@ -237,6 +236,11 @@ namespace andromeda
 			  }
 		      }
 
+		    if(expr.get_subtype()=="person-name-v2")
+		      {
+			subtype = "person-name";
+		      }
+		    
 		    if(keep)
 		      {
 			subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(), conf,
