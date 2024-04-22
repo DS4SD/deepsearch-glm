@@ -279,7 +279,9 @@ def train_tok(
 #
 # `./fasttext dump model_cooking.bin args`
 #
-def train_fst(model_name: str, train_file: str, model_file: str, metrics_file: str):
+def train_fst_legacy(
+    model_name: str, train_file: str, model_file: str, metrics_file: str
+):
     """Function to train fasttext model"""
 
     # model = andromeda_nlp.nlp_model()
@@ -295,3 +297,95 @@ def train_fst(model_name: str, train_file: str, model_file: str, metrics_file: s
             config["files"]["metrics-file"] = metrics_file
 
             model.train(config)
+
+
+def prepare_data_for_fst_training(
+    data_file: str,
+    loglevel: str = "WARNING"
+    # test_file:str, validation_file:str,
+    # model_file:str, metrics_file:str,
+    # ngram=3, autotune=True, duration=360, modelsize="1M"
+):
+    """Function to train fasttext classifier"""
+
+    model = nlp_model()
+
+    configs = model.get_train_configs()
+    # print(json.dumps(configs, indent=2))
+
+    for config in configs:
+        # print(" => ", config["model"])
+
+        if config["mode"] == "train" and config["model"].startswith("custom_fst"):
+            config["args"] = {}
+
+            config["files"]["data-file"] = data_file
+            model.prepare_data_for_train(config)
+
+
+# To train a FST model with HPO, one can use
+#
+# `./fasttext supervised -input <path-to-train.txt> -output model_name -autotune-validation <<path-to-valid.txt>> -autotune-duration 600 -autotune-modelsize 1M`
+#
+#  => the parameters can be found via
+#
+# `./fasttext dump model_cooking.bin args`
+#
+def train_fst(
+    # train_file:str, test_file:str, validation_file:str,
+    data_file: str,
+    model_file: str,
+    metrics_file: str,
+    autotune=True,
+    duration=360,
+    modelsize="1M",
+    ngram=None,
+    loglevel: str = "WARNING",
+):
+    """Function to train fasttext classifier"""
+
+    model = nlp_model()
+    model.set_loglevel(loglevel)
+
+    configs = model.get_train_configs()
+    # print(json.dumps(configs, indent=2))
+
+    for config in configs:
+        if config["mode"] == "train" and config["model"].startswith("custom_fst"):
+            config["args"] = {}
+            config["hpo"]["autotune"] = autotune
+            config["hpo"]["duration"] = duration
+            config["hpo"]["modelsize"] = modelsize
+
+            if ngram != None:
+                config["args"]["n-gram"] = ngram
+
+            config["files"]["data-file"] = data_file
+            config["files"]["model-file"] = model_file
+            config["files"]["metrics-file"] = metrics_file
+
+            # print(json.dumps(config, indent=2))
+            model.train(config)
+
+
+def eval_fst(
+    data_file: str, model_file: str, metrics_file: str, loglevel: str = "WARNING"
+):
+    """Function to evaluate fasttext classifier"""
+
+    model = nlp_model()
+    model.set_loglevel(loglevel)
+
+    configs = model.get_train_configs()
+    # print(json.dumps(configs, indent=2))
+
+    for config in configs:
+        if config["mode"] == "train" and config["model"].startswith("custom_fst"):
+            config["args"] = {}
+
+            config["files"]["data-file"] = data_file
+
+            config["files"]["model-file"] = model_file
+            config["files"]["metrics-file"] = metrics_file
+
+            model.evaluate(config)

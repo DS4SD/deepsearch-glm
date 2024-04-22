@@ -304,6 +304,12 @@ namespace andromeda
           {
 	    for(auto& node:itr->second)
 	      {
+		if(utils::contains(node.get_text(), "\""))
+		  {
+		    LOG_S(WARNING) << "skip node with text '" << node.get_text() << "' for pandas compatibility";
+		    continue;
+		  }
+		
 		nlohmann::json row = node.to_row(nodes);
 		assert(row.size()==N);
 		
@@ -329,8 +335,6 @@ namespace andromeda
 	    << "name" << ","
             << "hash_i" << ","
             << "hash_j" << ","
-	  //<< "ind_i" << ","
-	  //<< "ind_j" << ","
             << "count" << ","
             << "prob" << ","
             << "hash" << "\n";

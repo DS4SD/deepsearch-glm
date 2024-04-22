@@ -18,22 +18,24 @@ namespace andromeda
       const static inline std::string padding_lbl = "glm-padding";
       const static inline std::string paths_lbl = "glm-paths";
 
-      const static inline std::string paths_concs_lbl = "keep-concatenation";     
+      const static inline std::string concs_lbl = "keep-concatenation";
 
-      const static inline std::string paths_conns_lbl = "keep-connectors";
-      const static inline std::string paths_terms_lbl = "keep-terms";
-      const static inline std::string paths_verbs_lbl = "keep-verbs";
+      const static inline std::string conns_lbl = "keep-connectors";
+      const static inline std::string terms_lbl = "keep-terms";
+      const static inline std::string verbs_lbl = "keep-verbs";
 
-      const static inline std::string paths_sents_lbl = "keep-sentences";
-      const static inline std::string paths_texts_lbl = "keep-texts";
-      const static inline std::string paths_tabls_lbl = "keep-tables";
-      const static inline std::string paths_fdocs_lbl = "keep-docs";
-      
+      const static inline std::string sents_lbl = "keep-sentences";
+      const static inline std::string texts_lbl = "keep-texts";
+      const static inline std::string tabls_lbl = "keep-tables";
+      const static inline std::string fdocs_lbl = "keep-docs";
+
+      const static inline std::string insts_lbl = "instances";
+
       typedef std::size_t index_type;
 
       typedef glm_nodes nodes_type;
       typedef glm_edges edges_type;
-      
+
       typedef typename nodes_type::node_type node_type;
       typedef typename edges_type::edge_type edge_type;
 
@@ -41,30 +43,32 @@ namespace andromeda
 
       glm_parameters();
       glm_parameters(nlohmann::json& config, bool verbose);
-      
+
       ~glm_parameters();
 
       void clear();
-      
+
       nlohmann::json to_json();
 
       bool from_json(nlohmann::json& config, bool verbose);
 
     public:
-      
+
       short padding;
 
-      bool keep_concs, keep_conns, keep_verbs, keep_terms;      
+      bool keep_concs, keep_conns, keep_verbs, keep_terms;
       bool keep_sents, keep_texts, keep_tabls, keep_fdocs;
-      
+
       std::vector<std::shared_ptr<andromeda::base_nlp_model> > models;
+
+      std::vector<std::pair<std::string, std::string> > insts;
     };
 
     glm_parameters::glm_parameters():
       padding(1),
 
       keep_concs(true),
-      
+
       keep_conns(true),
       keep_verbs(true),
       keep_terms(true),
@@ -74,15 +78,16 @@ namespace andromeda
       keep_texts(false),
       keep_tabls(false),
       keep_fdocs(false),
-      
-      models({})
+
+      models({}),
+      insts({})
     {}
 
     glm_parameters::glm_parameters(nlohmann::json& config, bool verbose):
       padding(1),
 
       keep_concs(true),
-      
+
       keep_conns(true),
       keep_verbs(true),
       keep_terms(true),
@@ -91,12 +96,13 @@ namespace andromeda
 
       keep_texts(false),
       keep_tabls(false),
-      keep_fdocs(false),      
+      keep_fdocs(false),
 
-      models({})
+      models({}),
+      insts({})
     {
       this->from_json(config, verbose);
-    }    
+    }
 
     glm_parameters::~glm_parameters()
     {}
@@ -113,76 +119,127 @@ namespace andromeda
       }
 
       {
-	nlohmann::json& paths = result[paths_lbl];
+        nlohmann::json& paths = result[paths_lbl];
 
-	paths[paths_concs_lbl] = keep_concs;
+        paths[concs_lbl] = keep_concs;
 
-	paths[paths_conns_lbl] = keep_conns;
-	paths[paths_verbs_lbl] = keep_verbs;
-	paths[paths_terms_lbl] = keep_terms;
+        paths[conns_lbl] = keep_conns;
+        paths[verbs_lbl] = keep_verbs;
+        paths[terms_lbl] = keep_terms;
 
-	paths[paths_sents_lbl] = keep_sents;
+        paths[sents_lbl] = keep_sents;
 
-	paths[paths_texts_lbl] = keep_texts;
-	paths[paths_tabls_lbl] = keep_tabls;
-	paths[paths_fdocs_lbl] = keep_fdocs;	
+        paths[texts_lbl] = keep_texts;
+        paths[tabls_lbl] = keep_tabls;
+        paths[fdocs_lbl] = keep_fdocs;
       }
-      
+
+      {
+        std::stringstream ss;
+        for(std::size_t l=0; l<insts.size(); l++)
+          {
+            if(insts.at(l).second=="")
+              {
+                ss << insts.at(l).first;
+              }
+            else
+              {
+                ss << insts.at(l).first << "/" << insts.at(l).second;
+              }
+
+            if(l+1<insts.size())
+              {
+                ss << ";";
+              }
+          }
+
+        result[insts_lbl] = ss.str();
+      }
+
       if(models.size()==0)
-	{
-	  std::string model_expr="conn;verb;term;abbreviation";
-	  LOG_S(WARNING) << "falling back on default: " << model_expr;
-	  
-	  result[nlp_models_lbl] = model_expr;
-	}
+        {
+          std::string model_expr="conn;verb;term;abbreviation";
+          LOG_S(WARNING) << "falling back on default: " << model_expr;
+
+          result[nlp_models_lbl] = model_expr;
+        }
       else
-	{
-	  result[nlp_models_lbl] = from_models(models);
-	}
-      
+        {
+          result[nlp_models_lbl] = from_models(models);
+        }
+
       return result;
     }
 
     bool glm_parameters::from_json(nlohmann::json& config, bool verbose)
     {
-      if(config.count(parameters_lbl))
-	{
-	  return this->from_json(config[parameters_lbl], verbose);
-	}
       //LOG_S(INFO) << "parameters: " << config.dump(2);
-      
+
+      if(config.count(parameters_lbl))
+        {
+          return this->from_json(config[parameters_lbl], verbose);
+        }
+      //LOG_S(INFO) << "parameters: " << config.dump(2);
+
       {
         padding = config.value(padding_lbl, padding);
       }
 
-      {
-	nlohmann::json& paths = config[paths_lbl];
-	
-	keep_concs = paths.value(paths_concs_lbl, keep_concs);
+      if(config.count(paths_lbl))
+        {
+          nlohmann::json& paths = config[paths_lbl];
 
-	keep_conns = paths.value(paths_conns_lbl, keep_conns);
-	keep_verbs = paths.value(paths_verbs_lbl, keep_verbs);
-	keep_terms = paths.value(paths_terms_lbl, keep_terms);
+          keep_concs = paths.value(concs_lbl, keep_concs);
 
-	keep_sents = paths.value(paths_sents_lbl, keep_sents);
+          keep_conns = paths.value(conns_lbl, keep_conns);
+          keep_verbs = paths.value(verbs_lbl, keep_verbs);
+          keep_terms = paths.value(terms_lbl, keep_terms);
 
-	keep_texts = paths.value(paths_texts_lbl, keep_texts);
-	keep_tabls = paths.value(paths_tabls_lbl, keep_tabls);
-	keep_fdocs = paths.value(paths_fdocs_lbl, keep_fdocs);	
-      }
-      
-      {
-	std::string model_expr="conc;conn;verb;term";
-	model_expr = config.value(nlp_models_lbl, model_expr);
+          keep_sents = paths.value(sents_lbl, keep_sents);
 
-	if(not to_models(model_expr, models, verbose))
-	  {
-	    LOG_S(ERROR) << "could not initialise the models with expression: "
-			 << model_expr;
-	    return false;
-	  }
-      }
-      
+          keep_texts = paths.value(texts_lbl, keep_texts);
+          keep_tabls = paths.value(tabls_lbl, keep_tabls);
+          keep_fdocs = paths.value(fdocs_lbl, keep_fdocs);
+        }
+
+      if(config.count(insts_lbl))
+        {
+	  insts.clear();
+	  
+          std::string insts_expr = config.value(insts_lbl, "");
+
+          std::vector<std::string> insts_vec = utils::split(insts_expr, ";");
+          for(auto item:insts_vec)
+            {
+              //LOG_S(INFO) << item;
+
+              if(utils::contains(item , "/"))
+                {
+                  std::vector<std::string> parts = utils::split(item, "/");
+                  insts.emplace_back(parts.at(0), parts.at(1));
+                }
+              else if(item.size()>0)
+                {
+                  insts.emplace_back(item, "");
+                }
+              else
+                {}
+            }
+        }
+
+      if(config.count(nlp_models_lbl))
+        {
+          std::string model_expr="conc;conn;verb;term";
+          model_expr = config.value(nlp_models_lbl, model_expr);
+
+          if(not to_models(model_expr, models, verbose))
+            {
+              LOG_S(ERROR) << "could not initialise the models with expression: "
+                           << model_expr;
+              return false;
+            }
+        }
+
       return true;
     }
 

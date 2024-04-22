@@ -458,6 +458,18 @@ namespace andromeda
 	      }
 	  }
       }
+
+    for(std::size_t l=1; l<word_tokens.size(); l++)
+      {
+	if(word_tokens.at(l-1).get_rng(1)==word_tokens.at(l).get_rng(0))
+	  {
+	    word_tokens.at(l).set_start_with_space(false);
+	  }
+	else
+	  {
+	    word_tokens.at(l).set_start_with_space(true);
+	  }
+      }
   }
 
   void text_element::contract_word_tokens()

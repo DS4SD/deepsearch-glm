@@ -231,13 +231,13 @@ namespace andromeda
     base_node::base_node(flvr_type flavor, const std::vector<hash_type>& path):
       flvr(flavor),
       hash(node_names::UNKNOWN_HASH),
-
+      
       word_cnt(0),
       sent_cnt(0),
       text_cnt(0),
       tabl_cnt(0),
       fdoc_cnt(0),
-
+      
       text_ptr(NULL),
 
       nodes_ptr(std::make_shared<std::vector<hash_type> >(path)),
@@ -436,7 +436,7 @@ namespace andromeda
     template<typename nodes_type>
     std::string base_node::get_text(nodes_type& nodes_coll, bool connected) const
     {
-      std::string conn=" ";
+      std::string conn="";
       if(connected)
 	{
           switch(flvr)
@@ -446,7 +446,7 @@ namespace andromeda
                 conn="-";
               }
               break;
-
+	      /*
             case node_names::CONN:
             case node_names::VERB:
             case node_names::TERM:
@@ -470,10 +470,12 @@ namespace andromeda
 		return "<unresolved>";
 	      }
 	      break;
+	      */
 	      
             default:
               {
-                conn=" ";
+                //conn=" ";
+		conn="";
               }
             }
 	}
@@ -500,7 +502,13 @@ namespace andromeda
             }
 	  
           std::string res = ss.str();
-          res.pop_back();
+	  if(flvr==node_names::CONT)
+	    {
+	      res.pop_back();
+	    }
+	  
+	  res = utils::replace(res, word_token::get_space(), " ");
+	  res = utils::strip(res);
 	  
           return res;
         }

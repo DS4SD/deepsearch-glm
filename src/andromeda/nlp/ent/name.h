@@ -12,7 +12,6 @@ namespace andromeda
 
   public:
 
-    //nlp_model(std::filesystem::path resources_dir);
     nlp_model();
     ~nlp_model();
 
@@ -77,7 +76,7 @@ namespace andromeda
     // `xxx yyy of kkk lll and iii jjj`
     {
       pcre2_expr expr(this->get_key(), "specialised-name",
-		      R"((?P<name>(([A-Z][a-z]+)\s+)+(of\s+)([A-Z][a-z]+\s+)+(and\s+)([A-Z][a-z]+\s+)*)([A-Z][a-z]+))");
+		      R"((?P<name>(([A-Z][a-z]+)\s+)+(of\s+)([A-Z][a-z]+\s+)+(and\s+)([A-Z][a-z]+\s+)*([A-Z][a-z]+)))");
       exprs.push_back(expr);
     }
     
@@ -94,6 +93,13 @@ namespace andromeda
 		      R"((?P<name>(([A-Z][a-z]+)\s+)+(for\s+)([A-Z][a-z]+\s+)*([A-Z][a-z]+)))");
       exprs.push_back(expr);
     }
+
+    // `Wernick, H., `
+    {
+      pcre2_expr expr(this->get_key(), "person-name-v2",
+		      R"((?P<name>(([A-Z][a-z]+)(\,\s+)(([A-Z]\.)\s{0,1})+))(\,|$))");
+      exprs.push_back(expr);
+    }
     
     // `Jan H. Wernick`
     {
@@ -101,11 +107,12 @@ namespace andromeda
 		      R"((?P<name>(([A-Z][a-z]+)\s+)+(([A-Z]\.)\s+)+([A-Z][a-z]+)+))");
       exprs.push_back(expr);
     }
-
+    
     // `J. E. Kunzler`
     {
       pcre2_expr expr(this->get_key(), "person-name",
-		      R"((?P<name>(([A-Z][a-z]+)\s+)*(([A-Z]\.)\s+){1,}([A-Z][a-z]+)+))");
+		      //R"((?P<name>(([A-Z][a-z]+)\s+)*(([A-Z]\.)\s+){1,}([A-Z][a-z]+)+))");
+		      R"((?P<name>(([A-Z][a-z]+)\s+)*(([A-Z]\.)\s+){1,}([A-Z][a-z]+\s+)*([A-Z][a-z]+)))");
       exprs.push_back(expr);
     }
 
@@ -133,7 +140,7 @@ namespace andromeda
     // `U.S.`, `B.P.B.`
     {
       pcre2_expr expr(this->get_key(), "abbreviation-name",
-		      R"((?P<name>(([A-Z]\.){2,})))");
+		      R"((?P<name>(([A-Z]\.\s*){2,})))");
       exprs.push_back(expr);
     }    
 
@@ -207,6 +214,8 @@ namespace andromeda
 		    name = utils::strip(name);
 
 		    double conf=1.0;
+		    std::string subtype = expr.get_subtype();
+		    
 		    bool keep=true;
 		    if(expr.get_subtype()=="person-name")
 		      {
@@ -217,6 +226,7 @@ namespace andromeda
 			  {
 			    if(label=="expr" or conf_<0.85)
 			      {
+				subtype = label;
 				keep = false;
 			      }
 			    else
@@ -226,10 +236,15 @@ namespace andromeda
 			  }
 		      }
 
+		    if(expr.get_subtype()=="person-name-v2")
+		      {
+			subtype = "person-name";
+		      }
+		    
 		    if(keep)
 		      {
 			subj.instances.emplace_back(subj.get_hash(), subj.get_name(), subj.get_self_ref(), conf,
-						    NAME, expr.get_subtype(),
+						    NAME, subtype, //expr.get_subtype(),
 						    name, orig, 
 						    char_range, ctok_range, wtok_range);
 		      }

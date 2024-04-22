@@ -34,10 +34,20 @@ data/*/*/*.csv
 *.bin
 *.gz
 *.tar
+_models/*
+data_*
+build_*
 deepsearch_glm/resources/*/*/*.txt
 deepsearch_glm/resources/*/*/*.json
+deepsearch_glm/resources/*/*/*.jsonl
 deepsearch_glm/resources/*/*/*/*.txt
 deepsearch_glm/resources/*/*/*/*.json
+deepsearch_glm/resources/*/*/*/*.jsonl
+deepsearch_glm/resources/data_nlp/*.txt
+deepsearch_glm/resources/data_nlp/*.json
+deepsearch_glm/resources/data_nlp/*.jsonl
+tests/data/docs/*.json
+tests/data/texts/*.jsonl
 tests/data/glm/test_01A/glm_ref/*.csv
 tests/data/glm/test_01A/glm_ref/*.txt
 

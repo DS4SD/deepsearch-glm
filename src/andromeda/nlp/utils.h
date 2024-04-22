@@ -66,6 +66,13 @@ namespace andromeda
 	  model = std::make_shared<model_type>();	  	  	  
 	}
 	break;
+
+      case CUSTOM_FST:
+	{
+	  typedef nlp_model<CLS, CUSTOM_FST> model_type;
+	  model = std::make_shared<model_type>();	  	  	  
+	}
+	break;
 	
       default:
 	{
@@ -216,7 +223,13 @@ namespace andromeda
 	}
 	break;
 
-	// UCMI-CUSTOM_CRF:
+      case CUSTOM_FST:
+	{
+	  typedef nlp_model<CLS, CUSTOM_FST> model_type;
+	  model = std::make_shared<model_type>(desc);	  	  	  
+	}
+	break;
+
       case MATERIAL: 
 	{
 	  typedef nlp_model<ENT, MATERIAL> model_type;

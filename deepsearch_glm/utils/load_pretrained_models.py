@@ -32,7 +32,7 @@ def load_training_data(
 ):
     """Function to load data to train NLP models"""
 
-    assert data_type in ["text", "crf"]
+    assert data_type in ["text", "crf", "fst"]
 
     resources_dir = get_resources_dir()
     with open(f"{resources_dir}/data.json", "r", encoding="utf-8") as fr:

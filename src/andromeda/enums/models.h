@@ -50,6 +50,7 @@ namespace andromeda
 
      CUSTOM_CRF=666,
      CUSTOM_SPM=667,
+     CUSTOM_FST=668,
      
      // POS-patterns
      CONN=700,
@@ -100,6 +101,7 @@ namespace andromeda
      
      CUSTOM_SPM,
      CUSTOM_CRF,
+     CUSTOM_FST,
 
      MATERIAL,
      
@@ -154,6 +156,7 @@ namespace andromeda
 
       case CUSTOM_SPM: return "CUSTOM_SPM";
       case CUSTOM_CRF: return "CUSTOM_CRF";
+      case CUSTOM_FST: return "CUSTOM_FST";
 	
       case MATERIAL: return "MATERIAL";
 	
@@ -184,6 +187,11 @@ namespace andromeda
     if(uname.starts_with(to_string(CUSTOM_CRF)))
       {
 	return CUSTOM_CRF;
+      }
+
+    if(uname.starts_with(to_string(CUSTOM_FST)))
+      {
+	return CUSTOM_FST;
       }
     
     for(auto mname:MODEL_NAMES)

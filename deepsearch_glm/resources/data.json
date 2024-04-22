@@ -7,27 +7,30 @@
 	"prefix": "deepsearch_glm/v1/data",
 
 	"text": {
-	    "arxiv-abstracts": ["text/arxiv-abstracts.jsonl" ,"data/text/arxiv-abstracts.jsonl"],
-	    "arxiv-abstracts-2020": ["text/arxiv-abstracts-2020.jsonl", "data/text/arxiv-abstracts-2020.jsonl"],
-	    "arxiv-abstracts-2020-txt": ["text/arxiv-abstracts-2020.txt", "data/text/arxiv-abstracts-2020.txt"],
-	    "arxiv-abstracts-2020-Jan": ["text/arxiv-abstracts-2020-Jan.jsonl", "data/text/arxiv-abstracts-2020-Jan.jsonl"],
-	    "arxiv-abstracts-2020-Jan-txt": ["text/arxiv-abstracts-2020-Jan.txt", "data/text/arxiv-abstracts-2020-Jan.txt"]
+	    "arxiv-abstracts": ["text/arxiv-abstracts.jsonl",
+				"data/text/arxiv-abstracts.jsonl"],
+
+	    "arxiv-abstracts-2020": ["text/arxiv-abstracts-2020.jsonl",
+				     "data/text/arxiv-abstracts-2020.jsonl"],
+
+	    "arxiv-abstracts-2020-txt": ["text/arxiv-abstracts-2020.txt",
+					 "data/text/arxiv-abstracts-2020.txt"],
+
+	    "arxiv-abstracts-2020-Jan": ["text/arxiv-abstracts-2020-Jan.jsonl",
+					 "data/text/arxiv-abstracts-2020-Jan.jsonl"],
+
+	    "arxiv-abstracts-2020-Jan-txt": ["text/arxiv-abstracts-2020-Jan.txt",
+					     "data/text/arxiv-abstracts-2020-Jan.txt"]	    
 	},
 
-	"crf":
-	{
-	    "materials": ["nlp/nlp.crf.materials.jsonl", "data/nlp/crf.materials.jsonl"]
-	}
-    },
-    
-    "nlp-":
-    {
-	"bucket": "ds4sd-public-artifacts",
-	"prefix": "deepsearch_glm/v1/data/nlp",
-
-	"crf":
-	{
-	    "materials": ["nlp.crf.materials.jsonl", "data/nlp/crf.materials.jsonl"]
+	"crf": {
+	    "materials": ["nlp/nlp.crf.materials.jsonl",
+			  "data/nlp/crf.materials.jsonl"]
+	},
+	
+	"fst": {
+	    "names-classifier-small": ["nlp/nlp.fst.names-classifier.small.jsonl",
+				       "data/nlp/nlp.fst.names-classifier.small.jsonl"]
 	}
     },
 
