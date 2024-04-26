@@ -153,37 +153,42 @@ def init_nlp_model(models: str, filters: List[str] = []):
     return model
 
 
-def show_texts(doc_j):
+def show_texts(doc_j, props):
     """Function to show the text of the document on shell"""
 
     data = []
     for item in doc_j["texts"]:
-        data.append([item["subj_hash"], item["text_hash"], item["text"][0:48]])
+        # label=None
+        label = props[props["subj_hash"] == item["subj_hash"]].iloc[0]["label"]
 
-    print(tabulate(data, headers=["subj_hash", "text_hash", "text"]))
+        data.append([item["subj_hash"], label, item["text"][0:48]])
+
+    print(tabulate(data, headers=["subj_hash", "label", "text"]))
 
 
 def show_doc(doc_j):
     """Function to show the document"""
 
-    if "texts" in doc_j:
-        show_texts(doc_j)
-
+    props = None
     if "properties" in doc_j:
         props = pd.DataFrame(
             doc_j["properties"]["data"], columns=doc_j["properties"]["headers"]
         )
-        print("properties: \n\n", props)
+        print("properties: \n\n", props.to_string())
+
+    if "texts" in doc_j:
+        show_texts(doc_j, props)
 
     if "instances" in doc_j:
         inst = pd.DataFrame(
             doc_j["instances"]["data"], columns=doc_j["instances"]["headers"]
         )
-        print("instances: \n\n", inst.to_string())
+        # print("instances: \n\n", inst.to_string())
 
         meta = inst[inst["type"] == "metadata"]
         print("meta: \n\n", meta)
 
+        """
         terms = inst[inst["type"] == "term"]
         print("terms: \n\n", terms)
 
@@ -191,6 +196,7 @@ def show_doc(doc_j):
         for key, val in hist.items():
             name = terms[terms["hash"] == key].iloc[0]["name"]
             print(f"{val}\t{name}")
+        """
 
 
 if __name__ == "__main__":
