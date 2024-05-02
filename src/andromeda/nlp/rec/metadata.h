@@ -351,10 +351,10 @@ namespace andromeda
         auto& abstract_subj = subj.texts.at(abstract_ind);
 	abstract = abstract_subj->get_text();
 
-	auto tmp = utils::lower(abstract);
+	auto tmp = utils::to_lower(abstract);
 	tmp = utils::strip(tmp);
 
-	if(tmp.endswith("abstract"))
+	if(tmp.ends_with("abstract"))
 	  {
 	    if(abstract_ind+1<subj.texts.size())
 	      {
