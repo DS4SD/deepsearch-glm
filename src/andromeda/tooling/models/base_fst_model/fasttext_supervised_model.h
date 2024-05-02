@@ -754,6 +754,7 @@ namespace andromeda
   {
     if(model==NULL)
       {
+	LOG_S(ERROR) << "no model is loaded ...";
 	return false;
       }
 
