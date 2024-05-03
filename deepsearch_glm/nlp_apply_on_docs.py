@@ -20,31 +20,31 @@ from deepsearch_glm.utils.ds_utils import (
 
 
 def parse_arguments():
-    """Parse arguments for `apply_nlp_on_doc`"""
+    """Parse arguments for `nlp_apply_on_docs`"""
 
     parser = argparse.ArgumentParser(
-        prog="apply_nlp_on_doc",
+        prog="nlp_apply_on_docs",
         description="Apply NLP on `Deep Search` documents",
         epilog="""
 examples of execution: 
 
 1.a run on single document (pdf or json) with default model (=`langauge`):
 
-     poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --pdf './data/documents/articles/2305.02334.pdf'
-     poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --json './data/documents/articles/2305.02334.json'
+     poetry run python ./deepsearch_glm/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.02334.pdf'
+     poetry run python ./deepsearch_glm/nlp_apply_on_docs.py --json './data/documents/articles/2305.02334.json'
 
 1.b run on single document pdf document and enforce conversion (ignore cache):
 
-     poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --pdf './data/documents/articles/2305.02334.pdf' --force-convert True
+     poetry run python ./deepsearch_glm/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.02334.pdf' --force-convert True
 
 2. run on multiple documents:
 
-     poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --pdf './data/documents/articles/*.pdf'
-     poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --json './data/documents/articles/*.json'
+     poetry run python ./deepsearch_glm/nlp_apply_on_docs.py --pdf './data/documents/articles/*.pdf'
+     poetry run python ./deepsearch_glm/nlp_apply_on_docs.py --json './data/documents/articles/*.json'
 
 3. run on multiple documents with non-default models:
 
-     poetry run python ./deepsearch_glm/apply_nlp_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
+     poetry run python ./deepsearch_glm/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
 
 """,
         formatter_class=argparse.RawTextHelpFormatter,
@@ -153,37 +153,43 @@ def init_nlp_model(models: str, filters: List[str] = []):
     return model
 
 
-def show_texts(doc_j):
+def show_texts(doc_j, props):
     """Function to show the text of the document on shell"""
 
     data = []
     for item in doc_j["texts"]:
-        data.append([item["subj_hash"], item["text_hash"], item["text"][0:48]])
+        selection = props[props["subj_hash"] == item["subj_hash"]]
+        if len(selection) > 0:
+            label = selection.iloc[0]["label"]
 
-    print(tabulate(data, headers=["subj_hash", "text_hash", "text"]))
+        data.append([item["subj_hash"], label, item["text"][0:48]])
+
+    print(tabulate(data, headers=["subj_hash", "label", "text"]))
 
 
 def show_doc(doc_j):
     """Function to show the document"""
 
-    if "texts" in doc_j:
-        show_texts(doc_j)
-
+    props = None
     if "properties" in doc_j:
         props = pd.DataFrame(
             doc_j["properties"]["data"], columns=doc_j["properties"]["headers"]
         )
-        print("properties: \n\n", props)
+        print("properties: \n\n", props.to_string())
+
+    if "texts" in doc_j:
+        show_texts(doc_j, props)
 
     if "instances" in doc_j:
         inst = pd.DataFrame(
             doc_j["instances"]["data"], columns=doc_j["instances"]["headers"]
         )
-        print("instances: \n\n", inst.to_string())
+        # print("instances: \n\n", inst.to_string())
 
         meta = inst[inst["type"] == "metadata"]
         print("meta: \n\n", meta)
 
+        """
         terms = inst[inst["type"] == "term"]
         print("terms: \n\n", terms)
 
@@ -191,6 +197,7 @@ def show_doc(doc_j):
         for key, val in hist.items():
             name = terms[terms["hash"] == key].iloc[0]["name"]
             print(f"{val}\t{name}")
+        """
 
 
 if __name__ == "__main__":

@@ -16,6 +16,8 @@
 	    "name": ["fst_person_name.bin", "models/fasttext/person-name/fst_person_name.bin"],
 	    "semantic": ["fst_semantic.bin", "models/fasttext/semantic/fst_semantic.bin"],
 
+	    "metadata": ["fst_author.bin", "models/fasttext/metadata/fst_author.bin"],
+	    
 	    "geoloc": ["rgx_geoloc.json", "models/rgx/geoloc/rgx_geoloc.json"]
 	}
     },
