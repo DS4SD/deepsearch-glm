@@ -93,11 +93,11 @@ namespace andromeda
   {
     if(not is_scientific_paper(subj))
       {
-        LOG_S(WARNING) << "document is NOT scientific report!";
+        LOG_S(INFO) << "document is NOT scientific report!";
         return false;
       }
 
-    LOG_S(WARNING) << "document is scientific report!";
+    LOG_S(INFO) << "document is scientific report!";
 
     find_title(subj);
 
@@ -107,6 +107,7 @@ namespace andromeda
 
     find_abstract(subj);
 
+    /*
     {
       LOG_S(INFO) << "title: " << title;
       for(auto author:authors)
@@ -115,9 +116,10 @@ namespace andromeda
 	}
       LOG_S(INFO) << "abstract: " << abstract;
 
-      std::string text;
-      std::cin >> text;
+      //std::string text;
+      //std::cin >> text;
     }
+    */
     
     return update_applied_models(subj);
   }
@@ -183,8 +185,14 @@ namespace andromeda
 
     title_ind=-1;
 
+    // currently, the title-box is not found with great enough accuracy
+    // to rely on ML to distinguish title from header ...
+    
+    /*
     if(iref!="") // found bbox with type `title`
       {
+	//LOG_S(WARNING) << "found bbox with type `title`";
+	
 	for(int tind=0; tind<subj.texts.size(); tind++)
 	  {
 	    if(subj.texts.at(tind)->get_self_ref()==iref)
@@ -194,6 +202,7 @@ namespace andromeda
 	      }
 	  }
       }
+    */
 
     if(title_ind==-1) // fall-back: assume title is before first metadata
       {
@@ -288,7 +297,7 @@ namespace andromeda
 						inst.get_wtok_range());
 		  }
 		
-		LOG_S(INFO) << success << " name: " << name << " => " << label << " (" << conf << ")";
+		//LOG_S(INFO) << success << " name: " << name << " => " << label << " (" << conf << ")";
 	      }
           }
       }
@@ -341,7 +350,7 @@ namespace andromeda
 
     return true;
   }
-
+  
   bool nlp_model<REC, METADATA>::find_abstract(subject<DOCUMENT>& subj)
   {
     abstract="";
