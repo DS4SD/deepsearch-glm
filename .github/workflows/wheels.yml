@@ -161,6 +161,9 @@ jobs:
           /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
           echo "step 1"
           ls -l wheelhouse
+          /Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_14_0_x86_64 ./wheelhouse/*.whl
+          echo "step 2"
+          ls -l wheelhouse
           /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
