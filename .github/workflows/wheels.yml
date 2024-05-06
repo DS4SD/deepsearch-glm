@@ -68,7 +68,7 @@ jobs:
             platform: macos
             platform_id: macosx_x86_64
 
-          - os: macos-latest
+          - os: macosx_12_0 #macos-latest
             python: 310
             platform: macos
             platform_id: macosx_x86_64
@@ -142,8 +142,8 @@ jobs:
           /Users/runner/.local/bin/poetry run python --version
 
       - name: Build wheels [macos-x86_64]
-        if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_x86_64'}}
-        #if: matrix.os == 'macos-latest'
+        if: ${{matrix.os == 'macosx_12_0' && matrix.platform_id == 'macosx_x86_64'}}
+        #if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_x86_64'}}
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: x86_64 
