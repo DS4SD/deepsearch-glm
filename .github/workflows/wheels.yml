@@ -30,6 +30,7 @@ jobs:
 
     strategy:
       # Ensure that a wheel builder finishes even if another fails
+      # list of github vm: https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
       fail-fast: false
       matrix:
         include:
@@ -58,22 +59,22 @@ jobs:
 
           # MacOS x86_64
 
-          - os: macos-latest
+          - os: macos-12 # macos-latest
             python: 38
             platform: macos
             platform_id: macosx_x86_64
 
-          - os: macos-latest
+          - os: macos-12 # macos-latest
             python: 39
             platform: macos
             platform_id: macosx_x86_64
 
-          - os: macos-12 #macos-latest
+          - os: macos-12 # macos-latest
             python: 310
             platform: macos
             platform_id: macosx_x86_64
 
-          - os: macos-latest
+          - os: macos-12 # macos-latest
             python: 311
             platform: macos
             platform_id: macosx_x86_64
