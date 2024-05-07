@@ -43,25 +43,21 @@ if(NOT "${TOPLEVEL_PREFIX_PATH}/cmake" IN_LIST CMAKE_MODULE_PATH)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${TOPLEVEL_PREFIX_PATH}/cmake")
 endif()
 
-message(STATUS "    top path: " ${TOPLEVEL_PREFIX_PATH})
-message(STATUS "    lib path: " ${EXTERNALS_PREFIX_PATH})
-message(STATUS "install path: " ${CMAKE_INSTALL_PREFIX})
-message(STATUS "  cmake path: " ${CMAKE_MODULE_PATH})
-message(STATUS "cmake system: " ${CMAKE_SYSTEM_PROCESSOR})
-#message(STATUS " python path: " ${})
-
-# AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-#if(UNIX)
-#set(ENV_ARCHFLAGS "-march=x86-64")
-#else()
-
-#endif()
-
 set(ENV_ARCH $ENV{CIBW_ARCHS})
 message(STATUS "cibw arch: " ${ENV_ARCH})
 
+set(CMAKE_OSX_ARCHITECTURES $ENV{CIBW_ARCHS})
+#message(STATUS "cibw arch: " ${ENV_ARCH})
+
 set(ENV_ARCHFLAGS $ENV{ARCHFLAGS})
 message(STATUS "arch flags: " ${ENV_ARCHFLAGS})
+
+message(STATUS "      top path: " ${TOPLEVEL_PREFIX_PATH})
+message(STATUS "      lib path: " ${EXTERNALS_PREFIX_PATH})
+message(STATUS "  install path: " ${CMAKE_INSTALL_PREFIX})
+message(STATUS "    cmake path: " ${CMAKE_MODULE_PATH})
+message(STATUS "  cmake system: " ${CMAKE_SYSTEM_PROCESSOR})
+message(STATUS "cmake osx arch: " ${CMAKE_OSX_ARCHITECTURES})
 
 # ************************
 # ***  cxx-flags       ***
