@@ -162,6 +162,7 @@ jobs:
           echo "step 1"
           ls -l wheelhouse
           /Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_14_0_x86_64 ./wheelhouse/*.whl
+          rm ./wheelhouse/*arm64.whl
           echo "step 2"
           ls -l wheelhouse
           /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
