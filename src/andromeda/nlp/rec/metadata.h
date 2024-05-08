@@ -252,6 +252,8 @@ namespace andromeda
   {
     //LOG_S(INFO) << __FUNCTION__;
 
+    authors = {};
+    
     int cut_off=0;
     if(abstract_ind!=-1)
       {
@@ -301,7 +303,9 @@ namespace andromeda
 	      }
           }
       }
-
+    
+    subj.set_authors(authors);
+    
     return true;
   }
 
