@@ -29,7 +29,16 @@ PYBIND11_MODULE(andromeda_structs, m) {
     .def(pybind11::init())
     .def("to_json", &andromeda_py::ds_document::to_json)
     .def("from_json", &andromeda_py::ds_document::from_json)
+
     .def("clear", &andromeda_py::ds_document::clear)
+
+    .def("set_title", &andromeda_py::ds_document::set_title)
+    .def("set_date", &andromeda_py::ds_document::set_date)
+    .def("set_abstract", &andromeda_py::ds_document::set_abstract)
+    .def("set_authors", &andromeda_py::ds_document::set_authors)
+    .def("set_affiliations", &andromeda_py::ds_document::set_affiliations)
+    .def("set_advanced", &andromeda_py::ds_document::set_advanced)
+
     .def("append_text", &andromeda_py::ds_document::append_text)
     .def("append_table", &andromeda_py::ds_document::append_table);
 }

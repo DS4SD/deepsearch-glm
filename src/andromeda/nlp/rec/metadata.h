@@ -54,7 +54,7 @@ namespace andromeda
     std::set<int> metadata_inds;
     
     std::string title;
-    std::string abstract;
+    std::vector<std::string> abstract;
 
     std::vector<std::string> authors;
     std::vector<std::string> affiliations;
@@ -103,24 +103,10 @@ namespace andromeda
 
     find_authors(subj);
 
-    //find_affiliations(subj);
+    find_affiliations(subj);
 
     find_abstract(subj);
 
-    /*
-    {
-      LOG_S(INFO) << "title: " << title;
-      for(auto author:authors)
-	{
-	  LOG_S(INFO) << " -> author: " << author;
-	}
-      LOG_S(INFO) << "abstract: " << abstract;
-
-      //std::string text;
-      //std::cin >> text;
-    }
-    */
-    
     return update_applied_models(subj);
   }
 
@@ -252,6 +238,8 @@ namespace andromeda
   {
     //LOG_S(INFO) << __FUNCTION__;
 
+    authors = {};
+    
     int cut_off=0;
     if(abstract_ind!=-1)
       {
@@ -301,12 +289,16 @@ namespace andromeda
 	      }
           }
       }
-
+    
+    subj.set_authors(authors);
+    
     return true;
   }
 
   bool nlp_model<REC, METADATA>::find_affiliations(subject<DOCUMENT>& subj)
   {
+    affiliations = {};
+    
     int cut_off=0;
     if(abstract_ind!=-1)
       {
@@ -338,6 +330,8 @@ namespace andromeda
 
                 //LOG_S(INFO) << " --> author: " << name;
 
+		affiliations.push_back(name);
+		
                 subj.instances.emplace_back(subj.get_hash(), DOCUMENT, tsubj->get_self_ref(), inst.get_conf(),
                                             METADATA, "affiliation",
                                             name, orig,
@@ -348,19 +342,21 @@ namespace andromeda
           }
       }
 
+    subj.set_affiliations(affiliations);
+    
     return true;
   }
   
   bool nlp_model<REC, METADATA>::find_abstract(subject<DOCUMENT>& subj)
   {
-    abstract="";
+    abstract={};
     
     if(abstract_ind!=-1 and introduction_ind==-1) // only found abstract header
       {
         auto& abstract_subj = subj.texts.at(abstract_ind);
-	abstract = abstract_subj->get_text();
+	abstract.push_back(abstract_subj->get_text());
 
-	auto tmp = utils::to_lower(abstract);
+	auto tmp = utils::to_lower(abstract.back());
 	tmp = utils::strip(tmp);
 
 	if(tmp.ends_with("abstract"))
@@ -371,7 +367,7 @@ namespace andromeda
 					     get_name(), "abstract", 1.0);
 
 		auto& abstract_subj = subj.texts.at(abstract_ind+1);
-		abstract += " " + abstract_subj->get_text();
+		abstract.push_back(abstract_subj->get_text());
 	      }
 	  }
 	else
@@ -385,7 +381,8 @@ namespace andromeda
         for(int tind=abstract_ind; tind<introduction_ind; tind++)
           {
             auto& abstract_subj = subj.texts.at(tind);
-	    abstract += " " + abstract_subj->get_text();
+	    //abstract += " " + abstract_subj->get_text();
+	    abstract.push_back(abstract_subj->get_text());
 	    
             subj.properties.emplace_back(abstract_subj->get_hash(), DOCUMENT, abstract_subj->get_self_ref(),
                                          get_name(), "abstract", 1.0);
@@ -398,12 +395,12 @@ namespace andromeda
     else
       {}
 
-    abstract = utils::strip(abstract);
+    //abstract = utils::strip(abstract);
     
-    if(abstract.size()>0)
-      {
-	subj.set_abstract(abstract);
-      }
+    //if(abstract.size()>0)
+    //{
+    subj.set_abstract(abstract);
+    //}
     
     return true;
   }
