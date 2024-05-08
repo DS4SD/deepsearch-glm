@@ -88,9 +88,12 @@ namespace andromeda
               bool prps=true, bool insts=true, bool rels=true);
 
     void set_title(std::string title);
-    void set_abstract(std::string abstract);
+    void set_abstract(std::vector<std::string> abstract);
     void set_date(std::string date);
     void set_authors(std::vector<std::string>& authors);
+    void set_affiliations(std::vector<std::string>& affils);
+    
+    void set_advanced(nlohmann::json& advanced);
 
     bool set_data(nlohmann::json& data, bool order_maintext);
 
@@ -354,7 +357,7 @@ namespace andromeda
     desc["title"] = title;
   }
 
-  void subject<DOCUMENT>::set_abstract(std::string abstract)
+  void subject<DOCUMENT>::set_abstract(std::vector<std::string> abstract)
   {
     auto& desc = kept["description"];
     desc["abstract"] = abstract;
@@ -382,6 +385,38 @@ namespace andromeda
       }
   }
 
+  void subject<DOCUMENT>::set_affiliations(std::vector<std::string>& affiliations)
+  {
+    auto& desc = kept["description"];
+    
+    auto& items = desc["affiliations"];
+    items = nlohmann::json::array({});
+    
+    for(std::size_t i=0; i<affiliations.size(); i++)
+      {
+	auto item = nlohmann::json::object({});
+
+	item["name"] = affiliations.at(i);
+	items.push_back(item);
+      }
+  }
+
+  void subject<DOCUMENT>::set_advanced(nlohmann::json& advanced)
+  {
+    auto& desc = kept["description"];
+
+    if(desc.count("advanced")==0)
+      {
+	desc["advanced"] = nlohmann::json::object({});
+      }
+
+    auto& adv = desc["advanced"];
+    for(auto& elem:advanced.items())
+      {
+	adv[elem.key()] = elem.value();
+      }
+  }
+  
   bool subject<DOCUMENT>::set_data(std::filesystem::path filepath,
                                    nlohmann::json& data,
                                    bool update_maintext)
