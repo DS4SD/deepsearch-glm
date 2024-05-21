@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "deepsearch-glm"
-version = "0.18.4"
+version = "0.18.5"
 description = "Graph Language Models"
 authors = ["Peter Staar <taa@zurich.ibm.com>"]
 license = "MIT"
