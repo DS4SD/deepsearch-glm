@@ -38,6 +38,9 @@ isort = "^5.13.2"
 mypy = "^1.7.1"
 pre-commit = "2.17.0"
 pylint = "^3.0.3"
+cibuildwheel = "^2.19.2"
+wheel = "^0.43.0"
+delocate = "^0.11.0"
 
 [tool.black]
 line-length = 88

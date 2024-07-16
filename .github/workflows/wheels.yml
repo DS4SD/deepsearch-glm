@@ -64,27 +64,27 @@ jobs:
 
           # MacOS x86_64
 
-          - os: macos-13
+          - os: macos-14
             python: 38
             platform: macos
             platform_id: macosx_x86_64
 
-          - os: macos-13
+          - os: macos-14
             python: 39
             platform: macos
             platform_id: macosx_x86_64
 
-          - os: macos-13
+          - os: macos-14
             python: 310
             platform: macos
             platform_id: macosx_x86_64
 
-          - os: macos-13
+          - os: macos-14
             python: 311
             platform: macos
             platform_id: macosx_x86_64
 
-          - os: macos-13
+          - os: macos-14
             python: 312
             platform: macos
             platform_id: macosx_x86_64
@@ -149,37 +149,46 @@ jobs:
         with:
           python-version: '3.12'  # update once build dependencies are available
 
+      # - name: Install poetry
+      #   run: curl -sSL https://install.python-poetry.org | python3 -
       - name: Install poetry
-        run: curl -sSL https://install.python-poetry.org | python3 -
-
+        run: pipx install poetry==1.6.1
+        shell: bash
+  
       - name: Test poetry [macos]
         if: matrix.os == 'macos-latest'
         run: |
-          /Users/runner/.local/bin/poetry run python --version
+          poetry run python --version
 
       - name: Build wheels [macos-x86_64]
-        if: ${{matrix.os == 'macos-13' && matrix.platform_id == 'macosx_x86_64'}}
+        #if: ${{matrix.os == 'macos-12' && matrix.platform_id == 'macosx_x86_64'}}
+        if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_x86_64'}}
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
-          CIBW_ARCHS: x86_64 
+          CIBW_ARCHS: x86_64
+          CIBW_ARCHS_MACOS: x86_64
           CIBW_PLATFORM: macos
           CIBW_SKIP: "pp* *-musllinux_* *_i686* *_s390* *arm64*"
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           CIBW_BUILD_VERBOSITY: 3
+          CMAKE_OSX_ARCHITECTURES: x86_64
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: ""  # do not run delocate-wheel before the re-tag
           ARCHFLAGS: -arch x86_64
         run: |
-          /Users/runner/.local/bin/poetry run python --version
-          /Users/runner/.local/bin/poetry add cibuildwheel wheel
-          #/Users/runner/.local/bin/poetry install
+          poetry run python --version
+          poetry install
           cat ./pyproject.toml
-          /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
+          poetry run python -m cibuildwheel --output-dir wheelhouse
           echo "step 1"
           ls -l wheelhouse
-          /Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_14_0_x86_64 ./wheelhouse/*.whl
+          poetry run wheel tags --platform-tag macosx_14_0_x86_64 ./wheelhouse/*.whl
           rm ./wheelhouse/*arm64.whl
           echo "step 2"
           ls -l wheelhouse
-          /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
+          poetry run delocate-wheel --require-archs x86_64 -v ./wheelhouse/*.whl
+          echo "step 3"
+          ls -l wheelhouse
+          poetry run python -m zipfile --list wheelhouse/*.whl
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
 
@@ -187,7 +196,7 @@ jobs:
       # see note: https://cibuildwheel.readthedocs.io/en/stable/faq/
       # see here: https://gist.github.com/anderssonjohan/49f07e33fc5cb2420515a8ac76dc0c95#file-build-pendulum-wheels-yml-L39-L53
       - name: Build wheels [macos-arm64]
-        if: ${{matrix.os == 'macos-14' && matrix.platform_id == 'macosx_arm64'}}
+        if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_arm64'}}
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: arm64
@@ -198,22 +207,19 @@ jobs:
           CIBW_BUILD_VERBOSITY: 3
           ARCHFLAGS: -arch arm64
         run: |
-          /Users/runner/.local/bin/poetry run python --version
-          /Users/runner/.local/bin/poetry add cibuildwheel wheel
-          #/Users/runner/.local/bin/poetry install
+          poetry run python --version
+          poetry install
           cat ./pyproject.toml
-          /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
+          poetry run python -m cibuildwheel --output-dir wheelhouse
           echo "step 1"
           ls -l wheelhouse
-          #/Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_12_0_arm64 ./wheelhouse/*.whl
-          /Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_14_0_arm64 ./wheelhouse/*.whl
-          #/Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_12_0_arm64 ./wheelhouse/deepsearch_glm-0.12.2-cp${{matrix.python}}-cp${{matrix.python}}-macosx_12_0_x86_64.whl
+          poetry run wheel tags --platform-tag macosx_14_0_arm64 ./wheelhouse/*.whl
           echo "step 2"
           ls -l wheelhouse
           #rm ./wheelhouse/*x86_64.whl
           echo "step 3"
           ls -l wheelhouse
-          /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
+          poetry run python -m zipfile --list wheelhouse/*.whl
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
 
@@ -222,18 +228,18 @@ jobs:
         run: |
           ls -l ./
           ls -l ./dist
-          /Users/runner/.local/bin/poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+          poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       - name: publish wheels (on publishing) [macos]
         if: ${{ matrix.os == 'macos-latest' && startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls -l ./
           ls -l ./dist
-          /Users/runner/.local/bin/poetry publish --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+          poetry publish --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       - name: Test poetry [linux]
         if: matrix.os == 'ubuntu-latest'
-        run: /home/runner/.local/bin/poetry run python --version
+        run: poetry run python --version
 
       - name: Build wheels [linux]
         if: matrix.os == 'ubuntu-latest'
@@ -245,13 +251,12 @@ jobs:
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           CIBW_BUILD_VERBOSITY: 3
         run: |
-          /home/runner/.local/bin/poetry run python --version
-          /home/runner/.local/bin/poetry add cibuildwheel
-          #/home/runner/.local/bin/poetry install
+          poetry run python --version
+          poetry install
           cat ./pyproject.toml
-          /home/runner/.local/bin/poetry run python -m cibuildwheel --output-dir ./wheelhouse
+          poetry run python -m cibuildwheel --output-dir ./wheelhouse
           ls -l ./wheelhouse
-          /home/runner/.local/bin/poetry run python -m zipfile --list ./wheelhouse/*.whl
+          poetry run python -m zipfile --list ./wheelhouse/*.whl
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
 
@@ -260,7 +265,7 @@ jobs:
         run: |
           ls -l ./
           ls -l ./dist
-          /home/runner/.local/bin/poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+          poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
           #/home/runner/.local/bin/poetry publish --dry-run --build --no-interaction --skip-existing -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       - name: publish wheels (on publishing) [linux]
@@ -268,7 +273,7 @@ jobs:
         run: |
           ls -l ./
           ls -l ./dist
-          /home/runner/.local/bin/poetry publish --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+          poetry publish --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       #- uses: actions/upload-artifact@v4
       #  with:
