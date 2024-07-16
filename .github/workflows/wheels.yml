@@ -60,7 +60,7 @@ jobs:
       # - name: Install poetry
       #   run: curl -sSL https://install.python-poetry.org | python3 -
       - name: Install poetry
-        run: pipx install poetry==1.8.3
+        run: pipx install poetry==1.8.3 --python $(which python3)
         shell: bash
   
       - name: Test poetry
