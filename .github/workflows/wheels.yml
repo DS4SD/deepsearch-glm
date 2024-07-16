@@ -33,121 +33,36 @@ jobs:
       # list of github vm: https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
       fail-fast: false
       matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        # python: [38, 39, 310, 311, 312]
         include:
 
           # Linux 64 bit manylinux2014
 
           - os: ubuntu-latest
-            python: 38
-            platform: linux
-            platform_id: manylinux_x86_64
-
-          - os: ubuntu-latest
-            python: 39
-            platform: linux
-            platform_id: manylinux_x86_64
-
-          - os: ubuntu-latest
-            python: 310
-            platform: linux
-            platform_id: manylinux_x86_64
-
-          - os: ubuntu-latest
-            python: 311
-            platform: linux
-            platform_id: manylinux_x86_64
-
-          - os: ubuntu-latest
-            python: 312
             platform: linux
             platform_id: manylinux_x86_64
 
           # MacOS x86_64
 
           - os: macos-14
-            python: 38
-            platform: macos
-            platform_id: macosx_x86_64
-
-          - os: macos-14
-            python: 39
-            platform: macos
-            platform_id: macosx_x86_64
-
-          - os: macos-14
-            python: 310
-            platform: macos
-            platform_id: macosx_x86_64
-
-          - os: macos-14
-            python: 311
-            platform: macos
-            platform_id: macosx_x86_64
-
-          - os: macos-14
-            python: 312
             platform: macos
             platform_id: macosx_x86_64
 
           # MacOS arm64
 
           - os: macos-14
-            python: 38
             platform: macos
             platform_id: macosx_arm64
 
-          - os: macos-14
-            python: 39
-            platform: macos
-            platform_id: macosx_arm64
-
-          - os: macos-14
-            python: 310
-            platform: macos
-            platform_id: macosx_arm64
-
-          - os: macos-14
-            python: 311
-            platform: macos
-            platform_id: macosx_arm64
-
-          - os: macos-14
-            python: 312
-            platform: macos
-            platform_id: macosx_arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python 3.8
-        if: matrix.python == '38'
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.8'  # update once build dependencies are available
-
-      - name: Setup Python 3.9
-        if: matrix.python == '39'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.9'  # update once build dependencies are available
-
-      - name: Setup Python 3.10
-        if: matrix.python == '310'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'  # update once build dependencies are available
-
-      - name: Setup Python 3.11
-        if: matrix.python == '311'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'  # update once build dependencies are available
-
-      - name: Setup Python 3.12
-        if: matrix.python == '312'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'  # update once build dependencies are available
+          python-version: ${{ matrix.python-version }}
 
       # - name: Install poetry
       #   run: curl -sSL https://install.python-poetry.org | python3 -
@@ -159,11 +74,14 @@ jobs:
         run: |
           poetry run python --version
 
+      - name: Convert python-version to no-dot format
+        id: python_version
+        run: echo "::set-output name=python::${{ matrix.python-version//.}}"
+    
       - name: Build wheels [macos-x86_64]
-        #if: ${{matrix.os == 'macos-12' && matrix.platform_id == 'macosx_x86_64'}}
         if: ${{matrix.platform_id == 'macosx_x86_64'}}
         env:
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_BUILD: cp${{ matrix.python-version//.}}-${{ matrix.platform_id }}
           CIBW_ARCHS: x86_64
           CIBW_ARCHS_MACOS: x86_64
           CIBW_PLATFORM: macos
@@ -197,7 +115,7 @@ jobs:
       - name: Build wheels [macos-arm64]
         if: ${{matrix.platform_id == 'macosx_arm64'}}
         env:
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_BUILD: cp${{ steps.python_version.outputs.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: arm64
           CIBW_ARCHS_MACOS: arm64
           CIBW_PLATFORM: macos
@@ -240,7 +158,7 @@ jobs:
       - name: Build wheels [linux]
         if: matrix.os == 'ubuntu-latest'
         env:
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_BUILD: cp${{ steps.python_version.outputs.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: x86_64
           CIBW_PLATFORM: linux
           CIBW_SKIP: "pp* *musllinux_* *_i686* *_s390*"
