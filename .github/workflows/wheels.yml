@@ -152,7 +152,7 @@ jobs:
       # - name: Install poetry
       #   run: curl -sSL https://install.python-poetry.org | python3 -
       - name: Install poetry
-        run: pipx install poetry==1.6.1
+        run: pipx install poetry==1.8.3
         shell: bash
   
       - name: Test poetry
@@ -204,6 +204,7 @@ jobs:
           CIBW_SKIP: "pp* *-musllinux_* *_i686* *x86_64* *_s390*"
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           CIBW_BUILD_VERBOSITY: 3
+          CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET=14.0"
           ARCHFLAGS: -arch arm64
         run: |
           poetry run python --version
