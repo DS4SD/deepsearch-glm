@@ -64,54 +64,54 @@ jobs:
 
           # MacOS x86_64
 
-          - os: macos-latest # macos-12
+          - os: macos-13
             python: 38
             platform: macos
             platform_id: macosx_x86_64
 
-          - os: macos-latest # macos-12
+          - os: macos-13
             python: 39
             platform: macos
             platform_id: macosx_x86_64
 
-          - os: macos-latest # macos-12
+          - os: macos-13
             python: 310
             platform: macos
             platform_id: macosx_x86_64
 
-          - os: macos-latest # macos-12
+          - os: macos-13
             python: 311
             platform: macos
             platform_id: macosx_x86_64
 
-          - os: macos-latest # macos-12
+          - os: macos-13
             python: 312
             platform: macos
             platform_id: macosx_x86_64
 
           # MacOS arm64
 
-          - os: macos-latest
+          - os: macos-14
             python: 38
             platform: macos
             platform_id: macosx_arm64
 
-          - os: macos-latest
+          - os: macos-14
             python: 39
             platform: macos
             platform_id: macosx_arm64
 
-          - os: macos-latest
+          - os: macos-14
             python: 310
             platform: macos
             platform_id: macosx_arm64
 
-          - os: macos-latest
+          - os: macos-14
             python: 311
             platform: macos
             platform_id: macosx_arm64
 
-          - os: macos-latest
+          - os: macos-14
             python: 312
             platform: macos
             platform_id: macosx_arm64
@@ -158,8 +158,7 @@ jobs:
           /Users/runner/.local/bin/poetry run python --version
 
       - name: Build wheels [macos-x86_64]
-        #if: ${{matrix.os == 'macos-12' && matrix.platform_id == 'macosx_x86_64'}}
-        if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_x86_64'}}
+        if: ${{matrix.os == 'macos-13' && matrix.platform_id == 'macosx_x86_64'}}
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: x86_64 
@@ -188,7 +187,7 @@ jobs:
       # see note: https://cibuildwheel.readthedocs.io/en/stable/faq/
       # see here: https://gist.github.com/anderssonjohan/49f07e33fc5cb2420515a8ac76dc0c95#file-build-pendulum-wheels-yml-L39-L53
       - name: Build wheels [macos-arm64]
-        if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_arm64'}}
+        if: ${{matrix.os == 'macos-14' && matrix.platform_id == 'macosx_arm64'}}
         env:
           CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
           CIBW_ARCHS: arm64
