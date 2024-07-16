@@ -25,8 +25,8 @@ jobs:
 
   # Build the wheels for Linux, Windows and macOS for Python 3.x and newer
   build_wheels:
-    name: Build wheel for ${{ matrix.python-version }} ${{ matrix.platform_id }}
-    runs-on: ${{ matrix.os }}
+    name: Build wheel for ${{ matrix.python-version }} ${{ matrix.os.platform_id }}
+    runs-on: ${{ matrix.os.name }}
 
     strategy:
       # Ensure that a wheel builder finishes even if another fails
@@ -34,27 +34,19 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-        platform: ["linux", "macos"]
 
-        include:
+        os:
+          - name: "ubuntu-latest"
+            platform: "linux"
+            platform_id: "manylinux_x86_64"
 
-          # Linux 64 bit manylinux2014
+          - name: "macos-14"
+            platform: "macos"
+            platform_id: "macosx_x86_64"
 
-          - os: ubuntu-latest
-            platform: linux
-            platform_id: manylinux_x86_64
-
-          # MacOS x86_64
-
-          - os: macos-14
-            platform: macos
-            platform_id: macosx_x86_64
-
-          # MacOS arm64
-
-          - os: macos-14
-            platform: macos
-            platform_id: macosx_arm64
+          - name: "macos-14"
+            platform: "macos"
+            platform_id: "macosx_arm64"
 
     steps:
       - name: Checkout
@@ -82,9 +74,9 @@ jobs:
           echo "python_cp_version=$cp_version" >> $GITHUB_ENV
 
       - name: Build wheels [macos-x86_64]
-        if: ${{matrix.platform_id == 'macosx_x86_64'}}
+        if: ${{matrix.os.platform_id == 'macosx_x86_64'}}
         env:
-          CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.platform_id }}
+          CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.os.platform_id }}
           CIBW_ARCHS: x86_64
           CIBW_ARCHS_MACOS: x86_64
           CIBW_PLATFORM: macos
@@ -117,9 +109,9 @@ jobs:
       # see note: https://cibuildwheel.readthedocs.io/en/stable/faq/
       # see here: https://gist.github.com/anderssonjohan/49f07e33fc5cb2420515a8ac76dc0c95#file-build-pendulum-wheels-yml-L39-L53
       - name: Build wheels [macos-arm64]
-        if: ${{matrix.platform_id == 'macosx_arm64'}}
+        if: ${{matrix.os.platform_id == 'macosx_arm64'}}
         env:
-          CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.platform_id }}
+          CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.os.platform_id }}
           CIBW_ARCHS: arm64
           CIBW_ARCHS_MACOS: arm64
           CIBW_PLATFORM: macos
@@ -147,23 +139,23 @@ jobs:
           cp wheelhouse/*.whl ./dist/
 
       - name: publish wheels (dry run) [macos]
-        if: matrix.os == 'macos-latest'
+        if: matrix.os.platform == 'macos'
         run: |
           ls -l ./
           ls -l ./dist
           poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       - name: publish wheels (on publishing) [macos]
-        if: ${{ matrix.os == 'macos-latest' && startsWith(github.ref, 'refs/tags/') }}
+        if: ${{ matrix.os.platform == 'macos' && startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls -l ./
           ls -l ./dist
           poetry publish --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       - name: Build wheels [linux]
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os.name == 'ubuntu-latest'
         env:
-          CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.platform_id }}
+          CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.os.platform_id }}
           CIBW_ARCHS: x86_64
           CIBW_PLATFORM: linux
           CIBW_SKIP: "pp* *musllinux_* *_i686* *_s390*"
@@ -182,7 +174,7 @@ jobs:
           cp wheelhouse/*.whl ./dist/
 
       - name: publish wheels (dry run) [linux]
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os.platform == 'linux'
         run: |
           ls -l ./
           ls -l ./dist
@@ -190,7 +182,7 @@ jobs:
           #/home/runner/.local/bin/poetry publish --dry-run --build --no-interaction --skip-existing -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       - name: publish wheels (on publishing) [linux]
-        if: ${{ matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/') }}
+        if: ${{ matrix.os.platform == 'linux' && startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls -l ./
           ls -l ./dist
