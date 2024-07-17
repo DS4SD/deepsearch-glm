@@ -25,147 +25,96 @@ jobs:
 
   # Build the wheels for Linux, Windows and macOS for Python 3.x and newer
   build_wheels:
-    name: Build wheel for cp${{ matrix.python }}-${{ matrix.platform_id }}
-    runs-on: ${{ matrix.os }}
+    name: Build wheel for py${{ matrix.python-version }} ${{ matrix.os.platform_id }} ${{ matrix.os.macos_version }}
+    runs-on: ${{ matrix.os.name }}
 
     strategy:
       # Ensure that a wheel builder finishes even if another fails
       # list of github vm: https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
       fail-fast: false
       matrix:
-        include:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
-          # Linux 64 bit manylinux2014
+        os:
+          - name: "ubuntu-latest"
+            platform: "linux"
+            platform_id: "manylinux_x86_64"
 
-          - os: ubuntu-latest
-            python: 38
-            platform: linux
-            platform_id: manylinux_x86_64
+          - name: "macos-13"
+            platform: "macos"
+            macos_version: "13"
+            platform_id: "macosx_x86_64"
 
-          - os: ubuntu-latest
-            python: 39
-            platform: linux
-            platform_id: manylinux_x86_64
+          - name: "macos-13"
+            platform: "macos"
+            macos_version: "13"
+            platform_id: "macosx_arm64"
 
-          - os: ubuntu-latest
-            python: 310
-            platform: linux
-            platform_id: manylinux_x86_64
+          - name: "macos-14"
+            platform: "macos"
+            macos_version: "14"
+            platform_id: "macosx_x86_64"
 
-          - os: ubuntu-latest
-            python: 311
-            platform: linux
-            platform_id: manylinux_x86_64
+          - name: "macos-14"
+            platform: "macos"
+            macos_version: "14"
+            platform_id: "macosx_arm64"
 
-          # MacOS x86_64
-
-          - os: macos-latest # macos-12
-            python: 38
-            platform: macos
-            platform_id: macosx_x86_64
-
-          - os: macos-latest # macos-12
-            python: 39
-            platform: macos
-            platform_id: macosx_x86_64
-
-          - os: macos-latest # macos-12
-            python: 310
-            platform: macos
-            platform_id: macosx_x86_64
-
-          - os: macos-latest # macos-12
-            python: 311
-            platform: macos
-            platform_id: macosx_x86_64
-
-          # MacOS arm64
-
-          - os: macos-latest
-            python: 38
-            platform: macos
-            platform_id: macosx_arm64
-
-          - os: macos-latest
-            python: 39
-            platform: macos
-            platform_id: macosx_arm64
-
-          - os: macos-latest
-            python: 310
-            platform: macos
-            platform_id: macosx_arm64
-
-          - os: macos-latest
-            python: 311
-            platform: macos
-            platform_id: macosx_arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python 3.8
-        if: matrix.python == '38'
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.8'  # update once build dependencies are available
+          python-version: ${{ matrix.python-version }}
 
-      - name: Setup Python 3.9
-        if: matrix.python == '39'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.9'  # update once build dependencies are available
-
-      - name: Setup Python 3.10
-        if: matrix.python == '310'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'  # update once build dependencies are available
-
-      - name: Setup Python 3.11
-        if: matrix.python == '311'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'  # update once build dependencies are available
-
-      - name: Setup Python 3.12
-        if: matrix.python == '312'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'  # update once build dependencies are available
-
+      # - name: Install poetry
+      #   run: curl -sSL https://install.python-poetry.org | python3 -
       - name: Install poetry
-        run: curl -sSL https://install.python-poetry.org | python3 -
-
-      - name: Test poetry [macos]
-        if: matrix.os == 'macos-latest'
+        run: pipx install poetry==1.8.3 --python $(which python3)
+        shell: bash
+  
+      - name: Test poetry
         run: |
-          /Users/runner/.local/bin/poetry run python --version
+          poetry run python --version
+
+      - name: Convert python version to cpXYZ
+        run: |
+          version=${{ matrix.python-version }}
+          cp_version="cp${version//.}"
+          echo "python_cp_version=$cp_version" >> $GITHUB_ENV
 
       - name: Build wheels [macos-x86_64]
-        #if: ${{matrix.os == 'macos-12' && matrix.platform_id == 'macosx_x86_64'}}
-        if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_x86_64'}}
+        if: ${{matrix.os.platform_id == 'macosx_x86_64'}}
         env:
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
-          CIBW_ARCHS: x86_64 
+          CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.os.platform_id }}
+          CIBW_ARCHS: x86_64
+          CIBW_ARCHS_MACOS: x86_64
           CIBW_PLATFORM: macos
           CIBW_SKIP: "pp* *-musllinux_* *_i686* *_s390* *arm64*"
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           CIBW_BUILD_VERBOSITY: 3
+          CMAKE_OSX_ARCHITECTURES: x86_64
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: ""  # do not run delocate-wheel before the re-tag
+          CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET=${{ matrix.os.macos_version }}.0"
           ARCHFLAGS: -arch x86_64
         run: |
-          /Users/runner/.local/bin/poetry run python --version
-          /Users/runner/.local/bin/poetry add cibuildwheel wheel
-          #/Users/runner/.local/bin/poetry install
+          echo "Building wheel ${CIBW_BUILD}"
+          poetry run python --version
+          poetry install
           cat ./pyproject.toml
-          /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
+          poetry run python -m cibuildwheel --output-dir wheelhouse
           echo "step 1"
           ls -l wheelhouse
-          /Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_14_0_x86_64 ./wheelhouse/*.whl
-          rm ./wheelhouse/*arm64.whl
+          poetry run wheel tags --platform-tag macosx_${{ matrix.os.macos_version }}_0_x86_64 ./wheelhouse/*.whl
+          rm -f ./wheelhouse/*arm64.whl
           echo "step 2"
           ls -l wheelhouse
-          /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
+          poetry run delocate-wheel --require-archs x86_64 -v ./wheelhouse/*.whl
+          echo "step 3"
+          ls -l wheelhouse
+          poetry run python -m zipfile --list wheelhouse/*.whl
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
 
@@ -173,88 +122,87 @@ jobs:
       # see note: https://cibuildwheel.readthedocs.io/en/stable/faq/
       # see here: https://gist.github.com/anderssonjohan/49f07e33fc5cb2420515a8ac76dc0c95#file-build-pendulum-wheels-yml-L39-L53
       - name: Build wheels [macos-arm64]
-        if: ${{matrix.os == 'macos-latest' && matrix.platform_id == 'macosx_arm64'}}
+        if: ${{matrix.os.platform_id == 'macosx_arm64'}}
         env:
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.os.platform_id }}
           CIBW_ARCHS: arm64
           CIBW_ARCHS_MACOS: arm64
           CIBW_PLATFORM: macos
           CIBW_SKIP: "pp* *-musllinux_* *_i686* *x86_64* *_s390*"
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           CIBW_BUILD_VERBOSITY: 3
+          CMAKE_OSX_ARCHITECTURES: arm64
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: ""  # do not run delocate-wheel before the re-tag
+          CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET=${{ matrix.os.macos_version }}.0"
           ARCHFLAGS: -arch arm64
         run: |
-          /Users/runner/.local/bin/poetry run python --version
-          /Users/runner/.local/bin/poetry add cibuildwheel wheel
-          #/Users/runner/.local/bin/poetry install
+          echo "Building wheel ${CIBW_BUILD}"
+          poetry run python --version
+          poetry install
           cat ./pyproject.toml
-          /Users/runner/.local/bin/poetry run python -m cibuildwheel --output-dir wheelhouse
+          poetry run python -m cibuildwheel --output-dir wheelhouse
           echo "step 1"
           ls -l wheelhouse
-          #/Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_12_0_arm64 ./wheelhouse/*.whl
-          /Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_14_0_arm64 ./wheelhouse/*.whl
-          #/Users/runner/.local/bin/poetry run wheel tags --platform-tag macosx_12_0_arm64 ./wheelhouse/deepsearch_glm-0.12.2-cp${{matrix.python}}-cp${{matrix.python}}-macosx_12_0_x86_64.whl
+          poetry run wheel tags --platform-tag macosx_${{ matrix.os.macos_version }}_0_arm64 ./wheelhouse/*.whl
+          rm -f ./wheelhouse/*x86_64.whl
           echo "step 2"
           ls -l wheelhouse
-          #rm ./wheelhouse/*x86_64.whl
+          poetry run delocate-wheel --require-archs arm64 -v ./wheelhouse/*.whl
           echo "step 3"
           ls -l wheelhouse
-          /Users/runner/.local/bin/poetry run python -m zipfile --list wheelhouse/*.whl
+          poetry run python -m zipfile --list wheelhouse/*.whl
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
 
       - name: publish wheels (dry run) [macos]
-        if: matrix.os == 'macos-latest'
+        if: matrix.os.platform == 'macos'
         run: |
           ls -l ./
           ls -l ./dist
-          /Users/runner/.local/bin/poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+          poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       - name: publish wheels (on publishing) [macos]
-        if: ${{ matrix.os == 'macos-latest' && startsWith(github.ref, 'refs/tags/') }}
+        if: ${{ matrix.os.platform == 'macos' && startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls -l ./
           ls -l ./dist
-          /Users/runner/.local/bin/poetry publish --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
-
-      - name: Test poetry [linux]
-        if: matrix.os == 'ubuntu-latest'
-        run: /home/runner/.local/bin/poetry run python --version
+          poetry publish --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       - name: Build wheels [linux]
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os.name == 'ubuntu-latest'
         env:
-          CIBW_BUILD: cp${{ matrix.python }}-${{ matrix.platform_id }}
+          CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.os.platform_id }}
           CIBW_ARCHS: x86_64
           CIBW_PLATFORM: linux
           CIBW_SKIP: "pp* *musllinux_* *_i686* *_s390*"
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           CIBW_BUILD_VERBOSITY: 3
         run: |
-          /home/runner/.local/bin/poetry run python --version
-          /home/runner/.local/bin/poetry add cibuildwheel
-          #/home/runner/.local/bin/poetry install
+          echo "Building wheel ${CIBW_BUILD}"
+          poetry run python --version
+          poetry add cibuildwheel
+          # poetry install
           cat ./pyproject.toml
-          /home/runner/.local/bin/poetry run python -m cibuildwheel --output-dir ./wheelhouse
+          poetry run python -m cibuildwheel --output-dir ./wheelhouse
           ls -l ./wheelhouse
-          /home/runner/.local/bin/poetry run python -m zipfile --list ./wheelhouse/*.whl
+          poetry run python -m zipfile --list ./wheelhouse/*.whl
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
 
       - name: publish wheels (dry run) [linux]
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os.platform == 'linux'
         run: |
           ls -l ./
           ls -l ./dist
-          /home/runner/.local/bin/poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+          poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
           #/home/runner/.local/bin/poetry publish --dry-run --build --no-interaction --skip-existing -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       - name: publish wheels (on publishing) [linux]
-        if: ${{ matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/') }}
+        if: ${{ matrix.os.platform == 'linux' && startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls -l ./
           ls -l ./dist
-          /home/runner/.local/bin/poetry publish --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+          poetry publish --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
 
       #- uses: actions/upload-artifact@v4
       #  with:
