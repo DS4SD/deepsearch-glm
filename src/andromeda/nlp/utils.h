@@ -329,6 +329,10 @@ namespace andromeda
       {
 	model_names = utils::split(expr, ';');
       }
+    else if(expr.size()==0)
+      {
+	model_names = {};
+      }
     else
       {
 	model_names = {expr};
