@@ -37,7 +37,7 @@ jobs:
       run: poetry build
     - name: Testing
       run: |
-        poetry install --with test
+        poetry install --with test --all-extras
         #poetry run pytest ./tests/test_nlp.py -vvv -s
         poetry run pytest ./tests/test_structs.py -v
         poetry run pytest ./tests/test_nlp.py -v	

@@ -28,6 +28,7 @@ netwulf = "^0.1.5"
 python-dotenv = "^1.0.0"
 pybind11 = "^2.10.4"
 numerize = "^0.12"
+tqdm = "^4.64.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.2"

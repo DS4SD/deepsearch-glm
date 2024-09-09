@@ -103,7 +103,7 @@ jobs:
         run: |
           echo "Building wheel ${CIBW_BUILD}"
           poetry run python --version
-          poetry install
+          poetry install --all-extras
           cat ./pyproject.toml
           poetry run python -m cibuildwheel --output-dir wheelhouse
           echo "step 1"
@@ -140,7 +140,7 @@ jobs:
         run: |
           echo "Building wheel ${CIBW_BUILD}"
           poetry run python --version
-          poetry install
+          poetry install --all-extras
           cat ./pyproject.toml
           poetry run python -m cibuildwheel --output-dir wheelhouse
           echo "step 1"
