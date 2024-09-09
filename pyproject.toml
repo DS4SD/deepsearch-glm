@@ -95,6 +95,14 @@ module = "deepsearch_glm.andromeda_nlp.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
+module = "deepsearch_glm.andromeda_structs.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "deepsearch_glm.andromeda_glm.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
 module = "tabulate.*"
 ignore_missing_imports = true
 
