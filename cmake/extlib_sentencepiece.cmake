@@ -39,7 +39,8 @@ ExternalProject_Add(extlib_sentencepiece
 
     BUILD_IN_SOURCE ON
     LOG_DOWNLOAD ON
-    LOG_BUILD ON)
+    # LOG_BUILD ON
+)
 
 add_library(sentencepiece STATIC IMPORTED)
 set_target_properties(sentencepiece PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libsentencepiece.a)
