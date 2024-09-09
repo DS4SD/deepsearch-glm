@@ -9,13 +9,15 @@ import random
 import sys
 
 import pandas as pd
-import textColor as tc
 import tqdm
+from rich.console import Console
 from tabulate import tabulate
 
 from deepsearch_glm.andromeda_nlp import nlp_model
 from deepsearch_glm.nlp_utils import create_nlp_dir, init_nlp_model
 from deepsearch_glm.utils.ds_utils import ds_index_query
+
+console = Console()
 
 
 def parse_arguments():
@@ -231,15 +233,15 @@ def prepare_data_from_legacy_documents(doc):
             label = "text"
 
         if "title" in label:
-            print(tc.yellow(f"{label}, {type_}: {text[0:48]}"))
+            console.print(f"{label}, {type_}: {text[0:48]}", style="yellow")
         elif "meta" in label:
-            print(tc.green(f"\t{label}, {type_}: {text[0:48]}"))
+            console.print(f"\t{label}, {type_}: {text[0:48]}", style="green")
         elif "text" in label:
-            print(f"\t{label}, {type_}: {text[0:48]}")
+            console.print(f"\t{label}, {type_}: {text[0:48]}")
         elif "reference" in label:
-            print(tc.blue(f"\t{label}, {type_}: {text[0:48]}"))
+            console.print(f"\t{label}, {type_}: {text[0:48]}", style="blue")
         else:
-            print(tc.red(f"\t{label}, {type_}: {text[0:48]}"))
+            console.print(f"\t{label}, {type_}: {text[0:48]}", style="red")
 
         if random.random() < 0.9:
             training_sample = True
