@@ -12,11 +12,8 @@ import pandas as pd
 from tabulate import tabulate
 
 from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.utils.ds_utils import (
-    convert_pdffiles,
-    to_legacy_document_format,
-    to_xml_format,
-)
+from deepsearch_glm.utils.doc_utils import to_legacy_document_format, to_xml_format
+from deepsearch_glm.utils.ds_utils import convert_pdffiles
 
 
 def parse_arguments():

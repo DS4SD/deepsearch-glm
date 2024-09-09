@@ -18,7 +18,7 @@ import textColor as tc
 from tabulate import tabulate
 
 from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.utils.ds_utils import get_scratch_dir
+from deepsearch_glm.utils.common import get_scratch_dir
 
 # import andromeda_nlp
 

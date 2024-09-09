@@ -13,7 +13,7 @@ build = "build.py"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-deepsearch-toolkit = ">=0.31.0"
+deepsearch-toolkit = { version = ">=0.31.0", optional = true }
 textColor = "^3.0.1"
 tabulate = ">=0.8.9"
 numpy = [
@@ -42,6 +42,14 @@ cibuildwheel = "^2.19.2"
 wheel = "^0.43.0"
 delocate = "^0.11.0"
 
+[tool.poetry.extras]
+# MANUAL MAINTENANCE REQUIRED: for every change in the extras, "all" must be updated,
+# namely as the union of all extras' direct dependencies (since poetry currently does not
+# support recursive extras: https://github.com/python-poetry/poetry/issues/3369)
+
+toolkit = ["deepsearch-toolkit"]
+
+
 [tool.black]
 line-length = 88
 target-version = ["py38"]
@@ -59,7 +67,7 @@ py_version=38
 #known_first_party = ["cps"]
 
 [tool.mypy]
-plugins = ["pydantic.mypy"]
+# plugins = ["pydantic.mypy"]
 pretty = true
 # strict = true
 #no_implicit_optional = true
