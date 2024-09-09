@@ -91,6 +91,10 @@ disable_error_code = ["import-untyped"]
 #ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
+module = "deepsearch_glm.andromeda_nlp.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
 module = "tabulate.*"
 ignore_missing_imports = true
 
