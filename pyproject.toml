@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "deepsearch-glm"
-version = "0.20.0"
+version = "0.20.0"  # DO NOT EDIT, updated automatically
 description = "Graph Language Models"
 authors = ["Peter Staar <taa@zurich.ibm.com>"]
 license = "MIT"
@@ -25,10 +25,10 @@ matplotlib = "^3.7.1"
 networkx = "^3.1"
 netwulf = "^0.1.5"
 python-dotenv = "^1.0.0"
-pybind11 = "^2.10.4"
 numerize = "^0.12"
 tqdm = "^4.64.0"
 rich = "^13.7.0"
+docutils = "!=0.21"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.2"
@@ -39,6 +39,9 @@ isort = "^5.13.2"
 mypy = "^1.7.1"
 pre-commit = "2.17.0"
 pylint = "^3.0.3"
+python-semantic-release = "^7.32.2"
+
+[tool.poetry.group.build.dependencies]
 cibuildwheel = "^2.19.2"
 wheel = "^0.43.0"
 delocate = "^0.11.0"
@@ -88,6 +91,18 @@ disable_error_code = ["import-untyped"]
 #ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
+module = "deepsearch_glm.andromeda_nlp.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "deepsearch_glm.andromeda_structs.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "deepsearch_glm.andromeda_glm.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
 module = "tabulate.*"
 ignore_missing_imports = true
 
@@ -105,3 +120,16 @@ build-backend = "poetry.core.masonry.api"
 
 #[tool.poetry.build]
 #script = "build.py"
+
+[tool.semantic_release]
+# for default values check:
+# https://github.com/python-semantic-release/python-semantic-release/blob/v7.32.2/semantic_release/defaults.cfg
+
+version_source = "tag_only"
+branch = "main"
+
+# configure types which should trigger minor and patch version bumps respectively
+# (note that they must be a subset of the configured allowed types):
+parser_angular_allowed_types = "build,chore,ci,docs,feat,fix,perf,style,refactor,test"
+parser_angular_minor_types = "feat"
+parser_angular_patch_types = "fix,perf"

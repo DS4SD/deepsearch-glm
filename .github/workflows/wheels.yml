@@ -1,29 +1,10 @@
-# Workflow to build and test wheels
-name: Wheel builder
-
-# inspiration from `https://raw.githubusercontent.com/scikit-learn/scikit-learn/main/.github/workflows/wheels.yml`
-
 on:
-  schedule:
-    # Nightly build at 3:42 A.M.
-    - cron: "42 3 */1 * *"
-  push:
-    branches:
-      - main
-      # Release branches
-      - "[0-9]+.[0-9]+.X"
-  pull_request:
-    branches:
-      - main
-      - "[0-9]+.[0-9]+.X"
-  release:
-    types: [published]
-  # Manual run
-  # workflow_dispatch:
+  workflow_call:
+
+env:
+  CMAKE_BUILD_TYPE: Release
 
 jobs:
-
-  # Build the wheels for Linux, Windows and macOS for Python 3.x and newer
   build_wheels:
     name: Build wheel for py${{ matrix.python-version }} ${{ matrix.os.platform_id }} ${{ matrix.os.macos_version }}
     runs-on: ${{ matrix.os.name }}
@@ -33,7 +14,7 @@ jobs:
       # list of github vm: https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
 
         os:
           - name: "ubuntu-latest"
@@ -69,8 +50,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # - name: Install poetry
-      #   run: curl -sSL https://install.python-poetry.org | python3 -
       - name: Install poetry
         run: pipx install poetry==1.8.3 --python $(which python3)
         shell: bash
@@ -78,6 +57,12 @@ jobs:
       - name: Test poetry
         run: |
           poetry run python --version
+
+      - name: Setup pypi for poetry [for releases only]
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          poetry config keyring.enabled false
+          poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
 
       - name: Convert python version to cpXYZ
         run: |
@@ -92,8 +77,8 @@ jobs:
           CIBW_ARCHS: x86_64
           CIBW_ARCHS_MACOS: x86_64
           CIBW_PLATFORM: macos
-          CIBW_SKIP: "pp* *-musllinux_* *_i686* *_s390* *arm64*"
-          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
+          CIBW_SKIP: "pp* *-musllinux_* *_i686* *_s390* *arm64* *pypy*"
+          CIBW_PROJECT_REQUIRES_PYTHON: "~=${{ matrix.python-version }}.0"
           CIBW_BUILD_VERBOSITY: 3
           CMAKE_OSX_ARCHITECTURES: x86_64
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: ""  # do not run delocate-wheel before the re-tag
@@ -103,7 +88,7 @@ jobs:
         run: |
           echo "Building wheel ${CIBW_BUILD}"
           poetry run python --version
-          poetry install --all-extras
+          poetry install --no-root --only=build
           cat ./pyproject.toml
           poetry run python -m cibuildwheel --output-dir wheelhouse
           echo "step 1"
@@ -115,7 +100,10 @@ jobs:
           poetry run delocate-wheel --require-archs x86_64 -v ./wheelhouse/*.whl
           echo "step 3"
           ls -l wheelhouse
-          poetry run python -m zipfile --list wheelhouse/*.whl
+          for file in ./wheelhouse/*.whl; do
+            echo "Inspecting $file"
+            poetry run python -m zipfile --list "$file"
+          done
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
 
@@ -129,8 +117,8 @@ jobs:
           CIBW_ARCHS: arm64
           CIBW_ARCHS_MACOS: arm64
           CIBW_PLATFORM: macos
-          CIBW_SKIP: "pp* *-musllinux_* *_i686* *x86_64* *_s390*"
-          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
+          CIBW_SKIP: "pp* *-musllinux_* *_i686* *x86_64* *_s390* *pypy*"
+          CIBW_PROJECT_REQUIRES_PYTHON: "~=${{ matrix.python-version }}.0"
           CIBW_BUILD_VERBOSITY: 3
           CMAKE_OSX_ARCHITECTURES: arm64
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: ""  # do not run delocate-wheel before the re-tag
@@ -140,7 +128,7 @@ jobs:
         run: |
           echo "Building wheel ${CIBW_BUILD}"
           poetry run python --version
-          poetry install --all-extras
+          poetry install --no-root --only=build
           cat ./pyproject.toml
           poetry run python -m cibuildwheel --output-dir wheelhouse
           echo "step 1"
@@ -152,7 +140,10 @@ jobs:
           poetry run delocate-wheel --require-archs arm64 -v ./wheelhouse/*.whl
           echo "step 3"
           ls -l wheelhouse
-          poetry run python -m zipfile --list wheelhouse/*.whl
+          for file in ./wheelhouse/*.whl; do
+            echo "Inspecting $file"
+            poetry run python -m zipfile --list "$file"
+          done
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
 
@@ -161,21 +152,21 @@ jobs:
         run: |
           ls -l ./
           ls -l ./dist
-          poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+          poetry publish --dry-run --no-interaction -vvv
 
       - name: publish wheels (on publishing) [macos]
         if: ${{ matrix.os.platform == 'macos' && startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls -l ./
           ls -l ./dist
-          poetry publish --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+          poetry publish --no-interaction -vvv
 
       - name: Set up QEMU [linux]
         if: matrix.os.name == 'ubuntu-latest'
         uses: docker/setup-qemu-action@v3
         with:
             platforms: all
-  
+
       - name: Build wheels [linux]
         if: matrix.os.name == 'ubuntu-latest'
         env:
@@ -189,8 +180,7 @@ jobs:
         run: |
           echo "Building wheel ${CIBW_BUILD}"
           poetry run python --version
-          poetry add cibuildwheel
-          # poetry install
+          poetry install --no-root --only=build
           cat ./pyproject.toml
           poetry run python -m cibuildwheel --output-dir ./wheelhouse
           ls -l ./wheelhouse
@@ -206,16 +196,12 @@ jobs:
         run: |
           ls -l ./
           ls -l ./dist
-          poetry publish --dry-run --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
-          #/home/runner/.local/bin/poetry publish --dry-run --build --no-interaction --skip-existing -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+          poetry publish --dry-run --no-interaction -vvv
 
       - name: publish wheels (on publishing) [linux]
         if: ${{ matrix.os.platform == 'linux' && startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls -l ./
           ls -l ./dist
-          poetry publish --no-interaction -vvv --username=__token__ --password=${{ secrets.PYPI_TOKEN }}
+          poetry publish --no-interaction -vvv
 
-      #- uses: actions/upload-artifact@v4
-      #  with:
-      #    path: ./wheelhouse/*.whl
