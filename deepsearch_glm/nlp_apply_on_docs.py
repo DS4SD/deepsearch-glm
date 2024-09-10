@@ -155,6 +155,7 @@ def show_texts(doc_j, props):
 
     data = []
     for item in doc_j["texts"]:
+        label = ""
         selection = props[props["subj_hash"] == item["subj_hash"]]
         if len(selection) > 0:
             label = selection.iloc[0]["label"]
