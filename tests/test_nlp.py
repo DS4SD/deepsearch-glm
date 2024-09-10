@@ -23,7 +23,7 @@ from deepsearch_glm.nlp_utils import (
     train_fst,
     train_tok,
 )
-from deepsearch_glm.utils.ds_utils import to_legacy_document_format
+from deepsearch_glm.utils.doc_utils import to_legacy_document_format
 from deepsearch_glm.utils.load_pretrained_models import (  # load_pretrained_nlp_data,
     get_resources_dir,
     list_training_data,

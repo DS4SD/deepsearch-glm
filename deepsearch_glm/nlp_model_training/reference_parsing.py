@@ -11,8 +11,8 @@ import sys
 import time
 
 import pandas as pd
-import textColor as tc
 import tqdm
+from rich import Console
 from tabulate import tabulate
 
 # from deepsearch_glm.andromeda_nlp import nlp_model
@@ -23,6 +23,8 @@ from deepsearch_glm.nlp_utils import (
     train_crf,
 )
 from deepsearch_glm.utils.load_pretrained_models import get_resources_dir
+
+console = Console()
 
 
 def parse_arguments():
@@ -230,8 +232,8 @@ def parse_with_anystyle_api(anystyle, refs):
 
         return tmp
     except Exception as exc:
-        print(tc.red("could not call anystyle API endpoint ..."))
-        print(tc.yellow(f" -> error: {str(exc)}"))
+        console.print("could not call anystyle API endpoint ...", style="red")
+        console.print(f" -> error: {str(exc)}", style="yellow")
 
     if os.path.exists(tmpfile):
         os.remove(tmpfile)

@@ -14,7 +14,7 @@ import pandas as pd
 from tabulate import tabulate
 
 from deepsearch_glm.andromeda_glm import glm_model, glm_query
-from deepsearch_glm.utils.ds_utils import get_scratch_dir
+from deepsearch_glm.utils.common import get_scratch_dir
 
 
 def create_glm_dir():

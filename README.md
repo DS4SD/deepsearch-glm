@@ -139,7 +139,7 @@ To use the python interface, first make sure all dependencies are installed. We 
 for that. To install all the dependent python packages and get the python bindings, simply execute,
 
 ```sh
-poetry install
+poetry install --all-extras
 ```
 
 ### CXX compilation
@@ -161,6 +161,8 @@ cmake --build ./build -j
 
 ### NLP and GLM examples
 
+_Note: Some of the examples require to convert PDF documents with Deep Search. For this to run, it is required to install the [deepsearch-toolkit](https://github.com/DS4SD/deepsearch-toolkit) package. You can install it with `pip install deepsearch-glm[toolkit]`._
+
 To run the examples, simply do execute the scripts as `poetry run python <script> <input>`. Examples are,
 
 1. **apply NLP on document(s)**
@@ -177,6 +179,10 @@ poetry run python ./deepsearch_glm/glm_create_from_docs.py --pdf ./data/document
 ```
 
 ### Deep Search utilities
+
+To use the Deep Search capabilities, it is required to install the [deepsearch-toolkit](https://github.com/DS4SD/deepsearch-toolkit) package.
+You can install it with `pip install deepsearch-glm[toolkit]`.
+
 
 1. **Query and download document(s)**
 ```sh

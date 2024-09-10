@@ -14,13 +14,16 @@ import textwrap
 from typing import List
 
 import pandas as pd
-import textColor as tc
+from rich.console import Console
 from tabulate import tabulate
 
 from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.utils.ds_utils import get_scratch_dir
+from deepsearch_glm.utils.common import get_scratch_dir
 
 # import andromeda_nlp
+
+
+console = Console()
 
 
 def create_nlp_dir(tdir=None):
@@ -102,25 +105,28 @@ def print_key_on_shell(key, items):
             table.append(_)
 
         headers = ["type", "subtype", "subj_path", "char_i", "char_j", "original"]
-        print(tc.yellow(f"{key}: \n\n"), tabulate(table, headers=headers), "\n")
+        console.print(f"{key}: \n", style="yellow")
+        console.print(tabulate(table, headers=headers), "\n")
 
     else:
         df = pd.DataFrame(items["data"], columns=items["headers"])
 
-        print(tc.yellow(f"{key}: \n\n"), df.to_string(), "\n")
+        console.print(f"{key}: \n", style="yellow")
+        console.print(df.to_string(), "\n")
 
 
 def print_on_shell(text, result):
     """Function to print text on shell"""
 
     wrapper = textwrap.TextWrapper(width=70)
-    print(tc.yellow(f"\ntext: \n\n"), "\n".join(wrapper.wrap(text)), "\n")
+    console.print(f"\ntext: \n", style="yellow")
+    console.print("\n".join(wrapper.wrap(text)), "\n")
 
     for _ in ["properties", "word-tokens", "instances", "entities", "relations"]:
         if _ in result and len(result[_]["data"]) > 0:
             print_key_on_shell(_, result[_])
         else:
-            print(tc.yellow(f"{_}:"), " null\n\n")
+            console.print(f"[yellow]{_}:[/yellow]", " null\n\n")
 
 
 def extract_metadata_from_doc(doc):
