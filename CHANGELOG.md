@@ -1,3 +1,9 @@
+## [v0.21.1](https://github.com/DS4SD/deepsearch-glm/releases/tag/v0.21.1) - 2024-09-17
+
+### Fix
+
+* Propagate cell type ([#73](https://github.com/DS4SD/deepsearch-glm/issues/73)) ([`27c5852`](https://github.com/DS4SD/deepsearch-glm/commit/27c58526b68be4039d96f6f0001fa53b54e9f1ea))
+
 ## [v0.21.0](https://github.com/DS4SD/deepsearch-glm/releases/tag/v0.21.0) - 2024-09-10
 
 ### Feature
