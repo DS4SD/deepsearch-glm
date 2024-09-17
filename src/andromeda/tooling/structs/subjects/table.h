@@ -300,6 +300,12 @@ namespace andromeda
                     text = grid.at(i).at(j).at("text");
                   }
 
+                std::string type = "";
+                if (grid.at(i).at(j).count("type")==1)
+                  {
+                    type = grid.at(i).at(j).at("type").get<std::string>();
+                  }
+
 		std::array<float, 4> bbox = {0.0, 0.0, 0.0, 0.0};
 		if(grid.at(i).at(j).count("bbox")==1 and
 		   grid.at(i).at(j).at("bbox").is_array())
@@ -332,7 +338,7 @@ namespace andromeda
                       }
                   }
 
-                data.back().emplace_back(i, j, row_span, col_span, bbox, text);
+                data.back().emplace_back(i, j, row_span, col_span, bbox, type, text);
               }
           }
       }

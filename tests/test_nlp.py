@@ -536,12 +536,11 @@ def test_05A():
         with open(target_nlp, "w") as fw:
             fw.write(json.dumps(doc_j, indent=2))
 
-        """
         doc_i = to_legacy_document_format(doc_j, doc_i)
+        doc_i = round_floats(doc_i)
 
         with open(target_leg, "w") as fw:
             fw.write(json.dumps(doc_i, indent=2))
-        """
     else:
         with open(target_nlp, "r") as fr:
             doc_nlp = json.load(fr)

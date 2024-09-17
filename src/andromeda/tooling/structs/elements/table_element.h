@@ -23,6 +23,7 @@ namespace andromeda
 		  std::array<uint64_t,2> col_span,
 		  std::array<float, 4> bbox,
 		  //nlohmann::json bbox,
+      std::string type,
 		  std::string orig);
     
     nlohmann::json to_json();
@@ -65,9 +66,11 @@ namespace andromeda
 			       std::array<uint64_t,2> row_span,			       
 			       std::array<uint64_t,2> col_span,
 			       std::array<float, 4> bbox,
+             std::string type,
 			       std::string orig):
     text_element(),
     i(i), j(j),
+    type(type),
 
     row_span(row_span),
     col_span(col_span),
