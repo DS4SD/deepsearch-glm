@@ -1,6 +1,7 @@
 import re
 
 import pandas as pd
+from docling_core.types import DoclingDocument
 
 
 def resolve_item(paths, obj):
@@ -36,6 +37,8 @@ def resolve_item(paths, obj):
     else:
         return None
 
+def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
+    pass
 
 def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
     """Convert Document object (with `body`) to its legacy format (with `main-text`)"""
