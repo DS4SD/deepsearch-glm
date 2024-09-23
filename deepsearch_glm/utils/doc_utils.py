@@ -1,8 +1,8 @@
 import re
+from typing import List
 
 import pandas as pd
-from docling_core.types import DoclingDocument
-
+from docling_core.types.experimental.document import DoclingDocument, FileInfo, BaseFigureData, BaseTableData, TableCell
 
 def resolve_item(paths, obj):
     """Find item in document from a reference path"""
@@ -37,8 +37,229 @@ def resolve_item(paths, obj):
     else:
         return None
 
+
+def _flatten_table_grid(grid: List[List[dict]]) -> List[dict]:
+    unique_objects = []
+    seen_spans = set()
+
+    for sublist in grid:
+        for obj in sublist:
+            # Convert the spans list to a tuple of tuples for hashing
+            spans_tuple = tuple(tuple(span) for span in obj['spans'])
+            if spans_tuple not in seen_spans:
+                seen_spans.add(spans_tuple)
+                unique_objects.append(obj)
+
+    return unique_objects
+
 def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
-    return DoclingDocument(description={}, file_info={}) # TODO: Stub
+    doc: DoclingDocument = DoclingDocument(description={},
+                                           file_info=FileInfo(document_hash=doc_glm["file-info"]["document-hash"]))
+
+    if "properties" in doc_glm:
+        props = pd.DataFrame(
+            doc_glm["properties"]["data"], columns=doc_glm["properties"]["headers"]
+        )
+    else:
+        props = pd.DataFrame()
+
+    for pelem in doc_glm["page-elements"]:
+        ptype = pelem["type"]
+        span_i = pelem["span"][0]
+        span_j = pelem["span"][1]
+
+        if "iref" not in pelem:
+            # print(json.dumps(pelem, indent=2))
+            continue
+
+        iref = pelem["iref"]
+
+        if re.match("#/figures/(\\d+)/captions/(.+)", iref):
+            # print(f"skip {iref}")
+            continue
+
+        if re.match("#/tables/(\\d+)/captions/(.+)", iref):
+            # print(f"skip {iref}")
+            continue
+
+        path = iref.split("/")
+        obj = resolve_item(path, doc_glm)
+
+        if obj is None:
+            print(f"warning: undefined {path}")
+            continue
+
+        if ptype == "figure":
+            text = ""
+            caption_refs = []
+            for caption in obj["captions"]:
+                text += caption["text"]
+
+                for nprov in caption["prov"]:
+                    npaths = nprov["$ref"].split("/")
+                    nelem = resolve_item(npaths, doc_glm)
+
+                    if nelem is None:
+                        print(f"warning: undefined caption {npaths}")
+                        continue
+
+                    span_i = nelem["span"][0]
+                    span_j = nelem["span"][1]
+
+                    text = caption["text"][span_i:span_j]
+
+                    pitem = {
+                        "text": text,
+                        "name": nelem["name"],
+                        "type": nelem["type"],
+                        "prov": [
+                            {
+                                "bbox": nelem["bbox"],
+                                "page": nelem["page"],
+                                "span": [0, len(text)],
+                            }
+                        ],
+                    }
+                    doc_glm["page-elements"].remove(nelem)
+                    caption_obj = doc.add_paragraph(label="caption", text=text)
+                    caption_refs.append(caption_obj.get_ref())
+
+            figure = {
+                "confidence": obj.get("confidence", 0),
+                "created_by": obj.get("created_by", ""),
+                "type": obj.get("type", "figure"),
+                "cells": [],
+                "data": [],
+                "text": text,
+                "prov": [
+                    {
+                        "bbox": pelem["bbox"],
+                        "page": pelem["page"],
+                        "span": [0, len(text)],
+                    }
+                ],
+            }
+
+            fig = doc.add_figure(data=BaseFigureData())
+            fig.captions.extend(caption_refs)
+
+        elif ptype == "table":
+            text = ""
+            caption_refs = []
+            for caption in obj["captions"]:
+                text += caption["text"]
+
+                for nprov in caption["prov"]:
+                    npaths = nprov["$ref"].split("/")
+                    nelem = resolve_item(npaths, doc_glm)
+
+                    if nelem is None:
+                        print(f"warning: undefined caption {npaths}")
+                        continue
+
+                    span_i = nelem["span"][0]
+                    span_j = nelem["span"][1]
+
+                    text = caption["text"][span_i:span_j]
+
+                    pitem = {
+                        "text": text,
+                        "name": nelem["name"],
+                        "type": nelem["type"],
+                        "prov": [
+                            {
+                                "bbox": nelem["bbox"],
+                                "page": nelem["page"],
+                                "span": [0, len(text)],
+                            }
+                        ],
+                    }
+                    doc_glm["page-elements"].remove(nelem)
+                    caption_obj = doc.add_paragraph(label="caption", text=text)
+                    caption_refs.append(caption_obj.get_ref())
+
+
+            table = {
+                "#-cols": obj.get("#-cols", 0),
+                "#-rows": obj.get("#-rows", 0),
+                "confidence": obj.get("confidence", 0),
+                "created_by": obj.get("created_by", ""),
+                "type": obj.get("type", "table"),
+                "cells": [],
+                "data": obj["data"],
+                "text": text,
+                "prov": [
+                    {"bbox": pelem["bbox"], "page": pelem["page"], "span": [0, 0]}
+                ],
+            }
+
+            table_cells_glm = _flatten_table_grid(obj["data"])
+
+            table_cells = []
+            for tbl_cell_glm in table_cells_glm:
+                table_cells.append(
+                    TableCell(
+                        row_span=tbl_cell_glm["row-span"][1]-tbl_cell_glm["row-span"][0],
+                        col_span=tbl_cell_glm["col-span"][1]-tbl_cell_glm["col-span"][0],
+                        start_row_offset_idx=tbl_cell_glm["row-span"][0],
+                        end_row_offset_idx=tbl_cell_glm["row-span"][1],
+                        start_col_offset_idx=tbl_cell_glm["col-span"][0],
+                        end_col_offset_idx=tbl_cell_glm["col-span"][1],
+                        text=tbl_cell_glm["text"],
+                    ) # TODO: add "type" (col_header, row_header, body, ...)
+                )
+            """
+                row_span: int = 1
+                col_span: int = 1
+                start_row_offset_idx: int
+                end_row_offset_idx: int
+                start_col_offset_idx: int
+                end_col_offset_idx: int
+                text: str
+                column_header: bool = False
+                row_header: bool = False
+                row_section: bool = False
+            """
+            tbl_data = BaseTableData(num_rows=obj.get("#-rows", 0), num_cols=obj.get("#-cols", 0), table_cells=table_cells)
+            tbl = doc.add_table(data=tbl_data)
+            tbl.captions.extend(caption_refs)
+
+        elif "text" in obj:
+            text = obj["text"][span_i:span_j]
+
+            type_label = pelem["type"]
+            name_label = pelem["name"]
+            if update_name_label and len(props) > 0 and type_label == "paragraph":
+                prop = props[
+                    (props["type"] == "semantic") & (props["subj_path"] == iref)
+                    ]
+                if len(prop) == 1 and prop.iloc[0]["confidence"] > 0.85:
+                    name_label = prop.iloc[0]["label"]
+
+            pitem = {
+                "text": text,
+                "name": name_label,  # pelem["name"],
+                "type": type_label,  # pelem["type"],
+                "prov": [
+                    {
+                        "bbox": pelem["bbox"],
+                        "page": pelem["page"],
+                        "span": [0, len(text)],
+                    }
+                ],
+            }
+            doc.add_paragraph(label=name_label, text=text)
+
+        else:
+            pitem = {
+                "name": pelem["name"],
+                "type": pelem["type"],
+                "prov": [
+                    {"bbox": pelem["bbox"], "page": pelem["page"], "span": [0, 0]}
+                ],
+            }
+
+    return doc
 
 def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
     """Convert Document object (with `body`) to its legacy format (with `main-text`)"""
