@@ -2,7 +2,12 @@ import re
 from typing import List
 
 import pandas as pd
-from docling_core.types.experimental.document import DoclingDocument, FileInfo, BaseFigureData, BaseTableData, TableCell
+from docling_core.types.experimental.base import BoundingBox, CoordOrigin, Size
+from docling_core.types.experimental.document import DoclingDocument, FileInfo, BaseFigureData, BaseTableData, \
+    TableCell, ProvenanceItem, PageItem
+
+from docling_core.types.experimental.labels import PageLabel
+
 
 def resolve_item(paths, obj):
     """Find item in document from a reference path"""
@@ -121,7 +126,10 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                         ],
                     }
                     doc_glm["page-elements"].remove(nelem)
-                    caption_obj = doc.add_paragraph(label="caption", text=text)
+
+                    prov = ProvenanceItem(page_no=nelem["page"], charspan=tuple(nelem["span"]), bbox=BoundingBox.from_tuple(nelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
+
+                    caption_obj = doc.add_paragraph(label=PageLabel.CAPTION, text=text, prov=prov)
                     caption_refs.append(caption_obj.get_ref())
 
             figure = {
@@ -139,6 +147,9 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                     }
                 ],
             }
+
+            prov = ProvenanceItem(page_no=pelem["page"], charspan=(0, len(text)),
+                                  bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
 
             fig = doc.add_figure(data=BaseFigureData())
             fig.captions.extend(caption_refs)
@@ -175,7 +186,11 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                         ],
                     }
                     doc_glm["page-elements"].remove(nelem)
-                    caption_obj = doc.add_paragraph(label="caption", text=text)
+
+                    prov = ProvenanceItem(page_no=pelem["page"], charspan=nelem["span"],
+                                          bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
+
+                    caption_obj = doc.add_paragraph(label=PageLabel.CAPTION, text=text, prov=prov)
                     caption_refs.append(caption_obj.get_ref())
 
 
@@ -221,7 +236,11 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                 row_section: bool = False
             """
             tbl_data = BaseTableData(num_rows=obj.get("#-rows", 0), num_cols=obj.get("#-cols", 0), table_cells=table_cells)
-            tbl = doc.add_table(data=tbl_data)
+
+            prov = ProvenanceItem(page_no=pelem["page"], charspan=(0, 0),
+                                  bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
+
+            tbl = doc.add_table(data=tbl_data, prov=prov)
             tbl.captions.extend(caption_refs)
 
         elif "text" in obj:
@@ -248,7 +267,10 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                     }
                 ],
             }
-            doc.add_paragraph(label=name_label, text=text)
+            prov = ProvenanceItem(page_no=pelem["page"], charspan=(0, len(text)),
+                                  bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
+
+            doc.add_paragraph(label=PageLabel(name_label), text=text, prov=prov)
 
         else:
             pitem = {
@@ -258,6 +280,19 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                     {"bbox": pelem["bbox"], "page": pelem["page"], "span": [0, 0]}
                 ],
             }
+            # This branch should not be reachable.
+
+    page_to_hash = {
+        item["page"]: item["hash"]
+        for item in doc_glm["file-info"]["page-hashes"]
+    }
+
+    for page_dim in doc_glm["page-dimensions"]:
+        page_no = int(page_dim["page"])
+        size = Size(width=page_dim["width"], height=page_dim["height"])
+        hash = page_to_hash[page_no]
+
+        pitem = doc.add_page(page_no=page_no, size=size, hash=hash)
 
     return doc
 
