@@ -270,7 +270,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
             prov = ProvenanceItem(page_no=pelem["page"], charspan=(0, len(text)),
                                   bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
 
-            doc.add_paragraph(label=PageLabel(name_label), text=text, prov=prov)
+            doc.add_paragraph(label=DocItemLabel(name_label), text=text, prov=prov)
 
         else:
             pitem = {
