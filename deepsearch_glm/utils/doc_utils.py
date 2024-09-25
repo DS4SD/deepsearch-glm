@@ -59,7 +59,7 @@ def _flatten_table_grid(grid: List[List[dict]]) -> List[dict]:
 
 def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
     doc: DoclingDocument = DoclingDocument(description={},
-                                           file_info=FileInfo(document_hash=doc_glm["file-info"]["document-hash"]))
+                                           file_info=FileInfo(filename=doc_glm["file-info"]["filename"], document_hash=doc_glm["file-info"]["document-hash"]))
 
     if "properties" in doc_glm:
         props = pd.DataFrame(
@@ -299,6 +299,27 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
 def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
     """Convert Document object (with `body`) to its legacy format (with `main-text`)"""
 
+    reverse_label_mapping = {
+        DocItemLabel.CAPTION.value: "Caption",
+        DocItemLabel.FOOTNOTE.value: "Footnote",
+        DocItemLabel.FORMULA.value: "Formula",
+        DocItemLabel.LIST_ITEM.value: "List-item",
+        DocItemLabel.PAGE_FOOTER.value: "Page-footer",
+        DocItemLabel.PAGE_HEADER.value: "Page-header",
+        DocItemLabel.PICTURE.value: "Picture",  # low threshold adjust to capture chemical structures for examples.
+        DocItemLabel.SECTION_HEADER.value: "Section-header",
+        DocItemLabel.TABLE.value: "Table",
+        DocItemLabel.TEXT.value: "Text",
+        DocItemLabel.TITLE.value: "Title",
+        DocItemLabel.DOCUMENT_INDEX.value: "Document Index",
+        DocItemLabel.CODE.value: "Code",
+        DocItemLabel.CHECKBOX_SELECTED.value: "Checkbox-Selected",
+        DocItemLabel.CHECKBOX_UNSELECTED.value: "Checkbox-Unselected",
+        DocItemLabel.FORM.value: "Form",
+        DocItemLabel.KEY_VALUE_REGION.value: "Key-Value Region",
+        DocItemLabel.PARAGRAPH.value: "paragraph"
+    }
+
     doc_leg["main-text"] = []
     doc_leg["figures"] = []
     doc_leg["tables"] = []
@@ -360,7 +381,7 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
 
                     pitem = {
                         "text": text,
-                        "name": nelem["name"],
+                        "name": reverse_label_mapping[nelem["name"]],
                         "type": nelem["type"],
                         "prov": [
                             {
@@ -393,7 +414,7 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
 
             pitem = {
                 "$ref": f"#/figures/{find}",
-                "name": pelem["name"],
+                "name": reverse_label_mapping[pelem["name"]],
                 "type": pelem["type"],
             }
             doc_leg["main-text"].append(pitem)
@@ -418,7 +439,7 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
 
                     pitem = {
                         "text": text,
-                        "name": nelem["name"],
+                        "name": reverse_label_mapping[nelem["name"]],
                         "type": nelem["type"],
                         "prov": [
                             {
@@ -449,7 +470,7 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
 
             pitem = {
                 "$ref": f"#/tables/{tind}",
-                "name": pelem["name"],
+                "name": reverse_label_mapping[pelem["name"]],
                 "type": pelem["type"],
             }
             doc_leg["main-text"].append(pitem)
@@ -458,7 +479,7 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
             text = obj["text"][span_i:span_j]
 
             type_label = pelem["type"]
-            name_label = pelem["name"]
+            name_label = reverse_label_mapping[pelem["name"]]
             if update_name_label and len(props) > 0 and type_label == "paragraph":
                 prop = props[
                     (props["type"] == "semantic") & (props["subj_path"] == iref)
@@ -482,7 +503,7 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
 
         else:
             pitem = {
-                "name": pelem["name"],
+                "name": reverse_label_mapping[pelem["name"]],
                 "type": pelem["type"],
                 "prov": [
                     {"bbox": pelem["bbox"], "page": pelem["page"], "span": [0, 0]}

@@ -676,14 +676,13 @@ jsonref = "^1.1.0"
 jsonschema = "^4.16.0"
 pandas = "^2.2.2"
 pydantic = "^2.6.0"
-pydantic-extra-types = "^2.9.0"
 tabulate = "^0.9.0"
 
 [package.source]
 type = "git"
 url = "ssh://git@github.com/DS4SD/docling-core.git"
-reference = "b50d53c05bf755ddb73c7d33ececdb542877662a"
-resolved_reference = "b50d53c05bf755ddb73c7d33ececdb542877662a"
+reference = "ce0b7ee64750944e530d03a1cf22a75636fa2775"
+resolved_reference = "ce0b7ee64750944e530d03a1cf22a75636fa2775"
 
 [[package]]
 name = "docutils"
@@ -2133,28 +2132,6 @@ files = [
 typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
-name = "pydantic-extra-types"
-version = "2.9.0"
-description = "Extra Pydantic types."
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "pydantic_extra_types-2.9.0-py3-none-any.whl", hash = "sha256:f0bb975508572ba7bf3390b7337807588463b7248587e69f43b1ad7c797530d0"},
-    {file = "pydantic_extra_types-2.9.0.tar.gz", hash = "sha256:e061c01636188743bb69f368dcd391f327b8cfbfede2fe1cbb1211b06601ba3b"},
-]
-
-[package.dependencies]
-pydantic = ">=2.5.2"
-
-[package.extras]
-all = ["pendulum (>=3.0.0,<4.0.0)", "phonenumbers (>=8,<9)", "pycountry (>=23)", "python-ulid (>=1,<2)", "python-ulid (>=1,<3)", "pytz (>=2024.1)", "semver (>=3.0.2)", "tzdata (>=2024.1)"]
-pendulum = ["pendulum (>=3.0.0,<4.0.0)"]
-phonenumbers = ["phonenumbers (>=8,<9)"]
-pycountry = ["pycountry (>=23)"]
-python-ulid = ["python-ulid (>=1,<2)", "python-ulid (>=1,<3)"]
-semver = ["semver (>=3.0.2)"]
-
-[[package]]
 name = "pydantic-settings"
 version = "2.5.2"
 description = "Settings management using Pydantic"
@@ -3026,4 +3003,4 @@ toolkit = ["deepsearch-toolkit"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "c02e5606fbdde350f9651f5bcf0f2372b6b2a0e7f483606bfd76a80ecdbb9c09"
+content-hash = "3a6eb7c7cd371082ae860c804eb27ec09fa03d7cca64893f9ae88a2468fd8ef1"
