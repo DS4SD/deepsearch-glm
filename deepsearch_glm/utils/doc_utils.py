@@ -6,7 +6,7 @@ from docling_core.types.experimental.base import BoundingBox, CoordOrigin, Size
 from docling_core.types.experimental.document import DoclingDocument, FileInfo, BaseFigureData, BaseTableData, \
     TableCell, ProvenanceItem, PageItem
 
-from docling_core.types.experimental.labels import PageLabel
+from docling_core.types.experimental.labels import DocItemLabel
 
 
 def resolve_item(paths, obj):
@@ -129,7 +129,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
 
                     prov = ProvenanceItem(page_no=nelem["page"], charspan=tuple(nelem["span"]), bbox=BoundingBox.from_tuple(nelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
 
-                    caption_obj = doc.add_paragraph(label=PageLabel.CAPTION, text=text, prov=prov)
+                    caption_obj = doc.add_paragraph(label=DocItemLabel.CAPTION, text=text, prov=prov)
                     caption_refs.append(caption_obj.get_ref())
 
             figure = {
@@ -190,7 +190,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                     prov = ProvenanceItem(page_no=pelem["page"], charspan=nelem["span"],
                                           bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
 
-                    caption_obj = doc.add_paragraph(label=PageLabel.CAPTION, text=text, prov=prov)
+                    caption_obj = doc.add_paragraph(label=DocItemLabel.CAPTION, text=text, prov=prov)
                     caption_refs.append(caption_obj.get_ref())
 
 
