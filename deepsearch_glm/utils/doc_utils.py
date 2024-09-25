@@ -105,7 +105,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                     nelem = resolve_item(npaths, doc_glm)
 
                     if nelem is None:
-                        print(f"warning: undefined caption {npaths}")
+                        #print(f"warning: undefined caption {npaths}")
                         continue
 
                     span_i = nelem["span"][0]
@@ -113,18 +113,6 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
 
                     text = caption["text"][span_i:span_j]
 
-                    pitem = {
-                        "text": text,
-                        "name": nelem["name"],
-                        "type": nelem["type"],
-                        "prov": [
-                            {
-                                "bbox": nelem["bbox"],
-                                "page": nelem["page"],
-                                "span": [0, len(text)],
-                            }
-                        ],
-                    }
                     doc_glm["page-elements"].remove(nelem)
 
                     prov = ProvenanceItem(page_no=nelem["page"], charspan=tuple(nelem["span"]), bbox=BoundingBox.from_tuple(nelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
@@ -151,7 +139,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
             prov = ProvenanceItem(page_no=pelem["page"], charspan=(0, len(text)),
                                   bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
 
-            fig = doc.add_figure(data=BaseFigureData())
+            fig = doc.add_figure(data=BaseFigureData(), prov=prov)
             fig.captions.extend(caption_refs)
 
         elif ptype == "table":
@@ -165,7 +153,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                     nelem = resolve_item(npaths, doc_glm)
 
                     if nelem is None:
-                        print(f"warning: undefined caption {npaths}")
+                        #print(f"warning: undefined caption {npaths}")
                         continue
 
                     span_i = nelem["span"][0]
@@ -173,18 +161,6 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
 
                     text = caption["text"][span_i:span_j]
 
-                    pitem = {
-                        "text": text,
-                        "name": nelem["name"],
-                        "type": nelem["type"],
-                        "prov": [
-                            {
-                                "bbox": nelem["bbox"],
-                                "page": nelem["page"],
-                                "span": [0, len(text)],
-                            }
-                        ],
-                    }
                     doc_glm["page-elements"].remove(nelem)
 
                     prov = ProvenanceItem(page_no=pelem["page"], charspan=nelem["span"],
@@ -192,21 +168,6 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
 
                     caption_obj = doc.add_paragraph(label=DocItemLabel.CAPTION, text=text, prov=prov)
                     caption_refs.append(caption_obj.get_ref())
-
-
-            table = {
-                "#-cols": obj.get("#-cols", 0),
-                "#-rows": obj.get("#-rows", 0),
-                "confidence": obj.get("confidence", 0),
-                "created_by": obj.get("created_by", ""),
-                "type": obj.get("type", "table"),
-                "cells": [],
-                "data": obj["data"],
-                "text": text,
-                "prov": [
-                    {"bbox": pelem["bbox"], "page": pelem["page"], "span": [0, 0]}
-                ],
-            }
 
             table_cells_glm = _flatten_table_grid(obj["data"])
 
@@ -223,18 +184,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                         text=tbl_cell_glm["text"],
                     ) # TODO: add "type" (col_header, row_header, body, ...)
                 )
-            """
-                row_span: int = 1
-                col_span: int = 1
-                start_row_offset_idx: int
-                end_row_offset_idx: int
-                start_col_offset_idx: int
-                end_col_offset_idx: int
-                text: str
-                column_header: bool = False
-                row_header: bool = False
-                row_section: bool = False
-            """
+
             tbl_data = BaseTableData(num_rows=obj.get("#-rows", 0), num_cols=obj.get("#-cols", 0), table_cells=table_cells)
 
             prov = ProvenanceItem(page_no=pelem["page"], charspan=(0, 0),
@@ -255,31 +205,13 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                 if len(prop) == 1 and prop.iloc[0]["confidence"] > 0.85:
                     name_label = prop.iloc[0]["label"]
 
-            pitem = {
-                "text": text,
-                "name": name_label,  # pelem["name"],
-                "type": type_label,  # pelem["type"],
-                "prov": [
-                    {
-                        "bbox": pelem["bbox"],
-                        "page": pelem["page"],
-                        "span": [0, len(text)],
-                    }
-                ],
-            }
             prov = ProvenanceItem(page_no=pelem["page"], charspan=(0, len(text)),
                                   bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
 
             doc.add_paragraph(label=DocItemLabel(name_label), text=text, prov=prov)
 
         else:
-            pitem = {
-                "name": pelem["name"],
-                "type": pelem["type"],
-                "prov": [
-                    {"bbox": pelem["bbox"], "page": pelem["page"], "span": [0, 0]}
-                ],
-            }
+            pass
             # This branch should not be reachable.
 
     page_to_hash = {
@@ -292,7 +224,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
         size = Size(width=page_dim["width"], height=page_dim["height"])
         hash = page_to_hash[page_no]
 
-        pitem = doc.add_page(page_no=page_no, size=size, hash=hash)
+        doc.add_page(page_no=page_no, size=size, hash=hash)
 
     return doc
 
