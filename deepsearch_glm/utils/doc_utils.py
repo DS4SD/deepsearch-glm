@@ -1,12 +1,9 @@
 import re
+from pathlib import Path
 from typing import List
 
 import pandas as pd
-from docling_core.types.experimental.base import BoundingBox, CoordOrigin, Size
-from docling_core.types.experimental.document import DoclingDocument, FileInfo, BaseFigureData, BaseTableData, \
-    TableCell, ProvenanceItem, PageItem
-
-from docling_core.types.experimental.labels import DocItemLabel
+from docling_core.types.experimental import BoundingBox, CoordOrigin, Size, DoclingDocument, BasePictureData, BaseTableData, TableCell, ProvenanceItem, PageItem, DescriptionItem, DocItemLabel, DocumentOrigin
 
 
 def resolve_item(paths, obj):
@@ -58,8 +55,16 @@ def _flatten_table_grid(grid: List[List[dict]]) -> List[dict]:
     return unique_objects
 
 def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
-    doc: DoclingDocument = DoclingDocument(description={},
-                                           file_info=FileInfo(filename=doc_glm["file-info"]["filename"], document_hash=doc_glm["file-info"]["document-hash"]))
+    origin = DocumentOrigin(
+        mimetype = "application/pdf",
+        filename = doc_glm["file-info"]["filename"],
+        binary_hash=doc_glm["file-info"]["document-hash"]
+    )
+    doc_name = Path(origin.filename).stem
+
+    doc: DoclingDocument = DoclingDocument(name=doc_name,
+                                           description=DescriptionItem(),
+                                           origin=origin)
 
     if "properties" in doc_glm:
         props = pd.DataFrame(
@@ -117,7 +122,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
 
                     prov = ProvenanceItem(page_no=nelem["page"], charspan=tuple(nelem["span"]), bbox=BoundingBox.from_tuple(nelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
 
-                    caption_obj = doc.add_paragraph(label=DocItemLabel.CAPTION, text=text, prov=prov)
+                    caption_obj = doc.add_text(label=DocItemLabel.CAPTION, text=text, prov=prov)
                     caption_refs.append(caption_obj.get_ref())
 
             figure = {
@@ -139,8 +144,8 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
             prov = ProvenanceItem(page_no=pelem["page"], charspan=(0, len(text)),
                                   bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
 
-            fig = doc.add_figure(data=BaseFigureData(), prov=prov)
-            fig.captions.extend(caption_refs)
+            pic = doc.add_picture(data=BasePictureData(), prov=prov)
+            pic.captions.extend(caption_refs)
 
         elif ptype == "table":
             text = ""
@@ -166,7 +171,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                     prov = ProvenanceItem(page_no=pelem["page"], charspan=nelem["span"],
                                           bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
 
-                    caption_obj = doc.add_paragraph(label=DocItemLabel.CAPTION, text=text, prov=prov)
+                    caption_obj = doc.add_text(label=DocItemLabel.CAPTION, text=text, prov=prov)
                     caption_refs.append(caption_obj.get_ref())
 
             table_cells_glm = _flatten_table_grid(obj["data"])
@@ -208,23 +213,22 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
             prov = ProvenanceItem(page_no=pelem["page"], charspan=(0, len(text)),
                                   bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
 
-            doc.add_paragraph(label=DocItemLabel(name_label), text=text, prov=prov)
+            doc.add_text(label=DocItemLabel(name_label), text=text, prov=prov)
 
         else:
             pass
             # This branch should not be reachable.
 
-    page_to_hash = {
-        item["page"]: item["hash"]
-        for item in doc_glm["file-info"]["page-hashes"]
-    }
+    #page_to_hash = {
+    #    item["page"]: item["hash"]
+    #    for item in doc_glm["file-info"]["page-hashes"]
+    #}
 
     for page_dim in doc_glm["page-dimensions"]:
         page_no = int(page_dim["page"])
         size = Size(width=page_dim["width"], height=page_dim["height"])
-        hash = page_to_hash[page_no]
 
-        doc.add_page(page_no=page_no, size=size, hash=hash)
+        doc.add_page(page_no=page_no, size=size)
 
     return doc
 
