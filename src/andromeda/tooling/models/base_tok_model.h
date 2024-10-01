@@ -89,7 +89,9 @@ namespace andromeda
         model = std::make_shared<tok_model_type>();
       }
 
-    const auto status = model->Load(path.c_str());
+    // const auto status = model->Load(path.c_str());
+    const auto status = model->Load(path.string());
+
 
     if(!status.ok())
       {

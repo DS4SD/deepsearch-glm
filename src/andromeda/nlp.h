@@ -29,9 +29,12 @@ namespace andromeda
 	    ss << "nlp_" << mode << "_" << model << ".example.json"; 
 	
 	    std::filesystem::path filename = path / ss.str();
-	    LOG_S(INFO) << "writing " << filename.c_str();
+	    // LOG_S(INFO) << "writing " << filename.c_str();
+		LOG_S(INFO) << "writing " << filename.string();
+
 	
-	    std::ofstream ofs(filename.c_str());
+	    // std::ofstream ofs(filename.c_str());
+		std::ofstream ofs(filename);
 	    if(ofs.good())
 	      {
 		ofs << config.dump(4);
@@ -47,9 +50,11 @@ namespace andromeda
 	    ss << "nlp_" << mode << ".example.json"; 
 	
 	    std::filesystem::path filename = path / ss.str();
-	    LOG_S(INFO) << "writing " << filename.c_str();
+	    // LOG_S(INFO) << "writing " << filename.c_str();
+		LOG_S(INFO) << "writing " << filename.string();
 	
-	    std::ofstream ofs(filename.c_str());
+	    // std::ofstream ofs(filename.c_str());
+		std::ofstream ofs(filename);
 	    if(ofs.good())
 	      {
 		ofs << config.dump(4);

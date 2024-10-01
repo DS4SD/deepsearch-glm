@@ -6,7 +6,7 @@ include(ExternalProject)
 include(CMakeParseArguments)
 
 set(SENTENCEPIECE_URL https://github.com/google/sentencepiece.git)
-set(SENTENCEPIECE_TAG v0.1.99)
+set(SENTENCEPIECE_TAG v0.2.0)
 
 message(STATUS "extlib_sentencepiece cxx-flags: " ${CMAKE_CXX_FLAGS})
 

@@ -49,7 +49,9 @@ namespace andromeda
 	  processor = std::make_shared<sentencepiece::SentencePieceProcessor>();
 	}
       
-      const auto status = processor->Load(path.c_str());
+      // const auto status = processor->Load(path.c_str());
+      const auto status = processor->Load(path.string());
+
 
       if(!status.ok())
 	{

@@ -73,8 +73,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O0 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -g3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' -arch arm64")
 
-set(CMAKE_LIB_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ${ENV_ARCHFLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ${ENV_ARCHFLAGS}")
+#set(CMAKE_LIB_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ${ENV_ARCHFLAGS}")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ${ENV_ARCHFLAGS}")
+
+if (WIN32)
+    add_definitions(-DPCRE2_STATIC)
+    add_definitions(-DNOMINMAX)
+    add_definitions(-DROOT_PATH="\\\"${TOPLEVEL_PREFIX_PATH}\\\"")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 ${ENV_ARCHFLAGS}")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ${ENV_ARCHFLAGS}")
+endif()
 
 message(STATUS "cxx-compiler: " ${CMAKE_CXX_COMPILER})
 message(STATUS "cxx-flags   : " ${CMAKE_CXX_FLAGS})
@@ -163,7 +172,7 @@ include(FetchContent)
 FetchContent_Declare(pybind11
   FETCHCONTENT_BASE_DIR extlib_pybind11 
   GIT_REPOSITORY https://github.com/pybind/pybind11.git
-  GIT_TAG        v2.10.0
+  GIT_TAG        v2.13.5
   GIT_SHALLOW    TRUE
 )
 FetchContent_MakeAvailable(pybind11)
