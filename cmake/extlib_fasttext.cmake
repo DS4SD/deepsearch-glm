@@ -6,8 +6,10 @@ include(ExternalProject)
 include(CMakeParseArguments)
 
 #set(FASTTEXT_URL https://github.com/facebookresearch/fastText.git)
-set(FASTTEXT_URL https://github.com/PeterStaar-IBM/fastText.git)
 #set(FASTTEXT_TAG v0.9.2)
+
+set(FASTTEXT_URL https://github.com/PeterStaar-IBM/fastText.git)
+set(FASTTEXT_COMMIT_SHA 9d5b2a2b364f49ed2707ff3be48a0f1ba6d86022)
 
 set(CXX_FLAGS "${ENV_ARCHFLAGS} -O3")
 
