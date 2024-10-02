@@ -59,7 +59,7 @@ namespace andromeda
 
       return ss.str();
     }
-    
+
     std::string show_table(std::vector<std::vector<std::string> >& data,
                            std::stringstream& ss,
 			   std::size_t max_width=32,

@@ -63,7 +63,10 @@ namespace andromeda
     std::ifstream ifs(units_file.c_str());
     if (!ifs.is_open())
       {
-	LOG_S(ERROR) << "Failed to open file: " << units_file.c_str();
+	// LOG_S(ERROR) << "Failed to open file: " << units_file.c_str();
+	LOG_S(ERROR) << "Failed to open file: " << units_file.string();
+
+	
 	return false;
       }
 
@@ -106,7 +109,8 @@ namespace andromeda
 	  }
 	catch (const std::exception& e)
 	  {
-	    LOG_S(ERROR) << "Failed to parse JSON: " << e.what();
+	    // LOG_S(ERROR) << "Failed to parse JSON: " << e.what();
+		LOG_S(ERROR) << "Failed to parse JSON: " << std::string(e.what());
 	    continue;
 	  }
 

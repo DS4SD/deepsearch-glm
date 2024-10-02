@@ -7,7 +7,9 @@ license = "MIT"
 readme = "README.md"
 packages = [{include = "deepsearch_glm"}]
 include = [
-    {path = "deepsearch_glm/*.so", format = "wheel"}
+    {path = "deepsearch_glm/*.so", format = "wheel"},
+    {path = "deepsearch_glm/*.pyd", format = "wheel"},
+    {path = "deepsearch_glm/*.dll", format = "wheel"}
 ]
 build = "build.py"
 
@@ -29,6 +31,7 @@ numerize = "^0.12"
 tqdm = "^4.64.0"
 rich = "^13.7.0"
 docutils = "!=0.21"
+pywin32 = { version = "^306", markers = "sys_platform == 'win32'" }
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.2"

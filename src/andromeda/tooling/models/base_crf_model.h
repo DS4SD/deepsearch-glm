@@ -93,7 +93,8 @@ namespace andromeda
         model = std::make_shared<crf_model_type>();
       }
 
-    bool success = model->load_from_file(ifile, verbose);
+    // bool success = model->load_from_file(ifile, verbose);
+    bool success = model->load_from_file(ifile.string(), verbose);
 
     if(success)
       {
@@ -125,7 +126,8 @@ namespace andromeda
   {
     if(model!=NULL)
       {
-        return model->save_to_file(ofile);
+        // return model->save_to_file(ofile);
+        return model->save_to_file(ofile.string());
       }
 
     return false;

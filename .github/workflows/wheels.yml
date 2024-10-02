@@ -41,6 +41,10 @@ jobs:
             macos_version: "14"
             platform_id: "macosx_arm64"
 
+          - name: "windows-latest"
+            platform: "windows"
+            platform_id: "win_amd64"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,27 +53,35 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Install poetry
-        run: pipx install poetry==1.8.3 --python $(which python3)
-        shell: bash
   
-      - name: Test poetry
+      - name: Install Poetry
+        run: python -m pip install poetry==1.8.3
+
+      - name: Set up custom PATH and set py version to cpXYZ [windows]
+        if: ${{matrix.os.platform_id == 'win_amd64'}}
+        shell: pwsh
         run: |
-          poetry run python --version
+          echo "C:\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "C:\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "C:\Users\runneradmin\.local\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "C:\nasm" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          $version = "${{ matrix.python-version }}"
+          $cp_version = "cp$($version -replace '\.', '')"
+          Add-Content -Path $env:GITHUB_ENV -Value "python_cp_version=$cp_version"
+
+      - name: Convert python version to cpXYZ
+        if: ${{matrix.os.platform_id != 'win_amd64'}}
+        run: |
+          version=${{ matrix.python-version }}
+          cp_version="cp${version//.}"
+          echo "python_cp_version=$cp_version" >> $GITHUB_ENV
 
       - name: Setup pypi for poetry [for releases only]
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           poetry config keyring.enabled false
           poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
-
-      - name: Convert python version to cpXYZ
-        run: |
-          version=${{ matrix.python-version }}
-          cp_version="cp${version//.}"
-          echo "python_cp_version=$cp_version" >> $GITHUB_ENV
-
+          
       - name: Build wheels [macos-x86_64]
         if: ${{matrix.os.platform_id == 'macosx_x86_64'}}
         env:
@@ -147,20 +159,6 @@ jobs:
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
 
-      - name: publish wheels (dry run) [macos]
-        if: matrix.os.platform == 'macos'
-        run: |
-          ls -l ./
-          ls -l ./dist
-          poetry publish --dry-run --no-interaction -vvv
-
-      - name: publish wheels (on publishing) [macos]
-        if: ${{ matrix.os.platform == 'macos' && startsWith(github.ref, 'refs/tags/') }}
-        run: |
-          ls -l ./
-          ls -l ./dist
-          poetry publish --no-interaction -vvv
-
       - name: Set up QEMU [linux]
         if: matrix.os.name == 'ubuntu-latest'
         uses: docker/setup-qemu-action@v3
@@ -191,17 +189,58 @@ jobs:
           mkdir ./dist
           cp wheelhouse/*.whl ./dist/
 
-      - name: publish wheels (dry run) [linux]
-        if: matrix.os.platform == 'linux'
+      - name: Set up MSYS2
+        if: ${{matrix.os.platform_id == 'win_amd64'}}
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-gcc-libs
+
+      - name: Set up external-libs [windows]
+        if: ${{matrix.os.platform_id == 'win_amd64'}}
+        shell: pwsh
         run: |
-          ls -l ./
-          ls -l ./dist
+          Copy-Item -Path "C:/mingw64/bin/libgcc_s_seh-1.dll" -Destination ".\deepsearch_glm"
+          Copy-Item -Path "C:/mingw64/bin/libstdc++-6.dll" -Destination ".\deepsearch_glm"
+          Copy-Item -Path "C:/mingw64/bin/libwinpthread-1.dll" -Destination ".\deepsearch_glm"
+
+      - name: Build wheels
+        if: ${{matrix.os.platform_id == 'win_amd64'}}
+        env:
+          CIBW_PLATFORM: windows
+          CIBW_BUILD_VERBOSITY: 3
+          CIBW_ARCHS: AMD64
+          CIBW_PROJECT_REQUIRES_PYTHON: "~=${{ matrix.python-version }}.0"
+          PKG_CONFIG_PATH: "C:/msys64/usr/lib/pkgconfig"
+          PKG_CONFIG_EXECUTABLE: "C:/mingw64/bin/pkg-config.exe"
+          CMAKE_PREFIX_PATH: "C:/msys64/mingw64;C:/mingw64"
+          CMAKE_LIBRARY_PATH: "C:/msys64/mingw64/lib;C:/mingw64/lib"
+          CMAKE_INCLUDE_PATH: "C:/msys64/mingw64/include;C:/mingw64/include"
+          CMAKE_GENERATOR: "MSYS Makefiles"
+          BUILD_THREADS: 1
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force "C:\Strawberry\"
+          poetry install --no-interaction --no-root --only=build
+          poetry run python -m cibuildwheel --output-dir .\wheelhouse
+          Get-ChildItem -Path .\wheelhouse -Filter *.whl | Format-List
+          Get-ChildItem -Path .\wheelhouse -Filter *.whl | ForEach-Object {
+              $file = $_.FullName
+              Write-Output "Inspecting $file"
+              poetry run python -m zipfile --list "$file"
+          }
+          if (-not (Test-Path -Path .\dist)) {
+              New-Item -Path .\dist -ItemType Directory
+          }
+          Copy-Item -Path .\wheelhouse\*.whl -Destination .\dist\
+
+      - name: publish wheels (dry run)
+        run: |
           poetry publish --dry-run --no-interaction -vvv
 
-      - name: publish wheels (on publishing) [linux]
-        if: ${{ matrix.os.platform == 'linux' && startsWith(github.ref, 'refs/tags/') }}
+      - name: publish wheels (on publishing) [for releases only]
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
-          ls -l ./
-          ls -l ./dist
           poetry publish --no-interaction -vvv
-

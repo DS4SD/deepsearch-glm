@@ -52,7 +52,8 @@ namespace andromeda_crf
   
   predicter::predicter(std::filesystem::path model_file,
                        std::string tokenizer_mode, bool verbose):
-    model_file(model_file),
+    // model_file(model_file),
+    model_file(model_file.string()),
     tokenizer_mode(tokenizer_mode),
 
     model(NULL)
