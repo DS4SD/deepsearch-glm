@@ -1,49 +1,71 @@
 #!/usr/bin/env python
 
 import os
-import re
 
 import sys
 
-import json
-import glob
-
-import argparse
 import subprocess
+from typing import List
+import pybind11
 
-from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
+ROOT_DIR = os.path.abspath("./")
+BUILD_DIR = os.path.join(ROOT_DIR, "build")
 
-ROOT_DIR=os.path.abspath("./")
-BUILD_DIR=os.path.join(ROOT_DIR, "build")
+def get_pybind11_cmake_args():
+        pybind11_sys_path = os.getenv("PYBIND11_SYSPATH")
+        if pybind11_sys_path:
+            # pybind11_include_dir = os.path.join(pybind11_sys_path, "include")
+            pybind11_cmake_dir = os.path.join(pybind11_sys_path, "share", "cmake", "pybind11")
+        else:
+            # pybind11_include_dir = pybind11.get_include()
+            pybind11_cmake_dir = pybind11.get_cmake_dir()
+        # print(f"{pybind11_include_dir=}")
+        print(f"{pybind11_cmake_dir=}")
+        return [f"-Dpybind11_DIR={pybind11_cmake_dir}"]
 
-def run(cmd, cwd="./"):
+def run(cmd: List[str], cwd: str="./"):
 
-    print(f"\nlaunch: {cmd}")
-    
-    parts = cmd.split(" ")
-    message = subprocess.run(parts, cwd=cwd)    
+    print_cmd = " ".join(cmd)
+    print(f"\nlaunch: {print_cmd}")
+
+    message = subprocess.run(cmd, cwd=cwd)
 
     if "returncode=0" in str(message):
         print(f" -> SUCCESS")
         return True
 
-    print(f" -> ERROR with message: '{message}'\n")        
+    print(f" -> ERROR with message: '{message}'\n")
     return False
-    
-def build_local(num_threads: int):
-    
-    if not os.path.exists(BUILD_DIR):
-        print("python executable: ", sys.executable)
-        
-        cmd = f"cmake -B {BUILD_DIR} -DPYTHON_EXECUTABLE={sys.executable}"
-        run(cmd, cwd=ROOT_DIR)
-    else:
-        print(f"build directory detected: {BUILD_DIR}")
 
-    cmd = f"cmake --build {BUILD_DIR} --target install"
+
+def build_local(num_threads: int):
+
+    USE_SYSTEM_DEPS = os.getenv("USE_SYSTEM_DEPS", "OFF")
+
+
+    print("python prefix: ", sys.exec_prefix)
+    print("python executable: ", sys.executable)
+    config_cmd = [
+        "cmake",
+        "-B", f"{BUILD_DIR}",
+        f"-DUSE_SYSTEM_DEPS={USE_SYSTEM_DEPS}",
+        f"-DPYTHON_EXECUTABLE={sys.executable}",
+    ]
+    config_cmd.extend(get_pybind11_cmake_args())
+    success = run(config_cmd, cwd=ROOT_DIR)
+    if not success:
+        raise RuntimeError("Error building.")
+
+    build_cmd = [
+        "cmake",
+        "--build", f"{BUILD_DIR}",
+        "--target=install",
+    ]
     if num_threads > 1:
-        cmd += f" -j {num_threads}"
-    run(cmd, cwd=ROOT_DIR)    
+        build_cmd.extend(["-j", f"{num_threads}"])
+    success = run(build_cmd, cwd=ROOT_DIR)
+    if not success:
+        raise RuntimeError("Error building.")
 
 
 if "__main__" == __name__:

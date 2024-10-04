@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.12..3.26)
 
 project(andromeda VERSION 1.0.0 LANGUAGES CXX C)
 
@@ -90,47 +90,54 @@ message(STATUS "cxx-flags   : " ${CMAKE_CXX_FLAGS})
 message(STATUS "cxx-standard: " ${CMAKE_CXX_STANDARD})
 
 # ************************
-# *** libraries        ***
+# *** dependencies     ***
 # ************************
 
-if(NOT EXISTS ${EXTERNALS_PREFIX_PATH})
-  execute_process(COMMAND mkdir ${EXTERNALS_PREFIX_PATH})
-  execute_process(COMMAND mkdir ${EXTERNALS_PREFIX_PATH}/lib)
-  execute_process(COMMAND mkdir ${EXTERNALS_PREFIX_PATH}/bin)
-  execute_process(COMMAND mkdir ${EXTERNALS_PREFIX_PATH}/include)
-  execute_process(COMMAND mkdir ${EXTERNALS_PREFIX_PATH}/resources)
+option(USE_SYSTEM_DEPS OFF "If enabled, the build will find and link to system dependencies, otherwise they are sourced from the original repos and compiled on the fly.")
+
+# prepare setup for building external packages
+if(NOT USE_SYSTEM_DEPS)
+    if(NOT EXISTS ${EXTERNALS_PREFIX_PATH})
+        file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH})
+        file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH}/bin)
+        file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH}/lib)
+        file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH}/include)
+        file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH}/resources)
+    endif()
 endif()
 
-include(cmake/subdirlist.cmake)
 
+# include dependencies
 include(cmake/extlib_fmt.cmake)
 include(cmake/extlib_json.cmake)
-#include(cmake/extlib_json_schema.cmake)
 include(cmake/extlib_loguru.cmake)
 include(cmake/extlib_cxxopts.cmake)
 include(cmake/extlib_pcre2.cmake)
 include(cmake/extlib_fasttext.cmake)
-#include(cmake/extlib_utf8.svn.cmake)
 include(cmake/extlib_utf8.git.cmake)
-include(cmake/extlib_pybind11.cmake)
 include(cmake/extlib_sentencepiece.cmake)
 
+# aggregate the targets created by the dependencies
+set(DEPENDENCIES fmt json loguru cxxopts pcre2 fasttext utf8 sentencepiece sentencepiece_train)
+
+# ************************
+# *** libraries        ***
+# ************************
+
+# define LIB_LINK and OS_DEPENDENCIES
 include(cmake/os_opts.cmake)
+list(APPEND DEPENDENCIES ${OS_DEPENDENCIES})
 
 # ***********************
 # ***  includes       ***
 # ***********************
 
-include_directories(${EXTERNALS_PREFIX_PATH}/include)
-
-subdirlist(EXTERNALS_INCLUDES ${EXTERNALS_PREFIX_PATH}/include)	
-include_directories(${EXTERNALS_INCLUDES})
-
-message(STATUS "subdirs: " ${SUBDIRS})
-
+# define subdirlist utility
+include(cmake/subdirlist.cmake)
 include_directories(${TOPLEVEL_PREFIX_PATH}/src)
 
 subdirlist(SUBDIRS ${TOPLEVEL_PREFIX_PATH}/src)
+message(STATUS "subdirs: " ${SUBDIRS})
 include_directories(${SUBDIRS})
 
 # **********************
@@ -143,50 +150,54 @@ add_executable(glm.exe "${TOPLEVEL_PREFIX_PATH}/app/glm.cpp")
 set_property(TARGET nlp.exe PROPERTY CXX_STANDARD 20)
 set_property(TARGET glm.exe PROPERTY CXX_STANDARD 20)
 
-target_link_libraries(nlp.exe ${LIB_LINK})
-target_link_libraries(glm.exe ${LIB_LINK})
+add_dependencies(nlp.exe ${DEPENDENCIES})
+target_include_directories(nlp.exe INTERFACE ${DEPENDENCIES})
+target_link_libraries(nlp.exe ${DEPENDENCIES} ${LIB_LINK})
+
+add_dependencies(glm.exe ${DEPENDENCIES})
+target_include_directories(glm.exe INTERFACE ${DEPENDENCIES})
+target_link_libraries(glm.exe ${DEPENDENCIES} ${LIB_LINK})
 
 # **********************
 # ***  Libraries     ***
 # **********************
 
 add_library(nlp STATIC "${TOPLEVEL_PREFIX_PATH}/app/nlp.cpp")
-add_library(glm STATIC "${TOPLEVEL_PREFIX_PATH}/app/glm.cpp")
-
+add_dependencies(nlp ${DEPENDENCIES})
+target_include_directories(nlp INTERFACE ${DEPENDENCIES})
 set_target_properties(nlp PROPERTIES POSITION_INDEPENDENT_CODE ON)
-set_target_properties(glm PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(nlp ${DEPENDENCIES} ${LIB_LINK})
 
-target_link_libraries(nlp ${LIB_LINK})
-target_link_libraries(glm ${LIB_LINK})
+add_library(glm STATIC "${TOPLEVEL_PREFIX_PATH}/app/glm.cpp")
+add_dependencies(glm ${DEPENDENCIES})
+target_include_directories(glm INTERFACE ${DEPENDENCIES})
+set_target_properties(glm PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(glm ${DEPENDENCIES} ${LIB_LINK})
 
 # ***************************
 # ***  Python-binding     ***
 # ***************************
 
-# inspiration from
-# 1. https://github.com/pybind/cmake_example/blob/master/CMakeLists.txt`
-# 2. https://blog.devgenius.io/calling-python-and-c-code-using-pybind-99ab7fefa685
-# 3. https://github.com/pybind/cmake_example/issues/11
-
-include(FetchContent)
-FetchContent_Declare(pybind11
-  FETCHCONTENT_BASE_DIR extlib_pybind11 
-  GIT_REPOSITORY https://github.com/pybind/pybind11.git
-  GIT_TAG        v2.13.5
-  GIT_SHALLOW    TRUE
-)
-FetchContent_MakeAvailable(pybind11)
+# https://pybind11.readthedocs.io/en/stable/compiling.html#configuration-variables
+find_package(pybind11 CONFIG REQUIRED)
 
 pybind11_add_module(andromeda_structs "${TOPLEVEL_PREFIX_PATH}/app/pybind_structs.cpp")
 pybind11_add_module(andromeda_nlp "${TOPLEVEL_PREFIX_PATH}/app/pybind_nlp.cpp")
 pybind11_add_module(andromeda_glm "${TOPLEVEL_PREFIX_PATH}/app/pybind_glm.cpp")
 
-target_compile_definitions(andromeda_structs PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
-target_compile_definitions(andromeda_nlp PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
-target_compile_definitions(andromeda_glm PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
-
+add_dependencies(andromeda_structs nlp)
+target_include_directories(andromeda_structs INTERFACE ${DEPENDENCIES})
+target_compile_definitions(andromeda_structs PRIVATE VERSION_INFO=${CMAKE_PROJECT_VERSION})
 target_link_libraries(andromeda_structs PRIVATE nlp)
+
+add_dependencies(andromeda_nlp nlp)
+target_include_directories(andromeda_nlp INTERFACE ${DEPENDENCIES})
+target_compile_definitions(andromeda_nlp PRIVATE VERSION_INFO=${CMAKE_PROJECT_VERSION})
 target_link_libraries(andromeda_nlp PRIVATE nlp)
+
+add_dependencies(andromeda_glm glm)
+target_include_directories(andromeda_glm INTERFACE ${DEPENDENCIES})
+target_compile_definitions(andromeda_glm PRIVATE VERSION_INFO=${CMAKE_PROJECT_VERSION})
 target_link_libraries(andromeda_glm PRIVATE glm)
 
 # *****************
@@ -195,9 +206,6 @@ target_link_libraries(andromeda_glm PRIVATE glm)
 
 # add the install targets
 
-#install(TARGETS nlp.exe DESTINATION bin)
-#install(TARGETS glm.exe DESTINATION bin)
-
 install(TARGETS andromeda_structs DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
 install(TARGETS andromeda_nlp DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
 install(TARGETS andromeda_glm DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_glm")
@@ -205,12 +213,3 @@ install(TARGETS andromeda_glm DESTINATION "${TOPLEVEL_PREFIX_PATH}/deepsearch_gl
 # *****************
 # ***  Testing  ***
 # *****************
-
-#function(do_test target arg result)
-#  add_test(NAME Comp${arg} COMMAND ${target} ${arg})
-#  set_tests_properties(Comp${arg} PROPERTIES PASS_REGULAR_EXPRESSION ${result})
-# endfunction()
-
-# do a bunch of result based tests
-# do_test(Tutorial 4 "4 is 2")
-

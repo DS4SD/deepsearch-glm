@@ -51,11 +51,21 @@ jobs:
 
       - name: Setup Python
         uses: actions/setup-python@v5
+        id: py
         with:
           python-version: ${{ matrix.python-version }}
+          update-environment: false
   
       - name: Install Poetry
-        run: python -m pip install poetry==1.8.3
+        run: |
+          which python
+          python --version
+          which python3
+          python3 --version
+          echo "pythonpath: ${{ steps.py.outputs.python-path }}"
+          ${{ steps.py.outputs.python-path }} --version
+          pipx install poetry==1.8.3
+          poetry env use ${{ steps.py.outputs.python-path }}
 
       - name: Set up custom PATH and set py version to cpXYZ [windows]
         if: ${{matrix.os.platform_id == 'win_amd64'}}
@@ -97,9 +107,15 @@ jobs:
           CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET=${{ matrix.os.macos_version }}.0"
           ARCHFLAGS: -arch x86_64
           BUILD_THREADS: "4"
+          PYTORCH_MPS_HIGH_WATERMARK_RATIO: "0.0"
         run: |
-          echo "Building wheel ${CIBW_BUILD}"
+          PY_CACHE_TAG=$(poetry run python -c 'import sys;print(sys.implementation.cache_tag)')
+          echo "Building wheel ${CIBW_BUILD} ${{ env.CIBW_BUILD }}"
+          echo "Building cp: ${{ env.python_cp_version }}"
+          echo "Building cache_tag: ${PY_CACHE_TAG}"
+          echo "Building platform_id: ${{ matrix.os.platform_id }}"
           poetry run python --version
+          poetry run python --version | grep ${{ matrix.python-version }} 
           poetry install --no-root --only=build
           cat ./pyproject.toml
           poetry run python -m cibuildwheel --output-dir wheelhouse
@@ -115,8 +131,12 @@ jobs:
           for file in ./wheelhouse/*.whl; do
             echo "Inspecting $file"
             poetry run python -m zipfile --list "$file"
+            echo "Checking if .so is contained in the wheel"
+            poetry run python -m zipfile --list "$file" | grep \\.so
+            echo "Checking if the correct python version is contained in the wheel"
+            poetry run python -m zipfile --list "$file" | grep ${PY_CACHE_TAG}
           done
-          mkdir ./dist
+          mkdir -p ./dist
           cp wheelhouse/*.whl ./dist/
 
       # there is an error with the tagging of wheels for macosx-arm64
@@ -137,9 +157,16 @@ jobs:
           CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET=${{ matrix.os.macos_version }}.0"
           ARCHFLAGS: -arch arm64
           BUILD_THREADS: "4"
+          PYTORCH_MPS_HIGH_WATERMARK_RATIO: "0.0"
+          CUDA_VISIBLE_DEVICES: "cpu"
         run: |
-          echo "Building wheel ${CIBW_BUILD}"
+          PY_CACHE_TAG=$(poetry run python -c 'import sys;print(sys.implementation.cache_tag)')
+          echo "Building wheel ${CIBW_BUILD} ${{ env.CIBW_BUILD }}"
+          echo "Building cp: ${{ env.python_cp_version }}"
+          echo "Building cache_tag: ${PY_CACHE_TAG}"
+          echo "Building platform_id: ${{ matrix.os.platform_id }}"
           poetry run python --version
+          poetry run python --version | grep ${{ matrix.python-version }} 
           poetry install --no-root --only=build
           cat ./pyproject.toml
           poetry run python -m cibuildwheel --output-dir wheelhouse
@@ -155,8 +182,12 @@ jobs:
           for file in ./wheelhouse/*.whl; do
             echo "Inspecting $file"
             poetry run python -m zipfile --list "$file"
+            echo "Checking if .so is contained in the wheel"
+            poetry run python -m zipfile --list "$file" | grep \\.so
+            echo "Checking if the correct python version is contained in the wheel"
+            poetry run python -m zipfile --list "$file" | grep ${PY_CACHE_TAG}
           done
-          mkdir ./dist
+          mkdir -p ./dist
           cp wheelhouse/*.whl ./dist/
 
       - name: Set up QEMU [linux]
@@ -165,10 +196,17 @@ jobs:
         with:
             platforms: all
 
+      - name: Build sdist
+        # build only on Linux to avoid too many duplicates of the sdist
+        if: matrix.os.name == 'ubuntu-latest' 
+        run: |
+          echo "Building wheel ${CIBW_BUILD}"
+          poetry build -f sdist
+
       - name: Build wheels [linux]
         if: matrix.os.name == 'ubuntu-latest'
         env:
-          # CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.os.platform_id }}
+          ## CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.os.platform_id }}
           CIBW_ARCHS: auto x86_64 aarch64
           CIBW_PLATFORM: linux
           CIBW_SKIP: "pp* *musllinux_* *_i686* *_s390* *pypy*"
@@ -176,8 +214,12 @@ jobs:
           CIBW_BUILD_VERBOSITY: 3
           BUILD_THREADS: "8"
         run: |
-          echo "Building wheel ${CIBW_BUILD}"
+          PY_CACHE_TAG=$(poetry run python -c 'import sys;print(sys.implementation.cache_tag)')
+          echo "Building cp: ${{ env.python_cp_version }}"
+          echo "Building cache_tag: ${PY_CACHE_TAG}"
+          echo "Building platform_id: ${{ matrix.os.platform_id }}"
           poetry run python --version
+          poetry run python --version | grep ${{ matrix.python-version }} 
           poetry install --no-root --only=build
           cat ./pyproject.toml
           poetry run python -m cibuildwheel --output-dir ./wheelhouse
@@ -185,8 +227,12 @@ jobs:
           for file in ./wheelhouse/*.whl; do
             echo "Inspecting $file"
             poetry run python -m zipfile --list "$file"
+            echo "Checking if .so is contained in the wheel"
+            poetry run python -m zipfile --list "$file" | grep \\.so
+            echo "Checking if the correct python version is contained in the wheel"
+            poetry run python -m zipfile --list "$file" | grep ${PY_CACHE_TAG}
           done
-          mkdir ./dist
+          mkdir -p ./dist
           cp wheelhouse/*.whl ./dist/
 
       - name: Set up MSYS2
@@ -238,9 +284,23 @@ jobs:
 
       - name: publish wheels (dry run)
         run: |
-          poetry publish --dry-run --no-interaction -vvv
+          poetry publish --skip-existing --dry-run --no-interaction -vvv
 
       - name: publish wheels (on publishing) [for releases only]
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
-          poetry publish --no-interaction -vvv
+          poetry publish --skip-existing --no-interaction -vvv
+
+      # - name: Upload wheels [windows]
+      #   if: ${{ matrix.os.platform_id == 'win_amd64' }}
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: wheels-windows
+      #     path: ./dist/*.whl
+
+      # - name: Upload wheels [linux]
+      #   if: ${{ matrix.os.platform_id == 'manylinux_x86_64' }}
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: wheels-linux
+      #     path: ./dist/*.whl

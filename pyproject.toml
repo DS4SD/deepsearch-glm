@@ -9,7 +9,16 @@ packages = [{include = "deepsearch_glm"}]
 include = [
     {path = "deepsearch_glm/*.so", format = "wheel"},
     {path = "deepsearch_glm/*.pyd", format = "wheel"},
-    {path = "deepsearch_glm/*.dll", format = "wheel"}
+    {path = "deepsearch_glm/*.dll", format = "wheel"},
+    {path = "CMakeLists.txt", format = "sdist"},
+    {path = "build.py", format = "sdist"},
+    {path = "*.md", format = "sdist"},
+    {path = "poetry.lock", format = "sdist"},
+    {path = "app/*.cpp", format = "sdist"},
+    {path = "cmake/", format = "sdist"},
+    {path = "app/", format = "sdist"},
+    {path = "src/", format = "sdist"},
+    {path = "tests/", format = "sdist"},
 ]
 build = "build.py"
 
@@ -118,7 +127,7 @@ module = "matplotlib.*"
 ignore_missing_imports = true
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core", "pybind11>=2.13.1"]
 build-backend = "poetry.core.masonry.api"
 
 #[tool.poetry.build]
