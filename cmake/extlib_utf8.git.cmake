@@ -4,9 +4,7 @@ message(STATUS "entering in extlib_utf8.cmake")
 set(ext_name "utf8")
 
 if(USE_SYSTEM_DEPS)
-    # this will define the utf8cpp target
     find_package(utf8cpp REQUIRED)
-
     add_library(${ext_name} INTERFACE IMPORTED)
     add_dependencies(${ext_name} utf8cpp)
 

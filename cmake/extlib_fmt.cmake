@@ -6,8 +6,8 @@ set(ext_name "fmt")
 if(USE_SYSTEM_DEPS)
     find_package(PkgConfig)
     pkg_check_modules(libfmt REQUIRED IMPORTED_TARGET fmt)
-
     add_library(${ext_name} ALIAS PkgConfig::libfmt)
+    
 else()
     include(ExternalProject)
     include(CMakeParseArguments)

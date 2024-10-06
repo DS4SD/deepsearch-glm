@@ -6,8 +6,8 @@ set(ext_name "pcre2")
 if(USE_SYSTEM_DEPS)
     find_package(PkgConfig)
     pkg_check_modules(libpcre2-8 REQUIRED IMPORTED_TARGET libpcre2-8)
-
     add_library(${ext_name} ALIAS PkgConfig::libpcre2-8)
+    
 else()
     include(ExternalProject)
     include(CMakeParseArguments)

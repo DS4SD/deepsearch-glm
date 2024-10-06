@@ -4,12 +4,11 @@ message(STATUS "entering in extlib_sentencepiece.cmake")
 set(ext_name "sentencepiece")
 
 if(USE_SYSTEM_DEPS)
-    find_package(PkgConfig)
-    pkg_check_modules(libsentencepiece REQUIRED IMPORTED_TARGET sentencepiece)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(sentencepiece REQUIRED IMPORTED_TARGET sentencepiece)
+    add_library(${ext_name} ALIAS PkgConfig::sentencepiece)
 
-    add_library(${ext_name} ALIAS PkgConfig::libsentencepiece)
 else()
-    include(ExternalProject)
     include(CMakeParseArguments)
 
     set(SENTENCEPIECE_URL https://github.com/google/sentencepiece.git)

@@ -6,8 +6,8 @@ set(ext_name "cxxopts")
 if(USE_SYSTEM_DEPS)
     find_package(PkgConfig)
     pkg_check_modules(libcxxopts REQUIRED IMPORTED_TARGET cxxopts)
-
     add_library(${ext_name} ALIAS PkgConfig::libcxxopts)
+    
 else()
     include(ExternalProject)
     include(CMakeParseArguments)

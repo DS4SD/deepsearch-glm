@@ -6,8 +6,8 @@ set(ext_name "fasttext")
 if(USE_SYSTEM_DEPS)
     find_package(PkgConfig)
     pkg_check_modules(libfasttext_pic REQUIRED IMPORTED_TARGET fasttext)
-
     add_library(${ext_name} ALIAS PkgConfig::libfasttext_pic)
+    
 else()
     include(ExternalProject)
     include(CMakeParseArguments)

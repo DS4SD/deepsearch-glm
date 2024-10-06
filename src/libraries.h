@@ -25,3 +25,7 @@
 //#include <sentencepiece.pb.h>
 #include <sentencepiece_processor.h>
 #include <sentencepiece_trainer.h>
+
+#include <iostream>
+#include <mutex>
+#include <thread>

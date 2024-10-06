@@ -95,8 +95,12 @@ message(STATUS "cxx-standard: " ${CMAKE_CXX_STANDARD})
 
 option(USE_SYSTEM_DEPS OFF "If enabled, the build will find and link to system dependencies, otherwise they are sourced from the original repos and compiled on the fly.")
 
-# prepare setup for building external packages
-if(NOT USE_SYSTEM_DEPS)
+if(USE_SYSTEM_DEPS)
+    add_definitions(-DUSE_SYSTEM_DEPS)
+    set(DEPENDENCIES fmt json loguru cxxopts pcre2 fasttext utf8 sentencepiece)
+else()
+    add_definitions(-DNOT_USE_SYSTEM_DEPS)
+    set(DEPENDENCIES fmt json loguru cxxopts pcre2 fasttext utf8 sentencepiece sentencepiece_train) # sentencepiece in the compiled version, uses 2 static libs
     if(NOT EXISTS ${EXTERNALS_PREFIX_PATH})
         file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH})
         file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH}/bin)
@@ -105,7 +109,6 @@ if(NOT USE_SYSTEM_DEPS)
         file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH}/resources)
     endif()
 endif()
-
 
 # include dependencies
 include(cmake/extlib_fmt.cmake)
@@ -116,9 +119,6 @@ include(cmake/extlib_pcre2.cmake)
 include(cmake/extlib_fasttext.cmake)
 include(cmake/extlib_utf8.git.cmake)
 include(cmake/extlib_sentencepiece.cmake)
-
-# aggregate the targets created by the dependencies
-set(DEPENDENCIES fmt json loguru cxxopts pcre2 fasttext utf8 sentencepiece sentencepiece_train)
 
 # ************************
 # *** libraries        ***

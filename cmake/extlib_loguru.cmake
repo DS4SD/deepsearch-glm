@@ -4,10 +4,12 @@ message(STATUS "entering in extlib_loguru.cmake")
 set(ext_name "loguru")
 
 if(USE_SYSTEM_DEPS)
-    find_package(PkgConfig)
-    pkg_check_modules(libloguru REQUIRED IMPORTED_TARGET loguru)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(loguru REQUIRED loguru)
+    add_library(${ext_name} INTERFACE)
+    target_include_directories(${ext_name} INTERFACE ${loguru_INCLUDE_DIRS})
+    target_link_libraries(${ext_name} INTERFACE ${loguru_LIBRARIES})
 
-    add_library(${ext_name} ALIAS PkgConfig::libloguru)
 else()
     include(ExternalProject)
     include(CMakeParseArguments)
@@ -17,7 +19,6 @@ else()
 
     set(LOGURU_INCLUDE_DIR ${EXTERNALS_PREFIX_PATH}/include/loguru)
 
-    # Ensure the directory for headers exists
     execute_process(COMMAND mkdir -p ${LOGURU_INCLUDE_DIR})
 
     ExternalProject_Add(extlib_loguru

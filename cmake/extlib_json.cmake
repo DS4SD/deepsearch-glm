@@ -6,8 +6,8 @@ set(ext_name "json")
 if(USE_SYSTEM_DEPS)
     find_package(PkgConfig)
     pkg_check_modules(libjson REQUIRED IMPORTED_TARGET nlohmann_json)
-
     add_library(${ext_name} ALIAS PkgConfig::libjson)
+    
 else()
     include(ExternalProject)
     include(CMakeParseArguments)
