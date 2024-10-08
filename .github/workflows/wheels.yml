@@ -236,7 +236,7 @@ jobs:
           cp wheelhouse/*.whl ./dist/
 
       - name: Test install wheel [macos-arm64]
-        if: ${{matrix.os.platform_id == 'macosx_arm64'}}
+        if: matrix.os.platform_id == 'macosx_arm64' && matrix.os.name == 'macos-14'
         shell: bash
         run: |
           wheel_file=$(ls dist/*.whl | head -n 1)
