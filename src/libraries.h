@@ -11,6 +11,10 @@
 
 #include "pcre2.h"
 
+#ifdef _WIN32
+#include <share.h> // to define _SH_DENYNO for loguru
+#endif
+
 #ifndef LOGURU_WITH_STREAMS
 #define LOGURU_WITH_STREAMS 1
 #endif
