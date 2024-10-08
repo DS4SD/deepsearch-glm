@@ -16,6 +16,10 @@ else()
     set(STACKTRACES TRUE)
     set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
+    if(WIN32)
+        add_compile_definitions(_SH_DENYNO=0)
+    endif()
+    
     FetchContent_MakeAvailable(LoguruGitRepo) # defines target 'loguru::loguru'
 
 endif()
