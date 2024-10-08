@@ -15,7 +15,8 @@
 #define LOGURU_WITH_STREAMS 1
 #endif
 
-#include <loguru/loguru.cpp>
+#include <loguru.hpp>
+
 #include <cxxopts.hpp>
 #include <nlohmann/json.hpp>
 //#include <nlohmann/json-schema.hpp>
@@ -26,6 +27,4 @@
 #include <sentencepiece_processor.h>
 #include <sentencepiece_trainer.h>
 
-#include <iostream>
 #include <mutex>
-#include <thread>

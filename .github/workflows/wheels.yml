@@ -235,7 +235,14 @@ jobs:
           mkdir -p ./dist
           cp wheelhouse/*.whl ./dist/
 
-      - name: Set up MSYS2
+      - name: Test install wheel [macos-arm64]
+        if: ${{matrix.os.platform_id == 'macosx_arm64'}}
+        shell: bash
+        run: |
+          wheel_file=$(ls dist/*.whl | head -n 1)
+          poetry run pip install "$wheel_file"
+
+      - name: Set up MSYS2 [windows]
         if: ${{matrix.os.platform_id == 'win_amd64'}}
         uses: msys2/setup-msys2@v2
         with:
@@ -252,7 +259,7 @@ jobs:
           Copy-Item -Path "C:/mingw64/bin/libstdc++-6.dll" -Destination ".\deepsearch_glm"
           Copy-Item -Path "C:/mingw64/bin/libwinpthread-1.dll" -Destination ".\deepsearch_glm"
 
-      - name: Build wheels
+      - name: Build wheels [windows]
         if: ${{matrix.os.platform_id == 'win_amd64'}}
         env:
           CIBW_PLATFORM: windows
@@ -281,26 +288,26 @@ jobs:
               New-Item -Path .\dist -ItemType Directory
           }
           Copy-Item -Path .\wheelhouse\*.whl -Destination .\dist\
+    
+      - name: Test install wheel [windows]
+        if: ${{matrix.os.platform_id == 'win_amd64'}}
+        shell: pwsh
+        run: |
+          $wheel_file = Get-ChildItem dist\*.whl | Select-Object -First 1
+          Write-Host "Installing wheel: $wheel_file"
+          poetry run pip install "$wheel_file"
 
-      - name: publish wheels (dry run)
+      - name: Quick test wheel
+        if: ${{ matrix.os.platform_id == 'win_amd64' || matrix.os.platform_id == 'macosx_arm64' }}
+        run: |
+          poetry install --no-interaction --no-root --only=test
+          poetry run pytest ./tests/test_glm.py -v
+          
+      - name: Publish wheels (dry run)
         run: |
           poetry publish --skip-existing --dry-run --no-interaction -vvv
 
-      - name: publish wheels (on publishing) [for releases only]
+      - name: Publish wheels (on publishing) [for releases only]
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           poetry publish --skip-existing --no-interaction -vvv
-
-      # - name: Upload wheels [windows]
-      #   if: ${{ matrix.os.platform_id == 'win_amd64' }}
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: wheels-windows
-      #     path: ./dist/*.whl
-
-      # - name: Upload wheels [linux]
-      #   if: ${{ matrix.os.platform_id == 'manylinux_x86_64' }}
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: wheels-linux
-      #     path: ./dist/*.whl

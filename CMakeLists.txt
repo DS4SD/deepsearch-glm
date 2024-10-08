@@ -96,11 +96,8 @@ message(STATUS "cxx-standard: " ${CMAKE_CXX_STANDARD})
 option(USE_SYSTEM_DEPS OFF "If enabled, the build will find and link to system dependencies, otherwise they are sourced from the original repos and compiled on the fly.")
 
 if(USE_SYSTEM_DEPS)
-    add_definitions(-DUSE_SYSTEM_DEPS)
     set(DEPENDENCIES fmt json loguru cxxopts pcre2 fasttext utf8 sentencepiece)
 else()
-    add_definitions(-DNOT_USE_SYSTEM_DEPS)
-    set(DEPENDENCIES fmt json loguru cxxopts pcre2 fasttext utf8 sentencepiece sentencepiece_train) # sentencepiece in the compiled version, uses 2 static libs
     if(NOT EXISTS ${EXTERNALS_PREFIX_PATH})
         file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH})
         file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH}/bin)
@@ -108,6 +105,7 @@ else()
         file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH}/include)
         file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH}/resources)
     endif()
+    set(DEPENDENCIES fmt json loguru cxxopts pcre2 fasttext utf8 sentencepiece sentencepiece_train)
 endif()
 
 # include dependencies

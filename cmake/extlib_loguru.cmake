@@ -1,48 +1,21 @@
-
-message(STATUS "entering in extlib_loguru.cmake")
+message(STATUS "Entering extlib_loguru.cmake")
 
 set(ext_name "loguru")
 
 if(USE_SYSTEM_DEPS)
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(loguru REQUIRED loguru)
-    add_library(${ext_name} INTERFACE)
-    target_include_directories(${ext_name} INTERFACE ${loguru_INCLUDE_DIRS})
-    target_link_libraries(${ext_name} INTERFACE ${loguru_LIBRARIES})
-
+    find_package(loguru CONFIG REQUIRED)
+    add_library(${ext_name} ALIAS loguru::loguru)
 else()
-    include(ExternalProject)
-    include(CMakeParseArguments)
-
-    set(LOGURU_URL https://github.com/emilk/loguru)
-    set(LOGURU_TAG v2.1.0)
-
-    set(LOGURU_INCLUDE_DIR ${EXTERNALS_PREFIX_PATH}/include/loguru)
-
-    execute_process(COMMAND mkdir -p ${LOGURU_INCLUDE_DIR})
-
-    ExternalProject_Add(extlib_loguru
-
-        PREFIX extlib_loguru
-
-        GIT_REPOSITORY ${LOGURU_URL}
-        GIT_TAG ${LOGURU_TAG}
-
-        UPDATE_COMMAND ""
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND ""
-        BUILD_ALWAYS OFF
-
-        INSTALL_DIR ${EXTERNALS_PREFIX_PATH}
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/loguru.hpp ${LOGURU_INCLUDE_DIR} &&
-                        ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/loguru.cpp ${LOGURU_INCLUDE_DIR}
-
-        LOG_DOWNLOAD ON
-        LOG_BUILD ON
+    include(FetchContent)
+    FetchContent_Declare(LoguruGitRepo
+        GIT_REPOSITORY "https://github.com/emilk/loguru"
+        GIT_TAG        "4adaa185883e3c04da25913579c451d3c32cfac1" # pin current master, because tag v2.1.0 branch does not have full make support, that was introduced later , this SHA also matches the systen package .rpm https://koji.fedoraproject.org/koji/rpminfo?rpmID=40293153
     )
 
-    add_library(${ext_name} INTERFACE)
-    add_dependencies(${ext_name} extlib_loguru)
-    set_target_properties(${ext_name} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${LOGURU_INCLUDE_DIR}
-    )
+    set(LOGURU_WITH_STREAMS TRUE)
+    set(STACKTRACES TRUE)
+    set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+
+    FetchContent_MakeAvailable(LoguruGitRepo) # defines target 'loguru::loguru'
+
 endif()
