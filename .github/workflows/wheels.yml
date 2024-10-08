@@ -302,6 +302,7 @@ jobs:
         run: |
           poetry install --no-interaction --no-root --only=test
           poetry run python -c 'from deepsearch_glm import andromeda_glm'
+          poetry run pytest ./tests/test_glm.py -v
           
       - name: Publish wheels (dry run)
         run: |
