@@ -41,6 +41,7 @@ tqdm = "^4.64.0"
 rich = "^13.7.0"
 docutils = "!=0.21"
 pywin32 = { version = "^306", markers = "sys_platform == 'win32'" }
+requests = "^2.32.3"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.2"
