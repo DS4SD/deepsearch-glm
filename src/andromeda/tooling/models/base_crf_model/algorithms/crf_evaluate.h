@@ -62,7 +62,8 @@ namespace andromeda_crf
                        std::string tokenizer_mode):
     verbose(false),
 
-    model_file(model_file),
+    // model_file(model_file),
+    model_file(model_file.string()),
     tokenizer_mode(tokenizer_mode),
 
     model(NULL),
@@ -79,8 +80,8 @@ namespace andromeda_crf
     metrics_table()
   {
     model = std::make_shared<model_type>();
-
-    if(not model->load_from_file(model_file, false))
+    // if(not model->load_from_file(model_file, false))
+    if (not model->load_from_file(model_file.string(), false)) 
       {
         model = NULL;
         LOG_S(ERROR) << "could not read model from: " << model_file;
@@ -236,7 +237,8 @@ namespace andromeda_crf
 	perfect_preds += correct? 1:0;
       }
 
-    write_metrics(metrics_file);
+    // write_metrics(metrics_file);
+    write_metrics(metrics_file.string());
 
     return true;
   }

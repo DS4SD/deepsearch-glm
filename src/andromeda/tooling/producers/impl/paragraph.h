@@ -155,7 +155,8 @@ namespace andromeda
 
       config[write_output_lbl] = true;
 
-      std::filesystem::path opath(paths.front().c_str());
+      // std::filesystem::path opath(paths.front().c_str());
+      std::filesystem::path opath(paths.front());
       config[opath_lbl] = opath.parent_path();
 
       config["key"] = "abstract";
@@ -208,7 +209,8 @@ namespace andromeda
       }
 
     base_producer::write_output = true;
-    ofs.open(path.c_str(), std::ofstream::out);
+    // ofs.open(path.c_str(), std::ofstream::out);
+    ofs.open(path, std::ofstream::out);
 
     return ofs.good();
   }
@@ -249,13 +251,16 @@ namespace andromeda
         else
           {
             //LOG_S(INFO) << "opening for reading: " << (path_itr->c_str());
-            ifs.open(path_itr->c_str(), std::ifstream::in);
+            // ifs.open(path_itr->c_str(), std::ifstream::in);
+            ifs.open(*path_itr, std::ifstream::in);
 
             std::filesystem::path outfile;
             if(get_output_file(outfile))
               {
-                LOG_S(WARNING) << "writing to: " << outfile.c_str();
-                ofs.open(outfile.c_str(), std::ofstream::out);
+                // LOG_S(WARNING) << "writing to: " << outfile.c_str();
+                LOG_S(WARNING) << "writing to: " << outfile.string();
+                // ofs.open(outfile.c_str(), std::ofstream::out);
+                ofs.open(outfile, std::ofstream::out);
               }
 
             curr_line=0;

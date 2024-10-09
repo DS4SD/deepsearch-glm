@@ -1,33 +1,42 @@
-cmake_minimum_required (VERSION 3.5)
 
 message(STATUS "entering in extlib_cxxopts.cmake")
 
-include(ExternalProject)
-include(CMakeParseArguments)
+set(ext_name "cxxopts")
 
-set(CXXOPTS_TAG v2.2.0)
-set(CXXOPTS_URL https://github.com/jarro2783/cxxopts.git)
+if(USE_SYSTEM_DEPS)
+    find_package(PkgConfig)
+    pkg_check_modules(libcxxopts REQUIRED IMPORTED_TARGET cxxopts)
+    add_library(${ext_name} ALIAS PkgConfig::libcxxopts)
+    
+else()
+    include(ExternalProject)
+    include(CMakeParseArguments)
 
-ExternalProject_Add(extlib_cxxopts
-    PREFIX extlib_cxxopts
+    set(CXXOPTS_URL https://github.com/jarro2783/cxxopts.git)
+    set(CXXOPTS_TAG v3.2.0)
 
-    GIT_TAG ${CXXOPTS_TAG}
-    GIT_REPOSITORY ${CXXOPTS_URL}
+    ExternalProject_Add(extlib_cxxopts
 
-    INSTALL_DIR ${CXXOPTS_PREFIX_INSTALL_DIR}
+        PREFIX extlib_cxxopts
 
-    UPDATE_COMMAND ""
-    CONFIGURE_COMMAND ""
+        UPDATE_COMMAND ""
+        GIT_REPOSITORY ${CXXOPTS_URL}
+        GIT_TAG ${CXXOPTS_TAG}
 
-    BUILD_COMMAND ""
-    BUILD_ALWAYS OFF
+        BUILD_ALWAYS OFF
 
-    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/include/ ${EXTERNALS_PREFIX_PATH}/include/
+        INSTALL_DIR ${EXTERNALS_PREFIX_PATH}
 
-    LOG_DOWNLOAD ON
-    LOG_BUILD ON
+        CMAKE_ARGS \\
+        -DCMAKE_POSITION_INDEPENDENT_CODE=ON \\
+        -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH}
+
+        BUILD_IN_SOURCE ON
+        LOG_DOWNLOAD ON
     )
 
-add_library(cxxopts INTERFACE)
-add_custom_target(install_extlib_cxxopts DEPENDS extlib_cxxopts)
-add_dependencies(cxxopts install_extlib_cxxopts)
+    add_library(${ext_name} INTERFACE)
+    add_dependencies(${ext_name} extlib_cxxopts)
+    set_target_properties(${ext_name} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${EXTERNALS_PREFIX_PATH}/include
+    )
+endif()

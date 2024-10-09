@@ -3,8 +3,6 @@
 #ifndef PYBIND_ANDROMEDA_BASE_LOG_H
 #define PYBIND_ANDROMEDA_BASE_LOG_H
 
-#include <loguru.hpp>
-
 namespace andromeda_py
 {
   

@@ -1,38 +1,25 @@
-cmake_minimum_required (VERSION 3.5)
 
 message(STATUS "entering in 'os_opts.cmake'")
 
 if(WIN32)
    message(STATUS "compiling on windows")
+   
+   set(LIB_LINK)
+   set(OS_DEPENDENCIES)
 
 elseif(APPLE)
    message(STATUS "compiling on mac-osx")
 
-   #set(CMAKE_MACOSX_RPATH 1)
-
    find_library(FoundationLib Foundation)
-   #message("LIB: ${FoundationLib}")
-
+   find_package(ZLIB)
    find_library(SystemConfigurationLib SystemConfiguration)
-   #message("LIB: ${SystemConfigurationLib}")
-
-   #set(LIB_LINK json json_schema loguru cxxopts pcre2 fasttext utf8 andromeda_pos ${OPENSSL_LIBRARIES} ldap z)
-   #set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 andromeda_pos ${OPENSSL_LIBRARIES} ldap z)
-   #set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 ${OPENSSL_LIBRARIES} ldap z)
-   set(LIB_LINK fmt json loguru cxxopts pcre2 sentencepiece sentencepiece_train fasttext utf8 ldap z)	
-
-   list(APPEND LIB_LINK ${FoundationLib} ${SystemConfigurationLib})
+   set(OS_DEPENDENCIES ZLIB::ZLIB)
+   set(LIB_LINK ${FoundationLib} ${SystemConfigurationLib})
    
 elseif(UNIX)
    message(STATUS "compiling on linux")
 
-   #set(LIB_LINK json json_schema loguru cxxopts pcre2 fasttext utf8 andromeda_pos ${OPENSSL_LIBRARIES} z)
-   #set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 andromeda_pos ${OPENSSL_LIBRARIES} z)
-   #set(LIB_LINK json loguru cxxopts pcre2 fasttext utf8 ${OPENSSL_LIBRARIES} z)
-   set(LIB_LINK fmt json loguru cxxopts pcre2 sentencepiece sentencepiece_train fasttext utf8 z)
-
-   list(APPEND LIB_LINK dl m pthread rt resolv)
+   set(LIB_LINK dl m pthread rt resolv z)
+   set(OS_DEPENDENCIES)
 
 endif()
-
-

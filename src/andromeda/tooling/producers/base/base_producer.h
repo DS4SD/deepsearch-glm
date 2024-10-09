@@ -328,7 +328,8 @@ namespace andromeda
 	std::filesystem::path odir(opath.c_str());
 	std::filesystem::path ifile = (path_itr->filename());
 	
-	std::string ofile = utils::replace(ifile.c_str(), iformat, oformat);
+	// std::string ofile = utils::replace(ifile.c_str(), iformat, oformat);
+  std::string ofile = utils::replace(ifile.string(), iformat, oformat);
 	std::filesystem::path outfile(ofile.c_str());
 	
 	out = odir / outfile;
@@ -338,7 +339,8 @@ namespace andromeda
 	std::filesystem::path idir = (path_itr->parent_path());
 	std::filesystem::path ifile = (path_itr->filename());
 	
-	std::string ofile = utils::replace(ifile.c_str(), iformat, oformat);
+	// std::string ofile = utils::replace(ifile.c_str(), iformat, oformat);
+  std::string ofile = utils::replace(ifile.string(), iformat, oformat);
 	std::filesystem::path outfile(ofile.c_str());
 	
 	out = idir / outfile;
@@ -368,7 +370,8 @@ namespace andromeda
       {
 	std::filesystem::path odir(opath.c_str());
 	
-	std::string ofile = utils::replace(ifilename.c_str(), iformat, oformat);
+	// std::string ofile = utils::replace(ifilename.c_str(), iformat, oformat);
+  std::string ofile = utils::replace(ifilename.string(), iformat, oformat);
 	std::filesystem::path ofilename(ofile.c_str());
 	
 	outfile = odir / ofilename;		
@@ -377,7 +380,8 @@ namespace andromeda
       {
 	std::filesystem::path odir(ifiledir.c_str());
 	
-	std::string ofile = utils::replace(ifilename.c_str(), iformat, oformat);
+	// std::string ofile = utils::replace(ifilename.c_str(), iformat, oformat);
+  std::string ofile = utils::replace(ifilename.string(), iformat, oformat);
 	std::filesystem::path ofilename(ofile.c_str());
 	
 	outfile = odir / ofilename;	

@@ -11,17 +11,24 @@
 
 #include "pcre2.h"
 
+#ifdef _WIN32
+#include <share.h> // to define _SH_DENYNO for loguru
+#endif
+
 #ifndef LOGURU_WITH_STREAMS
 #define LOGURU_WITH_STREAMS 1
 #endif
 
-#include <loguru/loguru.cpp>
+#include <loguru.hpp>
+
 #include <cxxopts.hpp>
 #include <nlohmann/json.hpp>
 //#include <nlohmann/json-schema.hpp>
 
-#include <utf8/utf8.h>
+#include <utf8.h>
 #include <fasttext/fasttext.h>
 //#include <sentencepiece.pb.h>
 #include <sentencepiece_processor.h>
 #include <sentencepiece_trainer.h>
+
+#include <mutex>

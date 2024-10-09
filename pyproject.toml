@@ -1,19 +1,30 @@
 [tool.poetry]
 name = "deepsearch-glm"
-version = "0.21.1"  # DO NOT EDIT, updated automatically
+version = "0.23.0"  # DO NOT EDIT, updated automatically
 description = "Graph Language Models"
 authors = ["Peter Staar <taa@zurich.ibm.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "deepsearch_glm"}]
 include = [
-    {path = "deepsearch_glm/*.so", format = "wheel"}
+    {path = "deepsearch_glm/*.so", format = "wheel"},
+    {path = "deepsearch_glm/*.pyd", format = "wheel"},
+    {path = "deepsearch_glm/*.dll", format = "wheel"},
+    {path = "CMakeLists.txt", format = "sdist"},
+    {path = "build.py", format = "sdist"},
+    {path = "*.md", format = "sdist"},
+    {path = "poetry.lock", format = "sdist"},
+    {path = "app/*.cpp", format = "sdist"},
+    {path = "cmake/", format = "sdist"},
+    {path = "app/", format = "sdist"},
+    {path = "src/", format = "sdist"},
+    {path = "tests/", format = "sdist"},
 ]
 build = "build.py"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-docling-core = {git = "ssh://git@github.com/DS4SD/docling-core.git", rev = "089d692b95dd704a503e9d15c5072e2ff58a65e6"}
+docling-core = {git = "ssh://git@github.com/DS4SD/docling-core.git", rev = "5aa67df483fb82e01ebb8b86433459f86286403f"}
 deepsearch-toolkit = { version = ">=0.31.0", optional = true }
 tabulate = ">=0.8.9"
 numpy = [
@@ -30,6 +41,8 @@ numerize = "^0.12"
 tqdm = "^4.64.0"
 rich = "^13.7.0"
 docutils = "!=0.21"
+pywin32 = { version = "^306", markers = "sys_platform == 'win32'" }
+requests = "^2.32.3"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.2"
@@ -116,7 +129,7 @@ module = "matplotlib.*"
 ignore_missing_imports = true
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core", "pybind11>=2.13.1"]
 build-backend = "poetry.core.masonry.api"
 
 #[tool.poetry.build]

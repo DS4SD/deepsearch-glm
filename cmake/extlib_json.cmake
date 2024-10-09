@@ -1,29 +1,41 @@
-cmake_minimum_required(VERSION 3.5)
 
 message(STATUS "entering in extlib_json.cmake")
 
-include(ExternalProject)
-include(CMakeParseArguments)
+set(ext_name "json")
 
-set(JSON_URL https://github.com/nlohmann/json.git)
-set(JSON_TAG v3.11.3)
+if(USE_SYSTEM_DEPS)
+    find_package(PkgConfig)
+    pkg_check_modules(libjson REQUIRED IMPORTED_TARGET nlohmann_json)
+    add_library(${ext_name} ALIAS PkgConfig::libjson)
+    
+else()
+    include(ExternalProject)
+    include(CMakeParseArguments)
 
-ExternalProject_Add(extlib_json
-    PREFIX extlib_json
+    set(JSON_URL https://github.com/nlohmann/json.git)
+    set(JSON_TAG v3.11.3)
 
-    GIT_REPOSITORY ${JSON_URL}
-    GIT_TAG ${JSON_TAG}
+    ExternalProject_Add(extlib_json
 
-    UPDATE_COMMAND ""
-    CONFIGURE_COMMAND ""
+        PREFIX extlib_json
 
-    BUILD_COMMAND ""
-    BUILD_ALWAYS OFF
+        GIT_REPOSITORY ${JSON_URL}
+        GIT_TAG ${JSON_TAG}
 
-    INSTALL_DIR     ${EXTERNALS_PREFIX_PATH}
-    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/include/ ${EXTERNALS_PREFIX_PATH}/include/
+        UPDATE_COMMAND ""
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        BUILD_ALWAYS OFF
+
+        INSTALL_DIR ${EXTERNALS_PREFIX_PATH}
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/include/ ${EXTERNALS_PREFIX_PATH}/include/
+
+        LOG_DOWNLOAD ON
+        LOG_BUILD ON
     )
 
-add_library(json INTERFACE)
-add_custom_target(install_extlib_json DEPENDS extlib_json)
-add_dependencies(json install_extlib_json)
+    add_library(${ext_name} INTERFACE)
+    add_dependencies(${ext_name} extlib_json)
+    set_target_properties(${ext_name} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${EXTERNALS_PREFIX_PATH}/include
+    )
+endif()
