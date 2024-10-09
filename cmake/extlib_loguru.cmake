@@ -1,32 +1,27 @@
-cmake_minimum_required(VERSION 3.5)
+message(STATUS "Entering extlib_loguru.cmake")
 
-message(STATUS "entering in extlib_loguru.cmake")
+set(ext_name "loguru")
 
-include(ExternalProject)
-include(CMakeParseArguments)
-
-set(LOGURU_INCLUDE_DIR ${EXTERNALS_PREFIX_PATH}/include/loguru)
-execute_process(COMMAND mkdir -p ${LOGURU_INCLUDE_DIR})
-
-set(LOGURU_URL https://github.com/emilk/loguru)
-set(LOGURU_TAG v2.1.0)
-
-ExternalProject_Add(extlib_loguru
-    PREFIX extlib_loguru
-
-    GIT_REPOSITORY ${LOGURU_URL}
-    GIT_TAG ${LOGURU_TAG}
-
-    UPDATE_COMMAND ""
-    CONFIGURE_COMMAND ""
-
-    BUILD_COMMAND ""
-    BUILD_ALWAYS OFF
-
-    INSTALL_DIR ${EXTERNALS_PREFIX_PATH}
-    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/loguru.hpp ${LOGURU_INCLUDE_DIR} <SOURCE_DIR>/loguru.cpp ${LOGURU_INCLUDE_DIR}
+if(USE_SYSTEM_DEPS)
+    find_package(loguru CONFIG REQUIRED)
+    add_library(${ext_name} ALIAS loguru::loguru)
+else()
+    include(FetchContent)
+    FetchContent_Declare(LoguruGitRepo
+        GIT_REPOSITORY "https://github.com/emilk/loguru"
+        GIT_TAG        "4adaa185883e3c04da25913579c451d3c32cfac1" # pin current master, because tag v2.1.0 branch does not have full make support, that was introduced later , this SHA also matches the systen package .rpm https://koji.fedoraproject.org/koji/rpminfo?rpmID=40293153
     )
 
-add_library(loguru INTERFACE)
-add_custom_target(install_extlib_loguru DEPENDS extlib_loguru)
-add_dependencies(loguru install_extlib_loguru)
+    set(LOGURU_WITH_STREAMS TRUE)
+    set(STACKTRACES TRUE)
+    set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+
+    if(WIN32)
+        # https://digitalmars.com/rtl/constants.html
+        # value of _SH_DENYNO is 0x40 = 64 
+        add_compile_definitions(_SH_DENYNO=64)
+    endif()
+    
+    FetchContent_MakeAvailable(LoguruGitRepo) # defines target 'loguru::loguru'
+
+endif()

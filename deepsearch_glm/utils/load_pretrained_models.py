@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 """Module to load binary files of models and data"""
 
-
 import json
 import os
-import subprocess
-from urllib.parse import urljoin
+from pathlib import Path
+from typing import Dict, Tuple
+
+import requests
 
 
 def get_resources_dir():
-    """Function to obtain the resources-directory"""
+    """Function to obtain the resources directory"""
 
     if "DEEPSEARCH_GLM_RESOURCES_DIR" in os.environ:
         resources_dir = os.getenv("DEEPSEARCH_GLM_RESOURCES_DIR")
@@ -19,13 +20,52 @@ def get_resources_dir():
         model = nlp_model()
         resources_dir = model.get_resources_path()
 
-    return resources_dir
+    return os.path.normpath(resources_dir)
 
 
 def list_training_data(key: str, force: bool = False, verbose: bool = False):
     """Function to list the training data"""
 
     return []
+
+
+def download_items(
+    items: Dict[str, Tuple[str, Path]], force: bool = False, verbose: bool = False
+) -> Tuple[bool, Dict[str, str]]:
+    """
+    Iterate through all the items and downloads them.
+    The return dictionary will contain the location where items are downloaded.
+    If any error occur, the first return value will be false.
+    """
+
+    data = {}
+    done = True
+    for name, (source, target) in items.items():
+        if force or (not target.exists()):
+            if verbose:
+                print(f" -> downloading {name} ... ", end="")
+
+            target.parent.mkdir(exist_ok=True, parents=True)
+
+            with target.open("wb") as fw:
+                r = requests.get(source, stream=True)
+                if r.ok:
+                    for chunk in r.iter_content(chunk_size=8192):
+                        fw.write(chunk)
+                else:
+                    print(f"Error downloading {name}: [{r.status_code}] {r.text}")
+                    done = False
+                if verbose:
+                    print("done!")
+
+            data[name] = target.name
+        elif target.exists():
+            if verbose:
+                print(f" -> already downloaded {name}")
+            data[name] = target.name
+        else:
+            print(f" -> missing {name}")
+    return done, data
 
 
 def load_training_data(
@@ -35,92 +75,48 @@ def load_training_data(
 
     assert data_type in ["text", "crf", "fst"]
 
-    resources_dir = get_resources_dir()
-    with open(f"{resources_dir}/data.json", "r", encoding="utf-8") as fr:
+    resources_dir = Path(get_resources_dir())
+
+    data_file_path = resources_dir / "data.json"
+    with data_file_path.open(encoding="utf-8") as fr:
         training_data = json.load(fr)
 
     cos_url = training_data["object-store"]
     cos_prfx = training_data["data"]["prefix"]
-    cos_path = os.path.join(cos_url, cos_prfx)
+    cos_path = f"{cos_url}/{cos_prfx}"
 
-    cmds = {}
+    downloads = {}
     for name, files in training_data["data"][data_type].items():
         print(name)
         if name == data_name:
-            source = os.path.join(cos_path, files[0])
-            target = os.path.join(resources_dir, files[1])
+            source = f"{cos_path}/{files[0]}"
+            target = resources_dir / str(files[1])
 
-            cmd = ["curl", source, "-o", target, "-s"]
-            cmds[name] = cmd
+            downloads[name] = (source, target)
 
-    done = True
-    data = {}
-
-    for name, cmd in cmds.items():
-        data_file = cmd[3]
-        print(data_file)
-
-        if force or (not os.path.exists(data_file)):
-            if verbose:
-                print(f" -> downloading {name} ... ", end="")
-
-            subprocess.run(cmd, check=True)
-
-            if verbose:
-                print("done!")
-
-            data[name] = data_file
-
-        elif os.path.exists(data_file):
-            if verbose:
-                print(f" -> already downloaded {name}")
-
-            data[name] = data_file
-        else:
-            print(f" -> missing {name}")
-
+    done, data = download_items(downloads)
     return done, data
 
 
 def load_pretrained_nlp_models(force: bool = False, verbose: bool = False):
     """Function to load pretrained NLP models"""
 
-    resources_dir = get_resources_dir()
-    with open(f"{resources_dir}/models.json", "r", encoding="utf-8") as fr:
+    resources_dir = Path(get_resources_dir())
+    models_file_path = os.path.join(resources_dir, "models.json")
+
+    with open(models_file_path, "r", encoding="utf-8") as fr:
         models = json.load(fr)
 
     cos_url = models["object-store"]
     cos_prfx = models["nlp"]["prefix"]
 
-    cmds = {}
+    downloads = {}
     for name, files in models["nlp"]["trained-models"].items():
-        source = urljoin(cos_url, f"{cos_prfx}/{files[0]}")
-        target = os.path.join(resources_dir, files[1])
+        source = f"{cos_url}/{cos_prfx}/{files[0]}"
+        target = resources_dir / files[1]
 
-        cmd = ["curl", source, "-o", target, "-s"]
-        cmds[name] = cmd
+        downloads[name] = (source, target)
 
-    downloaded_models = []
-
-    for name, cmd in cmds.items():
-        model_weights = cmd[3]
-
-        if force or not os.path.exists(model_weights):
-            if verbose:
-                print(f"Downloading {name} ... ", end="")
-
-            subprocess.run(cmd, check=True)
-
-            if verbose:
-                print("done!")
-            downloaded_models.append(name)
-
-        elif os.path.exists(model_weights):
-            if verbose:
-                print(f"Already downloaded {name}")
-            downloaded_models.append(name)
-
-        else:
-            print(f" -> Missing {name}")
-
+    done, data = download_items(downloads)
+    downloaded_models = list(data.keys())
     return downloaded_models
