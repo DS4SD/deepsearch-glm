@@ -17,7 +17,9 @@ else()
     set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
     if(WIN32)
-        add_compile_definitions(_SH_DENYNO=0)
+        # https://digitalmars.com/rtl/constants.html
+        # value of _SH_DENYNO is 0x40 = 64 
+        add_compile_definitions(_SH_DENYNO=64)
     endif()
     
     FetchContent_MakeAvailable(LoguruGitRepo) # defines target 'loguru::loguru'
