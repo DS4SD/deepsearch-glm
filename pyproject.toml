@@ -24,7 +24,7 @@ build = "build.py"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-docling-core = {git = "ssh://git@github.com/DS4SD/docling-core.git", rev = "5aa67df483fb82e01ebb8b86433459f86286403f"}
+docling-core = {git = "ssh://git@github.com/DS4SD/docling-core.git", rev = "ba79b4a9168f0b7a948ba2862954b673179370a7"}
 deepsearch-toolkit = { version = ">=0.31.0", optional = true }
 tabulate = ">=0.8.9"
 numpy = [
