@@ -73,7 +73,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
     else:
         props = pd.DataFrame()
 
-    for pelem in doc_glm["page-elements"]:
+    for ix,pelem in enumerate(doc_glm["page-elements"]):
         ptype = pelem["type"]
         span_i = pelem["span"][0]
         span_j = pelem["span"][1]
@@ -118,7 +118,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
 
                     text = caption["text"][span_i:span_j]
 
-                    doc_glm["page-elements"].remove(nelem)
+                    #doc_glm["page-elements"].remove(nelem)
 
                     prov = ProvenanceItem(page_no=nelem["page"], charspan=tuple(nelem["span"]), bbox=BoundingBox.from_tuple(nelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
 
@@ -166,7 +166,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
 
                     text = caption["text"][span_i:span_j]
 
-                    doc_glm["page-elements"].remove(nelem)
+                    #doc_glm["page-elements"].remove(nelem)
 
                     prov = ProvenanceItem(page_no=pelem["page"], charspan=nelem["span"],
                                           bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
