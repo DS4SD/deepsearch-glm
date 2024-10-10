@@ -1,3 +1,9 @@
+## [v0.24.0](https://github.com/DS4SD/deepsearch-glm/releases/tag/v0.24.0) - 2024-10-10
+
+### Feature
+
+* Add support for python 3.13 ([#82](https://github.com/DS4SD/deepsearch-glm/issues/82)) ([`d4e3962`](https://github.com/DS4SD/deepsearch-glm/commit/d4e39623867a9c5feab39de5535385b93c4e7d37))
+
 ## [v0.23.0](https://github.com/DS4SD/deepsearch-glm/releases/tag/v0.23.0) - 2024-10-09
 
 ### Feature
