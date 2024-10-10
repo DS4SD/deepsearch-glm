@@ -695,7 +695,7 @@ tabulate = "^0.9.0"
 
 [package.source]
 type = "git"
-url = "ssh://git@github.com/DS4SD/docling-core.git"
+url = "https://github.com/DS4SD/docling-core.git"
 reference = "e42a1ddf36e53134aef92f0447cc3352a4e82e70"
 resolved_reference = "e42a1ddf36e53134aef92f0447cc3352a4e82e70"
 
@@ -3112,4 +3112,4 @@ toolkit = ["deepsearch-toolkit"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "237344e08d635ad5aca94c3947561006e2b8e1f823c18569e76bf2a04923389d"
+content-hash = "053027db146130c2c7c3e127e09eb8e6d0a45885cfbf30719911e6f287287404"
