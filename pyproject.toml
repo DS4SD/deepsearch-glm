@@ -43,7 +43,7 @@ numerize = "^0.12"
 tqdm = "^4.64.0"
 rich = "^13.7.0"
 docutils = "!=0.21"
-pywin32 = { version = "^306", markers = "sys_platform == 'win32'" }
+pywin32 = { version = "^307", markers = "sys_platform == 'win32'" }
 requests = "^2.32.3"
 
 [tool.poetry.group.test.dependencies]
