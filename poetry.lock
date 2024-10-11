@@ -696,8 +696,8 @@ tabulate = "^0.9.0"
 [package.source]
 type = "git"
 url = "https://github.com/DS4SD/docling-core.git"
-reference = "e42a1ddf36e53134aef92f0447cc3352a4e82e70"
-resolved_reference = "e42a1ddf36e53134aef92f0447cc3352a4e82e70"
+reference = "baceeaeaa690a12f717918d17336fcbfe414cbb8"
+resolved_reference = "baceeaeaa690a12f717918d17336fcbfe414cbb8"
 
 [[package]]
 name = "docutils"
@@ -2015,13 +2015,13 @@ xmp = ["defusedxml"]
 
 [[package]]
 name = "pkginfo"
-version = "1.11.1"
+version = "1.11.2"
 description = "Query metadata from sdists / bdists / installed packages."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pkginfo-1.11.1-py3-none-any.whl", hash = "sha256:bfa76a714fdfc18a045fcd684dbfc3816b603d9d075febef17cb6582bea29573"},
-    {file = "pkginfo-1.11.1.tar.gz", hash = "sha256:2e0dca1cf4c8e39644eed32408ea9966ee15e0d324c62ba899a393b3c6b467aa"},
+    {file = "pkginfo-1.11.2-py3-none-any.whl", hash = "sha256:9ec518eefccd159de7ed45386a6bb4c6ca5fa2cb3bd9b71154fae44f6f1b36a3"},
+    {file = "pkginfo-1.11.2.tar.gz", hash = "sha256:c6bc916b8298d159e31f2c216e35ee5b86da7da18874f879798d0a1983537c86"},
 ]
 
 [package.extras]
@@ -3112,4 +3112,4 @@ toolkit = ["deepsearch-toolkit"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "053027db146130c2c7c3e127e09eb8e6d0a45885cfbf30719911e6f287287404"
+content-hash = "a54cbfb7e7be8eae8c9a6993033b69e51d806a703ce9acc0ea9d5d88d2cd8ec0"
