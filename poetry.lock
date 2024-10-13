@@ -696,8 +696,8 @@ tabulate = "^0.9.0"
 [package.source]
 type = "git"
 url = "https://github.com/DS4SD/docling-core.git"
-reference = "8223654d87631ec61b9ec3570728e878d85d2ecf"
-resolved_reference = "8223654d87631ec61b9ec3570728e878d85d2ecf"
+reference = "f2b3afa42fe9733a96991df15ceb2e703257d96a"
+resolved_reference = "f2b3afa42fe9733a96991df15ceb2e703257d96a"
 
 [[package]]
 name = "docutils"
@@ -3112,4 +3112,4 @@ toolkit = ["deepsearch-toolkit"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "201bfa05b3a0585f461b50cf93ebaa4aae57237998f4c4b34eb3d44ad5f0478c"
+content-hash = "9633f3116344e96a6e46715b51f88e81712459ae8f556c10e9ec4ad60a1b526f"
