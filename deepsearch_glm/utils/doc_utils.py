@@ -3,7 +3,20 @@ from pathlib import Path
 from typing import List
 
 import pandas as pd
-from docling_core.types.experimental import BoundingBox, CoordOrigin, Size, DoclingDocument, BasePictureData, BaseTableData, TableCell, ProvenanceItem, PageItem, DescriptionItem, DocItemLabel, DocumentOrigin
+from docling_core.types.experimental import (
+    BaseTableData,
+    BoundingBox,
+    CoordOrigin,
+    DescriptionItem,
+    DocItemLabel,
+    DoclingDocument,
+    DocumentOrigin,
+    PageItem,
+    PictureData,
+    ProvenanceItem,
+    Size,
+    TableCell,
+)
 
 
 def resolve_item(paths, obj):
@@ -47,24 +60,25 @@ def _flatten_table_grid(grid: List[List[dict]]) -> List[dict]:
     for sublist in grid:
         for obj in sublist:
             # Convert the spans list to a tuple of tuples for hashing
-            spans_tuple = tuple(tuple(span) for span in obj['spans'])
+            spans_tuple = tuple(tuple(span) for span in obj["spans"])
             if spans_tuple not in seen_spans:
                 seen_spans.add(spans_tuple)
                 unique_objects.append(obj)
 
     return unique_objects
 
+
 def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
     origin = DocumentOrigin(
-        mimetype = "application/pdf",
-        filename = doc_glm["file-info"]["filename"],
-        binary_hash=doc_glm["file-info"]["document-hash"]
+        mimetype="application/pdf",
+        filename=doc_glm["file-info"]["filename"],
+        binary_hash=doc_glm["file-info"]["document-hash"],
     )
     doc_name = Path(origin.filename).stem
 
-    doc: DoclingDocument = DoclingDocument(name=doc_name,
-                                           description=DescriptionItem(),
-                                           origin=origin)
+    doc: DoclingDocument = DoclingDocument(
+        name=doc_name, description=DescriptionItem(), origin=origin
+    )
 
     if "properties" in doc_glm:
         props = pd.DataFrame(
@@ -73,7 +87,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
     else:
         props = pd.DataFrame()
 
-    for ix,pelem in enumerate(doc_glm["page-elements"]):
+    for ix, pelem in enumerate(doc_glm["page-elements"]):
         ptype = pelem["type"]
         span_i = pelem["span"][0]
         span_j = pelem["span"][1]
@@ -110,7 +124,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                     nelem = resolve_item(npaths, doc_glm)
 
                     if nelem is None:
-                        #print(f"warning: undefined caption {npaths}")
+                        # print(f"warning: undefined caption {npaths}")
                         continue
 
                     span_i = nelem["span"][0]
@@ -118,11 +132,19 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
 
                     text = caption["text"][span_i:span_j]
 
-                    #doc_glm["page-elements"].remove(nelem)
+                    # doc_glm["page-elements"].remove(nelem)
 
-                    prov = ProvenanceItem(page_no=nelem["page"], charspan=tuple(nelem["span"]), bbox=BoundingBox.from_tuple(nelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
+                    prov = ProvenanceItem(
+                        page_no=nelem["page"],
+                        charspan=tuple(nelem["span"]),
+                        bbox=BoundingBox.from_tuple(
+                            nelem["bbox"], origin=CoordOrigin.BOTTOMLEFT
+                        ),
+                    )
 
-                    caption_obj = doc.add_text(label=DocItemLabel.CAPTION, text=text, prov=prov)
+                    caption_obj = doc.add_text(
+                        label=DocItemLabel.CAPTION, text=text, prov=prov
+                    )
                     caption_refs.append(caption_obj.get_ref())
 
             figure = {
@@ -141,10 +163,15 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                 ],
             }
 
-            prov = ProvenanceItem(page_no=pelem["page"], charspan=(0, len(text)),
-                                  bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
+            prov = ProvenanceItem(
+                page_no=pelem["page"],
+                charspan=(0, len(text)),
+                bbox=BoundingBox.from_tuple(
+                    pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT
+                ),
+            )
 
-            pic = doc.add_picture(data=BasePictureData(), prov=prov)
+            pic = doc.add_picture(data=PictureData(), prov=prov)
             pic.captions.extend(caption_refs)
 
         elif ptype == "table":
@@ -158,7 +185,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                     nelem = resolve_item(npaths, doc_glm)
 
                     if nelem is None:
-                        #print(f"warning: undefined caption {npaths}")
+                        # print(f"warning: undefined caption {npaths}")
                         continue
 
                     span_i = nelem["span"][0]
@@ -166,12 +193,19 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
 
                     text = caption["text"][span_i:span_j]
 
-                    #doc_glm["page-elements"].remove(nelem)
+                    # doc_glm["page-elements"].remove(nelem)
 
-                    prov = ProvenanceItem(page_no=pelem["page"], charspan=nelem["span"],
-                                          bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
+                    prov = ProvenanceItem(
+                        page_no=pelem["page"],
+                        charspan=nelem["span"],
+                        bbox=BoundingBox.from_tuple(
+                            pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT
+                        ),
+                    )
 
-                    caption_obj = doc.add_text(label=DocItemLabel.CAPTION, text=text, prov=prov)
+                    caption_obj = doc.add_text(
+                        label=DocItemLabel.CAPTION, text=text, prov=prov
+                    )
                     caption_refs.append(caption_obj.get_ref())
 
             table_cells_glm = _flatten_table_grid(obj["data"])
@@ -180,20 +214,31 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
             for tbl_cell_glm in table_cells_glm:
                 table_cells.append(
                     TableCell(
-                        row_span=tbl_cell_glm["row-span"][1]-tbl_cell_glm["row-span"][0],
-                        col_span=tbl_cell_glm["col-span"][1]-tbl_cell_glm["col-span"][0],
+                        row_span=tbl_cell_glm["row-span"][1]
+                        - tbl_cell_glm["row-span"][0],
+                        col_span=tbl_cell_glm["col-span"][1]
+                        - tbl_cell_glm["col-span"][0],
                         start_row_offset_idx=tbl_cell_glm["row-span"][0],
                         end_row_offset_idx=tbl_cell_glm["row-span"][1],
                         start_col_offset_idx=tbl_cell_glm["col-span"][0],
                         end_col_offset_idx=tbl_cell_glm["col-span"][1],
                         text=tbl_cell_glm["text"],
-                    ) # TODO: add "type" (col_header, row_header, body, ...)
+                    )  # TODO: add "type" (col_header, row_header, body, ...)
                 )
 
-            tbl_data = BaseTableData(num_rows=obj.get("#-rows", 0), num_cols=obj.get("#-cols", 0), table_cells=table_cells)
+            tbl_data = BaseTableData(
+                num_rows=obj.get("#-rows", 0),
+                num_cols=obj.get("#-cols", 0),
+                table_cells=table_cells,
+            )
 
-            prov = ProvenanceItem(page_no=pelem["page"], charspan=(0, 0),
-                                  bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
+            prov = ProvenanceItem(
+                page_no=pelem["page"],
+                charspan=(0, 0),
+                bbox=BoundingBox.from_tuple(
+                    pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT
+                ),
+            )
 
             tbl = doc.add_table(data=tbl_data, prov=prov)
             tbl.captions.extend(caption_refs)
@@ -206,12 +251,17 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
             if update_name_label and len(props) > 0 and type_label == "paragraph":
                 prop = props[
                     (props["type"] == "semantic") & (props["subj_path"] == iref)
-                    ]
+                ]
                 if len(prop) == 1 and prop.iloc[0]["confidence"] > 0.85:
                     name_label = prop.iloc[0]["label"]
 
-            prov = ProvenanceItem(page_no=pelem["page"], charspan=(0, len(text)),
-                                  bbox=BoundingBox.from_tuple(pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT))
+            prov = ProvenanceItem(
+                page_no=pelem["page"],
+                charspan=(0, len(text)),
+                bbox=BoundingBox.from_tuple(
+                    pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT
+                ),
+            )
 
             doc.add_text(label=DocItemLabel(name_label), text=text, prov=prov)
 
@@ -219,10 +269,10 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
             pass
             # This branch should not be reachable.
 
-    #page_to_hash = {
+    # page_to_hash = {
     #    item["page"]: item["hash"]
     #    for item in doc_glm["file-info"]["page-hashes"]
-    #}
+    # }
 
     for page_dim in doc_glm["page-dimensions"]:
         page_no = int(page_dim["page"])
@@ -231,6 +281,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
         doc.add_page(page_no=page_no, size=size)
 
     return doc
+
 
 def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
     """Convert Document object (with `body`) to its legacy format (with `main-text`)"""
@@ -253,7 +304,7 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
         DocItemLabel.CHECKBOX_UNSELECTED.value: "Checkbox-Unselected",
         DocItemLabel.FORM.value: "Form",
         DocItemLabel.KEY_VALUE_REGION.value: "Key-Value Region",
-        DocItemLabel.PARAGRAPH.value: "paragraph"
+        DocItemLabel.PARAGRAPH.value: "paragraph",
     }
 
     doc_leg["main-text"] = []
