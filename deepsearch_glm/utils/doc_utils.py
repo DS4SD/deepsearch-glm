@@ -130,7 +130,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                     span_i = nelem["span"][0]
                     span_j = nelem["span"][1]
 
-                    text = caption["text"][span_i:span_j]
+                    cap_text = caption["text"][span_i:span_j]
 
                     # doc_glm["page-elements"].remove(nelem)
 
@@ -143,25 +143,9 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                     )
 
                     caption_obj = doc.add_text(
-                        label=DocItemLabel.CAPTION, text=text, prov=prov
+                        label=DocItemLabel.CAPTION, text=cap_text, prov=prov
                     )
                     caption_refs.append(caption_obj.get_ref())
-
-            figure = {
-                "confidence": obj.get("confidence", 0),
-                "created_by": obj.get("created_by", ""),
-                "type": obj.get("type", "figure"),
-                "cells": [],
-                "data": [],
-                "text": text,
-                "prov": [
-                    {
-                        "bbox": pelem["bbox"],
-                        "page": pelem["page"],
-                        "span": [0, len(text)],
-                    }
-                ],
-            }
 
             prov = ProvenanceItem(
                 page_no=pelem["page"],
@@ -191,20 +175,20 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                     span_i = nelem["span"][0]
                     span_j = nelem["span"][1]
 
-                    text = caption["text"][span_i:span_j]
+                    cap_text = caption["text"][span_i:span_j]
 
                     # doc_glm["page-elements"].remove(nelem)
 
                     prov = ProvenanceItem(
-                        page_no=pelem["page"],
-                        charspan=nelem["span"],
+                        page_no=nelem["page"],
+                        charspan=tuple(nelem["span"]),
                         bbox=BoundingBox.from_tuple(
-                            pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT
+                            nelem["bbox"], origin=CoordOrigin.BOTTOMLEFT
                         ),
                     )
 
                     caption_obj = doc.add_text(
-                        label=DocItemLabel.CAPTION, text=text, prov=prov
+                        label=DocItemLabel.CAPTION, text=cap_text, prov=prov
                     )
                     caption_refs.append(caption_obj.get_ref())
 
@@ -212,6 +196,24 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
 
             table_cells = []
             for tbl_cell_glm in table_cells_glm:
+                if tbl_cell_glm["bbox"] is not None:
+                    bbox = BoundingBox.from_tuple(
+                        tbl_cell_glm["bbox"], origin=CoordOrigin.BOTTOMLEFT
+                    )
+                else:
+                    bbox = None
+
+                is_col_header = False
+                is_row_header = False
+                is_row_section = False
+
+                if tbl_cell_glm["type"] == "col_header":
+                    is_col_header = True
+                elif tbl_cell_glm["type"] == "row_header":
+                    is_row_header = True
+                elif tbl_cell_glm["type"] == "row_section":
+                    is_row_section = True
+
                 table_cells.append(
                     TableCell(
                         row_span=tbl_cell_glm["row-span"][1]
@@ -223,7 +225,11 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                         start_col_offset_idx=tbl_cell_glm["col-span"][0],
                         end_col_offset_idx=tbl_cell_glm["col-span"][1],
                         text=tbl_cell_glm["text"],
-                    )  # TODO: add "type" (col_header, row_header, body, ...)
+                        bbox=bbox,
+                        column_header=is_col_header,
+                        row_header=is_row_header,
+                        row_section=is_row_section,
+                    )
                 )
 
             tbl_data = BaseTableData(
@@ -268,11 +274,6 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
         else:
             pass
             # This branch should not be reachable.
-
-    # page_to_hash = {
-    #    item["page"]: item["hash"]
-    #    for item in doc_glm["file-info"]["page-hashes"]
-    # }
 
     for page_dim in doc_glm["page-dimensions"]:
         page_no = int(page_dim["page"])
