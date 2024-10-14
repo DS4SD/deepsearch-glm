@@ -4,7 +4,7 @@ from typing import List
 
 import pandas as pd
 from docling_core.types.experimental import (
-    BaseTableData,
+    TableData,
     BoundingBox,
     CoordOrigin,
     DescriptionItem,
@@ -232,7 +232,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                     )
                 )
 
-            tbl_data = BaseTableData(
+            tbl_data = TableData(
                 num_rows=obj.get("#-rows", 0),
                 num_cols=obj.get("#-cols", 0),
                 table_cells=table_cells,
