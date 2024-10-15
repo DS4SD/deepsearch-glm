@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import List
 
 import pandas as pd
-from docling_core.types.experimental import (
+from docling_core.types.doc import (
     TableData,
     BoundingBox,
     CoordOrigin,
