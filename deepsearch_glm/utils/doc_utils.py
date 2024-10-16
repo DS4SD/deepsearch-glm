@@ -286,29 +286,57 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
     """Convert Document object (with `body`) to its legacy format (with `main-text`)"""
 
     reverse_label_mapping = {
-        DocItemLabel.CAPTION.value: "Caption",
-        DocItemLabel.FOOTNOTE.value: "Footnote",
-        DocItemLabel.FORMULA.value: "Formula",
-        DocItemLabel.LIST_ITEM.value: "List-item",
-        DocItemLabel.PAGE_FOOTER.value: "Page-footer",
-        DocItemLabel.PAGE_HEADER.value: "Page-header",
-        DocItemLabel.PICTURE.value: "Picture",  # low threshold adjust to capture chemical structures for examples.
-        DocItemLabel.SECTION_HEADER.value: "Section-header",
-        DocItemLabel.TABLE.value: "Table",
-        DocItemLabel.TEXT.value: "Text",
-        DocItemLabel.TITLE.value: "Title",
-        DocItemLabel.DOCUMENT_INDEX.value: "Document Index",
-        DocItemLabel.CODE.value: "Code",
-        DocItemLabel.CHECKBOX_SELECTED.value: "Checkbox-Selected",
-        DocItemLabel.CHECKBOX_UNSELECTED.value: "Checkbox-Unselected",
-        DocItemLabel.FORM.value: "Form",
-        DocItemLabel.KEY_VALUE_REGION.value: "Key-Value Region",
+        DocItemLabel.CAPTION.value: "caption",
+        DocItemLabel.FOOTNOTE.value: "footnote",
+        DocItemLabel.FORMULA.value: "formula",
+        DocItemLabel.LIST_ITEM.value: "list-item",
+        DocItemLabel.PAGE_FOOTER.value: "page-footer",
+        DocItemLabel.PAGE_HEADER.value: "page-header",
+        DocItemLabel.PICTURE.value: "picture",  # low threshold adjust to capture chemical structures for examples.
+        DocItemLabel.SECTION_HEADER.value: "section-header",
+        DocItemLabel.TABLE.value: "table",
+        DocItemLabel.TEXT.value: "text",
+        DocItemLabel.TITLE.value: "title",
+        DocItemLabel.DOCUMENT_INDEX.value: "document index",
+        DocItemLabel.CODE.value: "code",
+        DocItemLabel.CHECKBOX_SELECTED.value: "checkbox-selected",
+        DocItemLabel.CHECKBOX_UNSELECTED.value: "checkbox-unselected",
+        DocItemLabel.FORM.value: "form",
+        DocItemLabel.KEY_VALUE_REGION.value: "key-value region",
         DocItemLabel.PARAGRAPH.value: "paragraph",
+        "subtitle-level-1": "subtitle-level-1",
     }
 
-    # for v in reverse_label_mapping.values():
-    #     reverse_label_mapping[v] = v
-    #     reverse_label_mapping[v.lower()] = v
+    extra_mappings = {}
+    for v in reverse_label_mapping.values():
+        extra_mappings[v] = v
+        #extra_mappings[v.lower()] = v
+    reverse_label_mapping = {**reverse_label_mapping, **extra_mappings}
+
+    layout_label_to_ds_type = {
+        DocItemLabel.TITLE: "title",
+        DocItemLabel.DOCUMENT_INDEX: "table-of-contents",
+        DocItemLabel.SECTION_HEADER: "subtitle-level-1",
+        DocItemLabel.CHECKBOX_SELECTED: "checkbox-selected",
+        DocItemLabel.CHECKBOX_UNSELECTED: "checkbox-unselected",
+        DocItemLabel.CAPTION: "caption",
+        DocItemLabel.PAGE_HEADER: "page-header",
+        DocItemLabel.PAGE_FOOTER: "page-footer",
+        DocItemLabel.FOOTNOTE: "footnote",
+        DocItemLabel.TABLE: "table",
+        DocItemLabel.FORMULA: "equation",
+        DocItemLabel.LIST_ITEM: "paragraph",
+        DocItemLabel.CODE: "paragraph",
+        DocItemLabel.PICTURE: "figure",
+        DocItemLabel.TEXT: "paragraph",
+        DocItemLabel.PARAGRAPH: "paragraph",
+    }
+    extra_mappings = {}
+    for v in layout_label_to_ds_type.values():
+        #extra_mappings[v[:1].upper() + v[1:]] = v # capitalize
+        extra_mappings[v] = v
+    layout_label_to_ds_type = {**layout_label_to_ds_type, **extra_mappings}
+
 
     doc_leg["main-text"] = []
     doc_leg["figures"] = []
@@ -372,7 +400,7 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
                     pitem = {
                         "text": text,
                         "name": reverse_label_mapping[nelem["name"]],
-                        "type": nelem["type"],
+                        "type": layout_label_to_ds_type[nelem["type"]],
                         "prov": [
                             {
                                 "bbox": nelem["bbox"],
@@ -430,7 +458,7 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
                     pitem = {
                         "text": text,
                         "name": reverse_label_mapping[nelem["name"]],
-                        "type": nelem["type"],
+                        "type": layout_label_to_ds_type[nelem["type"]],
                         "prov": [
                             {
                                 "bbox": nelem["bbox"],
@@ -468,7 +496,7 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
         elif "text" in obj:
             text = obj["text"][span_i:span_j]
 
-            type_label = pelem["type"]
+            type_label = layout_label_to_ds_type[pelem["type"]]
             name_label = reverse_label_mapping[pelem["name"]]
             if update_name_label and len(props) > 0 and type_label == "paragraph":
                 prop = props[
@@ -494,7 +522,7 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
         else:
             pitem = {
                 "name": reverse_label_mapping[pelem["name"]],
-                "type": pelem["type"],
+                "type": layout_label_to_ds_type[pelem["type"]],
                 "prov": [
                     {"bbox": pelem["bbox"], "page": pelem["page"], "span": [0, 0]}
                 ],
