@@ -1,3 +1,9 @@
+## [v0.25.0](https://github.com/DS4SD/deepsearch-glm/releases/tag/v0.25.0) - 2024-10-16
+
+### Feature
+
+* Support new docling-core format ([#74](https://github.com/DS4SD/deepsearch-glm/issues/74)) ([`739eecb`](https://github.com/DS4SD/deepsearch-glm/commit/739eecb2c82a95a188faa8172dc659c2b45dae37))
+
 ## [v0.24.0](https://github.com/DS4SD/deepsearch-glm/releases/tag/v0.24.0) - 2024-10-10
 
 ### Feature
