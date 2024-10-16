@@ -268,6 +268,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                 ),
             )
 
+            # TODO: Decide on add_heading, add_list_item, or add_text according to label.
             doc.add_text(label=DocItemLabel(name_label), text=text, prov=prov)
 
         else:
