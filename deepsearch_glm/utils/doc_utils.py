@@ -73,9 +73,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
     )
     doc_name = Path(origin.filename).stem
 
-    doc: DoclingDocument = DoclingDocument(
-        name=doc_name, origin=origin
-    )
+    doc: DoclingDocument = DoclingDocument(name=doc_name, origin=origin)
 
     if "properties" in doc_glm:
         props = pd.DataFrame(
@@ -310,7 +308,7 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
     extra_mappings = {}
     for v in reverse_label_mapping.values():
         extra_mappings[v] = v
-        #extra_mappings[v.lower()] = v
+        # extra_mappings[v.lower()] = v
     reverse_label_mapping = {**reverse_label_mapping, **extra_mappings}
 
     layout_label_to_ds_type = {
@@ -333,10 +331,9 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
     }
     extra_mappings = {}
     for v in layout_label_to_ds_type.values():
-        #extra_mappings[v[:1].upper() + v[1:]] = v # capitalize
+        # extra_mappings[v[:1].upper() + v[1:]] = v # capitalize
         extra_mappings[v] = v
     layout_label_to_ds_type = {**layout_label_to_ds_type, **extra_mappings}
-
 
     doc_leg["main-text"] = []
     doc_leg["figures"] = []
