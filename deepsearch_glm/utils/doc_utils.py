@@ -4,7 +4,6 @@ from typing import List
 
 import pandas as pd
 from docling_core.types.doc import (
-    TableData,
     BoundingBox,
     CoordOrigin,
     DescriptionItem,
@@ -12,10 +11,10 @@ from docling_core.types.doc import (
     DoclingDocument,
     DocumentOrigin,
     PageItem,
-    PictureData,
     ProvenanceItem,
     Size,
     TableCell,
+    TableData,
 )
 
 
@@ -155,7 +154,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                 ),
             )
 
-            pic = doc.add_picture(data=PictureData(), prov=prov)
+            pic = doc.add_picture(prov=prov)
             pic.captions.extend(caption_refs)
 
         elif ptype == "table":
@@ -307,6 +306,10 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
         DocItemLabel.KEY_VALUE_REGION.value: "Key-Value Region",
         DocItemLabel.PARAGRAPH.value: "paragraph",
     }
+
+    for v in reverse_label_mapping.values():
+        reverse_label_mapping[v] = v
+        reverse_label_mapping[v.lower()] = v
 
     doc_leg["main-text"] = []
     doc_leg["figures"] = []
