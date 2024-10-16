@@ -154,13 +154,13 @@ files = [
 
 [[package]]
 name = "certifi"
-version = "2023.11.17"
+version = "2024.8.30"
 description = "Python package for providing Mozilla's CA Bundle."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "certifi-2023.11.17-py3-none-any.whl", hash = "sha256:e036ab49d5b79556f99cfc2d9320b34cfbe5be05c5871b51de9329f0603b0474"},
-    {file = "certifi-2023.11.17.tar.gz", hash = "sha256:9b469f3a900bf28dc19b8cfbf8019bf47f7fdd1a65a1d4ffb98fc14166beb4d1"},
+    {file = "certifi-2024.8.30-py3-none-any.whl", hash = "sha256:922820b53db7a7257ffbda3f597266d435245903d80737e34f8a45ff3e3230d8"},
+    {file = "certifi-2024.8.30.tar.gz", hash = "sha256:bec941d2aa8195e248a60b31ff9f0558284cf01a52591ceda73ea9afffd69fd9"},
 ]
 
 [[package]]
@@ -584,32 +584,34 @@ tests = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
 name = "deepsearch-toolkit"
-version = "0.48.0"
+version = "1.0.1"
 description = "Interact with the Deep Search platform for new knowledge explorations and discoveries"
 optional = true
-python-versions = "<4.0,>=3.8"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "deepsearch_toolkit-0.48.0-py3-none-any.whl", hash = "sha256:4f3140a36cdc8345e43545995480b7a6a6d32741ea38951177c71b3e25596b50"},
-    {file = "deepsearch_toolkit-0.48.0.tar.gz", hash = "sha256:c0dab8138e56ab6c22c41c08970eb518f62a3d0a73ac82fe81ace4c31a24d529"},
+    {file = "deepsearch_toolkit-1.0.1-py3-none-any.whl", hash = "sha256:765228574d0c8de0fcb7da7dc23a7b7cc94a207f5ac5ddc86e93cf0bdd50dd7e"},
+    {file = "deepsearch_toolkit-1.0.1.tar.gz", hash = "sha256:5c2745417778a42a8ff48d468765749f8157e29452fde862a0d357568075b346"},
 ]
 
 [package.dependencies]
-certifi = ">=2023.07.22,<2024.0.0"
-platformdirs = ">=3.5.1,<4.0.0"
+certifi = ">=2024.07.04,<2025.0.0"
+docling-core = ">=1.1.2,<2.0.0"
+platformdirs = ">=3.5.1,<5.0.0"
 pluggy = ">=1.0.0,<2.0.0"
 pydantic = ">=2.0.3,<3.0.0"
+pydantic-settings = ">=2.4.0,<3.0.0"
 python-dateutil = ">=2.8.2,<3.0.0"
 python-dotenv = ">=1.0.0,<2.0.0"
 requests = ">=2.27.1,<3.0.0"
 six = ">=1.16.0,<2.0.0"
 tabulate = ">=0.8.9,<1.0.0"
 tqdm = ">=4.64.0,<5.0.0"
-typer = {version = ">=0.9.0,<0.10.0", extras = ["all"]}
+typer = {version = ">=0.9.0,<1.0.0", extras = ["all"]}
 urllib3 = ">=1.26.8,<2.0.0"
 
 [package.extras]
-all = ["anyio (>=3.6.2,<4.0.0)", "fastapi (>=0.109.2,<0.110.0)", "uvicorn (>=0.27.0.post1,<0.28.0)"]
-api = ["anyio (>=3.6.2,<4.0.0)", "fastapi (>=0.109.2,<0.110.0)", "uvicorn (>=0.27.0.post1,<0.28.0)"]
+all = ["anyio (>=3.6.2,<4.0.0)", "fastapi (>=0.112.0,<0.113.0)", "uvicorn (>=0.30.5,<0.31.0)"]
+api = ["anyio (>=3.6.2,<4.0.0)", "fastapi (>=0.112.0,<0.113.0)", "uvicorn (>=0.30.5,<0.31.0)"]
 
 [[package]]
 name = "delocate"
@@ -657,22 +659,26 @@ files = [
 
 [[package]]
 name = "docling-core"
-version = "2.0.0"
+version = "1.7.2"
 description = "A python library to define and validate data types in Docling."
 optional = false
-python-versions = "<4.0,>=3.9"
-files = [
-    {file = "docling_core-2.0.0-py3-none-any.whl", hash = "sha256:81b1f74258ae02afee3519e12a72cf89c3a6e2acb2ff159414eae8b1332c083e"},
-    {file = "docling_core-2.0.0.tar.gz", hash = "sha256:086b2f539b055f1ba3920fa0d609db55ca92633e95abd0578d4f2375647b3d64"},
-]
+python-versions = "^3.9"
+files = []
+develop = false
 
 [package.dependencies]
-jsonref = ">=1.1.0,<2.0.0"
-jsonschema = ">=4.16.0,<5.0.0"
-pandas = ">=2.1.4,<3.0.0"
-pillow = ">=10.3.0,<11.0.0"
-pydantic = ">=2.6.0,<3.0.0"
-tabulate = ">=0.9.0,<0.10.0"
+jsonref = "^1.1.0"
+jsonschema = "^4.16.0"
+pandas = "^2.1.4"
+pillow = "^10.3.0"
+pydantic = "^2.6.0"
+tabulate = "^0.9.0"
+
+[package.source]
+type = "git"
+url = "https://github.com/DS4SD/docling-core.git"
+reference = "002f784745bf2e2bcf9def81d070c59f2e7c61c2"
+resolved_reference = "002f784745bf2e2bcf9def81d070c59f2e7c61c2"
 
 [[package]]
 name = "docutils"
@@ -1840,18 +1846,19 @@ testing = ["pytest", "pytest-cov", "wheel"]
 
 [[package]]
 name = "platformdirs"
-version = "3.11.0"
-description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
+version = "4.3.6"
+description = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "platformdirs-3.11.0-py3-none-any.whl", hash = "sha256:e9d171d00af68be50e9202731309c4e658fd8bc76f55c11c7dd760d023bda68e"},
-    {file = "platformdirs-3.11.0.tar.gz", hash = "sha256:cf8ee52a3afdb965072dcc652433e0c7e3e40cf5ea1477cd4b3b1d2eb75495b3"},
+    {file = "platformdirs-4.3.6-py3-none-any.whl", hash = "sha256:73e575e1408ab8103900836b97580d5307456908a03e92031bab39e4554cc3fb"},
+    {file = "platformdirs-4.3.6.tar.gz", hash = "sha256:357fb2acbc885b0419afd3ce3ed34564c13c9b95c89360cd9563f73aa5e2b907"},
 ]
 
 [package.extras]
-docs = ["furo (>=2023.7.26)", "proselint (>=0.13)", "sphinx (>=7.1.1)", "sphinx-autodoc-typehints (>=1.24)"]
-test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.4)", "pytest-cov (>=4.1)", "pytest-mock (>=3.11.1)"]
+docs = ["furo (>=2024.8.6)", "proselint (>=0.14)", "sphinx (>=8.0.2)", "sphinx-autodoc-typehints (>=2.4)"]
+test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=8.3.2)", "pytest-cov (>=5)", "pytest-mock (>=3.14)"]
+type = ["mypy (>=1.11.2)"]
 
 [[package]]
 name = "pluggy"
@@ -2021,6 +2028,26 @@ files = [
 
 [package.dependencies]
 typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
+
+[[package]]
+name = "pydantic-settings"
+version = "2.5.2"
+description = "Settings management using Pydantic"
+optional = true
+python-versions = ">=3.8"
+files = [
+    {file = "pydantic_settings-2.5.2-py3-none-any.whl", hash = "sha256:2c912e55fd5794a59bf8c832b9de832dcfdf4778d79ff79b708744eed499a907"},
+    {file = "pydantic_settings-2.5.2.tar.gz", hash = "sha256:f90b139682bee4d2065273d5185d71d37ea46cfe57e1b5ae184fc6a0b2484ca0"},
+]
+
+[package.dependencies]
+pydantic = ">=2.7.0"
+python-dotenv = ">=0.21.0"
+
+[package.extras]
+azure-key-vault = ["azure-identity (>=1.16.0)", "azure-keyvault-secrets (>=4.8.0)"]
+toml = ["tomli (>=2.0.1)"]
+yaml = ["pyyaml (>=6.0.1)"]
 
 [[package]]
 name = "pygments"
@@ -2775,27 +2802,20 @@ urllib3 = ">=1.26.0"
 
 [[package]]
 name = "typer"
-version = "0.9.4"
+version = "0.12.5"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
 optional = true
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "typer-0.9.4-py3-none-any.whl", hash = "sha256:aa6c4a4e2329d868b80ecbaf16f807f2b54e192209d7ac9dd42691d63f7a54eb"},
-    {file = "typer-0.9.4.tar.gz", hash = "sha256:f714c2d90afae3a7929fcd72a3abb08df305e1ff61719381384211c4070af57f"},
+    {file = "typer-0.12.5-py3-none-any.whl", hash = "sha256:62fe4e471711b147e3365034133904df3e235698399bc4de2b36c8579298d52b"},
+    {file = "typer-0.12.5.tar.gz", hash = "sha256:f592f089bedcc8ec1b974125d64851029c3b1af145f04aca64d69410f0c9b722"},
 ]
 
 [package.dependencies]
-click = ">=7.1.1,<9.0.0"
-colorama = {version = ">=0.4.3,<0.5.0", optional = true, markers = "extra == \"all\""}
-rich = {version = ">=10.11.0,<14.0.0", optional = true, markers = "extra == \"all\""}
-shellingham = {version = ">=1.3.0,<2.0.0", optional = true, markers = "extra == \"all\""}
+click = ">=8.0.0"
+rich = ">=10.11.0"
+shellingham = ">=1.3.0"
 typing-extensions = ">=3.7.4.3"
-
-[package.extras]
-all = ["colorama (>=0.4.3,<0.5.0)", "rich (>=10.11.0,<14.0.0)", "shellingham (>=1.3.0,<2.0.0)"]
-dev = ["autoflake (>=1.3.1,<2.0.0)", "flake8 (>=3.8.3,<4.0.0)", "pre-commit (>=2.17.0,<3.0.0)"]
-doc = ["cairosvg (>=2.5.2,<3.0.0)", "mdx-include (>=1.4.1,<2.0.0)", "mkdocs (>=1.1.2,<2.0.0)", "mkdocs-material (>=8.1.4,<9.0.0)", "pillow (>=9.3.0,<10.0.0)"]
-test = ["black (>=22.3.0,<23.0.0)", "coverage (>=6.2,<7.0)", "isort (>=5.0.6,<6.0.0)", "mypy (==0.971)", "pytest (>=4.4.0,<8.0.0)", "pytest-cov (>=2.10.0,<5.0.0)", "pytest-sugar (>=0.9.4,<0.10.0)", "pytest-xdist (>=1.32.0,<4.0.0)", "rich (>=10.11.0,<14.0.0)", "shellingham (>=1.3.0,<2.0.0)"]
 
 [[package]]
 name = "typing-extensions"
@@ -2894,4 +2914,4 @@ toolkit = ["deepsearch-toolkit"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "27db16690cd6b56a624a4e39caf5886e3e428837d778d99b7d5c06b7574da349"
+content-hash = "7d09f3c5e4fb58a4c47e50701b6441237b605a4d31cac9d14b4710ac1abf5e2a"
