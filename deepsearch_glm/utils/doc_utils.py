@@ -6,11 +6,9 @@ import pandas as pd
 from docling_core.types.doc import (
     BoundingBox,
     CoordOrigin,
-    DescriptionItem,
     DocItemLabel,
     DoclingDocument,
     DocumentOrigin,
-    PageItem,
     ProvenanceItem,
     Size,
     TableCell,
@@ -76,7 +74,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
     doc_name = Path(origin.filename).stem
 
     doc: DoclingDocument = DoclingDocument(
-        name=doc_name, description=DescriptionItem(), origin=origin
+        name=doc_name, origin=origin
     )
 
     if "properties" in doc_glm:
@@ -308,9 +306,9 @@ def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
         DocItemLabel.PARAGRAPH.value: "paragraph",
     }
 
-    for v in reverse_label_mapping.values():
-        reverse_label_mapping[v] = v
-        reverse_label_mapping[v.lower()] = v
+    # for v in reverse_label_mapping.values():
+    #     reverse_label_mapping[v] = v
+    #     reverse_label_mapping[v.lower()] = v
 
     doc_leg["main-text"] = []
     doc_leg["figures"] = []
