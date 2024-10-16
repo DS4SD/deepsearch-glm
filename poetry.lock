@@ -584,18 +584,18 @@ tests = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
 name = "deepsearch-toolkit"
-version = "1.0.1"
+version = "1.1.0"
 description = "Interact with the Deep Search platform for new knowledge explorations and discoveries"
 optional = true
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "deepsearch_toolkit-1.0.1-py3-none-any.whl", hash = "sha256:765228574d0c8de0fcb7da7dc23a7b7cc94a207f5ac5ddc86e93cf0bdd50dd7e"},
-    {file = "deepsearch_toolkit-1.0.1.tar.gz", hash = "sha256:5c2745417778a42a8ff48d468765749f8157e29452fde862a0d357568075b346"},
+    {file = "deepsearch_toolkit-1.1.0-py3-none-any.whl", hash = "sha256:0a186a669efc2df4560c920b93510e33193da9178388a2536fc40904ce43fe62"},
+    {file = "deepsearch_toolkit-1.1.0.tar.gz", hash = "sha256:3b219b410569e13fdb87e11e17811269086e39715439357970c9094848922bc8"},
 ]
 
 [package.dependencies]
 certifi = ">=2024.07.04,<2025.0.0"
-docling-core = ">=1.1.2,<2.0.0"
+docling-core = ">=2.0.0,<3.0.0"
 platformdirs = ">=3.5.1,<5.0.0"
 pluggy = ">=1.0.0,<2.0.0"
 pydantic = ">=2.0.3,<3.0.0"
@@ -659,26 +659,22 @@ files = [
 
 [[package]]
 name = "docling-core"
-version = "1.7.2"
+version = "2.0.0"
 description = "A python library to define and validate data types in Docling."
 optional = false
-python-versions = "^3.9"
-files = []
-develop = false
+python-versions = "<4.0,>=3.9"
+files = [
+    {file = "docling_core-2.0.0-py3-none-any.whl", hash = "sha256:81b1f74258ae02afee3519e12a72cf89c3a6e2acb2ff159414eae8b1332c083e"},
+    {file = "docling_core-2.0.0.tar.gz", hash = "sha256:086b2f539b055f1ba3920fa0d609db55ca92633e95abd0578d4f2375647b3d64"},
+]
 
 [package.dependencies]
-jsonref = "^1.1.0"
-jsonschema = "^4.16.0"
-pandas = "^2.1.4"
-pillow = "^10.3.0"
-pydantic = "^2.6.0"
-tabulate = "^0.9.0"
-
-[package.source]
-type = "git"
-url = "https://github.com/DS4SD/docling-core.git"
-reference = "002f784745bf2e2bcf9def81d070c59f2e7c61c2"
-resolved_reference = "002f784745bf2e2bcf9def81d070c59f2e7c61c2"
+jsonref = ">=1.1.0,<2.0.0"
+jsonschema = ">=4.16.0,<5.0.0"
+pandas = ">=2.1.4,<3.0.0"
+pillow = ">=10.3.0,<11.0.0"
+pydantic = ">=2.6.0,<3.0.0"
+tabulate = ">=0.9.0,<0.10.0"
 
 [[package]]
 name = "docutils"
@@ -2914,4 +2910,4 @@ toolkit = ["deepsearch-toolkit"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "7d09f3c5e4fb58a4c47e50701b6441237b605a4d31cac9d14b4710ac1abf5e2a"
+content-hash = "8f8ca00ed6c1a5a086d2c5d85674f27e25bd2ad8801e4d9ce03a4dc2cbb22f7a"
