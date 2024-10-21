@@ -36,11 +36,8 @@ pandas = [
     { version = "^2.1.4", markers = 'python_version >= "3.9"' },
     { version = ">=1.5.1", markers = 'python_version < "3.9"' },
 ]
-matplotlib = "^3.7.1"
-networkx = "^3.1"
-netwulf = "^0.1.5"
+matplotlib = { version = "^3.7.1", optional = true }
 python-dotenv = "^1.0.0"
-numerize = "^0.12"
 tqdm = "^4.64.0"
 rich = "^13.7.0"
 docutils = "!=0.21"
@@ -68,6 +65,7 @@ delocate = "^0.11.0"
 # namely as the union of all extras' direct dependencies (since poetry currently does not
 # support recursive extras: https://github.com/python-poetry/poetry/issues/3369)
 
+pyplot = ["matplotlib"]
 toolkit = ["deepsearch-toolkit"]
 
 
