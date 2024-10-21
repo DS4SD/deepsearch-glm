@@ -1,3 +1,9 @@
+## [v0.26.0](https://github.com/DS4SD/deepsearch-glm/releases/tag/v0.26.0) - 2024-10-21
+
+### Feature
+
+* Disambiguate section headings and list items from text items in DoclingDocument ([#86](https://github.com/DS4SD/deepsearch-glm/issues/86)) ([`d2b1e60`](https://github.com/DS4SD/deepsearch-glm/commit/d2b1e60d79d961c53889016eff06536a97ec31ee))
+
 ## [v0.25.0](https://github.com/DS4SD/deepsearch-glm/releases/tag/v0.25.0) - 2024-10-16
 
 ### Feature
