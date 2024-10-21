@@ -263,9 +263,15 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
                     pelem["bbox"], origin=CoordOrigin.BOTTOMLEFT
                 ),
             )
+            label = DocItemLabel(name_label)
 
-            # TODO: Decide on add_heading, add_list_item, or add_text according to label.
-            doc.add_text(label=DocItemLabel(name_label), text=text, prov=prov)
+            if label == DocItemLabel.SECTION_HEADER:
+                doc.add_heading(text=text, prov=prov)
+            elif label == DocItemLabel.LIST_ITEM:
+                # TODO: Infer if this is a numbered or a bullet list item
+                doc.add_list_item(text=text, enumerated=False, prov=prov)
+            else:
+                doc.add_text(label=DocItemLabel(name_label), text=text, prov=prov)
 
         else:
             pass
