@@ -9,6 +9,7 @@ from docling_core.types.doc import (
     DocItemLabel,
     DoclingDocument,
     DocumentOrigin,
+    GroupLabel,
     ProvenanceItem,
     Size,
     TableCell,
@@ -82,6 +83,8 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
     else:
         props = pd.DataFrame()
 
+    current_list = None
+
     for ix, pelem in enumerate(doc_glm["page-elements"]):
         ptype = pelem["type"]
         span_i = pelem["span"][0]
@@ -105,10 +108,12 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
         obj = resolve_item(path, doc_glm)
 
         if obj is None:
+            current_list = None
             print(f"warning: undefined {path}")
             continue
 
         if ptype == "figure":
+            current_list = None
             text = ""
             caption_refs = []
             for caption in obj["captions"]:
@@ -154,6 +159,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
             pic.captions.extend(caption_refs)
 
         elif ptype == "table":
+            current_list = None
             text = ""
             caption_refs = []
             for caption in obj["captions"]:
@@ -265,17 +271,22 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
             )
             label = DocItemLabel(name_label)
 
-            if label == DocItemLabel.SECTION_HEADER:
-                doc.add_heading(text=text, prov=prov)
-            elif label == DocItemLabel.LIST_ITEM:
-                # TODO: Infer if this is a numbered or a bullet list item
-                doc.add_list_item(text=text, enumerated=False, prov=prov)
-            else:
-                doc.add_text(label=DocItemLabel(name_label), text=text, prov=prov)
+            if label == DocItemLabel.LIST_ITEM:
+                if current_list is None:
+                    current_list = doc.add_group(label=GroupLabel.LIST, name="list")
 
-        else:
-            pass
-            # This branch should not be reachable.
+                # TODO: Infer if this is a numbered or a bullet list item
+                doc.add_list_item(
+                    text=text, enumerated=False, prov=prov, parent=current_list
+                )
+            elif label == DocItemLabel.SECTION_HEADER:
+                current_list = None
+
+                doc.add_heading(text=text, prov=prov)
+            else:
+                current_list = None
+
+                doc.add_text(label=DocItemLabel(name_label), text=text, prov=prov)
 
     for page_dim in doc_glm["page-dimensions"]:
         page_no = int(page_dim["page"])
