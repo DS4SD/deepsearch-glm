@@ -24,7 +24,6 @@ from deepsearch.cps.client.components.elastic import ElasticDataCollectionSource
 # from deepsearch.cps.client.components.queries import RunQueryError
 from deepsearch.cps.queries import DataQuery
 from dotenv import load_dotenv
-from numerize.numerize import numerize
 from tqdm import tqdm
 
 # re-import from the new module, in order to keep backwards compatibility
@@ -188,7 +187,7 @@ def ds_list_indices():
         {
             "Name": c.name,
             "Type": c.metadata.type,
-            "Num entries": numerize(c.documents),
+            "Num entries": c.documents,
             "Date": c.metadata.created.strftime("%Y-%m-%d"),
             "Id": f"{c.source.elastic_id}",
             "Index": f"{c.source.index_key}",

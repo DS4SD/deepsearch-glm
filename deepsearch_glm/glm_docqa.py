@@ -5,8 +5,8 @@ import argparse
 
 # import glob
 import json
+import sys
 
-import matplotlib.pyplot as plt
 import pandas as pd
 from tabulate import tabulate
 
@@ -55,9 +55,16 @@ def parse_arguments():
         help="set NLP models (e.g. `term;sentence`)",
     )
 
+    parser.add_argument(
+        "--show",
+        required=False,
+        action="store_true",
+        help="show a picture of the output",
+    )
+
     args = parser.parse_args()
 
-    return args.glm_dir, args.qa_pairs, args.models
+    return args.glm_dir, args.qa_pairs, args.models, args.show
 
 
 def analyse_prompt(prompt, nlp_model):
@@ -80,7 +87,7 @@ def analyse_prompt(prompt, nlp_model):
     return terms
 
 
-def compute_topk_on_documents(df, nlp_mdl, glm_mdl):
+def compute_topk_on_documents(df, nlp_mdl, glm_mdl, show=False):
     """Function to compute topk of documents"""
 
     topk = {0: 0}
@@ -157,17 +164,26 @@ def compute_topk_on_documents(df, nlp_mdl, glm_mdl):
 
     print(json.dumps(topk, indent=2))
 
-    x = []
-    y = []
-    for i in range(1, 10):
-        x.append(i)
-        y.append(topk[i] / topk[0])
+    if show:
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            print(
+                "matplotlib is not installed, please install it via python -m pip install matplotlib to activate this functionality."
+            )
+            sys.exit(1)
 
-    plt.figure(1)
-    plt.plot(x, y, "r.-", label="doc-topk")
-    plt.ylim(0, 1.05)
-    plt.legend(loc="lower right")
-    plt.show()
+        x = []
+        y = []
+        for i in range(1, 10):
+            x.append(i)
+            y.append(topk[i] / topk[0])
+
+        plt.figure(1)
+        plt.plot(x, y, "r.-", label="doc-topk")
+        plt.ylim(0, 1.05)
+        plt.legend(loc="lower right")
+        plt.show()
 
 
 def compute_topk_on_element(df, nlp_mdl, glm_mdl):
@@ -242,7 +258,7 @@ def compute_topk_on_element(df, nlp_mdl, glm_mdl):
 
 
 if __name__ == "__main__":
-    glm_dir, qa_pairs_file, models = parse_arguments()
+    glm_dir, qa_pairs_file, models, show = parse_arguments()
 
     glm_mdl = load_glm(glm_dir)
     # nlp_mdl = load_nlp(models)
@@ -252,5 +268,5 @@ if __name__ == "__main__":
 
     df = pd.read_csv(qa_pairs_file)
 
-    compute_topk_on_documents(df, nlp_mdl, glm_mdl)
+    compute_topk_on_documents(df, nlp_mdl, glm_mdl, show=show)
     # compute_topk_on_element(df, nlp_mdl, glm_mdl)
