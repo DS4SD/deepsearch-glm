@@ -1,3 +1,9 @@
+## [v0.26.1](https://github.com/DS4SD/deepsearch-glm/releases/tag/v0.26.1) - 2024-10-22
+
+### Fix
+
+* Remove old dependencies or more to extras ([#87](https://github.com/DS4SD/deepsearch-glm/issues/87)) ([`90b2c7f`](https://github.com/DS4SD/deepsearch-glm/commit/90b2c7f65854f22d35d8d5b4b1ef459d2a7012d5))
+
 ## [v0.26.0](https://github.com/DS4SD/deepsearch-glm/releases/tag/v0.26.0) - 2024-10-21
 
 ### Feature
