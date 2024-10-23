@@ -1,7 +1,7 @@
 # Graph Language Models
 
-![build](https://github.com/DS4SD/deepsearch-glm/actions/workflows/cmake.yml/badge.svg)
-![tests](https://github.com/DS4SD/deepsearch-glm/actions/workflows/tests.yml/badge.svg)
+![build](https://github.com/DS4SD/deepsearch-glm/actions/workflows/wheels.yml/badge.svg)
+![tests](https://github.com/DS4SD/deepsearch-glm/actions/workflows/checks.yml/badge.svg)
 
 [![License MIT](https://img.shields.io/github/license/ds4sd/deepsearch-glm)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
