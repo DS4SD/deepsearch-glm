@@ -1,3 +1,10 @@
+## [v0.26.2](https://github.com/DS4SD/deepsearch-glm/releases/tag/v0.26.2) - 2024-12-02
+
+### Fix
+
+* Improve pinning for numpy and pandas ([#90](https://github.com/DS4SD/deepsearch-glm/issues/90)) ([`fe16932`](https://github.com/DS4SD/deepsearch-glm/commit/fe1693202bfaaa6eb34d868ff4382ea8ece9c107))
+* README badges ([#85](https://github.com/DS4SD/deepsearch-glm/issues/85)) ([`f929929`](https://github.com/DS4SD/deepsearch-glm/commit/f92992902dfe1ef501f736efa5477cdad2118867))
+
 ## [v0.26.1](https://github.com/DS4SD/deepsearch-glm/releases/tag/v0.26.1) - 2024-10-22
 
 ### Fix
