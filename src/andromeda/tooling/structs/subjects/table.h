@@ -279,6 +279,15 @@ namespace andromeda
 
     data.clear();
 
+    if(item.count(payload_lbl))
+      {
+	payload = item.value(payload_lbl, payload);
+      }
+    else
+      {
+	payload = nlohmann::json::value_t::null;
+      }
+    
     {
       conf = item.value(base_subject::confidence_lbl, conf);
       created_by = item.value(base_subject::created_by_lbl, created_by);
