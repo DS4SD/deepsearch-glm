@@ -169,6 +169,15 @@ namespace andromeda
   {
     base_subject::valid = true;
 
+    if(data.count(payload_lbl))
+      {
+	payload = data.value(payload_lbl, payload);
+      }
+    else
+      {
+	payload = nlohmann::json::value_t::null;
+      }
+    
     return base_subject::valid;
   }
   

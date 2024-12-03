@@ -323,14 +323,14 @@ namespace andromeda
 
         std::string base = parts.at(1);
         std::size_t index = std::stoi(parts.at(2));
-
+	
         auto& item = orig.at(base).at(index);
-
+	
         if(is_text.count(prov->get_type()))
           {
             std::stringstream ss;
             ss << doc_name << "#/" << doc_type::texts_lbl << "/" << texts.size();
-
+	    
             std::string dloc = ss.str();
 
             auto subj = std::make_shared<subject<TEXT> >(doc.get_hash(), dloc, prov);
