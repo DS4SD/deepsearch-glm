@@ -1,3 +1,4 @@
+import json
 import re
 from pathlib import Path
 from typing import List
@@ -157,6 +158,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
 
             pic = doc.add_picture(prov=prov)
             pic.captions.extend(caption_refs)
+            _add_child_elements(pic, doc, obj, pelem)
 
         elif ptype == "table":
             current_list = None
@@ -250,6 +252,13 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
             tbl = doc.add_table(data=tbl_data, prov=prov)
             tbl.captions.extend(caption_refs)
 
+        elif ptype in ["form", "key_value_region"]:
+
+            label = DocItemLabel(ptype)
+            container_el = doc.add_group(label=label, name=label)
+
+            _add_child_elements(container_el, doc, obj, pelem)
+
         elif "text" in obj:
             text = obj["text"][span_i:span_j]
 
@@ -296,6 +305,30 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
 
     return doc
 
+
+def _add_child_elements(container_el, doc, obj, pelem):
+    children = obj.get("payload", [])
+    for child in children:
+        c_label = child["label"]
+        c_bbox = BoundingBox.model_validate(child["bbox"])
+        c_text = " ".join([
+            cell["text"].replace("\x02", "-").strip()
+            for cell in child["cells"]
+            if len(cell["text"].strip()) > 0
+        ])
+
+        c_prov = ProvenanceItem(
+            page_no=pelem["page"],
+            charspan=(0, len(c_text)),
+            bbox=c_bbox
+        )
+        if c_label == DocItemLabel.LIST_ITEM:
+            # TODO: Infer if this is a numbered or a bullet list item
+            doc.add_list_item(parent=container_el, label=c_label, text=c_text, prov=c_prov)
+        elif c_label == DocItemLabel.SECTION_HEADER:
+            doc.add_heading(parent=container_el, label=c_label, text=c_text, prov=c_prov)
+        else:
+            doc.add_text(parent=container_el, label=c_label, text=c_text, prov=c_prov)
 
 def to_legacy_document_format(doc_glm, doc_leg={}, update_name_label=False):
     """Convert Document object (with `body`) to its legacy format (with `main-text`)"""
