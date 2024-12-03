@@ -1,4 +1,3 @@
-import json
 import re
 from pathlib import Path
 from typing import List
@@ -76,6 +75,12 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
     doc_name = Path(origin.filename).stem
 
     doc: DoclingDocument = DoclingDocument(name=doc_name, origin=origin)
+
+    for page_dim in doc_glm["page-dimensions"]:
+        page_no = int(page_dim["page"])
+        size = Size(width=page_dim["width"], height=page_dim["height"])
+
+        doc.add_page(page_no=page_no, size=size)
 
     if "properties" in doc_glm:
         props = pd.DataFrame(
@@ -255,7 +260,7 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
         elif ptype in ["form", "key_value_region"]:
 
             label = DocItemLabel(ptype)
-            container_el = doc.add_group(label=label, name=label)
+            container_el = doc.add_group(label=GroupLabel.UNSPECIFIED, name=label)
 
             _add_child_elements(container_el, doc, obj, pelem)
 
@@ -297,11 +302,6 @@ def to_docling_document(doc_glm, update_name_label=False) -> DoclingDocument:
 
                 doc.add_text(label=DocItemLabel(name_label), text=text, prov=prov)
 
-    for page_dim in doc_glm["page-dimensions"]:
-        page_no = int(page_dim["page"])
-        size = Size(width=page_dim["width"], height=page_dim["height"])
-
-        doc.add_page(page_no=page_no, size=size)
 
     return doc
 
@@ -312,8 +312,8 @@ def _add_child_elements(container_el, doc, obj, pelem):
         children = payload.get("children", [])
 
         for child in children:
-            c_label = child["label"]
-            c_bbox = BoundingBox.model_validate(child["bbox"])
+            c_label = DocItemLabel(child["label"])
+            c_bbox = BoundingBox.model_validate(child["bbox"]).to_bottom_left_origin(doc.pages[pelem["page"]].size.height)
             c_text = " ".join([
                 cell["text"].replace("\x02", "-").strip()
                 for cell in child["cells"]
@@ -327,9 +327,9 @@ def _add_child_elements(container_el, doc, obj, pelem):
             )
             if c_label == DocItemLabel.LIST_ITEM:
                 # TODO: Infer if this is a numbered or a bullet list item
-                doc.add_list_item(parent=container_el, label=c_label, text=c_text, prov=c_prov)
+                doc.add_list_item(parent=container_el, text=c_text, prov=c_prov)
             elif c_label == DocItemLabel.SECTION_HEADER:
-                doc.add_heading(parent=container_el, label=c_label, text=c_text, prov=c_prov)
+                doc.add_heading(parent=container_el, text=c_text, prov=c_prov)
             else:
                 doc.add_text(parent=container_el, label=c_label, text=c_text, prov=c_prov)
 
