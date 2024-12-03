@@ -25,6 +25,8 @@ namespace andromeda
 
     const static inline std::string prov_lbl = "prov";
 
+    const static inline std::string payload_lbl = "payload"; // arbitrary data that needs to be carried through
+    
     const static inline std::string subj_hash_lbl = "subj_hash";
     const static inline std::string text_hash_lbl = "text_hash"; // for text
     
@@ -141,6 +143,8 @@ namespace andromeda
     std::vector<base_property> properties;
     std::vector<base_instance> instances;
     std::vector<base_relation> relations;
+
+    nlohmann::json payload;
     
     //std::vector<base_entity> entities;
   };
@@ -159,7 +163,9 @@ namespace andromeda
 
     properties({}),
     instances({}),
-    relations({})
+    relations({}),
+
+    payload(nlohmann::json::value_t::null)
   {}
 
   base_subject::base_subject(subject_name name):
@@ -176,7 +182,9 @@ namespace andromeda
 
     properties({}),
     instances({}),
-    relations({})
+    relations({}),
+
+    payload(nlohmann::json::value_t::null)
   {}
 
   base_subject::base_subject(uint64_t dhash,
@@ -195,7 +203,9 @@ namespace andromeda
 
     properties({}),
     instances({}),
-    relations({})
+    relations({}),
+
+    payload(nlohmann::json::value_t::null)
   {
     auto parts = utils::split(dloc, "#");
     if(parts.size()==2)
@@ -322,6 +332,10 @@ namespace andromeda
     nlohmann::json result = nlohmann::json::object({});
 
     {
+      result[payload_lbl] = payload;      
+    }
+    
+    {
       result[subj_hash_lbl] = hash;
       result[dloc_lbl] = dloc;
       result[sref_lbl] = sref;
@@ -379,6 +393,8 @@ namespace andromeda
   
   bool base_subject::_from_json(const nlohmann::json& item)
   {
+    payload = item.value(payload_lbl, payload);
+    
     hash = item.value(subj_hash_lbl, hash);
 
     dloc = item.value(dloc_lbl, dloc);
