@@ -49,5 +49,5 @@ docker build --progress=plain \
     
     RUN cd /src \
         && pip3.11 install pytest \
-        && pytest ./tests/test_glm.py -v
+        && pytest ./tests/test_simple_interface.py -v
 EOF
