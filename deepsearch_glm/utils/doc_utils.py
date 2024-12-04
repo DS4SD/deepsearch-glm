@@ -1,18 +1,7 @@
 import re
 
 import pandas as pd
-from docling_core.types.doc import (
-    BoundingBox,
-    CoordOrigin,
-    DocItemLabel,
-    DoclingDocument,
-    DocumentOrigin,
-    GroupLabel,
-    ProvenanceItem,
-    Size,
-    TableCell,
-    TableData,
-)
+from docling_core.types.doc import DocItemLabel
 
 
 def resolve_item(paths, obj):
