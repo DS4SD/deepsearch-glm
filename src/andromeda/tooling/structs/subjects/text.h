@@ -196,6 +196,15 @@ namespace andromeda
         return false;
       }
 
+    if(item.count(payload_lbl))
+      {
+	payload = item.value(payload_lbl, payload);
+      }
+    else
+      {
+	payload = nlohmann::json::value_t::null;
+      }
+    
     for(auto& prov:provs)
       {
         labels.insert(prov->get_name());
