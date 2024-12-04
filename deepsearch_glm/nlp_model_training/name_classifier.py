@@ -7,8 +7,6 @@ import random
 import re
 
 import pandas as pd
-from tabulate import tabulate
-from tqdm import tqdm
 
 from deepsearch_glm.glm_utils import read_edges_in_dataframe, read_nodes_in_dataframe
 from deepsearch_glm.nlp_utils import (
