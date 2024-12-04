@@ -300,7 +300,7 @@ jobs:
       - name: Quick test wheel
         if: ${{ matrix.os.platform_id == 'win_amd64' || (matrix.os.platform_id == 'macosx_arm64' && matrix.os.name == 'macos-14') }}
         run: |
-          poetry install --no-interaction --no-root --only=test
+          poetry install --no-interaction --no-root --all-extras
           poetry run python -c 'from deepsearch_glm import andromeda_glm'
           poetry run pytest ./tests/test_glm.py -v
           

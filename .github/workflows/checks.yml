@@ -20,7 +20,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           run_install: 'false'
 
-      - name: Install extras
+      - name: Compile and install
         run: |
           poetry install
           ls -l
