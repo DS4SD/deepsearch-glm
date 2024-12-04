@@ -18,7 +18,18 @@ jobs:
       - uses: ./.github/actions/setup-poetry
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install with poetry
+          run_install: 'false'
+
+      - name: Install extras
+        run: |
+          poetry install
+          ls -l
+          ls -l deepsearch_glm
+      
+      - name: Test interface without extras
+        run: |
+          poetry run pytest ./tests/test_simple_interface.py -vs
+      - name: Install extras
         run: |
           poetry install --all-extras
           ls -l

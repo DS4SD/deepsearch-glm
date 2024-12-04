@@ -4,6 +4,12 @@ inputs:
   python-version:
     description: "Version range or exact version of Python or PyPy to use, using SemVer's version range syntax."
     default: '3.11'
+  run_install:
+    description: "Install the dependencies."
+    default: 'true'
+  install_extras:
+    description: "When installing depdencies, the extra dependencies are included."
+    default: 'true'
 runs:
   using: 'composite'
   steps:
@@ -21,6 +27,11 @@ runs:
         poetry env use ${{ steps.py.outputs.python-path }}
         poetry run python --version
       shell: bash
-    - name: Install only dependencies and not the package itself
+    - name: Install the dependencies and the extas (but not the package itself)
+      if: ${{ inputs.run_install == 'true' && inputs.install_extras == 'true' }}
       run: poetry install --all-extras --no-root
+      shell: bash
+    - name: Install only dependencies and not the package itself
+      if: ${{ inputs.run_install == 'true' && inputs.install_extras != 'true' }}
+      run: poetry install --no-root
       shell: bash
