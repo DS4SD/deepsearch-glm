@@ -773,10 +773,10 @@ def test_08B():
 
     assert os.path.exists(metrics_file)
 
+
 def test_09():
     with open("./tests/data/docs/doc_with_payloads.json") as fr:
         doc = json.load(fr)
 
     model = init_nlp_model("")
     res = model.apply_on_doc(doc)
-
