@@ -12,6 +12,8 @@ namespace andromeda_py
 
     base_log();
 
+    base_log(std::string level);
+
     bool set_loglevel(std::string level);
   };
   
@@ -33,23 +35,32 @@ namespace andromeda_py
     */
   }
 
+  base_log::base_log(std::string level)
+  {
+    set_loglevel(level);
+  }
+  
   bool base_log::set_loglevel(std::string level)
   {
-    if(level=="INFO")
+    if(level=="INFO" or level=="info")
       {
 	loguru::g_stderr_verbosity = loguru::Verbosity_INFO;
       }
-    else if(level=="WARNING")
+    else if(level=="WARNING" or level=="warning")
       {
 	loguru::g_stderr_verbosity = loguru::Verbosity_WARNING;
       }
-    else if(level=="ERROR")
+    else if(level=="ERROR" or level=="error")
       {
 	loguru::g_stderr_verbosity = loguru::Verbosity_ERROR;
       }
+    else if(level=="FATAL" or level=="fatal")
+      {
+	loguru::g_stderr_verbosity = loguru::Verbosity_FATAL;
+      }
     else
       {
-	loguru::g_stderr_verbosity = loguru::Verbosity_WARNING;
+	loguru::g_stderr_verbosity = loguru::Verbosity_ERROR;
 	return false;
       }
 
