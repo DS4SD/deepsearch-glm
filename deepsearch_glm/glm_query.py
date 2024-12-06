@@ -2,9 +2,7 @@
 """Module to query the GLM"""
 
 import argparse
-import json
 
-import pandas as pd
 from tabulate import tabulate
 
 from deepsearch_glm.andromeda_glm import glm_query

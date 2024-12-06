@@ -71,9 +71,6 @@ def init_nlp_model(
     model = nlp_model()
     model.set_loglevel(loglevel)
 
-    configs = model.get_apply_configs()
-    # print(json.dumps(configs, indent=2))
-
     config = model.get_apply_configs()[0]
     config["models"] = model_names
     config["subject-filters"] = filters

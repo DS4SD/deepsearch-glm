@@ -24,18 +24,16 @@ build = "build.py"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-docling-core = "^2.0"
-deepsearch-toolkit = { version = "^1.1.0", optional = true }
-tabulate = ">=0.8.9"
-numpy = ">=1.24.4,<3.0.0"
-pandas = ">=1.5.1,<3.0.0"
-matplotlib = { version = "^3.7.1", optional = true }
-python-dotenv = "^1.0.0"
-tqdm = "^4.64.0"
-rich = "^13.7.0"
-docutils = "!=0.21"
 pywin32 = { version = "^307", markers = "sys_platform == 'win32'" }
-requests = "^2.32.3"
+docling-core = { version = "^2.0", optional = true }
+deepsearch-toolkit = { version = "^1.1.0", optional = true }
+tabulate = { version = ">=0.8.9", optional = true }
+pandas = { version = ">=1.5.1,<3.0.0", optional = true }
+matplotlib = { version = "^3.7.1", optional = true }
+python-dotenv = { version = "^1.0.0", optional = true }
+tqdm = { version = "^4.64.0", optional = true }
+rich = { version = "^13.7.0", optional = true }
+requests = { version = "^2.32.3", optional = true }
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.2"
@@ -46,6 +44,7 @@ isort = "^5.13.2"
 mypy = "^1.7.1"
 pre-commit = "2.17.0"
 pylint = "^3.0.3"
+docutils = "!=0.21"  # added by python-semantic-release
 python-semantic-release = "^7.32.2"
 
 [tool.poetry.group.build.dependencies]
@@ -73,12 +72,13 @@ pandas = [
 # support recursive extras: https://github.com/python-poetry/poetry/issues/3369)
 
 pyplot = ["matplotlib"]
-toolkit = ["deepsearch-toolkit"]
-
+toolkit = ["deepsearch-toolkit", "python-dotenv"]
+docling = ["docling-core", "pandas"]
+utils = ["tabulate", "python-dotenv", "pandas", "tqdm", "rich", "requests"]
 
 [tool.black]
 line-length = 88
-target-version = ["py38"]
+target-version = ["py39"]
 include = '\.pyi?$'
 #extend-exclude = """
 ## Exclude generated API code
@@ -88,16 +88,14 @@ include = '\.pyi?$'
 [tool.isort]
 profile = "black"
 line_length = 88
-#skip_glob = ["docs", "deepsearch/cps/apis"]
-py_version=38
-#known_first_party = ["cps"]
+py_version=39
 
 [tool.mypy]
 # plugins = ["pydantic.mypy"]
 pretty = true
 # strict = true
 #no_implicit_optional = true
-python_version = 3.8
+python_version = "3.9"
 disable_error_code = ["import-untyped"]
 
 #[[tool.mypy.overrides]]

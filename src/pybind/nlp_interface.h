@@ -11,6 +11,8 @@ namespace andromeda_py
   public:
     
     nlp_model();
+    nlp_model(std::string loglevel, bool text_ordering, bool normalise_chars, bool normalise_text);
+    
     ~nlp_model();
 
     bool initialise(const nlohmann::json config_);
@@ -66,6 +68,21 @@ namespace andromeda_py
     char_normaliser(andromeda::text_element::create_char_normaliser(false)),
     text_normaliser(andromeda::text_element::create_text_normaliser(false))
   {}
+
+  nlp_model::nlp_model(std::string loglevel, bool text_ordering, bool normalise_chars, bool normalise_text):
+    base_log::base_log(loglevel),
+    base_resources::base_resources(),
+    
+    config(nlohmann::json::object({})),
+    
+    order_text(text_ordering),
+    models({}),
+
+    char_normaliser(andromeda::text_element::create_char_normaliser(normalise_chars)),
+    text_normaliser(andromeda::text_element::create_text_normaliser(normalise_text))
+  {
+    config["order-text"] = order_text;
+  }
   
   nlp_model::~nlp_model()
   {}

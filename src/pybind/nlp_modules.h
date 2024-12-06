@@ -14,7 +14,15 @@ PYBIND11_MODULE(andromeda_nlp, m) {
   
   pybind11::class_<andromeda_py::nlp_model>(m, "nlp_model")
     .def(pybind11::init())
-
+    .def(pybind11::init<std::string, bool, bool, bool>(),
+	 pybind11::arg("loglevel"),
+	 pybind11::arg("text_ordering") = true,
+	 pybind11::arg("normalise_chars") = true,
+	 pybind11::arg("normalise_text") = true,
+	 R"(
+    Initialise the NLP models with standard parameters.)"
+	 )
+    
     .def("set_loglevel", &andromeda_py::nlp_model::set_loglevel)
     .def("get_resources_path", &andromeda_py::nlp_model::get_resources_path)
 

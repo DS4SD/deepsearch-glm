@@ -4,7 +4,6 @@
 import json
 
 import pandas as pd
-from tabulate import tabulate
 
 from deepsearch_glm.andromeda_structs import ds_document, ds_table, ds_text
 from deepsearch_glm.nlp_utils import init_nlp_model
