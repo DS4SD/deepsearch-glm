@@ -1,3 +1,15 @@
+## [v1.0.0](https://github.com/DS4SD/deepsearch-glm/releases/tag/v1.0.0) - 2024-12-09
+
+### Feature
+
+* Move all dependencies to extras ([#93](https://github.com/DS4SD/deepsearch-glm/issues/93)) ([`69318d8`](https://github.com/DS4SD/deepsearch-glm/commit/69318d8f184626bac2789399fb174335cda0d4b0))
+* Resolve nested clusters for DoclingDocument ([#92](https://github.com/DS4SD/deepsearch-glm/issues/92)) ([`61e5499`](https://github.com/DS4SD/deepsearch-glm/commit/61e54997dc41083f133843fac3c018582c2c01a2))
+
+### Breaking
+
+* move all dependencies to extras ([#93](https://github.com/DS4SD/deepsearch-glm/issues/93)) ([`69318d8`](https://github.com/DS4SD/deepsearch-glm/commit/69318d8f184626bac2789399fb174335cda0d4b0))
+* Resolve nested clusters for DoclingDocument ([#92](https://github.com/DS4SD/deepsearch-glm/issues/92)) ([`61e5499`](https://github.com/DS4SD/deepsearch-glm/commit/61e54997dc41083f133843fac3c018582c2c01a2))
+
 ## [v0.26.2](https://github.com/DS4SD/deepsearch-glm/releases/tag/v0.26.2) - 2024-12-02
 
 ### Fix
