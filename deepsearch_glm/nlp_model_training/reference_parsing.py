@@ -38,11 +38,11 @@ examples of execution:
 
 1. end-to-end example on pdf documents:
 
-    poetry run python ./deepsearch_glm/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
+    uv run python ./deepsearch_glm/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
 
 2. annotate (100) references:
 
-    poetry run python ./deepsearch_glm/nlp_train_semantic.py -m annotate --input-dir '<root-dir-of-json-docs> --output-dir <models-directory> --max-items 100'        
+    uv run python ./deepsearch_glm/nlp_train_semantic.py -m annotate --input-dir '<root-dir-of-json-docs> --output-dir <models-directory> --max-items 100'        
 """,
         formatter_class=argparse.RawTextHelpFormatter,
     )

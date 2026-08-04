@@ -3,8 +3,8 @@
 set -e  # trigger failure on error - do not remove!
 set -x  # display command on output
 
-# Build the Python package with Poetry
-poetry build -f sdist
+# Build the Python package with uv
+uv build --sdist
 
 USE_SYSTEM_DEPS="ON"
 

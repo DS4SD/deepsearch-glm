@@ -30,19 +30,19 @@ examples of execution:
 
 1. apply NLP on default text with default models (=`language`):
 
-    poetry run python ./deepsearch_glm/apply_nlp_on_text.py
+    uv run python ./deepsearch_glm/apply_nlp_on_text.py
 
 2. apply NLP on a single piece of text with default model (=`language`):
 
-    poetry run python ./deepsearch_glm/apply_nlp_on_text.py --text "FeSe is a superconductor with Tc of 30 K."
+    uv run python ./deepsearch_glm/apply_nlp_on_text.py --text "FeSe is a superconductor with Tc of 30 K."
 
 3. apply NLP on default text with specific models (=`verb;term;conn;semantic;abbreviation`):
 
-    poetry run python ./deepsearch_glm/apply_nlp_on_text.py --model-names "verb;term;conn;semantic;abbreviation"
+    uv run python ./deepsearch_glm/apply_nlp_on_text.py --model-names "verb;term;conn;semantic;abbreviation"
 
 4. apply NLP on text from prompt with specific models (=`verb;term`):
 
-    poetry run python ./deepsearch_glm/apply_nlp_on_text.py --model-names "verb;term" --interactive True
+    uv run python ./deepsearch_glm/apply_nlp_on_text.py --model-names "verb;term" --interactive True
 
 """,
         formatter_class=argparse.RawTextHelpFormatter,

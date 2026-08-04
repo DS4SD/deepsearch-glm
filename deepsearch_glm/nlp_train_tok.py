@@ -23,7 +23,7 @@ examples of execution:
 
 1. end-to-end example to train CRF:
 
-    poetry run python ./deepsearch_glm/nlp_train_tok.py -t unigram -n <name> --input-file <filename>
+    uv run python ./deepsearch_glm/nlp_train_tok.py -t unigram -n <name> --input-file <filename>
 """,
         formatter_class=argparse.RawTextHelpFormatter,
     )

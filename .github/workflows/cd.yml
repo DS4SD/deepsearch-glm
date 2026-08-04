@@ -18,15 +18,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # for fetching tags, required for semantic-release
-      - uses: ./.github/actions/setup-poetry
+      - uses: ./.github/actions/setup-uv
       - name: Check version of potential release
         id: version_check
         run: |
-            TRGT_VERSION=$(poetry run semantic-release print-version)
+            TRGT_VERSION=$(uv run semantic-release print-version)
             echo "TRGT_VERSION=${TRGT_VERSION}" >> $GITHUB_OUTPUT
             echo "${TRGT_VERSION}"
       - name: Check notes of potential release
-        run: poetry run semantic-release changelog --unreleased
+        run: uv run semantic-release changelog --unreleased
   release:
     needs: [code-checks, pre-release-check]
     if: needs.pre-release-check.outputs.TARGET_TAG_V != ''
@@ -43,7 +43,7 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0  # for fetching tags, required for semantic-release
-      - uses: ./.github/actions/setup-poetry
+      - uses: ./.github/actions/setup-uv
       - name: Run release script
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}

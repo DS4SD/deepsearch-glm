@@ -30,7 +30,7 @@ def parse_arguments():
 examples of execution: 
 
 1 Explore the GLM
-    poetry run python ./deepsearch_glm/explore_glm.py --glm-dir <glm-root-dir>
+    uv run python ./deepsearch_glm/explore_glm.py --glm-dir <glm-root-dir>
 
 """,
         formatter_class=argparse.RawTextHelpFormatter,

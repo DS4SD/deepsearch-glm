@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
-[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
+[![uv](https://img.shields.io/badge/build-uv-DE5FE9)](https://docs.astral.sh/uv/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Pybind11](https://img.shields.io/badge/build-pybind11-blue)](https://github.com/pybind/pybind11/)
 [![Platforms](https://img.shields.io/badge/platform-macos%20|%20linux%20|%20windows-blue)](https://github.com/DS4SD/deepsearch-glm/)
@@ -14,7 +14,7 @@
 ### Finding entities and relations via NLP on text and documents
 
 To get easily started, simply install the `deepsearch-glm` package from PyPi. This can be
-done using the traditional `pip install deepsearch-glm` or via poetry `poetry add deepsearch-glm`.
+done using the traditional `pip install deepsearch-glm` or via uv `uv add deepsearch-glm`.
 
 Below, you can find the code-snippet to process pieces of text,
 
@@ -133,11 +133,11 @@ TBD
 
 ### Python installation
 
-To use the python interface, first make sure all dependencies are installed. We use [poetry](https://python-poetry.org/docs/)
+To use the python interface, first make sure all dependencies are installed. We use [uv](https://docs.astral.sh/uv/)
 for that. To install all the dependent python packages and get the python bindings, simply execute,
 
 ```sh
-poetry install --all-extras
+uv sync --all-extras
 ```
 
 ### CXX compilation
@@ -161,19 +161,19 @@ cmake --build ./build -j
 
 _Note: Some of the examples require to convert PDF documents with Deep Search. For this to run, it is required to install the [deepsearch-toolkit](https://github.com/DS4SD/deepsearch-toolkit) package. You can install it with `pip install deepsearch-glm[toolkit]`._
 
-To run the examples, simply do execute the scripts as `poetry run python <script> <input>`. Examples are,
+To run the examples, execute the scripts as `uv run python <script> <input>`. Examples are,
 
 1. **apply NLP on document(s)**
 ```sh
-poetry run python ./deepsearch_glm/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
+uv run python ./deepsearch_glm/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
 ```
 2. **analyse NLP on document(s)**
 ```sh
-poetry run python ./deepsearch_glm/nlp_apply_on_docs.py --json './data/documents/articles/2305.*.nlp.json' 
+uv run python ./deepsearch_glm/nlp_apply_on_docs.py --json './data/documents/articles/2305.*.nlp.json' 
 ```
 3. **create GLM from document(s)**
 ```sh
-poetry run python ./deepsearch_glm/glm_create_from_docs.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
+uv run python ./deepsearch_glm/glm_create_from_docs.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
 ```
 
 ### Deep Search utilities
@@ -184,11 +184,11 @@ You can install it with `pip install deepsearch-glm[toolkit]`.
 
 1. **Query and download document(s)**
 ```sh
-poetry run python ./deepsearch_glm/utils/ds_query.py --index patent-uspto --query "\"global warming potential\" AND \"etching\""
+uv run python ./deepsearch_glm/utils/ds_query.py --index patent-uspto --query "\"global warming potential\" AND \"etching\""
 ```
 2. **Converting PDF document(s) into JSON**
 ```sh
-poetry run python ./deepsearch_glm/utils/ds_convert.py --pdf './data/documents/articles/2305.*.pdf'"
+uv run python ./deepsearch_glm/utils/ds_convert.py --pdf './data/documents/articles/2305.*.pdf'"
 ```
 
 ## Run using CXX executables
@@ -244,5 +244,5 @@ After you have generated the configuration files (see above), you can
 To run the tests, simply execute (after installation),
 
 ```sh
-poetry run pytest ./tests -vvv -s
+uv run pytest ./tests -vvv -s
 ```

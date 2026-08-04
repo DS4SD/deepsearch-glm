@@ -28,15 +28,15 @@ def parse_arguments():
 examples of execution: 
 
 1.a run on single document (pdf or json) with default NLP models (=`term`):
-    poetry run python ./deepsearch_glm/create_glm_from_docs.py --pdf-docs './data/documents/articles/2305.02334.pdf'
-    poetry run python ./deepsearch_glm/create_glm_from_docs.py --json-docs './data/documents/articles/2305.02334.json'
+    uv run python ./deepsearch_glm/create_glm_from_docs.py --pdf-docs './data/documents/articles/2305.02334.pdf'
+    uv run python ./deepsearch_glm/create_glm_from_docs.py --json-docs './data/documents/articles/2305.02334.json'
 
 2. run on multiple documents:
-    poetry run python ./deepsearch_glm/create_glm_from_docs.py --pdf-docs './data/documents/articles/*.pdf'
-    poetry run python ./deepsearch_glm/create_glm_from_docs.py --json-docs './data/documents/articles/*.json'
+    uv run python ./deepsearch_glm/create_glm_from_docs.py --pdf-docs './data/documents/articles/*.pdf'
+    uv run python ./deepsearch_glm/create_glm_from_docs.py --json-docs './data/documents/articles/*.json'
 
 3. run on multiple documents with non-default models:
-    poetry run python ./deepsearch_glm/create_glm_from_docs.py --pdf-docs './data/documents/articles/2305.*.pdf' --models 'language;term;abbreviation'
+    uv run python ./deepsearch_glm/create_glm_from_docs.py --pdf-docs './data/documents/articles/2305.*.pdf' --models 'language;term;abbreviation'
 
 """,
         formatter_class=argparse.RawTextHelpFormatter,

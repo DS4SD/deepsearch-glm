@@ -4,13 +4,13 @@ repos:
     hooks:
       - id: system
         name: Black
-        entry: poetry run black deepsearch_glm
+        entry: uv run black deepsearch_glm
         pass_filenames: false
         language: system
         files: '\.py$'
       - id: system
         name: Black
-        entry: poetry run black tests
+        entry: uv run black tests
         pass_filenames: false
         language: system
         files: '\.py$'
@@ -18,13 +18,13 @@ repos:
     hooks:
       - id: system
         name: isort
-        entry: poetry run isort deepsearch_glm
+        entry: uv run isort deepsearch_glm
         pass_filenames: false
         language: system
         files: '\.py$'
       - id: system
         name: isort
-        entry: poetry run isort tests
+        entry: uv run isort tests
         pass_filenames: false
         language: system
         files: '\.py$'
@@ -32,13 +32,13 @@ repos:
     hooks:
       - id: system
         name: MyPy
-        entry: poetry run mypy deepsearch_glm
+        entry: uv run mypy deepsearch_glm
         pass_filenames: false
         language: system
         files: '\.py$'
       - id: system
         name: MyPy
-        entry: poetry run mypy tests
+        entry: uv run mypy tests
         pass_filenames: false
         language: system
         files: '\.py$'
@@ -46,15 +46,15 @@ repos:
     hooks:
       - id: system
         name: Pylint
-        #entry: poetry run pylint --jobs 0 --disable=E0611,W0621,R0912,R0914,R0915,R1705,R1732 deepsearch_glm
-        entry: poetry run pylint --errors-only --jobs 0 --disable=E0611 deepsearch_glm
+        #entry: uv run pylint --jobs 0 --disable=E0611,W0621,R0912,R0914,R0915,R1705,R1732 deepsearch_glm
+        entry: uv run pylint --errors-only --jobs 0 --disable=E0611 deepsearch_glm
         pass_filenames: false
         language: system
         files: '\.py$'
   - repo: local
     hooks:
       - id: system
-        name: Poetry check
-        entry: poetry lock --check
+        name: uv lock
+        entry: uv lock --check
         pass_filenames: false
         language: system

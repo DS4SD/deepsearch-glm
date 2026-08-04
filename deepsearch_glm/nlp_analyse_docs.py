@@ -31,7 +31,7 @@ examples of execution:
 
 1.a run on single document (pdf or json) with default model (=`langauge`):
 
-    poetry run python ./deepsearch_glm/nlp_analyse_docs.py --json ./data/documents/articles/2305.02334.nlp.json
+    uv run python ./deepsearch_glm/nlp_analyse_docs.py --json ./data/documents/articles/2305.02334.nlp.json
 
 """,
         formatter_class=argparse.RawTextHelpFormatter,

@@ -29,11 +29,11 @@ examples of execution:
 
 1. end-to-end example to train CRF:
 
-    poetry run python ./deepsearch_glm/nlp_train_crf.py -m all --input-file <filename> --output-dir <models-directory>'
+    uv run python ./deepsearch_glm/nlp_train_crf.py -m all --input-file <filename> --output-dir <models-directory>'
 
 2. end-to-end example to train CRF with limited samples:
 
-    poetry run python ./deepsearch_glm/nlp_train_crf.py -m all --input-file <filename> --output-dir <models-directory> --max-items 1000'
+    uv run python ./deepsearch_glm/nlp_train_crf.py -m all --input-file <filename> --output-dir <models-directory> --max-items 1000'
 """,
         formatter_class=argparse.RawTextHelpFormatter,
     )
