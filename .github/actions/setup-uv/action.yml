@@ -1,0 +1,30 @@
+name: 'Set up uv and install'
+description: 'Set up uv, Python, and optionally install dependencies using caching.'
+inputs:
+  python-version:
+    description: "Version range or exact version of Python or PyPy to use, using SemVer's version range syntax."
+    default: '3.11'
+  run_install:
+    description: "Install the dependencies."
+    default: 'true'
+  install_extras:
+    description: "When installing dependencies, the extra dependencies are included."
+    default: 'true'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install uv and set the python version
+      uses: astral-sh/setup-uv@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Show Python version
+      run: uv python find ${{ inputs.python-version }}
+      shell: bash
+    - name: Install the dependencies and extras
+      if: ${{ inputs.run_install == 'true' && inputs.install_extras == 'true' }}
+      run: uv sync --all-extras --no-install-project
+      shell: bash
+    - name: Install only dependencies
+      if: ${{ inputs.run_install == 'true' && inputs.install_extras != 'true' }}
+      run: uv sync --no-install-project
+      shell: bash
