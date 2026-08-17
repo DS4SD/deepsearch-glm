@@ -154,10 +154,10 @@ def prepare_crf(rfile: str, ofile: str, max_items: int, ratio: float = 0.9):
 
     max_items = get_max_items(rfile, max_items)
 
-    fr = open(rfile, "r", encoding="utf-8")
+    fr = open(rfile, encoding="utf-8")
     fw = open(ofile, "w", encoding="utf-8")
 
-    for i in tqdm.tqdm(range(0, max_items)):
+    for i in tqdm.tqdm(range(max_items)):
         line = fr.readline().strip()
         if line is None or len(line) == 0:
             break
@@ -168,7 +168,7 @@ def prepare_crf(rfile: str, ofile: str, max_items: int, ratio: float = 0.9):
         atem = annotate_item(atem, item)
         atem["training-sample"] = random.random() < ratio
 
-        if "annotated" in atem and atem["annotated"]:
+        if atem.get("annotated"):
             fw.write(json.dumps(atem) + "\n")
 
     fr.close()

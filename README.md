@@ -3,7 +3,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
 [![uv](https://img.shields.io/badge/build-uv-DE5FE9)](https://docs.astral.sh/uv/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Code style: Ruff](https://img.shields.io/badge/code%20style-ruff-46a2f1.svg)](https://github.com/astral-sh/ruff)
 [![Pybind11](https://img.shields.io/badge/build-pybind11-blue)](https://github.com/pybind/pybind11/)
 [![Platforms](https://img.shields.io/badge/platform-macos%20|%20linux%20|%20windows-blue)](https://github.com/DS4SD/deepsearch-glm/)
 [![License MIT](https://img.shields.io/github/license/DS4SD/deepsearch-glm)](https://opensource.org/licenses/MIT)

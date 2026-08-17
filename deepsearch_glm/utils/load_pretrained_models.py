@@ -104,7 +104,7 @@ def load_pretrained_nlp_models(force: bool = False, verbose: bool = False):
     resources_dir = Path(get_resources_dir())
     models_file_path = os.path.join(resources_dir, "models.json")
 
-    with open(models_file_path, "r", encoding="utf-8") as fr:
+    with open(models_file_path, encoding="utf-8") as fr:
         models = json.load(fr)
 
     cos_url = models["object-store"]

@@ -170,7 +170,7 @@ def prepare(max_items=None):
             text_ = text.lower()
 
             label = "expr"
-            if re.match("^[A-Z]\.\s[A-Z].+", text):
+            if re.match(r"^[A-Z]\.\s[A-Z].+", text):
                 label = "person-name"
 
             text_ = text.lower()
@@ -199,7 +199,7 @@ def prepare(max_items=None):
             if _ in line["text"].lower():
                 cand = True
 
-        if re.match("J\.?\s[A-Z].*", line["text"]) and cand:
+        if re.match(r"J\.?\s[A-Z].*", line["text"]) and cand:
             print(line)
             line["label"] = "person-name"
 

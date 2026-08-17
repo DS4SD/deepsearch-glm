@@ -2,29 +2,15 @@ fail_fast: true
 repos:
   - repo: local
     hooks:
-      - id: system
-        name: Black
-        entry: uv run black deepsearch_glm
+      - id: ruff-format
+        name: Ruff formatter
+        entry: uv run ruff format deepsearch_glm tests
         pass_filenames: false
         language: system
         files: '\.py$'
-      - id: system
-        name: Black
-        entry: uv run black tests
-        pass_filenames: false
-        language: system
-        files: '\.py$'
-  - repo: local
-    hooks:
-      - id: system
-        name: isort
-        entry: uv run isort deepsearch_glm
-        pass_filenames: false
-        language: system
-        files: '\.py$'
-      - id: system
-        name: isort
-        entry: uv run isort tests
+      - id: ruff-lint
+        name: Ruff linter
+        entry: uv run ruff check --fix deepsearch_glm tests
         pass_filenames: false
         language: system
         files: '\.py$'
@@ -39,15 +25,6 @@ repos:
       - id: system
         name: MyPy
         entry: uv run mypy tests
-        pass_filenames: false
-        language: system
-        files: '\.py$'
-  - repo: local
-    hooks:
-      - id: system
-        name: Pylint
-        #entry: uv run pylint --jobs 0 --disable=E0611,W0621,R0912,R0914,R0915,R1705,R1732 deepsearch_glm
-        entry: uv run pylint --errors-only --jobs 0 --disable=E0611 deepsearch_glm
         pass_filenames: false
         language: system
         files: '\.py$'

@@ -12,7 +12,7 @@ from deepsearch_glm.utils.common import get_scratch_dir
 
 try:
     import deepsearch as ds
-except ImportError as err:
+except ImportError:
     raise ImportError(
         "To use the Deep Search capabilities, it is required to install the deepsearch-toolkit package."
         "You can install it with `pip install deepsearch-toolkit` or using the convenience extra in "

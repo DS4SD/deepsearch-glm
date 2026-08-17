@@ -58,7 +58,7 @@ def extract(idir: str, ifile: str, max_count: int = -1):
     items = []
 
     for fname in tqdm(fnames, total=len(fnames), ncols=140):
-        with open(fname, "r") as fr:
+        with open(fname) as fr:
             doc = json.load(fr)
 
         desc = doc["description"]

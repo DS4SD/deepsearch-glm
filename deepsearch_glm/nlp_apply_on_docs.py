@@ -225,7 +225,7 @@ if __name__ == "__main__":
 
     for json_file in json_files:
         print(f"reading {json_file} ... ", end="")
-        with open(json_file, "r", encoding="utf-8") as fr:
+        with open(json_file, encoding="utf-8") as fr:
             doc_i = json.load(fr)
 
         print("applying models ... ", end="")

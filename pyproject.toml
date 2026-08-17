@@ -49,13 +49,11 @@ test = [
     "pytest>=7.4.2,<8.0.0",
 ]
 dev = [
-    "black>=23.12.0,<24.0.0",
     "docutils!=0.21",
-    "isort>=5.13.2,<6.0.0",
     "mypy>=1.7.1,<2.0.0",
     "pre-commit==2.17.0",
-    "pylint>=3.0.3,<4.0.0",
     "python-semantic-release>=7.32.2,<8.0.0",
+    "ruff>=0.11,<1.0",
 ]
 build = [
     "cibuildwheel>=2.19.2,<3.0.0; python_version < '3.11'",
@@ -91,19 +89,56 @@ include = ["deepsearch_glm*"]
 [tool.setuptools.exclude-package-data]
 "deepsearch_glm" = ["*.pyc", "__pycache__"]
 
-[tool.black]
+[tool.ruff]
+target-version = "py310"
 line-length = 88
-target-version = ["py310"]
-include = '\.pyi?$'
-#extend-exclude = """
-## Exclude generated API code
-#^/deepsearch/cps/apis/.+$
-#"""
+respect-gitignore = true
 
-[tool.isort]
-profile = "black"
-line_length = 88
-py_version = 310
+[tool.ruff.format]
+skip-magic-trailing-comma = false
+
+[tool.ruff.lint]
+select = [
+    "C",
+    "C9",
+    "E",
+    "F",
+    "I",
+    "PIE",
+    "Q",
+    "RUF",
+    "W",
+    "ASYNC",
+    "UP",
+]
+ignore = [
+    "C408",
+    "E501",
+    "E722",
+    "F401",
+    "F811",
+    "F841",
+    "PL",
+    "C405",
+    "C414",
+    "RUF012",
+    "RUF059",
+    "UP006",
+    "UP007",
+    "UP035",
+    "W291",
+    "W293",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401"]
+"tests/*.py" = ["ASYNC", "E402"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 30
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
 
 [tool.mypy]
 # plugins = ["pydantic.mypy"]

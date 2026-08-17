@@ -4,8 +4,8 @@
 import json
 
 import pandas as pd
-
 from deepsearch_glm.andromeda_structs import ds_document, ds_table, ds_text
+
 from deepsearch_glm.nlp_utils import init_nlp_model
 from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
 

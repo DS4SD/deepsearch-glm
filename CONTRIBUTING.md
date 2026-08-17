@@ -182,7 +182,7 @@ To run the checks on-demand, run:
 pre-commit run --all-files
 ```
 
-Note: Checks like `Black` and `isort` will "fail" if they modify files. This is because `pre-commit` doesn't like to see files modified by their Hooks. In these cases, `git add` the modified files and `git commit` again.
+Note: Checks like `Ruff formatter` and `Ruff linter` will "fail" if they modify files. This is because `pre-commit` doesn't like to see files modified by their Hooks. In these cases, `git add` the modified files and `git commit` again.
 
 
 

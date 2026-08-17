@@ -355,9 +355,9 @@ def test_03D():
     # print(tabulate(res_j["instances"]["data"][-30:]))
     # print(tabulate(res_k["instances"]["data"][-30:]))
 
-    for j in range(0, len(res_j["instances"]["data"])):
+    for j in range(len(res_j["instances"]["data"])):
         found = False
-        for k in range(0, len(res_k["instances"]["data"])):
+        for k in range(len(res_k["instances"]["data"])):
             if res_k["instances"]["data"][k] == res_j["instances"]["data"][j]:
                 found = True
 
@@ -366,9 +366,9 @@ def test_03D():
             # print(res_j["instances"]["data"][j])
             print(res_k["instances"]["data"][j])
 
-    for k in range(0, len(res_k["instances"]["data"])):
+    for k in range(len(res_k["instances"]["data"])):
         found = False
-        for j in range(0, len(res_j["instances"]["data"])):
+        for j in range(len(res_j["instances"]["data"])):
             if res_k["instances"]["data"][k] == res_j["instances"]["data"][j]:
                 found = True
 
@@ -526,7 +526,7 @@ def test_05A():
     target_nlp = "./tests/data/docs/doc_01.nlp.json"
 
     # print(f"reading {source} ... ", end="")
-    with open(source, "r") as fr:
+    with open(source) as fr:
         doc_i = json.load(fr)
 
     if GENERATE:
@@ -542,11 +542,11 @@ def test_05A():
         with open(target_leg, "w") as fw:
             fw.write(json.dumps(doc_i, indent=2))
     else:
-        with open(target_nlp, "r") as fr:
+        with open(target_nlp) as fr:
             doc_nlp = json.load(fr)
             doc_nlp = round_floats(doc_nlp)
 
-        with open(target_leg, "r") as fr:
+        with open(target_leg) as fr:
             doc_leg = json.load(fr)
             doc_leg = round_floats(doc_leg)
 
@@ -649,7 +649,7 @@ def test_06C():
             filters=["properties", "instances"],
         )
 
-        fr = open(crf_file, "r")
+        fr = open(crf_file)
 
         while True:
             line = fr.readline()
