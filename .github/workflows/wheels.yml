@@ -8,6 +8,15 @@ on:
 
 env:
   CMAKE_BUILD_TYPE: Release
+  # fasttext/sentencepiece still declare cmake_minimum_required(VERSION <3.5), which
+  # CMake 4.x refuses. The env var (unlike -D) propagates into the ExternalProject
+  # sub-configures, which is where the failure actually happens.
+  CMAKE_POLICY_VERSION_MINIMUM: "3.5"
+  # `uv run` re-syncs by default and, because [tool.uv] sets package = true, that
+  # builds+installs the project on the host. On linux this leaves a build/CMakeCache.txt
+  # pinned to the host path, which cibuildwheel then copies into the container as /project
+  # -> "current CMakeCache.txt directory is different than the directory where it was created".
+  UV_NO_SYNC: "1"
 
 jobs:
   build_sdist:
@@ -100,7 +109,7 @@ jobs:
           CIBW_BUILD_VERBOSITY: 3
           CMAKE_OSX_ARCHITECTURES: x86_64
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: ""  # do not run delocate-wheel before the re-tag
-          CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET=${{ matrix.os.min_macos_version }}.0"
+          CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET=${{ matrix.os.min_macos_version }}.0 CMAKE_POLICY_VERSION_MINIMUM=3.5"
           ARCHFLAGS: -arch x86_64
           BUILD_THREADS: "4"
           PYTORCH_MPS_HIGH_WATERMARK_RATIO: "0.0"
@@ -150,7 +159,7 @@ jobs:
           CIBW_BUILD_VERBOSITY: 3
           CMAKE_OSX_ARCHITECTURES: arm64
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: ""  # do not run delocate-wheel before the re-tag
-          CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET=${{ matrix.os.min_macos_version }}.0"
+          CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET=${{ matrix.os.min_macos_version }}.0 CMAKE_POLICY_VERSION_MINIMUM=3.5"
           ARCHFLAGS: -arch arm64
           BUILD_THREADS: "4"
           PYTORCH_MPS_HIGH_WATERMARK_RATIO: "0.0"
@@ -201,9 +210,14 @@ jobs:
           CIBW_SKIP: "pp* *musllinux_* *_i686* *_s390* *pypy*"
           CIBW_PROJECT_REQUIRES_PYTHON: "~=${{ matrix.python-version }}.0"
           CIBW_BUILD_VERBOSITY: 3
+          # env vars do not cross into the manylinux container; CIBW_ENVIRONMENT does
+          CIBW_ENVIRONMENT: "CMAKE_POLICY_VERSION_MINIMUM=3.5"
+          # belt-and-braces: never ship a host-generated cmake cache into /project
+          CIBW_BEFORE_BUILD: "rm -rf /project/build"
           BUILD_THREADS: "8"
         run: |
           uv sync --no-default-groups --no-install-project --group build
+          rm -rf ./build
           PY_CACHE_TAG=$(uv run python -c 'import sys;print(sys.implementation.cache_tag)')
           echo "Building cp: ${{ env.python_cp_version }}"
           echo "Building cache_tag: ${PY_CACHE_TAG}"
@@ -229,7 +243,7 @@ jobs:
         shell: bash
         run: |
           wheel_file=$(ls dist/*.whl | head -n 1)
-          uv run pip install "$wheel_file"
+          uv pip install "$wheel_file"
 
       - name: Set up MSYS2 [windows]
         if: ${{matrix.os.platform_id == 'win_amd64'}}
@@ -261,6 +275,7 @@ jobs:
           CMAKE_LIBRARY_PATH: "C:/msys64/mingw64/lib;C:/mingw64/lib"
           CMAKE_INCLUDE_PATH: "C:/msys64/mingw64/include;C:/mingw64/include"
           CMAKE_GENERATOR: "MSYS Makefiles"
+          CIBW_ENVIRONMENT: "CMAKE_POLICY_VERSION_MINIMUM=3.5"
           BUILD_THREADS: 1
         shell: pwsh
         run: |
@@ -284,7 +299,7 @@ jobs:
         run: |
           $wheel_file = Get-ChildItem dist\*.whl | Select-Object -First 1
           Write-Host "Installing wheel: $wheel_file"
-          uv run pip install "$wheel_file"
+          uv pip install "$wheel_file"
 
       - name: Quick test wheel
         if: ${{ matrix.os.platform_id == 'win_amd64' || (matrix.os.platform_id == 'macosx_arm64' && matrix.os.name == 'macos-14') }}

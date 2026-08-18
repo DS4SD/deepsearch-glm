@@ -1,0 +1,13 @@
+include CMakeLists.txt
+include build.py
+include *.md
+include uv.lock
+include LICENSE
+
+recursive-include app *
+recursive-include cmake *
+recursive-include src *
+recursive-include tests *
+
+recursive-include deepsearch_glm *.so *.pyd *.dll
+recursive-include deepsearch_glm/resources *
