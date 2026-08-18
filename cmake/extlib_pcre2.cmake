@@ -44,6 +44,16 @@ else()
 
     add_library(${ext_name} STATIC IMPORTED)
     add_dependencies(${ext_name} extlib_pcre2)
-    set_target_properties(${ext_name} PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libpcre2-8.a INTERFACE_INCLUDE_DIRECTORIES ${EXTERNALS_PREFIX_PATH}/include
+    # The static library basename is not just a prefix/suffix swap: pcre2's own
+    # CMakeLists appends "-static" under MSVC so the static lib does not collide
+    # with the DLL import library. Observed on the runner: pcre2-8-static.lib
+    # vs libpcre2-8.a everywhere else.
+    if(MSVC)
+        set(PCRE2_STATIC_NAME pcre2-8-static)
+    else()
+        set(PCRE2_STATIC_NAME pcre2-8)
+    endif()
+
+    set_target_properties(${ext_name} PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${PCRE2_STATIC_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX} INTERFACE_INCLUDE_DIRECTORIES ${EXTERNALS_PREFIX_PATH}/include
     )
 endif()

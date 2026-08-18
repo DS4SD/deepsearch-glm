@@ -58,10 +58,10 @@ else()
     )
 
     add_library(${ext_name} STATIC IMPORTED)
-    set_target_properties(${ext_name} PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libsentencepiece.a)
+    set_target_properties(${ext_name} PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}sentencepiece${CMAKE_STATIC_LIBRARY_SUFFIX})
     add_dependencies(${ext_name} extlib_sentencepiece)
 
     add_library(${ext_name}_train STATIC IMPORTED)
-    set_target_properties(${ext_name}_train PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libsentencepiece_train.a)
+    set_target_properties(${ext_name}_train PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}sentencepiece_train${CMAKE_STATIC_LIBRARY_SUFFIX})
     add_dependencies(${ext_name}_train extlib_sentencepiece)
 endif()

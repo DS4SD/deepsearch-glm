@@ -76,6 +76,6 @@ else()
 
     add_library(${ext_name} STATIC IMPORTED)
     add_dependencies(${ext_name} extlib_fasttext)
-    set_target_properties(${ext_name} PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libfasttext_pic.a INTERFACE_INCLUDE_DIRECTORIES ${EXTERNALS_PREFIX_PATH}/include
+    set_target_properties(${ext_name} PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}fasttext_pic${CMAKE_STATIC_LIBRARY_SUFFIX} INTERFACE_INCLUDE_DIRECTORIES ${EXTERNALS_PREFIX_PATH}/include
     )
 endif()
