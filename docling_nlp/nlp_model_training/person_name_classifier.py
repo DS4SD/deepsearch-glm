@@ -10,8 +10,8 @@ import random
 import pandas as pd
 from tqdm import tqdm
 
-from deepsearch_glm.glm_utils import read_edges_in_dataframe, read_nodes_in_dataframe
-from deepsearch_glm.nlp_utils import (
+from docling_nlp.glm_utils import read_edges_in_dataframe, read_nodes_in_dataframe
+from docling_nlp.nlp_utils import (
     eval_fst,
     init_nlp_model,
     prepare_data_for_fst_training,

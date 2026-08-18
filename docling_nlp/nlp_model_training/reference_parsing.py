@@ -15,14 +15,14 @@ import tqdm
 from rich import Console
 from tabulate import tabulate
 
-# from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.nlp_utils import (
+# from docling_nlp.andromeda_nlp import nlp_model
+from docling_nlp.nlp_utils import (
     create_nlp_dir,
     get_max_items,
     init_nlp_model,
     train_crf,
 )
-from deepsearch_glm.utils.load_pretrained_models import get_resources_dir
+from docling_nlp.utils.load_pretrained_models import get_resources_dir
 
 console = Console()
 
@@ -38,11 +38,11 @@ examples of execution:
 
 1. end-to-end example on pdf documents:
 
-    uv run python ./deepsearch_glm/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
+    uv run python ./docling_nlp/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
 
 2. annotate (100) references:
 
-    uv run python ./deepsearch_glm/nlp_train_semantic.py -m annotate --input-dir '<root-dir-of-json-docs> --output-dir <models-directory> --max-items 100'        
+    uv run python ./docling_nlp/nlp_train_semantic.py -m annotate --input-dir '<root-dir-of-json-docs> --output-dir <models-directory> --max-items 100'        
 """,
         formatter_class=argparse.RawTextHelpFormatter,
     )

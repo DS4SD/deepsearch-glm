@@ -9,5 +9,5 @@ recursive-include cmake *
 recursive-include src *
 recursive-include tests *
 
-recursive-include deepsearch_glm *.so *.pyd *.dll
-recursive-include deepsearch_glm/resources *
+recursive-include docling_nlp *.so *.pyd *.dll
+recursive-include docling_nlp/resources *

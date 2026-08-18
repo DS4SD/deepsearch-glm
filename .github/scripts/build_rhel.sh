@@ -43,7 +43,7 @@ docker build --progress=plain \
 
     ARG USE_SYSTEM_DEPS
 
-    RUN USE_SYSTEM_DEPS=\$USE_SYSTEM_DEPS pip3.11 install /src/deepsearch_glm*.tar.gz
+    RUN USE_SYSTEM_DEPS=\$USE_SYSTEM_DEPS pip3.11 install /src/docling_nlp*.tar.gz
 
     COPY ./tests /src/tests
     

@@ -240,9 +240,9 @@ jobs:
         if: ${{matrix.os.platform_id == 'win_amd64'}}
         shell: pwsh
         run: |
-          Copy-Item -Path "C:/mingw64/bin/libgcc_s_seh-1.dll" -Destination ".\deepsearch_glm"
-          Copy-Item -Path "C:/mingw64/bin/libstdc++-6.dll" -Destination ".\deepsearch_glm"
-          Copy-Item -Path "C:/mingw64/bin/libwinpthread-1.dll" -Destination ".\deepsearch_glm"
+          Copy-Item -Path "C:/mingw64/bin/libgcc_s_seh-1.dll" -Destination ".\docling_nlp"
+          Copy-Item -Path "C:/mingw64/bin/libstdc++-6.dll" -Destination ".\docling_nlp"
+          Copy-Item -Path "C:/mingw64/bin/libwinpthread-1.dll" -Destination ".\docling_nlp"
 
       - name: Set up build env [windows]
         if: ${{ matrix.os.platform == 'windows' }}
@@ -317,11 +317,11 @@ jobs:
           wheel_file=$(ls dist/*.whl | head -n 1)
           uv pip install "$wheel_file"
           # Resolve the venv interpreter and run the import check from outside
-          # the repo: with the source tree as cwd, ./deepsearch_glm shadows the
+          # the repo: with the source tree as cwd, ./docling_nlp shadows the
           # installed wheel and this check could never fail.
           if [ -x .venv/bin/python ]; then PY=.venv/bin/python; else PY=.venv/Scripts/python.exe; fi
           PY_ABS="$(cd "$(dirname "$PY")" && pwd)/$(basename "$PY")"
-          (cd "${RUNNER_TEMP}" && "$PY_ABS" -c "from deepsearch_glm import andromeda_glm; print('imported from', andromeda_glm.__file__)")
+          (cd "${RUNNER_TEMP}" && "$PY_ABS" -c "from docling_nlp import andromeda_glm; print('imported from', andromeda_glm.__file__)")
           # pytest does not put cwd on sys.path, so this exercises the wheel
           uv run --no-sync pytest ./tests/test_glm.py -v
 
@@ -341,7 +341,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/deepsearch-glm
+      url: https://pypi.org/p/docling-nlp
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
       contents: write  # IMPORTANT: mandatory for adding artifacts to GitHub Releases

@@ -15,7 +15,7 @@ def get_resources_dir():
     if "DEEPSEARCH_GLM_RESOURCES_DIR" in os.environ:
         resources_dir = os.getenv("DEEPSEARCH_GLM_RESOURCES_DIR")
     else:
-        from deepsearch_glm.andromeda_nlp import nlp_model
+        from docling_nlp.andromeda_nlp import nlp_model
 
         model = nlp_model()
         resources_dir = model.get_resources_path()

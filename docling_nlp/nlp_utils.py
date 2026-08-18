@@ -17,8 +17,8 @@ import pandas as pd
 from rich.console import Console
 from tabulate import tabulate
 
-from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.utils.common import get_scratch_dir
+from docling_nlp.andromeda_nlp import nlp_model
+from docling_nlp.utils.common import get_scratch_dir
 
 # import andromeda_nlp
 

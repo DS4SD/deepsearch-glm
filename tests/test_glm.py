@@ -6,8 +6,8 @@ import glob
 import json
 import os
 
-from deepsearch_glm import andromeda_glm
-from deepsearch_glm.glm_utils import (
+from docling_nlp import andromeda_glm
+from docling_nlp.glm_utils import (
     create_glm_config_from_docs,
     create_glm_config_from_texts,
     create_glm_dir,
@@ -20,7 +20,7 @@ from deepsearch_glm.glm_utils import (
     read_nodes_in_dataframe,
     show_query_result,
 )
-from deepsearch_glm.utils.load_pretrained_models import (
+from docling_nlp.utils.load_pretrained_models import (
     load_pretrained_nlp_models,
     load_training_data,
 )
@@ -134,7 +134,7 @@ def test_02C_create_glm_from_texts():
     model_names = "spm;semantic;name;conn;verb;term;abbreviation"
 
     # json_files = glob.glob(os.path.join(sdir, "docs/*.json"))
-    json_files = ["deepsearch_glm/resources/data/text/arxiv-abstracts-2020-Jan.jsonl"]
+    json_files = ["docling_nlp/resources/data/text/arxiv-abstracts-2020-Jan.jsonl"]
 
     config = create_glm_config_from_texts(odir, json_files, model_names)
 

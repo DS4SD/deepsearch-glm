@@ -6,7 +6,7 @@ import sys
 
 import pandas as pd
 
-from deepsearch_glm.utils.ds_utils import (
+from docling_nlp.utils.ds_utils import (
     create_docs_dir,
     ds_index_query,
     ds_list_indices,
@@ -24,9 +24,9 @@ examples of execution:
 
 1. search for documents:
 
-    uv run python ./deepsearch_glm/ds_query.py --index esg-reports --query "\\\"net zero\\\""
-    uv run python ./deepsearch_glm/ds_query.py --index patent-uspto --query "\\\"global warming potential\\\" AND \\\"etching\\\""
-    uv run python ./deepsearch_glm/ds_query.py --index arxiv --query "\\\"quantum computing\\\""
+    uv run python ./docling_nlp/ds_query.py --index esg-reports --query "\\\"net zero\\\""
+    uv run python ./docling_nlp/ds_query.py --index patent-uspto --query "\\\"global warming potential\\\" AND \\\"etching\\\""
+    uv run python ./docling_nlp/ds_query.py --index arxiv --query "\\\"quantum computing\\\""
 
 
 """,

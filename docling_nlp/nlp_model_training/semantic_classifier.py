@@ -13,9 +13,9 @@ import tqdm
 from rich.console import Console
 from tabulate import tabulate
 
-from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.nlp_utils import create_nlp_dir, init_nlp_model
-from deepsearch_glm.utils.ds_utils import ds_index_query
+from docling_nlp.andromeda_nlp import nlp_model
+from docling_nlp.nlp_utils import create_nlp_dir, init_nlp_model
+from docling_nlp.utils.ds_utils import ds_index_query
 
 console = Console()
 
@@ -31,7 +31,7 @@ examples of execution:
 
 1. end-to-end example on pdf documents:
 
-    uv run python ./deepsearch_glm/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
+    uv run python ./docling_nlp/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
 
 """,
         formatter_class=argparse.RawTextHelpFormatter,

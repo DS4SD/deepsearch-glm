@@ -562,110 +562,6 @@ wheels = [
 ]
 
 [[package]]
-name = "deepsearch-glm"
-version = "1.0.0"
-source = { editable = "." }
-dependencies = [
-    { name = "pywin32", marker = "sys_platform == 'win32'" },
-]
-
-[package.optional-dependencies]
-all = [
-    { name = "deepsearch-toolkit" },
-    { name = "docling-core" },
-    { name = "matplotlib", version = "3.10.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
-    { name = "matplotlib", version = "3.11.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
-    { name = "pandas" },
-    { name = "python-dotenv" },
-    { name = "requests" },
-    { name = "rich" },
-    { name = "tabulate" },
-    { name = "tqdm" },
-]
-docling = [
-    { name = "docling-core" },
-    { name = "pandas" },
-]
-pyplot = [
-    { name = "matplotlib", version = "3.10.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
-    { name = "matplotlib", version = "3.11.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
-]
-toolkit = [
-    { name = "deepsearch-toolkit" },
-    { name = "python-dotenv" },
-]
-utils = [
-    { name = "pandas" },
-    { name = "python-dotenv" },
-    { name = "requests" },
-    { name = "rich" },
-    { name = "tabulate" },
-    { name = "tqdm" },
-]
-
-[package.dev-dependencies]
-build = [
-    { name = "cibuildwheel", version = "2.23.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
-    { name = "cibuildwheel", version = "3.4.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
-    { name = "delocate" },
-    { name = "pybind11" },
-    { name = "wheel" },
-]
-dev = [
-    { name = "docutils" },
-    { name = "mypy" },
-    { name = "pre-commit" },
-    { name = "python-semantic-release" },
-    { name = "ruff" },
-]
-test = [
-    { name = "pytest" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "deepsearch-toolkit", marker = "extra == 'all'", specifier = ">=1.1.0,<2.0.0" },
-    { name = "deepsearch-toolkit", marker = "extra == 'toolkit'", specifier = ">=1.1.0,<2.0.0" },
-    { name = "docling-core", marker = "extra == 'all'", specifier = ">=2.0,<3.0" },
-    { name = "docling-core", marker = "extra == 'docling'", specifier = ">=2.0,<3.0" },
-    { name = "matplotlib", marker = "extra == 'all'", specifier = ">=3.7.1,<4.0.0" },
-    { name = "matplotlib", marker = "extra == 'pyplot'", specifier = ">=3.7.1,<4.0.0" },
-    { name = "pandas", marker = "extra == 'all'", specifier = ">=1.5.1,<3.0.0" },
-    { name = "pandas", marker = "extra == 'docling'", specifier = ">=1.5.1,<3.0.0" },
-    { name = "pandas", marker = "extra == 'utils'", specifier = ">=1.5.1,<3.0.0" },
-    { name = "python-dotenv", marker = "extra == 'all'", specifier = ">=1.0.0,<2.0.0" },
-    { name = "python-dotenv", marker = "extra == 'toolkit'", specifier = ">=1.0.0,<2.0.0" },
-    { name = "python-dotenv", marker = "extra == 'utils'", specifier = ">=1.0.0,<2.0.0" },
-    { name = "pywin32", marker = "sys_platform == 'win32'", specifier = ">=307,<400" },
-    { name = "requests", marker = "extra == 'all'", specifier = ">=2.32.3,<3.0.0" },
-    { name = "requests", marker = "extra == 'utils'", specifier = ">=2.32.3,<3.0.0" },
-    { name = "rich", marker = "extra == 'all'", specifier = ">=13.7.0,<14.0.0" },
-    { name = "rich", marker = "extra == 'utils'", specifier = ">=13.7.0,<14.0.0" },
-    { name = "tabulate", marker = "extra == 'all'", specifier = ">=0.8.9" },
-    { name = "tabulate", marker = "extra == 'utils'", specifier = ">=0.8.9" },
-    { name = "tqdm", marker = "extra == 'all'", specifier = ">=4.64.0,<5.0.0" },
-    { name = "tqdm", marker = "extra == 'utils'", specifier = ">=4.64.0,<5.0.0" },
-]
-provides-extras = ["pyplot", "toolkit", "docling", "utils", "all"]
-
-[package.metadata.requires-dev]
-build = [
-    { name = "cibuildwheel", marker = "python_full_version < '3.11'", specifier = ">=2.19.2,<3.0.0" },
-    { name = "cibuildwheel", marker = "python_full_version >= '3.11'", specifier = ">=2.19.2,<4.0.0" },
-    { name = "delocate", specifier = ">=0.11.0,<1.0.0" },
-    { name = "pybind11", specifier = ">=2.13.1" },
-    { name = "wheel", specifier = ">=0.43.0,<1.0.0" },
-]
-dev = [
-    { name = "docutils", specifier = "!=0.21" },
-    { name = "mypy", specifier = ">=1.7.1,<2.0.0" },
-    { name = "pre-commit", specifier = "==2.17.0" },
-    { name = "python-semantic-release", specifier = ">=7.32.2,<8.0.0" },
-    { name = "ruff", specifier = ">=0.11,<1.0" },
-]
-test = [{ name = "pytest", specifier = ">=7.4.2,<8.0.0" }]
-
-[[package]]
 name = "deepsearch-toolkit"
 version = "1.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -771,6 +667,110 @@ sdist = { url = "https://files.pythonhosted.org/packages/a0/83/4e7169415904494d0
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6b/9c/a2d9c4d733f16c93158c5c5bee134da10727a444dc7a5fe640bd13976c7c/docling_core-2.90.0-py3-none-any.whl", hash = "sha256:e8d739c51db4ea29d25217de1b1c3854dba9dd2483cd2f95aaafb09e4e52d3c5", size = 286436, upload-time = "2026-08-03T12:22:09.971Z" },
 ]
+
+[[package]]
+name = "docling-nlp"
+version = "1.0.0"
+source = { editable = "." }
+dependencies = [
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
+]
+
+[package.optional-dependencies]
+all = [
+    { name = "deepsearch-toolkit" },
+    { name = "docling-core" },
+    { name = "matplotlib", version = "3.10.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "matplotlib", version = "3.11.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "pandas" },
+    { name = "python-dotenv" },
+    { name = "requests" },
+    { name = "rich" },
+    { name = "tabulate" },
+    { name = "tqdm" },
+]
+docling = [
+    { name = "docling-core" },
+    { name = "pandas" },
+]
+pyplot = [
+    { name = "matplotlib", version = "3.10.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "matplotlib", version = "3.11.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+]
+toolkit = [
+    { name = "deepsearch-toolkit" },
+    { name = "python-dotenv" },
+]
+utils = [
+    { name = "pandas" },
+    { name = "python-dotenv" },
+    { name = "requests" },
+    { name = "rich" },
+    { name = "tabulate" },
+    { name = "tqdm" },
+]
+
+[package.dev-dependencies]
+build = [
+    { name = "cibuildwheel", version = "2.23.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "cibuildwheel", version = "3.4.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "delocate" },
+    { name = "pybind11" },
+    { name = "wheel" },
+]
+dev = [
+    { name = "docutils" },
+    { name = "mypy" },
+    { name = "pre-commit" },
+    { name = "python-semantic-release" },
+    { name = "ruff" },
+]
+test = [
+    { name = "pytest" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "deepsearch-toolkit", marker = "extra == 'all'", specifier = ">=1.1.0,<2.0.0" },
+    { name = "deepsearch-toolkit", marker = "extra == 'toolkit'", specifier = ">=1.1.0,<2.0.0" },
+    { name = "docling-core", marker = "extra == 'all'", specifier = ">=2.0,<3.0" },
+    { name = "docling-core", marker = "extra == 'docling'", specifier = ">=2.0,<3.0" },
+    { name = "matplotlib", marker = "extra == 'all'", specifier = ">=3.7.1,<4.0.0" },
+    { name = "matplotlib", marker = "extra == 'pyplot'", specifier = ">=3.7.1,<4.0.0" },
+    { name = "pandas", marker = "extra == 'all'", specifier = ">=1.5.1,<3.0.0" },
+    { name = "pandas", marker = "extra == 'docling'", specifier = ">=1.5.1,<3.0.0" },
+    { name = "pandas", marker = "extra == 'utils'", specifier = ">=1.5.1,<3.0.0" },
+    { name = "python-dotenv", marker = "extra == 'all'", specifier = ">=1.0.0,<2.0.0" },
+    { name = "python-dotenv", marker = "extra == 'toolkit'", specifier = ">=1.0.0,<2.0.0" },
+    { name = "python-dotenv", marker = "extra == 'utils'", specifier = ">=1.0.0,<2.0.0" },
+    { name = "pywin32", marker = "sys_platform == 'win32'", specifier = ">=307,<400" },
+    { name = "requests", marker = "extra == 'all'", specifier = ">=2.32.3,<3.0.0" },
+    { name = "requests", marker = "extra == 'utils'", specifier = ">=2.32.3,<3.0.0" },
+    { name = "rich", marker = "extra == 'all'", specifier = ">=13.7.0,<14.0.0" },
+    { name = "rich", marker = "extra == 'utils'", specifier = ">=13.7.0,<14.0.0" },
+    { name = "tabulate", marker = "extra == 'all'", specifier = ">=0.8.9" },
+    { name = "tabulate", marker = "extra == 'utils'", specifier = ">=0.8.9" },
+    { name = "tqdm", marker = "extra == 'all'", specifier = ">=4.64.0,<5.0.0" },
+    { name = "tqdm", marker = "extra == 'utils'", specifier = ">=4.64.0,<5.0.0" },
+]
+provides-extras = ["pyplot", "toolkit", "docling", "utils", "all"]
+
+[package.metadata.requires-dev]
+build = [
+    { name = "cibuildwheel", marker = "python_full_version < '3.11'", specifier = ">=2.19.2,<3.0.0" },
+    { name = "cibuildwheel", marker = "python_full_version >= '3.11'", specifier = ">=2.19.2,<4.0.0" },
+    { name = "delocate", specifier = ">=0.11.0,<1.0.0" },
+    { name = "pybind11", specifier = ">=2.13.1" },
+    { name = "wheel", specifier = ">=0.43.0,<1.0.0" },
+]
+dev = [
+    { name = "docutils", specifier = "!=0.21" },
+    { name = "mypy", specifier = ">=1.7.1,<2.0.0" },
+    { name = "pre-commit", specifier = "==2.17.0" },
+    { name = "python-semantic-release", specifier = ">=7.32.2,<8.0.0" },
+    { name = "ruff", specifier = ">=0.11,<1.0" },
+]
+test = [{ name = "pytest", specifier = ">=7.4.2,<8.0.0" }]
 
 [[package]]
 name = "docutils"

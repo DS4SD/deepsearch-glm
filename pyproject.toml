@@ -1,5 +1,5 @@
 [project]
-name = "deepsearch-glm"
+name = "docling-nlp"
 version = "1.0.0"  # DO NOT EDIT, updated automatically
 description = "Graph Language Models"
 license = "MIT"
@@ -76,10 +76,10 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["deepsearch_glm*"]
+include = ["docling_nlp*"]
 
 [tool.setuptools.package-data]
-"deepsearch_glm" = [
+"docling_nlp" = [
     "*.so",
     "*.pyd",
     "*.dll",
@@ -87,7 +87,7 @@ include = ["deepsearch_glm*"]
 ]
 
 [tool.setuptools.exclude-package-data]
-"deepsearch_glm" = ["*.pyc", "__pycache__"]
+"docling_nlp" = ["*.pyc", "__pycache__"]
 
 [tool.ruff]
 target-version = "py310"
@@ -150,11 +150,11 @@ no_site_packages = true
 disable_error_code = ["import-untyped", "import-not-found"]
 
 #[[tool.mypy.overrides]]
-#module = "deepsearch_glm.andromeda_nlp"
+#module = "docling_nlp.andromeda_nlp"
 #ignore_errors = true
 
 #[[tool.mypy.overrides]]
-#module = "deepsearch_glm.andromeda_glm.*"
+#module = "docling_nlp.andromeda_glm.*"
 #ignore_errors = true
 
 #[[tool.mypy.overrides]]
@@ -162,15 +162,15 @@ disable_error_code = ["import-untyped", "import-not-found"]
 #ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = "deepsearch_glm.andromeda_nlp.*"
+module = "docling_nlp.andromeda_nlp.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = "deepsearch_glm.andromeda_structs.*"
+module = "docling_nlp.andromeda_structs.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = "deepsearch_glm.andromeda_glm.*"
+module = "docling_nlp.andromeda_glm.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

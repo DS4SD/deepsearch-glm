@@ -8,7 +8,7 @@ import json
 import os
 import subprocess
 
-from deepsearch_glm.utils.common import get_scratch_dir
+from docling_nlp.utils.common import get_scratch_dir
 
 try:
     import deepsearch as ds
@@ -16,7 +16,7 @@ except ImportError:
     raise ImportError(
         "To use the Deep Search capabilities, it is required to install the deepsearch-toolkit package."
         "You can install it with `pip install deepsearch-toolkit` or using the convenience extra in "
-        "deepsearch-glm as `pip install deepsearch-glm[toolkit]`."
+        "docling-nlp as `pip install docling-nlp[toolkit]`."
     ) from None
 
 from deepsearch.cps.client.components.elastic import ElasticDataCollectionSource
@@ -27,7 +27,7 @@ from dotenv import load_dotenv
 from tqdm import tqdm
 
 # re-import from the new module, in order to keep backwards compatibility
-from deepsearch_glm.utils.doc_utils import (
+from docling_nlp.utils.doc_utils import (
     resolve_item,
     to_legacy_document_format,
     to_xml_format,

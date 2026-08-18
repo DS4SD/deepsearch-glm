@@ -4,13 +4,13 @@ repos:
     hooks:
       - id: ruff-format
         name: Ruff formatter
-        entry: uv run ruff format deepsearch_glm tests
+        entry: uv run ruff format docling_nlp tests
         pass_filenames: false
         language: system
         files: '\.py$'
       - id: ruff-lint
         name: Ruff linter
-        entry: uv run ruff check --fix deepsearch_glm tests
+        entry: uv run ruff check --fix docling_nlp tests
         pass_filenames: false
         language: system
         files: '\.py$'
@@ -18,7 +18,7 @@ repos:
     hooks:
       - id: system
         name: MyPy
-        entry: uv run mypy deepsearch_glm
+        entry: uv run mypy docling_nlp
         pass_filenames: false
         language: system
         files: '\.py$'

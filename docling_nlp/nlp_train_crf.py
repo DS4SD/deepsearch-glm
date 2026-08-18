@@ -9,7 +9,7 @@ import random
 import tqdm
 from tabulate import tabulate
 
-from deepsearch_glm.nlp_utils import (
+from docling_nlp.nlp_utils import (
     create_nlp_dir,
     eval_crf,
     get_max_items,
@@ -29,11 +29,11 @@ examples of execution:
 
 1. end-to-end example to train CRF:
 
-    uv run python ./deepsearch_glm/nlp_train_crf.py -m all --input-file <filename> --output-dir <models-directory>'
+    uv run python ./docling_nlp/nlp_train_crf.py -m all --input-file <filename> --output-dir <models-directory>'
 
 2. end-to-end example to train CRF with limited samples:
 
-    uv run python ./deepsearch_glm/nlp_train_crf.py -m all --input-file <filename> --output-dir <models-directory> --max-items 1000'
+    uv run python ./docling_nlp/nlp_train_crf.py -m all --input-file <filename> --output-dir <models-directory> --max-items 1000'
 """,
         formatter_class=argparse.RawTextHelpFormatter,
     )

@@ -11,7 +11,7 @@ CHGLOG_FILE="${CHGLOG_FILE:-CHANGELOG.md}"
 
 # update package version
 uvx --from=toml-cli toml set --toml-path=pyproject.toml project.version "${TARGET_VERSION}"
-UV_FROZEN=0 uv lock --upgrade-package deepsearch-glm
+UV_FROZEN=0 uv lock --upgrade-package docling-nlp
 
 # collect release notes
 REL_NOTES=$(mktemp)

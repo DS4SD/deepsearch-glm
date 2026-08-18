@@ -11,9 +11,9 @@ from typing import List
 import pandas as pd
 from tabulate import tabulate
 
-from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.utils.doc_utils import to_legacy_document_format, to_xml_format
-from deepsearch_glm.utils.ds_utils import convert_pdffiles
+from docling_nlp.andromeda_nlp import nlp_model
+from docling_nlp.utils.doc_utils import to_legacy_document_format, to_xml_format
+from docling_nlp.utils.ds_utils import convert_pdffiles
 
 
 def parse_arguments():
@@ -27,21 +27,21 @@ examples of execution:
 
 1.a run on single document (pdf or json) with default model (=`langauge`):
 
-     uv run python ./deepsearch_glm/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.02334.pdf'
-     uv run python ./deepsearch_glm/nlp_apply_on_docs.py --json './data/documents/articles/2305.02334.json'
+     uv run python ./docling_nlp/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.02334.pdf'
+     uv run python ./docling_nlp/nlp_apply_on_docs.py --json './data/documents/articles/2305.02334.json'
 
 1.b run on single document pdf document and enforce conversion (ignore cache):
 
-     uv run python ./deepsearch_glm/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.02334.pdf' --force-convert True
+     uv run python ./docling_nlp/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.02334.pdf' --force-convert True
 
 2. run on multiple documents:
 
-     uv run python ./deepsearch_glm/nlp_apply_on_docs.py --pdf './data/documents/articles/*.pdf'
-     uv run python ./deepsearch_glm/nlp_apply_on_docs.py --json './data/documents/articles/*.json'
+     uv run python ./docling_nlp/nlp_apply_on_docs.py --pdf './data/documents/articles/*.pdf'
+     uv run python ./docling_nlp/nlp_apply_on_docs.py --json './data/documents/articles/*.json'
 
 3. run on multiple documents with non-default models:
 
-     uv run python ./deepsearch_glm/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
+     uv run python ./docling_nlp/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
 
 """,
         formatter_class=argparse.RawTextHelpFormatter,

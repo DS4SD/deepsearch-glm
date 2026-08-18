@@ -17,13 +17,13 @@ class BinaryDistribution(Distribution):
 
 
 setup(
-    packages=find_packages(include=["deepsearch_glm", "deepsearch_glm.*"]),
+    packages=find_packages(include=["docling_nlp", "docling_nlp.*"]),
     distclass=BinaryDistribution,
     cmdclass={"build_py": CustomBuildPy},
     zip_safe=False,
     include_package_data=True,
     package_data={
-        "deepsearch_glm": [
+        "docling_nlp": [
             "*.so",
             "*.pyd",
             "*.dll",

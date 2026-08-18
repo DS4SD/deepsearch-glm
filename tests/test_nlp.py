@@ -8,11 +8,11 @@ import os
 
 from tabulate import tabulate
 
-from deepsearch_glm.nlp_train_crf import create_crf_model
+from docling_nlp.nlp_train_crf import create_crf_model
 
-# from deepsearch_glm.nlp_train_semantic import train_semantic
-from deepsearch_glm.nlp_train_tok import create_tok_model
-from deepsearch_glm.nlp_utils import (
+# from docling_nlp.nlp_train_semantic import train_semantic
+from docling_nlp.nlp_train_tok import create_tok_model
+from docling_nlp.nlp_utils import (
     eval_crf,
     eval_fst,
     extract_references_from_doc,
@@ -23,8 +23,8 @@ from deepsearch_glm.nlp_utils import (
     train_fst,
     train_tok,
 )
-from deepsearch_glm.utils.doc_utils import to_legacy_document_format
-from deepsearch_glm.utils.load_pretrained_models import (  # load_pretrained_nlp_data,
+from docling_nlp.utils.doc_utils import to_legacy_document_format
+from docling_nlp.utils.load_pretrained_models import (  # load_pretrained_nlp_data,
     get_resources_dir,
     list_training_data,
     load_pretrained_nlp_models,

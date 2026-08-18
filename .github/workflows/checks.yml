@@ -31,7 +31,7 @@ jobs:
         run: |
           uv sync
           ls -l
-          ls -l deepsearch_glm
+          ls -l docling_nlp
       
       - name: Test interface without extras
         run: |
@@ -40,7 +40,7 @@ jobs:
         run: |
           uv sync --all-extras
           ls -l
-          ls -l deepsearch_glm
+          ls -l docling_nlp
       - name: Run styling check
         run: uv run pre-commit run --all-files
       - name: Testing

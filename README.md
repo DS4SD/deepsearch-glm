@@ -1,24 +1,24 @@
 # Graph Language Models
 
-[![PyPI version](https://img.shields.io/pypi/v/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/deepsearch-glm)](https://pypi.org/project/deepsearch-glm/)
+[![PyPI version](https://img.shields.io/pypi/v/docling-nlp)](https://pypi.org/project/docling-nlp/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/docling-nlp)](https://pypi.org/project/docling-nlp/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Pybind11](https://img.shields.io/badge/build-pybind11-blue)](https://github.com/pybind/pybind11/)
-[![Platforms](https://img.shields.io/badge/platform-macos%20|%20linux%20|%20windows-blue)](https://github.com/DS4SD/deepsearch-glm/)
-[![License MIT](https://img.shields.io/github/license/DS4SD/deepsearch-glm)](https://opensource.org/licenses/MIT)
+[![Platforms](https://img.shields.io/badge/platform-macos%20|%20linux%20|%20windows-blue)](https://github.com/docling-project/docling-nlp/)
+[![License MIT](https://img.shields.io/github/license/docling-project/docling-nlp)](https://opensource.org/licenses/MIT)
 
 ## Getting Started
 
 ### Finding entities and relations via NLP on text and documents
 
-To get easily started, simply install the `deepsearch-glm` package from PyPi. This can be
-done using the traditional `pip install deepsearch-glm` or via uv `uv add deepsearch-glm`.
+To get easily started, simply install the `docling-nlp` package from PyPi. This can be
+done using the traditional `pip install docling-nlp` or via uv `uv add docling-nlp`.
 
 Below, you can find the code-snippet to process pieces of text,
 
 ```python
-from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
-from deepsearch_glm.nlp_utils import init_nlp_model, print_on_shell
+from docling_nlp.utils.load_pretrained_models import load_pretrained_nlp_models
+from docling_nlp.nlp_utils import init_nlp_model, print_on_shell
 
 load_pretrained_nlp_models(force=False, verbose=False)
 mdl = init_nlp_model()
@@ -94,8 +94,8 @@ The NLP can also be applied on entire documents which were converted using
 Deep Search. A simple example is shown below,
 
 ```python
-from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
-from deepsearch_glm.nlp_utils import init_nlp_model, print_on_shell
+from docling_nlp.utils.load_pretrained_models import load_pretrained_nlp_models
+from docling_nlp.nlp_utils import init_nlp_model, print_on_shell
 
 load_pretrained_nlp_models(force=False, verbose=False)
 mdl = init_nlp_model()
@@ -140,7 +140,7 @@ uv sync --all-extras
 
 ### CXX compilation
 
-To compile from scratch, simply run the following command in the `deepsearch-glm` root folder to
+To compile from scratch, simply run the following command in the `docling-nlp` root folder to
 create the `build` directory,
 
 ```sh
@@ -157,36 +157,36 @@ cmake --build ./build -j
 
 ### NLP and GLM examples
 
-_Note: Some of the examples require to convert PDF documents with Deep Search. For this to run, it is required to install the [deepsearch-toolkit](https://github.com/DS4SD/deepsearch-toolkit) package. You can install it with `pip install deepsearch-glm[toolkit]`._
+_Note: Some of the examples require to convert PDF documents with Deep Search. For this to run, it is required to install the [deepsearch-toolkit](https://github.com/DS4SD/deepsearch-toolkit) package. You can install it with `pip install docling-nlp[toolkit]`._
 
 To run the examples, execute the scripts as `uv run python <script> <input>`. Examples are,
 
 1. **apply NLP on document(s)**
 ```sh
-uv run python ./deepsearch_glm/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
+uv run python ./docling_nlp/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
 ```
 2. **analyse NLP on document(s)**
 ```sh
-uv run python ./deepsearch_glm/nlp_apply_on_docs.py --json './data/documents/articles/2305.*.nlp.json' 
+uv run python ./docling_nlp/nlp_apply_on_docs.py --json './data/documents/articles/2305.*.nlp.json' 
 ```
 3. **create GLM from document(s)**
 ```sh
-uv run python ./deepsearch_glm/glm_create_from_docs.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
+uv run python ./docling_nlp/glm_create_from_docs.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
 ```
 
 ### Deep Search utilities
 
 To use the Deep Search capabilities, it is required to install the [deepsearch-toolkit](https://github.com/DS4SD/deepsearch-toolkit) package.
-You can install it with `pip install deepsearch-glm[toolkit]`.
+You can install it with `pip install docling-nlp[toolkit]`.
 
 
 1. **Query and download document(s)**
 ```sh
-uv run python ./deepsearch_glm/utils/ds_query.py --index patent-uspto --query "\"global warming potential\" AND \"etching\""
+uv run python ./docling_nlp/utils/ds_query.py --index patent-uspto --query "\"global warming potential\" AND \"etching\""
 ```
 2. **Converting PDF document(s) into JSON**
 ```sh
-uv run python ./deepsearch_glm/utils/ds_convert.py --pdf './data/documents/articles/2305.*.pdf'"
+uv run python ./docling_nlp/utils/ds_convert.py --pdf './data/documents/articles/2305.*.pdf'"
 ```
 
 ## Run using CXX executables

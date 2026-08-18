@@ -1,6 +1,6 @@
 import json
 
-from deepsearch_glm.andromeda_nlp import nlp_model
+from docling_nlp.andromeda_nlp import nlp_model
 
 
 def test_simple_interface_v1():
