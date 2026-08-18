@@ -16,6 +16,16 @@ else()
 
     message(STATUS "extlib_sentencepiece cxx-flags: " ${CMAKE_CXX_FLAGS})
 
+    # sentencepiece_processor.h uses uint32_t without including <cstdint>, which
+    # breaks on the MinGW gcc now shipped on windows-2025 ("'uint32_t' does not
+    # name a type"). Same class of bug as cxxopts/fasttext; force the include.
+    # MSVC still provides it transitively but takes the flag harmlessly.
+    if(MSVC)
+        set(SPM_EXTRA_CXX_FLAGS "/FIcstdint")
+    else()
+        set(SPM_EXTRA_CXX_FLAGS "-include cstdint")
+    endif()
+
     ExternalProject_Add(extlib_sentencepiece
         PREFIX extlib_sentencepiece
 
@@ -26,7 +36,7 @@ else()
         CMAKE_ARGS \\
             -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} \\
             -DCMAKE_INSTALL_LIBDIR=lib \\
-            -DCMAKE_CXX_FLAGS=${CMAKE_LIB_FLAGS} \\
+            "-DCMAKE_CXX_FLAGS=${CMAKE_LIB_FLAGS} ${SPM_EXTRA_CXX_FLAGS}" \\
             -DSPM_BUILD_TEST=OFF \\
             -DSPM_COVERAGE=OFF \\
             -DSPM_ENABLE_NFKC_COMPILE=OFF \\

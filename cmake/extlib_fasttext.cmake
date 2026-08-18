@@ -64,9 +64,10 @@ else()
 
         BUILD_IN_SOURCE ON
         LOG_DOWNLOAD ON
-        LOG_BUILD ON
-        # without this a compile error is written to a log file inside the
-        # container and never reaches the CI output
+        # LOG_BUILD is deliberately off: with it on, a failure is replayed
+        # through LOG_OUTPUT_ON_FAILURE truncated ("...skipping to end..."),
+        # which hid why the MSVC/ARM64 build returns 1 even though
+        # fasttext_pic.lib links fine. Stream it instead.
         LOG_OUTPUT_ON_FAILURE ON
     )
 
