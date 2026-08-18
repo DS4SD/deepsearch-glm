@@ -23,7 +23,10 @@ else()
     #   9e4f8199  install rules now honour CMAKE_INSTALL_* (see CMAKE_ARGS note)
     #   6879700e  do not force "-pthread -std=c++11" under MSVC, which cl.exe
     #             rejects -- required for the win_arm64 build
-    set(FASTTEXT_TAG 6879700efe1c6c37aefe96f79322546a741463ab)
+    #   040db187  do not link pthread under MSVC either; there is no pthread.lib,
+    #             and fasttext-bin failing to link (LNK1181) fails the whole
+    #             build even though every library target links fine
+    set(FASTTEXT_TAG 040db1874f833cf5ad4857411fdccf9932b18e99)
 
     # Force-include <cstdint> as belt-and-braces (see CMAKE_ARGS below). The
     # spelling is compiler specific: cl.exe has no -include.
