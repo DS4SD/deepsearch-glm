@@ -21,7 +21,9 @@ else()
     #             py3.10 kept working because cibuildwheel <3 uses manylinux2014
     #             (gcc 10).
     #   9e4f8199  install rules now honour CMAKE_INSTALL_* (see CMAKE_ARGS note)
-    set(FASTTEXT_TAG c86fcd1a9626a0b13c25cf055db82ddf97917865)
+    #   6879700e  do not force "-pthread -std=c++11" under MSVC, which cl.exe
+    #             rejects -- required for the win_arm64 build
+    set(FASTTEXT_TAG 6879700efe1c6c37aefe96f79322546a741463ab)
 
     # Force-include <cstdint> as belt-and-braces (see CMAKE_ARGS below). The
     # spelling is compiler specific: cl.exe has no -include.
