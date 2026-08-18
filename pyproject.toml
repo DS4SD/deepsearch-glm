@@ -146,7 +146,8 @@ pretty = true
 # strict = true
 #no_implicit_optional = true
 python_version = "3.10"
-disable_error_code = ["import-untyped"]
+no_site_packages = true
+disable_error_code = ["import-untyped", "import-not-found"]
 
 #[[tool.mypy.overrides]]
 #module = "deepsearch_glm.andromeda_nlp"
