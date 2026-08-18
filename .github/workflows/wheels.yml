@@ -65,14 +65,6 @@ jobs:
             platform: "linux"
             platform_id: "manylinux_aarch64"
 
-          # macos-13 is deprecated; macos-15-intel is its x86_64 replacement.
-          # min_macos_version stays 13 so the wheel keeps its macosx_13_0 tag
-          # and does not lose compatibility with macOS 13/14 users.
-          - name: "macos-15-intel"
-            platform: "macos"
-            min_macos_version: "13"
-            platform_id: "macosx_x86_64"
-
           - name: "macos-14"
             platform: "macos"
             min_macos_version: "14"
@@ -81,6 +73,10 @@ jobs:
           - name: "windows-2025"
             platform: "windows"
             platform_id: "win_amd64"
+
+          - name: "windows-11-arm"
+            platform: "windows"
+            platform_id: "win_arm64"
 
     steps:
       - name: Checkout
@@ -93,71 +89,27 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Set up custom PATH and set py version to cpXYZ [windows]
-        if: ${{matrix.os.platform_id == 'win_amd64'}}
+        if: ${{matrix.os.platform == 'windows'}}
         shell: pwsh
         run: |
-          echo "C:\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          echo "C:\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          # MSYS2/MinGW is only used for the amd64 build; arm64 goes via MSVC and
+          # must not pick a gcc off PATH.
+          if ("${{ matrix.os.platform_id }}" -eq "win_amd64") {
+              echo "C:\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+              echo "C:\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+              echo "C:\nasm" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          }
           echo "C:\Users\runneradmin\.local\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          echo "C:\nasm" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           $version = "${{ matrix.python-version }}"
           $cp_version = "cp$($version -replace '\.', '')"
           Add-Content -Path $env:GITHUB_ENV -Value "python_cp_version=$cp_version"
 
       - name: Convert python version to cpXYZ
-        if: ${{matrix.os.platform_id != 'win_amd64'}}
+        if: ${{matrix.os.platform != 'windows'}}
         run: |
           version=${{ matrix.python-version }}
           cp_version="cp${version//.}"
           echo "python_cp_version=$cp_version" >> $GITHUB_ENV
-
-      - name: Build wheels [macos-x86_64]
-        if: ${{matrix.os.platform_id == 'macosx_x86_64'}}
-        env:
-          CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.os.platform_id }}
-          CIBW_ARCHS: x86_64
-          CIBW_ARCHS_MACOS: x86_64
-          CIBW_PLATFORM: macos
-          CIBW_SKIP: "pp* *-musllinux_* *_i686* *_s390* *arm64* *pypy*"
-          CIBW_PROJECT_REQUIRES_PYTHON: "~=${{ matrix.python-version }}.0"
-          CIBW_BUILD_VERBOSITY: 3
-          CMAKE_OSX_ARCHITECTURES: x86_64
-          CIBW_REPAIR_WHEEL_COMMAND_MACOS: ""  # do not run delocate-wheel before the re-tag
-          CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET=${{ matrix.os.min_macos_version }}.0 CMAKE_POLICY_VERSION_MINIMUM=3.5"
-          ARCHFLAGS: -arch x86_64
-          BUILD_THREADS: "4"
-          PYTORCH_MPS_HIGH_WATERMARK_RATIO: "0.0"
-        run: |
-          uv sync --no-default-groups --no-install-project --group build
-          rm -rf ./build || true
-          PY_CACHE_TAG=$(uv run python -c 'import sys;print(sys.implementation.cache_tag)')
-          echo "Building wheel ${CIBW_BUILD} ${{ env.CIBW_BUILD }}"
-          echo "Building cp: ${{ env.python_cp_version }}"
-          echo "Building cache_tag: ${PY_CACHE_TAG}"
-          echo "Building platform_id: ${{ matrix.os.platform_id }}"
-          uv run python --version
-          uv run python --version | grep ${{ matrix.python-version }} 
-          cat ./pyproject.toml
-          uv run python -m cibuildwheel --output-dir wheelhouse
-          echo "step 1"
-          ls -l wheelhouse
-          uv run wheel tags --remove --platform-tag macosx_${{ matrix.os.min_macos_version }}_0_x86_64 ./wheelhouse/*.whl
-          rm -f ./wheelhouse/*arm64.whl
-          echo "step 2"
-          ls -l wheelhouse
-          uv run delocate-wheel --require-archs x86_64 -v ./wheelhouse/*.whl
-          echo "step 3"
-          ls -l wheelhouse
-          for file in ./wheelhouse/*.whl; do
-            echo "Inspecting $file"
-            uv run python -m zipfile --list "$file"
-            echo "Checking if .so is contained in the wheel"
-            uv run python -m zipfile --list "$file" | grep \\.so
-            echo "Checking if the correct python version is contained in the wheel"
-            uv run python -m zipfile --list "$file" | grep ${PY_CACHE_TAG}
-          done
-          mkdir -p ./dist
-          cp wheelhouse/*.whl ./dist/
 
       # there is an error with the tagging of wheels for macosx-arm64
       # see note: https://cibuildwheel.readthedocs.io/en/stable/faq/
@@ -256,14 +208,7 @@ jobs:
           mkdir -p ./dist
           cp wheelhouse/*.whl ./dist/
 
-      - name: Test install wheel [macos-arm64]
-        if: matrix.os.platform_id == 'macosx_arm64' && matrix.os.name == 'macos-14'
-        shell: bash
-        run: |
-          wheel_file=$(ls dist/*.whl | head -n 1)
-          uv pip install "$wheel_file"
-
-      - name: Set up MSYS2 [windows]
+      - name: Set up MSYS2 [windows amd64]
         if: ${{matrix.os.platform_id == 'win_amd64'}}
         uses: msys2/setup-msys2@v2
         with:
@@ -272,7 +217,7 @@ jobs:
             mingw-w64-x86_64-toolchain
             mingw-w64-x86_64-gcc-libs
 
-      - name: Set up external-libs [windows]
+      - name: Set up external-libs [windows amd64]
         if: ${{matrix.os.platform_id == 'win_amd64'}}
         shell: pwsh
         run: |
@@ -280,25 +225,51 @@ jobs:
           Copy-Item -Path "C:/mingw64/bin/libstdc++-6.dll" -Destination ".\deepsearch_glm"
           Copy-Item -Path "C:/mingw64/bin/libwinpthread-1.dll" -Destination ".\deepsearch_glm"
 
+      - name: Set up build env [windows]
+        if: ${{ matrix.os.platform == 'windows' }}
+        shell: pwsh
+        run: |
+          if ("${{ matrix.os.platform_id }}" -eq "win_amd64") {
+              # MinGW/gcc via MSYS2, as before
+              Add-Content -Path $env:GITHUB_ENV -Value "CIBW_ARCHS=AMD64"
+              Add-Content -Path $env:GITHUB_ENV -Value "PKG_CONFIG_PATH=C:/msys64/usr/lib/pkgconfig"
+              Add-Content -Path $env:GITHUB_ENV -Value "PKG_CONFIG_EXECUTABLE=C:/mingw64/bin/pkg-config.exe"
+              Add-Content -Path $env:GITHUB_ENV -Value "CMAKE_PREFIX_PATH=C:/msys64/mingw64;C:/mingw64"
+              Add-Content -Path $env:GITHUB_ENV -Value "CMAKE_LIBRARY_PATH=C:/msys64/mingw64/lib;C:/mingw64/lib"
+              Add-Content -Path $env:GITHUB_ENV -Value "CMAKE_INCLUDE_PATH=C:/msys64/mingw64/include;C:/mingw64/include"
+              Add-Content -Path $env:GITHUB_ENV -Value "CMAKE_GENERATOR=MSYS Makefiles"
+          }
+          else {
+              # There is no MinGW aarch64 toolchain on the runner, so arm64 goes
+              # through MSVC. -A ARM64 selects the target platform for the
+              # Visual Studio generator; local_build.py forwards both.
+              Add-Content -Path $env:GITHUB_ENV -Value "CIBW_ARCHS=ARM64"
+              Add-Content -Path $env:GITHUB_ENV -Value "CMAKE_GENERATOR=Visual Studio 17 2022"
+              Add-Content -Path $env:GITHUB_ENV -Value "CMAKE_ARGS=-A ARM64"
+          }
+          Add-Content -Path $env:GITHUB_ENV -Value 'PYTHON_MODULE_EXTENSION=${SETUPTOOLS_EXT_SUFFIX}'
+
       - name: Build wheels [windows]
-        if: ${{matrix.os.platform_id == 'win_amd64'}}
+        if: ${{ matrix.os.platform == 'windows' }}
         env:
           CIBW_PLATFORM: windows
           CIBW_BUILD_VERBOSITY: 3
-          CIBW_ARCHS: AMD64
+          CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.os.platform_id }}
+          CIBW_SKIP: "pp*"
           CIBW_PROJECT_REQUIRES_PYTHON: "~=${{ matrix.python-version }}.0"
-          PKG_CONFIG_PATH: "C:/msys64/usr/lib/pkgconfig"
-          PKG_CONFIG_EXECUTABLE: "C:/mingw64/bin/pkg-config.exe"
-          CMAKE_PREFIX_PATH: "C:/msys64/mingw64;C:/mingw64"
-          CMAKE_LIBRARY_PATH: "C:/msys64/mingw64/lib;C:/mingw64/lib"
-          CMAKE_INCLUDE_PATH: "C:/msys64/mingw64/include;C:/mingw64/include"
-          CMAKE_GENERATOR: "MSYS Makefiles"
           CIBW_ENVIRONMENT: "CMAKE_POLICY_VERSION_MINIMUM=3.5"
           BUILD_THREADS: 1
         shell: pwsh
         run: |
-          Remove-Item -Recurse -Force "C:\Strawberry\"
+          # Strawberry Perl shadows tools the build needs; it is not present on
+          # the arm64 image, so guard the removal.
+          if (Test-Path "C:\Strawberry\") {
+              Remove-Item -Recurse -Force "C:\Strawberry\"
+          }
           uv sync --no-default-groups --no-install-project --group build
+          if (Test-Path ".\build") {
+              Remove-Item -Recurse -Force ".\build"
+          }
           uv run python -m cibuildwheel --output-dir .\wheelhouse
           Get-ChildItem -Path .\wheelhouse -Filter *.whl | Format-List
           Get-ChildItem -Path .\wheelhouse -Filter *.whl | ForEach-Object {
@@ -310,21 +281,25 @@ jobs:
               New-Item -Path .\dist -ItemType Directory
           }
           Copy-Item -Path .\wheelhouse\*.whl -Destination .\dist\
-    
-      - name: Test install wheel [windows]
-        if: ${{matrix.os.platform_id == 'win_amd64'}}
-        shell: pwsh
-        run: |
-          $wheel_file = Get-ChildItem dist\*.whl | Select-Object -First 1
-          Write-Host "Installing wheel: $wheel_file"
-          uv pip install "$wheel_file"
 
-      - name: Quick test wheel
-        if: ${{ matrix.os.platform_id == 'win_amd64' || (matrix.os.platform_id == 'macosx_arm64' && matrix.os.name == 'macos-14') }}
+      - name: Test wheel
+        if: ${{ matrix.os.platform == 'windows' || matrix.os.platform_id == 'macosx_arm64' }}
+        shell: bash
         run: |
+          # Order matters. `uv sync` makes the venv match the lockfile exactly,
+          # so installing the wheel first just gets it removed again
+          # ("Uninstalled 1 package") and the tests then import nothing.
           uv sync --all-extras --no-install-project
-          uv run python -c 'from deepsearch_glm import andromeda_glm'
-          uv run pytest ./tests/test_glm.py -v
+          wheel_file=$(ls dist/*.whl | head -n 1)
+          uv pip install "$wheel_file"
+          # Resolve the venv interpreter and run the import check from outside
+          # the repo: with the source tree as cwd, ./deepsearch_glm shadows the
+          # installed wheel and this check could never fail.
+          if [ -x .venv/bin/python ]; then PY=.venv/bin/python; else PY=.venv/Scripts/python.exe; fi
+          PY_ABS="$(cd "$(dirname "$PY")" && pwd)/$(basename "$PY")"
+          (cd "${RUNNER_TEMP}" && "$PY_ABS" -c "from deepsearch_glm import andromeda_glm; print('imported from', andromeda_glm.__file__)")
+          # pytest does not put cwd on sys.path, so this exercises the wheel
+          uv run --no-sync pytest ./tests/test_glm.py -v
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

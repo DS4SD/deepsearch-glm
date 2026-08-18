@@ -23,6 +23,14 @@ else()
     #   9e4f8199  install rules now honour CMAKE_INSTALL_* (see CMAKE_ARGS note)
     set(FASTTEXT_TAG c86fcd1a9626a0b13c25cf055db82ddf97917865)
 
+    # Force-include <cstdint> as belt-and-braces (see CMAKE_ARGS below). The
+    # spelling is compiler specific: cl.exe has no -include.
+    if(MSVC)
+        set(FASTTEXT_EXTRA_CXX_FLAGS "/FIcstdint")
+    else()
+        set(FASTTEXT_EXTRA_CXX_FLAGS "-include cstdint")
+    endif()
+
     ExternalProject_Add(extlib_fasttext
 
         PREFIX extlib_fasttext
@@ -47,7 +55,7 @@ else()
             # belt-and-braces: the args.cc fix above covers the one translation
             # unit that is known to break, this covers any other header that
             # relied on a transitive <cstdint>
-            "-DCMAKE_CXX_FLAGS=${CMAKE_LIB_FLAGS} -include cstdint"
+            "-DCMAKE_CXX_FLAGS=${CMAKE_LIB_FLAGS} ${FASTTEXT_EXTRA_CXX_FLAGS}"
             -DCMAKE_INSTALL_LIBDIR=${EXTERNALS_PREFIX_PATH}/lib
             -DCMAKE_INSTALL_BINDIR=${EXTERNALS_PREFIX_PATH}/bin
             -DCMAKE_INSTALL_INCLUDEDIR=${EXTERNALS_PREFIX_PATH}/include

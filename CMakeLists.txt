@@ -80,7 +80,18 @@ if (WIN32)
     add_definitions(-DPCRE2_STATIC)
     add_definitions(-DNOMINMAX)
     add_definitions(-DROOT_PATH="\\\"${TOPLEVEL_PREFIX_PATH}\\\"")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 ${ENV_ARCHFLAGS}")
+    if (MSVC)
+        # win_arm64 builds with MSVC (the Visual Studio generator), which rejects
+        # the gcc spellings used for the MinGW win_amd64 build:
+        #   /O2      optimize for speed        (gcc -O3)
+        #   /W3      reasonable warning level  (gcc -Wall)
+        #   /EHsc    standard C++ exceptions   (implicit for gcc)
+        #   /bigobj  the pybind11 translation units exceed the default section limit
+        #   /utf-8   treat sources as UTF-8; several src files carry non-ASCII literals
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2 /W3 /EHsc /bigobj /utf-8")
+    else()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 ${ENV_ARCHFLAGS}")
+    endif()
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -DROOT_PATH='\"${TOPLEVEL_PREFIX_PATH}\"' ${ENV_ARCHFLAGS}")
 endif()
