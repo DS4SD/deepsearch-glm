@@ -25,6 +25,7 @@ ExternalProject_Add(extlib_utf8
 
     LOG_DOWNLOAD ON
     LOG_BUILD ON
+    LOG_OUTPUT_ON_FAILURE ON
     )
 
 add_library(utf8 INTERFACE)

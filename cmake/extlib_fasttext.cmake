@@ -13,7 +13,15 @@ else()
     include(CMakeParseArguments)
 
     set(FASTTEXT_URL https://github.com/PeterStaar-IBM/fastText.git)
-    set(FASTTEXT_TAG 9d5b2a2b364f49ed2707ff3be48a0f1ba6d86022)
+    # The old pin (9d5b2a2b, 2023-10-17) predates two fixes that already exist
+    # on this fork's master:
+    #   f8b084a9  "#include <cstdint>" in args.cc -- gcc 13+ no longer pulls it
+    #             in transitively, so args.cc fails on the manylinux_2_28 image
+    #             (gcc 14). This is what broke every py3.11+ linux wheel, while
+    #             py3.10 kept working because cibuildwheel <3 uses manylinux2014
+    #             (gcc 10).
+    #   9e4f8199  install rules now honour CMAKE_INSTALL_* (see CMAKE_ARGS note)
+    set(FASTTEXT_TAG c86fcd1a9626a0b13c25cf055db82ddf97917865)
 
     ExternalProject_Add(extlib_fasttext
 
@@ -27,16 +35,29 @@ else()
         BUILD_ALWAYS OFF
         INSTALL_DIR ${EXTERNALS_PREFIX_PATH}
 
-        CMAKE_ARGS \\
-            -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH} \\
-            -DCMAKE_CXX_FLAGS=${CMAKE_LIB_FLAGS} \\
-            -DCMAKE_INSTALL_LIBDIR=${EXTERNALS_PREFIX_PATH}/lib \\
-            -DCMAKE_INSTALL_BINDIR=${EXTERNALS_PREFIX_PATH}/bin \\
+        # NOTE: deliberately no `\\` line continuations here. CMake expands `\\`
+        # to a literal backslash which then escapes the list separator, so every
+        # argument came out as ";-DCMAKE_INSTALL_LIBDIR=..." and was silently
+        # ignored. That was harmless while fastText hardcoded `DESTINATION lib`,
+        # but master includes GNUInstallDirs and installs to CMAKE_INSTALL_LIBDIR
+        # -- which defaults to lib64 on the RHEL-based manylinux image, i.e. not
+        # where IMPORTED_LOCATION below looks for libfasttext_pic.a.
+        CMAKE_ARGS
+            -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH}
+            # belt-and-braces: the args.cc fix above covers the one translation
+            # unit that is known to break, this covers any other header that
+            # relied on a transitive <cstdint>
+            "-DCMAKE_CXX_FLAGS=${CMAKE_LIB_FLAGS} -include cstdint"
+            -DCMAKE_INSTALL_LIBDIR=${EXTERNALS_PREFIX_PATH}/lib
+            -DCMAKE_INSTALL_BINDIR=${EXTERNALS_PREFIX_PATH}/bin
             -DCMAKE_INSTALL_INCLUDEDIR=${EXTERNALS_PREFIX_PATH}/include
 
         BUILD_IN_SOURCE ON
         LOG_DOWNLOAD ON
         LOG_BUILD ON
+        # without this a compile error is written to a log file inside the
+        # container and never reaches the CI output
+        LOG_OUTPUT_ON_FAILURE ON
     )
 
     add_library(${ext_name} STATIC IMPORTED)

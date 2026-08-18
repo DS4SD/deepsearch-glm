@@ -44,6 +44,7 @@ else()
         BUILD_IN_SOURCE ON
         LOG_DOWNLOAD ON
         LOG_BUILD ON
+        LOG_OUTPUT_ON_FAILURE ON
     )
 
     add_library(${ext_name} STATIC IMPORTED)
