@@ -3,7 +3,6 @@
 #ifndef ANDROMEDA_BASE_CRF_UTILS_H_
 #define ANDROMEDA_BASE_CRF_UTILS_H_
 
-#include <sys/time.h>
 #include <stdio.h>
 #include <fstream>
 #include <map>
