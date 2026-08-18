@@ -7,7 +7,7 @@ from setuptools.command.build_py import build_py as _build_py
 
 class CustomBuildPy(_build_py):
     def run(self):
-        subprocess.check_call([sys.executable, "build.py"])
+        subprocess.check_call([sys.executable, "local_build.py"])
         super().run()
 
 

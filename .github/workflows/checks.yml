@@ -1,6 +1,13 @@
 on:
   workflow_call:
 
+concurrency:
+  # NOTE: docling-parse also has ${{ github.run_id }} in this group, which makes
+  # the group unique per run so cancel-in-progress can never fire. Omitted here
+  # so superseded check runs actually get cancelled.
+  group: checks-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   CMAKE_BUILD_TYPE: Debug
 

@@ -6,6 +6,11 @@ on:
         description: "If true, the packages will be published."
         default: false
 
+concurrency:
+  # never cancel a publishing run
+  group: wheels-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ inputs.publish }}
+  cancel-in-progress: ${{ !inputs.publish }}
+
 env:
   CMAKE_BUILD_TYPE: Release
   # fasttext/sentencepiece still declare cmake_minimum_required(VERSION <3.5), which
@@ -50,11 +55,20 @@ jobs:
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
         os:
-          - name: "ubuntu-22.04"
+          - name: "ubuntu-24.04"
             platform: "linux"
             platform_id: "manylinux_x86_64"
 
-          - name: "macos-13"
+          # native arm64 runner: aarch64 wheels used to be cross-built on the
+          # x86_64 runner under QEMU, which is what made these jobs take ~1h
+          - name: "ubuntu-24.04-arm"
+            platform: "linux"
+            platform_id: "manylinux_aarch64"
+
+          # macos-13 is deprecated; macos-15-intel is its x86_64 replacement.
+          # min_macos_version stays 13 so the wheel keeps its macosx_13_0 tag
+          # and does not lose compatibility with macOS 13/14 users.
+          - name: "macos-15-intel"
             platform: "macos"
             min_macos_version: "13"
             platform_id: "macosx_x86_64"
@@ -64,9 +78,9 @@ jobs:
             min_macos_version: "14"
             platform_id: "macosx_arm64"
 
-          - name: "windows-latest"
+          - name: "windows-2025"
             platform: "windows"
-            platform_id: "win_amd64"      
+            platform_id: "win_amd64"
 
     steps:
       - name: Checkout
@@ -115,6 +129,7 @@ jobs:
           PYTORCH_MPS_HIGH_WATERMARK_RATIO: "0.0"
         run: |
           uv sync --no-default-groups --no-install-project --group build
+          rm -rf ./build || true
           PY_CACHE_TAG=$(uv run python -c 'import sys;print(sys.implementation.cache_tag)')
           echo "Building wheel ${CIBW_BUILD} ${{ env.CIBW_BUILD }}"
           echo "Building cp: ${{ env.python_cp_version }}"
@@ -166,6 +181,7 @@ jobs:
           CUDA_VISIBLE_DEVICES: "cpu"
         run: |
           uv sync --no-default-groups --no-install-project --group build
+          rm -rf ./build || true
           PY_CACHE_TAG=$(uv run python -c 'import sys;print(sys.implementation.cache_tag)')
           echo "Building wheel ${CIBW_BUILD} ${{ env.CIBW_BUILD }}"
           echo "Building cp: ${{ env.python_cp_version }}"
@@ -195,17 +211,16 @@ jobs:
           mkdir -p ./dist
           cp wheelhouse/*.whl ./dist/
 
-      - name: Set up QEMU [linux]
-        if: startsWith(matrix.os.name, 'ubuntu')
-        uses: docker/setup-qemu-action@v3
-        with:
-            platforms: all
+      # No QEMU step: both linux runners are native for their own arch, and
+      # CIBW_BUILD below pins each job to exactly one build identifier.
 
       - name: Build wheels [linux]
         if: startsWith(matrix.os.name, 'ubuntu')
         env:
-          # CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.os.platform_id }}
-          CIBW_ARCHS: auto x86_64 aarch64
+          # Pin to this matrix entry only. Previously commented out, which made
+          # every linux job build x86_64 *and* emulated aarch64.
+          CIBW_BUILD: ${{ env.python_cp_version }}-${{ matrix.os.platform_id }}
+          CIBW_ARCHS: auto
           CIBW_PLATFORM: linux
           CIBW_SKIP: "pp* *musllinux_* *_i686* *_s390* *pypy*"
           CIBW_PROJECT_REQUIRES_PYTHON: "~=${{ matrix.python-version }}.0"
@@ -214,6 +229,9 @@ jobs:
           CIBW_ENVIRONMENT: "CMAKE_POLICY_VERSION_MINIMUM=3.5"
           # belt-and-braces: never ship a host-generated cmake cache into /project
           CIBW_BEFORE_BUILD: "rm -rf /project/build"
+          # without this BUILD_THREADS never reaches the container and the build
+          # falls back to local_build.py's default of 4
+          CIBW_ENVIRONMENT_PASS_LINUX: "BUILD_THREADS"
           BUILD_THREADS: "8"
         run: |
           uv sync --no-default-groups --no-install-project --group build
