@@ -4,10 +4,10 @@
 import json
 
 import pandas as pd
+from docling_nlp.andromeda_structs import ds_document, ds_table, ds_text
 
-from deepsearch_glm.andromeda_structs import ds_document, ds_table, ds_text
-from deepsearch_glm.nlp_utils import init_nlp_model
-from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models
+from docling_nlp.nlp_utils import init_nlp_model
+from docling_nlp.utils.load_pretrained_models import load_pretrained_nlp_models
 
 TEXTS = [
     """Anarchism is a political philosophy and movement that is sceptical

@@ -15,14 +15,14 @@ import tqdm
 from rich import Console
 from tabulate import tabulate
 
-# from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.nlp_utils import (
+# from docling_nlp.andromeda_nlp import nlp_model
+from docling_nlp.nlp_utils import (
     create_nlp_dir,
     get_max_items,
     init_nlp_model,
     train_crf,
 )
-from deepsearch_glm.utils.load_pretrained_models import get_resources_dir
+from docling_nlp.utils.load_pretrained_models import get_resources_dir
 
 console = Console()
 
@@ -38,11 +38,11 @@ examples of execution:
 
 1. end-to-end example on pdf documents:
 
-    poetry run python ./deepsearch_glm/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
+    uv run python ./docling_nlp/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
 
 2. annotate (100) references:
 
-    poetry run python ./deepsearch_glm/nlp_train_semantic.py -m annotate --input-dir '<root-dir-of-json-docs> --output-dir <models-directory> --max-items 100'        
+    uv run python ./docling_nlp/nlp_train_semantic.py -m annotate --input-dir '<root-dir-of-json-docs> --output-dir <models-directory> --max-items 100'        
 """,
         formatter_class=argparse.RawTextHelpFormatter,
     )
@@ -117,10 +117,10 @@ def extract_references(filenames, ofile, max_items: int = -1):
         # print(f"reading {filename}")
 
         try:
-            with open(filename, "r", encoding="utf-8") as fr:
+            with open(filename, encoding="utf-8") as fr:
                 idoc = json.load(fr)
         except Exception as exc:
-            print(f"could not read line: {str(exc)}")
+            print(f"could not read line: {exc!s}")
             continue
 
         training_sample = random.random() < 0.9
@@ -224,7 +224,7 @@ def parse_with_anystyle_api(anystyle, refs):
     )
 
     try:
-        with open(tmpfile, "r", encoding="utf-8") as fr:
+        with open(tmpfile, encoding="utf-8") as fr:
             tmp = json.load(fr)
 
         if os.path.exists(tmpfile):
@@ -233,7 +233,7 @@ def parse_with_anystyle_api(anystyle, refs):
         return tmp
     except Exception as exc:
         console.print("could not call anystyle API endpoint ...", style="red")
-        console.print(f" -> error: {str(exc)}", style="yellow")
+        console.print(f" -> error: {exc!s}", style="yellow")
 
     if os.path.exists(tmpfile):
         os.remove(tmpfile)
@@ -319,7 +319,7 @@ def annotate_references(rfile, ofile, max_items):
     }
 
     resources_dir = get_resources_dir()
-    with open(f"{resources_dir}/data_nlp.json", "r", encoding="utf-8") as fr:
+    with open(f"{resources_dir}/data_nlp.json", encoding="utf-8") as fr:
         configs = json.load(fr)
         anystyle = configs["services"]["anystyle"]
 
@@ -329,10 +329,10 @@ def annotate_references(rfile, ofile, max_items):
 
     refs = []
 
-    fr = open(rfile, "r", encoding="utf-8")
+    fr = open(rfile, encoding="utf-8")
     fw = open(ofile, "w", encoding="utf-8")
 
-    for i in tqdm.tqdm(range(0, max_items)):
+    for i in tqdm.tqdm(range(max_items)):
         line = fr.readline().strip()
         if line is None or len(line) == 0:
             break
@@ -346,14 +346,14 @@ def annotate_references(rfile, ofile, max_items):
             refs.append(ref)
 
         except Exception as exc:
-            print(f"Could not process (error: {str(exc)}) for line: {line}")
+            print(f"Could not process (error: {exc!s}) for line: {line}")
             continue
 
         if len(refs) >= 16:
             update_references(anystyle, refs, label_map)
 
             for ref in refs:
-                if "annotated" in ref and ref["annotated"]:
+                if ref.get("annotated"):
                     fw.write(json.dumps(ref) + "\n")
 
             refs = []

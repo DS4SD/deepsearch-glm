@@ -10,14 +10,14 @@ import sys
 import pandas as pd
 from tabulate import tabulate
 
-# from deepsearch_glm.andromeda_glm import glm_model, glm_query
-from deepsearch_glm.andromeda_glm import glm_query
+# from docling_nlp.andromeda_glm import glm_model, glm_query
+from docling_nlp.andromeda_glm import glm_query
 
 # import andromeda_glm
 # import andromeda_nlp
-# from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.glm_utils import load_glm
-from deepsearch_glm.nlp_utils import init_nlp_model
+# from docling_nlp.andromeda_nlp import nlp_model
+from docling_nlp.glm_utils import load_glm
+from docling_nlp.nlp_utils import init_nlp_model
 
 # import os
 # import textwrap

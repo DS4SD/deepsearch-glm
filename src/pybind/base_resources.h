@@ -45,7 +45,7 @@ namespace andromeda_py
     */
     
     // Get the module object of your package
-    PyObject* myPackageModule = PyImport_ImportModule("deepsearch_glm");
+    PyObject* myPackageModule = PyImport_ImportModule("docling_nlp");
     
     // Get the filename object of the module
     PyObject* filenameObj = PyModule_GetFilenameObject(myPackageModule);

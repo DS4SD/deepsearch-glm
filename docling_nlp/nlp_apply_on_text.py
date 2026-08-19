@@ -3,8 +3,8 @@
 
 import argparse
 
-from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.nlp_utils import print_on_shell
+from docling_nlp.andromeda_nlp import nlp_model
+from docling_nlp.nlp_utils import print_on_shell
 
 # import glob
 # import json
@@ -30,19 +30,19 @@ examples of execution:
 
 1. apply NLP on default text with default models (=`language`):
 
-    poetry run python ./deepsearch_glm/apply_nlp_on_text.py
+    uv run python ./docling_nlp/apply_nlp_on_text.py
 
 2. apply NLP on a single piece of text with default model (=`language`):
 
-    poetry run python ./deepsearch_glm/apply_nlp_on_text.py --text "FeSe is a superconductor with Tc of 30 K."
+    uv run python ./docling_nlp/apply_nlp_on_text.py --text "FeSe is a superconductor with Tc of 30 K."
 
 3. apply NLP on default text with specific models (=`verb;term;conn;semantic;abbreviation`):
 
-    poetry run python ./deepsearch_glm/apply_nlp_on_text.py --model-names "verb;term;conn;semantic;abbreviation"
+    uv run python ./docling_nlp/apply_nlp_on_text.py --model-names "verb;term;conn;semantic;abbreviation"
 
 4. apply NLP on text from prompt with specific models (=`verb;term`):
 
-    poetry run python ./deepsearch_glm/apply_nlp_on_text.py --model-names "verb;term" --interactive True
+    uv run python ./docling_nlp/apply_nlp_on_text.py --model-names "verb;term" --interactive True
 
 """,
         formatter_class=argparse.RawTextHelpFormatter,

@@ -8,11 +8,11 @@ import os
 
 from tabulate import tabulate
 
-from deepsearch_glm.nlp_train_crf import create_crf_model
+from docling_nlp.nlp_train_crf import create_crf_model
 
-# from deepsearch_glm.nlp_train_semantic import train_semantic
-from deepsearch_glm.nlp_train_tok import create_tok_model
-from deepsearch_glm.nlp_utils import (
+# from docling_nlp.nlp_train_semantic import train_semantic
+from docling_nlp.nlp_train_tok import create_tok_model
+from docling_nlp.nlp_utils import (
     eval_crf,
     eval_fst,
     extract_references_from_doc,
@@ -23,8 +23,8 @@ from deepsearch_glm.nlp_utils import (
     train_fst,
     train_tok,
 )
-from deepsearch_glm.utils.doc_utils import to_legacy_document_format
-from deepsearch_glm.utils.load_pretrained_models import (  # load_pretrained_nlp_data,
+from docling_nlp.utils.doc_utils import to_legacy_document_format
+from docling_nlp.utils.load_pretrained_models import (  # load_pretrained_nlp_data,
     get_resources_dir,
     list_training_data,
     load_pretrained_nlp_models,
@@ -355,9 +355,9 @@ def test_03D():
     # print(tabulate(res_j["instances"]["data"][-30:]))
     # print(tabulate(res_k["instances"]["data"][-30:]))
 
-    for j in range(0, len(res_j["instances"]["data"])):
+    for j in range(len(res_j["instances"]["data"])):
         found = False
-        for k in range(0, len(res_k["instances"]["data"])):
+        for k in range(len(res_k["instances"]["data"])):
             if res_k["instances"]["data"][k] == res_j["instances"]["data"][j]:
                 found = True
 
@@ -366,9 +366,9 @@ def test_03D():
             # print(res_j["instances"]["data"][j])
             print(res_k["instances"]["data"][j])
 
-    for k in range(0, len(res_k["instances"]["data"])):
+    for k in range(len(res_k["instances"]["data"])):
         found = False
-        for j in range(0, len(res_j["instances"]["data"])):
+        for j in range(len(res_j["instances"]["data"])):
             if res_k["instances"]["data"][k] == res_j["instances"]["data"][j]:
                 found = True
 
@@ -526,7 +526,7 @@ def test_05A():
     target_nlp = "./tests/data/docs/doc_01.nlp.json"
 
     # print(f"reading {source} ... ", end="")
-    with open(source, "r") as fr:
+    with open(source) as fr:
         doc_i = json.load(fr)
 
     if GENERATE:
@@ -542,11 +542,11 @@ def test_05A():
         with open(target_leg, "w") as fw:
             fw.write(json.dumps(doc_i, indent=2))
     else:
-        with open(target_nlp, "r") as fr:
+        with open(target_nlp) as fr:
             doc_nlp = json.load(fr)
             doc_nlp = round_floats(doc_nlp)
 
-        with open(target_leg, "r") as fr:
+        with open(target_leg) as fr:
             doc_leg = json.load(fr)
             doc_leg = round_floats(doc_leg)
 
@@ -649,7 +649,7 @@ def test_06C():
             filters=["properties", "instances"],
         )
 
-        fr = open(crf_file, "r")
+        fr = open(crf_file)
 
         while True:
             line = fr.readline()

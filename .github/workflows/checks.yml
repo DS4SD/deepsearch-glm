@@ -1,45 +1,52 @@
 on:
   workflow_call:
 
+concurrency:
+  # NOTE: docling-parse also has ${{ github.run_id }} in this group, which makes
+  # the group unique per run so cancel-in-progress can never fire. Omitted here
+  # so superseded check runs actually get cancelled.
+  group: checks-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   CMAKE_BUILD_TYPE: Debug
 
 jobs:
   run-checks:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v4
       # - name: Install dependencies [linux]
       #   run: sudo apt-get install -y libldap-common
       #   shell: bash
-      - uses: ./.github/actions/setup-poetry
+      - uses: ./.github/actions/setup-uv
         with:
           python-version: ${{ matrix.python-version }}
           run_install: 'false'
 
       - name: Compile and install
         run: |
-          poetry install
+          uv sync
           ls -l
-          ls -l deepsearch_glm
+          ls -l docling_nlp
       
       - name: Test interface without extras
         run: |
-          poetry run pytest ./tests/test_simple_interface.py -vs
+          uv run pytest ./tests/test_simple_interface.py -vs
       - name: Install extras
         run: |
-          poetry install --all-extras
+          uv sync --all-extras
           ls -l
-          ls -l deepsearch_glm
+          ls -l docling_nlp
       - name: Run styling check
-        run: poetry run pre-commit run --all-files
+        run: uv run pre-commit run --all-files
       - name: Testing
         run: |
-          poetry run pytest ./tests/test_structs.py -v
-          poetry run pytest ./tests/test_nlp.py -v	
-          poetry run pytest ./tests/test_glm.py -v
-      - name: Build with poetry
-        run: poetry build
+          uv run pytest ./tests/test_structs.py -v
+          uv run pytest ./tests/test_nlp.py -v
+          uv run pytest ./tests/test_glm.py -v
+      - name: Build with uv
+        run: uv build

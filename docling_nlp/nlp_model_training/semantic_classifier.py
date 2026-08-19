@@ -13,9 +13,9 @@ import tqdm
 from rich.console import Console
 from tabulate import tabulate
 
-from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.nlp_utils import create_nlp_dir, init_nlp_model
-from deepsearch_glm.utils.ds_utils import ds_index_query
+from docling_nlp.andromeda_nlp import nlp_model
+from docling_nlp.nlp_utils import create_nlp_dir, init_nlp_model
+from docling_nlp.utils.ds_utils import ds_index_query
 
 console = Console()
 
@@ -31,7 +31,7 @@ examples of execution:
 
 1. end-to-end example on pdf documents:
 
-    poetry run python ./deepsearch_glm/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
+    uv run python ./docling_nlp/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
 
 """,
         formatter_class=argparse.RawTextHelpFormatter,
@@ -197,7 +197,7 @@ def prepare_data_from_legacy_documents(doc):
             ref_end == text_len
             and ref_beg < text_len
             and i > ref_beg
-            and (("title" in label))
+            and ("title" in label)
             and ("reference" not in text)
         ):
             ref_end = i
@@ -347,7 +347,7 @@ def prepare_data(json_files, data_file):
         data = []
 
         try:
-            with open(json_file, "r", encoding="utf-8") as fr:
+            with open(json_file, encoding="utf-8") as fr:
                 doc = json.load(fr)
         except:
             continue
@@ -447,7 +447,7 @@ def refine_data(data_file):
 
     print(f"reading {data_file}")
 
-    fr = open(data_file, "r", encoding="utf-8")
+    fr = open(data_file, encoding="utf-8")
     fw = open(data_file.replace(".jsonl", ".v2.jsonl"), "w", encoding="utf-8")
 
     table = []

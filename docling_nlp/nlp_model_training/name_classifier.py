@@ -8,8 +8,8 @@ import re
 
 import pandas as pd
 
-from deepsearch_glm.glm_utils import read_edges_in_dataframe, read_nodes_in_dataframe
-from deepsearch_glm.nlp_utils import (
+from docling_nlp.glm_utils import read_edges_in_dataframe, read_nodes_in_dataframe
+from docling_nlp.nlp_utils import (
     eval_fst,
     init_nlp_model,
     prepare_data_for_fst_training,
@@ -170,7 +170,7 @@ def prepare(max_items=None):
             text_ = text.lower()
 
             label = "expr"
-            if re.match("^[A-Z]\.\s[A-Z].+", text):
+            if re.match(r"^[A-Z]\.\s[A-Z].+", text):
                 label = "person-name"
 
             text_ = text.lower()
@@ -199,7 +199,7 @@ def prepare(max_items=None):
             if _ in line["text"].lower():
                 cand = True
 
-        if re.match("J\.?\s[A-Z].*", line["text"]) and cand:
+        if re.match(r"J\.?\s[A-Z].*", line["text"]) and cand:
             print(line)
             line["label"] = "person-name"
 
@@ -299,14 +299,14 @@ if __name__ == "__main__":
     if mode == "extract" or mode == "all":
         extract(
             mode="abstracts",
-            nodes_file="/Users/taa/Documents/projects/deepsearch-glm/build/glm_arxiv_v2_names_abstracts/nodes.csv",
-            edges_file="/Users/taa/Documents/projects/deepsearch-glm/build/glm_arxiv_v2_names_abstracts/edges.csv",
+            nodes_file="/Users/taa/Documents/projects/docling-nlp/build/glm_arxiv_v2_names_abstracts/nodes.csv",
+            edges_file="/Users/taa/Documents/projects/docling-nlp/build/glm_arxiv_v2_names_abstracts/edges.csv",
         )
 
         extract(
             mode="authors",
-            nodes_file="/Users/taa/Documents/projects/deepsearch-glm/build/glm_arxiv_v2_names_authors/nodes.csv",
-            edges_file="/Users/taa/Documents/projects/deepsearch-glm/build/glm_arxiv_v2_names_authors/edges.csv",
+            nodes_file="/Users/taa/Documents/projects/docling-nlp/build/glm_arxiv_v2_names_authors/nodes.csv",
+            edges_file="/Users/taa/Documents/projects/docling-nlp/build/glm_arxiv_v2_names_authors/edges.csv",
         )
 
     if mode == "prepare" or mode == "all":

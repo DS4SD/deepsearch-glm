@@ -5,9 +5,9 @@ import argparse
 
 from tabulate import tabulate
 
-from deepsearch_glm.andromeda_glm import glm_query
-from deepsearch_glm.glm_utils import load_glm
-from deepsearch_glm.nlp_utils import init_nlp_model
+from docling_nlp.andromeda_glm import glm_query
+from docling_nlp.glm_utils import load_glm
+from docling_nlp.nlp_utils import init_nlp_model
 
 
 def parse_arguments():

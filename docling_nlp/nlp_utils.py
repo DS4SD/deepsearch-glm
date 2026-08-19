@@ -17,8 +17,8 @@ import pandas as pd
 from rich.console import Console
 from tabulate import tabulate
 
-from deepsearch_glm.andromeda_nlp import nlp_model
-from deepsearch_glm.utils.common import get_scratch_dir
+from docling_nlp.andromeda_nlp import nlp_model
+from docling_nlp.utils.common import get_scratch_dir
 
 # import andromeda_nlp
 
@@ -40,7 +40,7 @@ def create_nlp_dir(tdir=None):
 
 
 def get_max_items(ifile: str, max_lines: int = -1):
-    num_lines = sum(1 for _ in open(ifile, "r", encoding="utf-8"))
+    num_lines = sum(1 for _ in open(ifile, encoding="utf-8"))
     if max_lines != -1:
         max_lines = min(max_lines, num_lines)
     else:
@@ -116,7 +116,7 @@ def print_on_shell(text, result):
     """Function to print text on shell"""
 
     wrapper = textwrap.TextWrapper(width=70)
-    console.print(f"\ntext: \n", style="yellow")
+    console.print("\ntext: \n", style="yellow")
     console.print("\n".join(wrapper.wrap(text)), "\n")
 
     for _ in ["properties", "word-tokens", "instances", "entities", "relations"]:
@@ -304,7 +304,7 @@ def train_fst_legacy(
 
 def prepare_data_for_fst_training(
     data_file: str,
-    loglevel: str = "WARNING"
+    loglevel: str = "WARNING",
     # test_file:str, validation_file:str,
     # model_file:str, metrics_file:str,
     # ngram=3, autotune=True, duration=360, modelsize="1M"
@@ -360,7 +360,7 @@ def train_fst(
             config["hpo"]["duration"] = duration
             config["hpo"]["modelsize"] = modelsize
 
-            if ngram != None:
+            if ngram is not None:
                 config["args"]["n-gram"] = ngram
 
             config["files"]["data-file"] = data_file

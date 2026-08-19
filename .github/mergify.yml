@@ -4,6 +4,10 @@ merge_protections:
     if:
       - base = main
     success_conditions:
-      - "title ~=
-        ^(fix|feat|docs|style|refactor|perf|test|build|ci|chore|revert)(?:\\(.+\
-        \\))?:"
+      # The `(!)?` allows the breaking-change marker, e.g. "feat!: ...".
+      # Without it a major-bump PR title is rejected outright, which is how
+      # semantic-release is told to raise the major version.
+      - "title ~= ^(fix|feat|docs|style|refactor|perf|test|build|ci|chore|revert)(?:\\(.+\\\
+        ))?(!)?:"
+merge_protections_settings:
+  reporting_method: check-runs

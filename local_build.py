@@ -51,6 +51,20 @@ def build_local(num_threads: int):
         f"-DUSE_SYSTEM_DEPS={USE_SYSTEM_DEPS}",
         f"-DPYTHON_EXECUTABLE={sys.executable}",
     ]
+    # Forward CMAKE_GENERATOR so callers (e.g. the CI workflow) can switch the
+    # generator without patching this script ("Visual Studio 17 2022" for MSVC
+    # on Windows ARM64 vs "MSYS Makefiles" for MinGW on Windows AMD64).
+    cmake_generator = os.getenv("CMAKE_GENERATOR")
+    if cmake_generator:
+        config_cmd.extend(["-G", cmake_generator])
+
+    # Forward extra cmake flags supplied via CMAKE_ARGS (e.g. "-A ARM64").
+    # Split on whitespace but respect quoted strings.
+    cmake_args_env = os.getenv("CMAKE_ARGS", "").strip()
+    if cmake_args_env:
+        import shlex
+        config_cmd.extend(shlex.split(cmake_args_env))
+
     config_cmd.extend(get_pybind11_cmake_args())
     success = run(config_cmd, cwd=ROOT_DIR)
     if not success:
@@ -60,6 +74,12 @@ def build_local(num_threads: int):
         "cmake",
         "--build", f"{BUILD_DIR}",
         "--target=install",
+        # Authoritative for multi-config generators (the Visual Studio generator
+        # on Windows ARM64): builds Release so MSVC uses /O2 and the
+        # redistributable release CRT. Ignored by single-config generators
+        # (Makefiles/Ninja on Linux, macOS and MinGW), where the optimization
+        # level comes from CMAKE_CXX_FLAGS.
+        "--config", "Release",
     ]
     if num_threads > 1:
         build_cmd.extend(["-j", f"{num_threads}"])

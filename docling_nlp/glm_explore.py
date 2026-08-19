@@ -9,11 +9,11 @@ import argparse
 import os
 import sys
 
-# from deepsearch_glm.andromeda_glm import glm_model, glm_query
-# from deepsearch_glm.andromeda_nlp import nlp_model
-# from deepsearch_glm.andromeda_glm import glm_query
-# from deepsearch_glm.glm_utils import expand_terms, load_glm, show_query_result
-from deepsearch_glm.glm_utils import expand_terms, load_glm
+# from docling_nlp.andromeda_glm import glm_model, glm_query
+# from docling_nlp.andromeda_nlp import nlp_model
+# from docling_nlp.andromeda_glm import glm_query
+# from docling_nlp.glm_utils import expand_terms, load_glm, show_query_result
+from docling_nlp.glm_utils import expand_terms, load_glm
 
 # import textwrap
 
@@ -30,7 +30,7 @@ def parse_arguments():
 examples of execution: 
 
 1 Explore the GLM
-    poetry run python ./deepsearch_glm/explore_glm.py --glm-dir <glm-root-dir>
+    uv run python ./docling_nlp/explore_glm.py --glm-dir <glm-root-dir>
 
 """,
         formatter_class=argparse.RawTextHelpFormatter,

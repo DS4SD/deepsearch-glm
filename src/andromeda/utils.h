@@ -10,7 +10,7 @@ namespace andromeda
   {
   public:
 
-    const static inline std::filesystem::path package_name = "deepsearch_glm";
+    const static inline std::filesystem::path package_name = "docling_nlp";
     const static inline std::filesystem::path resources_relative_path = "resources";
 
   private:

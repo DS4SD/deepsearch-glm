@@ -13,7 +13,9 @@ else()
     include(CMakeParseArguments)
 
     set(CXXOPTS_URL https://github.com/jarro2783/cxxopts.git)
-    set(CXXOPTS_TAG v3.2.0)
+    # v3.3.1 is the first release with the `#include <cstdint>` fix; without it
+    # gcc 13+ (mingw on windows-latest) fails with "'uint8_t' does not name a type"
+    set(CXXOPTS_TAG v3.3.1)
 
     ExternalProject_Add(extlib_cxxopts
 
@@ -29,6 +31,8 @@ else()
 
         CMAKE_ARGS \\
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON \\
+        -DCXXOPTS_BUILD_EXAMPLES=OFF \\
+        -DCXXOPTS_BUILD_TESTS=OFF \\
         -DCMAKE_INSTALL_PREFIX=${EXTERNALS_PREFIX_PATH}
 
         BUILD_IN_SOURCE ON

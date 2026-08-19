@@ -9,7 +9,7 @@ import random
 import tqdm
 from tabulate import tabulate
 
-from deepsearch_glm.nlp_utils import train_tok
+from docling_nlp.nlp_utils import train_tok
 
 
 def parse_arguments():
@@ -23,7 +23,7 @@ examples of execution:
 
 1. end-to-end example to train CRF:
 
-    poetry run python ./deepsearch_glm/nlp_train_tok.py -t unigram -n <name> --input-file <filename>
+    uv run python ./docling_nlp/nlp_train_tok.py -t unigram -n <name> --input-file <filename>
 """,
         formatter_class=argparse.RawTextHelpFormatter,
     )

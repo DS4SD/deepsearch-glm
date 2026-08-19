@@ -2,13 +2,13 @@
 Our project welcomes external contributions. If you have an itch, please feel
 free to scratch it.
 
-To contribute code or documentation, please submit a [pull request](https://github.com/DS4SD/deepsearch-glm/pulls).
+To contribute code or documentation, please submit a [pull request](https://github.com/docling-project/docling-nlp/pulls).
 
 A good way to familiarize yourself with the codebase and contribution process is
-to look for and tackle low-hanging fruit in the [issue tracker](https://github.com/DS4SD/deepsearch-glm/issues).
+to look for and tackle low-hanging fruit in the [issue tracker](https://github.com/docling-project/docling-nlp/issues).
 Before embarking on a more ambitious contribution, please quickly [get in touch](#communication) with us.
 
-For general questions or support requests, please refer to the [discussion section](https://github.com/DS4SD/deepsearch-glm/discussions).
+For general questions or support requests, please refer to the [discussion section](https://github.com/docling-project/docling-nlp/discussions).
 
 **Note: We appreciate your effort, and want to avoid a situation where a contribution
 requires extensive rework (by you or by us), sits in backlog for a long time, or
@@ -16,14 +16,14 @@ cannot be accepted at all!**
 
 ### Proposing new features
 
-If you would like to implement a new feature, please [raise an issue](https://github.com/DS4SD/deepsearch-glm/issues)
+If you would like to implement a new feature, please [raise an issue](https://github.com/docling-project/docling-nlp/issues)
 before sending a pull request so the feature can be discussed. This is to avoid
 you wasting your valuable time working on a feature that the project developers
 are not interested in accepting into the code base.
 
 ### Fixing bugs
 
-If you would like to fix a bug, please [raise an issue](https://github.com/DS4SD/deepsearch-glm/issues) before sending a
+If you would like to fix a bug, please [raise an issue](https://github.com/docling-project/docling-nlp/issues) before sending a
 pull request so it can be tracked.
 
 ### Merge approval
@@ -74,69 +74,66 @@ git commit -s
 
 ## Communication
 
-Please feel free to connect with us using the [discussion section](https://github.com/DS4SD/deepsearch-glm/discussions).
+Please feel free to connect with us using the [discussion section](https://github.com/docling-project/docling-nlp/discussions).
 
 
 
 ## Developing
 
-### Usage of Poetry
+### Usage of uv
 
-We use Poetry to manage dependencies.
+We use uv to manage dependencies.
 
 
 #### Install
 
-To install, see the documentation here: https://python-poetry.org/docs/master/#installing-with-the-official-installer
+To install, see the documentation here: https://docs.astral.sh/uv/getting-started/installation/
 
-1. Install the Poetry globally in your machine
+1. Install uv globally on your machine
     ```bash
-    curl -sSL https://install.python-poetry.org | python3 -
+    curl -LsSf https://astral.sh/uv/install.sh | sh
     ```
-    The installation script will print the installation bin folder `POETRY_BIN` which you need in the next steps.
 
-2. Make sure Poetry is in your `$PATH`
+2. Make sure uv is in your `$PATH`
     - for `zsh`
         ```sh
-        echo 'export PATH="POETRY_BIN:$PATH"' >> ~/.zshrc
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
         ```
     - for `bash`
         ```sh
-        echo 'export PATH="POETRY_BIN:$PATH"' >> ~/.bashrc
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
         ```
-
-3. The official guidelines linked above include useful details on the configuration of autocomplete for most shell environments, e.g. Bash and Zsh.
+3. The official guidelines linked above include useful details on shell completion.
 
 
 #### Create a Virtual Environment and Install Dependencies
 
-To activate the Virtual Environment, run:
+To create the virtual environment and install dependencies, run:
 
 ```bash
-poetry shell
+uv sync --all-extras
 ```
 
-To spawn a shell with the Virtual Environment activated. If the Virtual Environment doesn't exist, Poetry will create one for you. Then, to install dependencies, run:
+To run commands inside the environment, use `uv run`, for example:
 
 ```bash
-poetry install
+uv run pytest
 ```
 
 **(Advanced) Use a Specific Python Version**
 
-If for whatever reason you need to work in a specific (older) version of Python, run:
+This project supports Python 3.10 and newer. To use a specific supported Python version, run:
 
 ```bash
-poetry env use $(which python3.8)
+uv python pin 3.10
+uv sync --all-extras
 ```
-
-This creates a Virtual Environment with Python 3.8. For other versions, replace `$(which python3.8)` by the path to the interpreter (e.g., `/usr/bin/python3.8`) or use `$(which pythonX.Y)`.
 
 
 #### Add a new dependency
 
 ```bash
-poetry add NAME
+uv add NAME
 ```
 
 
@@ -185,7 +182,7 @@ To run the checks on-demand, run:
 pre-commit run --all-files
 ```
 
-Note: Checks like `Black` and `isort` will "fail" if they modify files. This is because `pre-commit` doesn't like to see files modified by their Hooks. In these cases, `git add` the modified files and `git commit` again.
+Note: Checks like `Ruff formatter` and `Ruff linter` will "fail" if they modify files. This is because `pre-commit` doesn't like to see files modified by their Hooks. In these cases, `git add` the modified files and `git commit` again.
 
 
 

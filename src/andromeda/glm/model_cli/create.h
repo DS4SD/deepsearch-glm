@@ -220,7 +220,12 @@ namespace andromeda
 	  for(std::size_t id=0; id<results.size(); id++)
 	    {
 	      results.at(id) = std::async(std::launch::async,
-					  &model_cli<CREATE, model_type>::update_task<producer_type>,
+					  // `template` disambiguator: update_task is a member
+					  // template, and MSVC's conformance mode (/permissive-,
+					  // implied by /std:c++20) rejects the bare form with
+					  // "C3878: unexpected token '>'". gcc and clang accept
+					  // either spelling.
+					  &model_cli<CREATE, model_type>::template update_task<producer_type>,
 					  this, id,
 					  std::ref(read_mtx), std::ref(update_mtx),
 					  std::ref(line_count), std::ref(merge_count), 

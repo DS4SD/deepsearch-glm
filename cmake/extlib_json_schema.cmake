@@ -37,7 +37,8 @@ ExternalProject_Add(extlib_json_schema
     BUILD_IN_SOURCE ON
 
     LOG_DOWNLOAD ON
-    LOG_BUILD ON)
+    LOG_BUILD ON
+    LOG_OUTPUT_ON_FAILURE ON)
 
 add_library(json_schema STATIC IMPORTED)
 set_target_properties(json_schema PROPERTIES IMPORTED_LOCATION ${EXTERNALS_PREFIX_PATH}/lib/libnlohmann_json_schema_validator.a)

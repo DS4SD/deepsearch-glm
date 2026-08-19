@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw
 # from tabulate import tabulate
 
 # import andromeda_nlp
-# from deepsearch_glm.andromeda_nlp import nlp_model
+# from docling_nlp.andromeda_nlp import nlp_model
 
 
 def parse_arguments():
@@ -31,7 +31,7 @@ examples of execution:
 
 1.a run on single document (pdf or json) with default model (=`langauge`):
 
-    poetry run python ./deepsearch_glm/nlp_analyse_docs.py --json ./data/documents/articles/2305.02334.nlp.json
+    uv run python ./docling_nlp/nlp_analyse_docs.py --json ./data/documents/articles/2305.02334.nlp.json
 
 """,
         formatter_class=argparse.RawTextHelpFormatter,
@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
     for json_file in json_files:
         print(f" --> reading {json_file}")
-        with open(json_file, "r", encoding="utf-8") as fr:
+        with open(json_file, encoding="utf-8") as fr:
             doc = json.load(fr)
 
         show_page(doc, page_num=page)
