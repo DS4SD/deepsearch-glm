@@ -1,11 +1,11 @@
 {
-    "object-store": "https://ds4sd-public-artifacts.s3.eu-de.cloud-object-storage.appdomain.cloud",
+    "huggingface": {
+	"repo-id": "docling-project/docling-nlp-models",
+	"revision": "c1be31d505b231948ca432c29ceb5205d9971a77"
+	},
     
     "nlp":
     {
-	"bucket": "ds4sd-public-artifacts",
-	"prefix": "deepsearch_glm/v1/nlp",
-
 	"trained-models":
 	{
 	    "part-of-speech": ["crf_pos_model_en.bin", "models/crf/part-of-speech/crf_pos_model_en.bin"],

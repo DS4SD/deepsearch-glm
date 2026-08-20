@@ -3,10 +3,12 @@
 
 import json
 import os
+import shutil
 from pathlib import Path
 from typing import Dict, Tuple
 
 import requests
+from huggingface_hub import hf_hub_download
 
 
 def get_resources_dir():
@@ -107,16 +109,42 @@ def load_pretrained_nlp_models(force: bool = False, verbose: bool = False):
     with open(models_file_path, encoding="utf-8") as fr:
         models = json.load(fr)
 
-    cos_url = models["object-store"]
-    cos_prfx = models["nlp"]["prefix"]
+    huggingface = models["huggingface"]
+    repo_id = huggingface["repo-id"]
+    revision = huggingface.get("revision")
 
-    downloads = {}
+    downloaded_models = []
     for name, files in models["nlp"]["trained-models"].items():
-        source = f"{cos_url}/{cos_prfx}/{files[0]}"
+        source = files[1]
         target = resources_dir / files[1]
 
-        downloads[name] = (source, target)
+        if target.exists() and not force:
+            if verbose:
+                print(f" -> already downloaded {name}")
+            downloaded_models.append(name)
+            continue
 
-    done, data = download_items(downloads)
-    downloaded_models = list(data.keys())
+        if verbose:
+            print(f" -> downloading {name} ... ", end="")
+
+        target.parent.mkdir(exist_ok=True, parents=True)
+        try:
+            cached_file = hf_hub_download(
+                repo_id=repo_id,
+                filename=source,
+                revision=revision,
+                force_download=force,
+            )
+            shutil.copyfile(cached_file, target)
+        except Exception as exc:
+            if verbose:
+                print("failed!")
+            raise RuntimeError(
+                f"Failed to download NLP model {name!r} from {repo_id!r} ({source!r})"
+            ) from exc
+
+        if verbose:
+            print("done!")
+        downloaded_models.append(name)
+
     return downloaded_models
