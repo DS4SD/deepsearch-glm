@@ -690,7 +690,7 @@ wheels = [
 
 [[package]]
 name = "docling-nlp"
-version = "1.1.0"
+version = "1.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "pywin32", marker = "sys_platform == 'win32'" },

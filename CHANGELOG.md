@@ -1,3 +1,9 @@
+## [v1.2.0](https://github.com/docling-project/docling-nlp/releases/tag/v1.2.0) - 2026-08-21
+
+### Feature
+
+* Fixed the wheels for publish ([#101](https://github.com/docling-project/docling-nlp/issues/101)) ([`1005f9c`](https://github.com/docling-project/docling-nlp/commit/1005f9cec36550b8d362b2d563be7c9250671d25))
+
 ## [v1.1.0](https://github.com/docling-project/docling-nlp/releases/tag/v1.1.0) - 2026-08-21
 
 ### Feature

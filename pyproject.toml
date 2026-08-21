@@ -1,6 +1,6 @@
 [project]
 name = "docling-nlp"
-version = "1.1.0"  # DO NOT EDIT, updated automatically
+version = "1.2.0"  # DO NOT EDIT, updated automatically
 description = "Graph Language Models"
 license = "MIT"
 readme = "README.md"
