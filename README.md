@@ -123,10 +123,6 @@ model_names = "<list of NLP models:langauge;term;verb;abbreviation>"
 glm = create_glm_from_docs(odir, json_files, model_names)	
 ```
 
-### Querying Graphs 
-
-TBD
-
 ## Install for development
 
 ### Python installation
