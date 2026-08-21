@@ -370,10 +370,14 @@ jobs:
         # Upload to GitHub Release using the `gh` CLI.
         # `dist/` contains the built packages, and the
         # sigstore-produced signatures and certificates.
+        # --clobber: without it a re-run of this job (e.g. after the PyPI step
+        # failed) dies here with "asset under the same name already exists",
+        # before it ever reaches PyPI.
         run: >-
           gh release upload
           '${{ github.ref_name }}' dist/**
           --repo '${{ github.repository }}'
+          --clobber
       # PyPI does not accept .sigstore artifacts and
       # gh-action-pypi-publish has no option to ignore them.
       - name: Remove sigstore signatures before uploading to PyPI
@@ -383,3 +387,6 @@ jobs:
         with:
           # currently not working with reusable workflows
           attestations: false
+          # same idea as --clobber above: let a re-run finish the upload
+          # instead of failing on the files that already made it through.
+          skip-existing: true
