@@ -1,3 +1,9 @@
+## [v1.1.0](https://github.com/docling-project/docling-nlp/releases/tag/v1.1.0) - 2026-08-21
+
+### Feature
+
+* Migrate NLP Model Downloads to Hugging Face ([#100](https://github.com/docling-project/docling-nlp/issues/100)) ([`3e08c7a`](https://github.com/docling-project/docling-nlp/commit/3e08c7aae8da4504cf1505a5cfcbf98d9c52f0fd))
+
 ## [v1.0.0](https://github.com/DS4SD/deepsearch-glm/releases/tag/v1.0.0) - 2024-12-09
 
 ### Feature
