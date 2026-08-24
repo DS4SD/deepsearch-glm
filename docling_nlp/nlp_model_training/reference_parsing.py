@@ -36,7 +36,7 @@ def parse_arguments():
         epilog="""
 examples of execution: 
 
-1. end-to-end example on pdf documents:
+1. end-to-end example on JSON documents:
 
     uv run python ./docling_nlp/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
 

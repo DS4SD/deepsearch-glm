@@ -13,7 +13,6 @@ from tabulate import tabulate
 
 from docling_nlp.andromeda_nlp import nlp_model
 from docling_nlp.utils.doc_utils import to_legacy_document_format, to_xml_format
-from docling_nlp.utils.ds_utils import convert_pdffiles
 
 
 def parse_arguments():
@@ -21,38 +20,24 @@ def parse_arguments():
 
     parser = argparse.ArgumentParser(
         prog="nlp_apply_on_docs",
-        description="Apply NLP on `Deep Search` documents",
+        description="Apply NLP on JSON documents",
         epilog="""
 examples of execution: 
 
-1.a run on single document (pdf or json) with default model (=`langauge`):
+1. run on single JSON document with default model (=`language`):
 
-     uv run python ./docling_nlp/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.02334.pdf'
      uv run python ./docling_nlp/nlp_apply_on_docs.py --json './data/documents/articles/2305.02334.json'
 
-1.b run on single document pdf document and enforce conversion (ignore cache):
+2. run on multiple JSON documents:
 
-     uv run python ./docling_nlp/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.02334.pdf' --force-convert True
-
-2. run on multiple documents:
-
-     uv run python ./docling_nlp/nlp_apply_on_docs.py --pdf './data/documents/articles/*.pdf'
      uv run python ./docling_nlp/nlp_apply_on_docs.py --json './data/documents/articles/*.json'
 
 3. run on multiple documents with non-default models:
 
-     uv run python ./docling_nlp/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
+     uv run python ./docling_nlp/nlp_apply_on_docs.py --json './data/documents/articles/2305.*.json' --models 'language;term'
 
 """,
         formatter_class=argparse.RawTextHelpFormatter,
-    )
-
-    parser.add_argument(
-        "--pdf",
-        required=False,
-        type=str,
-        default=None,
-        help="filename(s) of pdf document",
     )
 
     parser.add_argument(
@@ -80,14 +65,6 @@ examples of execution:
     )
 
     parser.add_argument(
-        "--force-convert",
-        required=False,
-        type=bool,
-        default=False,
-        help="force pdf conversion",
-    )
-
-    parser.add_argument(
         "--legacy",
         required=False,
         type=bool,
@@ -105,28 +82,17 @@ examples of execution:
 
     args = parser.parse_args()
 
-    pdf = args.pdf
     json = args.json
 
-    if pdf is None and json is None:
+    if json is None:
         sys.exit(-1)
 
-    if pdf is not None:
-        pdf_files = sorted(glob.glob(pdf))
-    else:
-        pdf_files = []
-
-    if json is not None:
-        json_files = sorted(glob.glob(json))
-    else:
-        json_files = []
+    json_files = sorted(glob.glob(json))
 
     return (
-        pdf_files,
         json_files,
         args.models,
         args.filters,
-        args.force_convert,
         args.legacy,
         args.xml,
     )
@@ -200,20 +166,12 @@ def show_doc(doc_j):
 
 if __name__ == "__main__":
     (
-        pdf_files,
         json_files,
         model_names,
         filters,
-        force_convert,
         legacy,
         xml,
     ) = parse_arguments()
-
-    if len(pdf_files) > 0:
-        new_json_files = convert_pdffiles(pdf_files, force=force_convert)
-
-        for _ in new_json_files:
-            json_files.append(_)
 
     json_files = sorted(list(set(json_files)))
 

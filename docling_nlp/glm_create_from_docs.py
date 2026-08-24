@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Module to create GLM from PDF/JSON documets"""
+"""Module to create GLM from JSON documents"""
 
 import argparse
 
@@ -11,7 +11,6 @@ import glob
 import sys
 
 from docling_nlp.glm_utils import create_glm_dir, create_glm_from_docs
-from docling_nlp.utils.ds_utils import convert_pdffiles
 
 # import textwrap
 
@@ -23,31 +22,21 @@ def parse_arguments():
 
     parser = argparse.ArgumentParser(
         prog="create_glm_from_docs",
-        description="Create GLM from Deep Search documents",
+        description="Create GLM from JSON documents",
         epilog="""
 examples of execution: 
 
-1.a run on single document (pdf or json) with default NLP models (=`term`):
-    uv run python ./docling_nlp/create_glm_from_docs.py --pdf-docs './data/documents/articles/2305.02334.pdf'
+1. run on single JSON document with default NLP models (=`term`):
     uv run python ./docling_nlp/create_glm_from_docs.py --json-docs './data/documents/articles/2305.02334.json'
 
-2. run on multiple documents:
-    uv run python ./docling_nlp/create_glm_from_docs.py --pdf-docs './data/documents/articles/*.pdf'
+2. run on multiple JSON documents:
     uv run python ./docling_nlp/create_glm_from_docs.py --json-docs './data/documents/articles/*.json'
 
 3. run on multiple documents with non-default models:
-    uv run python ./docling_nlp/create_glm_from_docs.py --pdf-docs './data/documents/articles/2305.*.pdf' --models 'language;term;abbreviation'
+    uv run python ./docling_nlp/create_glm_from_docs.py --json-docs './data/documents/articles/2305.*.json' --models 'language;term;abbreviation'
 
 """,
         formatter_class=argparse.RawTextHelpFormatter,
-    )
-
-    parser.add_argument(
-        "--pdf-docs",
-        required=False,
-        type=str,
-        default=None,
-        help="filename(s) of pdf document",
     )
 
     parser.add_argument(
@@ -67,51 +56,34 @@ examples of execution:
     )
 
     parser.add_argument(
-        "--force-convert",
-        required=False,
-        type=bool,
-        default=False,
-        help="force pdf conversion",
-    )
-
-    parser.add_argument(
         "--output-dir",
         required=False,
         type=str,
-        default=create_glm_dir(),
+        default=None,
         help="output root directory for GLM",
     )
 
     args = parser.parse_args()
 
-    pdf_docs = args.pdf_docs
     json_docs = args.json_docs
 
-    if pdf_docs is None and json_docs is None:
+    if json_docs is None:
         sys.exit(-1)
 
-    pdf_files = []
-    if pdf_docs is not None:
-        pdf_files = sorted(glob.glob(pdf_docs))
+    json_files = sorted(glob.glob(json_docs))
 
-    json_files = []
-    if json_docs is not None:
-        json_files = sorted(glob.glob(json_docs))
-
-    if len(pdf_files) == 0 and len(json_files) == 0:
+    if len(json_files) == 0:
         sys.exit(-1)
 
-    return pdf_files, json_files, args.models, args.force_convert, args.output_dir
+    output_dir = args.output_dir
+    if output_dir is None:
+        output_dir = create_glm_dir()
+
+    return json_files, args.models, output_dir
 
 
 if __name__ == "__main__":
-    pdf_files, json_files, model_names, force_convert, odir = parse_arguments()
-
-    if len(pdf_files) > 0:
-        new_json_files = convert_pdffiles(pdf_files, force=force_convert)
-
-        for _ in new_json_files:
-            json_files.append(_)
+    json_files, model_names, odir = parse_arguments()
 
     json_files = sorted(list(set(json_files)))
 

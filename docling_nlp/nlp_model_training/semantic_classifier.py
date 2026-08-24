@@ -15,7 +15,6 @@ from tabulate import tabulate
 
 from docling_nlp.andromeda_nlp import nlp_model
 from docling_nlp.nlp_utils import create_nlp_dir, init_nlp_model
-from docling_nlp.utils.ds_utils import ds_index_query
 
 console = Console()
 
@@ -29,7 +28,7 @@ def parse_arguments():
         epilog="""
 examples of execution: 
 
-1. end-to-end example on pdf documents:
+1. end-to-end example on JSON documents:
 
     uv run python ./docling_nlp/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
 
@@ -43,7 +42,7 @@ examples of execution:
         required=True,
         default="all",
         help="mode for training semantic model",
-        choices=["retrieve", "prepare", "process", "train", "eval", "refine", "all"],
+        choices=["prepare", "process", "train", "eval", "refine", "all"],
     )
 
     parser.add_argument(
@@ -81,74 +80,6 @@ examples of execution:
         odir = args.output_dir
 
     return args.mode, idir, odir
-
-
-def retrieve_data_pubmed(sdir):
-    """Function to retrieve data from pubmed folder"""
-
-    tdir = os.path.join(sdir, "pubmed")
-
-    if not os.path.exists(sdir):
-        os.mkdir(sdir)
-
-    index = "pubmed"
-    query = "description.publication_date:[2022-01-01 TO 2022-03-01]"
-
-    odir = ds_index_query(
-        index,
-        query,
-        tdir,
-        sources=["_name", "file-info", "references", "description"],
-        force=True,
-        limit=1000,
-    )
-
-    return odir
-
-
-def retrieve_data_arxiv(sdir):
-    """Function to retrieve data from arxiv folder"""
-
-    tdir = os.path.join(sdir, "arxiv")
-
-    if not os.path.exists(sdir):
-        os.mkdir(sdir)
-
-    index = "arxiv"
-    query = "description.publication_date:[2022-01-01 TO 2022-03-01]"
-
-    odir = ds_index_query(
-        index,
-        query,
-        tdir,
-        sources=["_name", "file-info", "description", "main-text"],
-        force=True,
-        limit=50000,
-    )
-
-    return odir
-
-
-def retrieve_data(sdir, index):
-    """Function to retrieve data"""
-
-    tdir = os.path.join(sdir, index)
-
-    if not os.path.exists(sdir):
-        os.mkdir(sdir)
-
-    query = "*"
-
-    odir = ds_index_query(
-        index,
-        query,
-        tdir,
-        sources=["_name", "file-info", "description", "main-text"],
-        force=True,
-        limit=50000,
-    )
-
-    return odir
 
 
 def prepare_data_from_legacy_documents(doc):
@@ -503,20 +434,11 @@ def refine_data(data_file):
 def train_semantic(mode, idir, odir, autotune=True, duration=360, modelsize="1M"):
     """Function to train semantic fasttext classifier"""
 
-    tdir = os.path.join(odir, "documents")
-
     data_file = os.path.join(odir, "nlp-train-semantic.data.jsonl")
     # annot_file = os.path.join(odir, "nlp-train-semantic.annot.jsonl")
 
     fst_model_file = os.path.join(odir, "fst_semantic")
     fst_metrics_file = os.path.join(odir, "fst_semantic.metrics.txt")
-
-    if mode in ["all", "retrieve"]:
-        retrieve_data_pubmed(tdir)
-        json_files = sorted(glob.glob(os.path.join(tdir, "*.json")))
-
-        retrieve_data_arxiv(tdir)
-        json_files += sorted(glob.glob(os.path.join(tdir, "*.json")))
 
     if mode in ["all", "prepare"]:
         json_files = sorted(glob.glob(os.path.join(idir, "*.json")))
