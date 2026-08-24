@@ -25,7 +25,7 @@ def parse_arguments():
 
     parser = argparse.ArgumentParser(
         prog="glm_explore",
-        description="Explore GLM from Deep Search documents",
+        description="Explore GLM from JSON documents",
         epilog="""
 examples of execution: 
 

@@ -14,8 +14,8 @@ from huggingface_hub import hf_hub_download
 def get_resources_dir():
     """Function to obtain the resources directory"""
 
-    if "DEEPSEARCH_GLM_RESOURCES_DIR" in os.environ:
-        resources_dir = os.getenv("DEEPSEARCH_GLM_RESOURCES_DIR")
+    if "DOCLING_NLP_RESOURCES_DIR" in os.environ:
+        resources_dir = os.getenv("DOCLING_NLP_RESOURCES_DIR")
     else:
         from docling_nlp.andromeda_nlp import nlp_model
 

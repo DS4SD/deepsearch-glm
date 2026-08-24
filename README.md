@@ -90,8 +90,8 @@ term         single-term           #                 313       359  largest disc
 term         single-term           #                 367       372  world
 ```
 
-The NLP can also be applied on entire documents which were converted using
-Deep Search. A simple example is shown below,
+The NLP can also be applied on entire documents represented as JSON. A simple
+example is shown below,
 
 ```python
 from docling_nlp.utils.load_pretrained_models import load_pretrained_nlp_models
@@ -153,13 +153,11 @@ cmake --build ./build -j
 
 ### NLP and GLM examples
 
-_Note: Some of the examples require to convert PDF documents with Deep Search. For this to run, it is required to install the [deepsearch-toolkit](https://github.com/DS4SD/deepsearch-toolkit) package. You can install it with `pip install docling-nlp[toolkit]`._
-
 To run the examples, execute the scripts as `uv run python <script> <input>`. Examples are,
 
 1. **apply NLP on document(s)**
 ```sh
-uv run python ./docling_nlp/nlp_apply_on_docs.py --pdf './data/documents/articles/2305.*.pdf' --models 'language;term'
+uv run python ./docling_nlp/nlp_apply_on_docs.py --json './data/documents/articles/2305.*.json' --models 'language;term'
 ```
 2. **analyse NLP on document(s)**
 ```sh
@@ -167,22 +165,7 @@ uv run python ./docling_nlp/nlp_apply_on_docs.py --json './data/documents/articl
 ```
 3. **create GLM from document(s)**
 ```sh
-uv run python ./docling_nlp/glm_create_from_docs.py --pdf ./data/documents/reports/2022-ibm-annual-report.pdf
-```
-
-### Deep Search utilities
-
-To use the Deep Search capabilities, it is required to install the [deepsearch-toolkit](https://github.com/DS4SD/deepsearch-toolkit) package.
-You can install it with `pip install docling-nlp[toolkit]`.
-
-
-1. **Query and download document(s)**
-```sh
-uv run python ./docling_nlp/utils/ds_query.py --index patent-uspto --query "\"global warming potential\" AND \"etching\""
-```
-2. **Converting PDF document(s) into JSON**
-```sh
-uv run python ./docling_nlp/utils/ds_convert.py --pdf './data/documents/articles/2305.*.pdf'"
+uv run python ./docling_nlp/glm_create_from_docs.py --json-docs ./data/documents/reports/2022-ibm-annual-report.json
 ```
 
 ## Run using CXX executables

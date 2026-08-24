@@ -124,7 +124,6 @@ namespace andromeda
 			  std::string key,
 			  std::vector<std::shared_ptr<item_type> >& vals);
     
-    //public:
   protected:
     
     bool valid;
@@ -145,8 +144,6 @@ namespace andromeda
     std::vector<base_relation> relations;
 
     nlohmann::json payload;
-    
-    //std::vector<base_entity> entities;
   };
 
   base_subject::base_subject():
