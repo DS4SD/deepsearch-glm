@@ -1,3 +1,9 @@
+## [v1.3.0](https://github.com/docling-project/docling-nlp/releases/tag/v1.3.0) - 2026-08-24
+
+### Feature
+
+* Removal of deepsearch related code ([#102](https://github.com/docling-project/docling-nlp/issues/102)) ([`2c2eeae`](https://github.com/docling-project/docling-nlp/commit/2c2eeaef09fb5f7553c92634501387be7de38654))
+
 ## [v1.2.0](https://github.com/docling-project/docling-nlp/releases/tag/v1.2.0) - 2026-08-21
 
 ### Feature
