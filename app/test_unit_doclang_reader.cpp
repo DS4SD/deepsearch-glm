@@ -94,7 +94,12 @@ namespace
       "</doclang>";
 
     const auto path = std::filesystem::temp_directory_path() / "docling-nlp-test-unit-doclang.dclg";
-    assert(write_text_file(path, xml));
+    const bool wrote_xml = write_text_file(path, xml);
+    if(not wrote_xml)
+      {
+        return 1;
+      }
+    assert(wrote_xml);
 
     andromeda::doclang::document doc;
     assert(andromeda::doclang::reader::read(path, doc));
@@ -116,7 +121,12 @@ namespace
       "</doclang>";
 
     std::vector<std::byte> bytes;
-    assert(create_dclx(bytes, xml));
+    const bool created_archive = create_dclx(bytes, xml);
+    if(not created_archive)
+      {
+        return 1;
+      }
+    assert(created_archive);
 
     andromeda::doclang::document doc;
     assert(andromeda::doclang::reader::read_dclx_buffer(bytes, doc));
@@ -128,6 +138,10 @@ namespace
     assert(std::string(doc.root().child("text").child_value())=="Archive text");
 
     auto asset = doc.artifacts().text("assets/image_000001.png");
+    if(not asset.has_value() or asset.value()!="artifact-bytes")
+      {
+        return 1;
+      }
     assert(asset.has_value());
     assert(asset.value()=="artifact-bytes");
 
