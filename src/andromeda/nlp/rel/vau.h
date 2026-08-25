@@ -142,13 +142,14 @@ namespace andromeda
 	auto& inst = instances.at(l);
 
 	auto wtok_rng = inst.get_wtok_range();	    
+	auto char_rng = inst.get_char_range();
 
 	bool keep = true;
-	auto i0 = wtok_rng.at(0);
+	auto i0 = char_rng.at(0);
 		
 	if(i0>0 and
-	   'a'<=text.at(i0-1) and text.at(i0-1)<='z' and
-	   'A'<=text.at(i0-1) and text.at(i0-1)<='Z')
+	   (('a'<=text.at(i0-1) and text.at(i0-1)<='z') or
+	    ('A'<=text.at(i0-1) and text.at(i0-1)<='Z')))
 	  {
 	    keep = false;
 	  }
@@ -278,8 +279,10 @@ namespace andromeda
 
 		      if(updated)
 			{
-			  break;
+			  continue;
 			}
+
+		      break;
 		    }
 
 		  std::vector<std::string> endings = {"-", "$"};
@@ -299,8 +302,10 @@ namespace andromeda
 
 		      if(updated)
 			{
-			  break;
+			  continue;
 			}
+
+		      break;
 		    }
 		}
 		

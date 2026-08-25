@@ -107,7 +107,7 @@ message(STATUS "cxx-standard: " ${CMAKE_CXX_STANDARD})
 option(USE_SYSTEM_DEPS OFF "If enabled, the build will find and link to system dependencies, otherwise they are sourced from the original repos and compiled on the fly.")
 
 if(USE_SYSTEM_DEPS)
-    set(DEPENDENCIES fmt json loguru cxxopts pcre2 fasttext utf8 sentencepiece)
+    set(DEPENDENCIES fmt json loguru cxxopts pcre2 fasttext utf8 sentencepiece pugixml miniz)
 else()
     if(NOT EXISTS ${EXTERNALS_PREFIX_PATH})
         file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH})
@@ -116,7 +116,7 @@ else()
         file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH}/include)
         file(MAKE_DIRECTORY ${EXTERNALS_PREFIX_PATH}/resources)
     endif()
-    set(DEPENDENCIES fmt json loguru cxxopts pcre2 fasttext utf8 sentencepiece sentencepiece_train)
+    set(DEPENDENCIES fmt json loguru cxxopts pcre2 fasttext utf8 sentencepiece sentencepiece_train pugixml miniz)
 endif()
 
 # include dependencies
@@ -128,6 +128,8 @@ include(cmake/extlib_pcre2.cmake)
 include(cmake/extlib_fasttext.cmake)
 include(cmake/extlib_utf8.git.cmake)
 include(cmake/extlib_sentencepiece.cmake)
+include(cmake/extlib_pugixml.cmake)
+include(cmake/extlib_miniz.cmake)
 
 # ************************
 # *** libraries        ***
@@ -155,9 +157,11 @@ include_directories(${SUBDIRS})
 
 add_executable(nlp.exe "${TOPLEVEL_PREFIX_PATH}/app/nlp.cpp")
 add_executable(glm.exe "${TOPLEVEL_PREFIX_PATH}/app/glm.cpp")
+add_executable(nlp-on-dclx.exe "${TOPLEVEL_PREFIX_PATH}/app/nlp-on-dclx.cpp")
 
 set_property(TARGET nlp.exe PROPERTY CXX_STANDARD 20)
 set_property(TARGET glm.exe PROPERTY CXX_STANDARD 20)
+set_property(TARGET nlp-on-dclx.exe PROPERTY CXX_STANDARD 20)
 
 add_dependencies(nlp.exe ${DEPENDENCIES})
 target_include_directories(nlp.exe INTERFACE ${DEPENDENCIES})
@@ -166,6 +170,10 @@ target_link_libraries(nlp.exe ${DEPENDENCIES} ${LIB_LINK})
 add_dependencies(glm.exe ${DEPENDENCIES})
 target_include_directories(glm.exe INTERFACE ${DEPENDENCIES})
 target_link_libraries(glm.exe ${DEPENDENCIES} ${LIB_LINK})
+
+add_dependencies(nlp-on-dclx.exe ${DEPENDENCIES})
+target_include_directories(nlp-on-dclx.exe INTERFACE ${DEPENDENCIES})
+target_link_libraries(nlp-on-dclx.exe ${DEPENDENCIES} ${LIB_LINK})
 
 # **********************
 # ***  Libraries     ***
@@ -222,3 +230,21 @@ install(TARGETS andromeda_glm DESTINATION "${TOPLEVEL_PREFIX_PATH}/docling_nlp")
 # *****************
 # ***  Testing  ***
 # *****************
+
+include(CTest)
+
+if(BUILD_TESTING)
+    add_executable(test_unit_doclang_reader.exe "${TOPLEVEL_PREFIX_PATH}/app/test_unit_doclang_reader.cpp")
+    set_property(TARGET test_unit_doclang_reader.exe PROPERTY CXX_STANDARD 20)
+    add_dependencies(test_unit_doclang_reader.exe ${DEPENDENCIES})
+    target_include_directories(test_unit_doclang_reader.exe INTERFACE ${DEPENDENCIES})
+    target_link_libraries(test_unit_doclang_reader.exe ${DEPENDENCIES} ${LIB_LINK})
+    add_test(NAME test_unit_doclang_reader COMMAND test_unit_doclang_reader.exe)
+
+    add_executable(test_unit_doclang_boundaries.exe "${TOPLEVEL_PREFIX_PATH}/app/test_unit_doclang_boundaries.cpp")
+    set_property(TARGET test_unit_doclang_boundaries.exe PROPERTY CXX_STANDARD 20)
+    add_dependencies(test_unit_doclang_boundaries.exe ${DEPENDENCIES})
+    target_include_directories(test_unit_doclang_boundaries.exe INTERFACE ${DEPENDENCIES})
+    target_link_libraries(test_unit_doclang_boundaries.exe ${DEPENDENCIES} ${LIB_LINK})
+    add_test(NAME test_unit_doclang_boundaries COMMAND test_unit_doclang_boundaries.exe)
+endif()
