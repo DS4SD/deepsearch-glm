@@ -90,21 +90,9 @@ term         single-term           #                 313       359  largest disc
 term         single-term           #                 367       372  world
 ```
 
-The NLP can also be applied on entire documents represented as JSON. A simple
-example is shown below,
-
-```python
-from docling_nlp.utils.load_pretrained_models import load_pretrained_nlp_models
-from docling_nlp.nlp_utils import init_nlp_model, print_on_shell
-
-load_pretrained_nlp_models(force=False, verbose=False)
-mdl = init_nlp_model()
-
-with open("<path-to-json-file-of-converted-pdf-doc>", "r") as fr:
-    doc = json.load(fr)
-
-enriched_doc = mdl.apply_on_doc(doc)
-```
+For complete documents, use DocLang archives (`.dclx`). The C++ document path
+reads `document.xml`, applies the selected NLP models to DocLang text surfaces,
+and writes annotation CSV files back into the archive.
 
 ### Creating Graphs from NLP entities and relations in document collections
 
@@ -113,15 +101,9 @@ To create graphs, you need two ingredients, namely,
 1. a collection of text or documents
 2. a set of NLP models that provide entities and relations
 
-Below is a code snippet to create the graph using these basic ingredients,
-
-```python
-odir = "<ouput-dir-to-save-graph>"
-json_files = ["json-file of converted PDF document"]
-model_names = "<list of NLP models:langauge;term;verb;abbreviation>"
-
-glm = create_glm_from_docs(odir, json_files, model_names)	
-```
+The document-level workflow is based on `.dclx` archives with annotation CSVs
+under `annotations/`. Legacy Deep Search document JSON scripts are no longer
+part of the supported document path.
 
 ## Install for development
 
@@ -153,20 +135,23 @@ cmake --build ./build -j
 
 ### NLP and GLM examples
 
-To run the examples, execute the scripts as `uv run python <script> <input>`. Examples are,
+The Python interface supports text, structured subject APIs, and direct DocLang
+archive access:
 
-1. **apply NLP on document(s)**
-```sh
-uv run python ./docling_nlp/nlp_apply_on_docs.py --json './data/documents/articles/2305.*.json' --models 'language;term'
+```python
+from docling_nlp.andromeda_doclang import DocLangXDocument
+
+doc = DocLangXDocument()
+doc.read("document.dclx")
+doc.apply_nlp("language;term")
+doc.write("document.nlp.dclx")
+
+terms = doc.query_instances(type="term")
+relations = doc.query_relations(name="contains")
 ```
-2. **analyse NLP on document(s)**
-```sh
-uv run python ./docling_nlp/nlp_apply_on_docs.py --json './data/documents/articles/2305.*.nlp.json' 
-```
-3. **create GLM from document(s)**
-```sh
-uv run python ./docling_nlp/glm_create_from_docs.py --json-docs ./data/documents/reports/2022-ibm-annual-report.json
-```
+
+The legacy Deep Search document JSON workflow has been removed from the
+supported examples.
 
 ## Run using CXX executables
 
@@ -174,6 +159,7 @@ If you like to be bare-bones, you can also use the executables for NLP and GLM's
 follow a simple scheme of the form
 
 ```sh
+./nlp-on-dclx.exe --input <document.dclx> --models 'language;term' --output <document.nlp.dclx>
 ./nlp.exe -m <mode> -c <JSON-config file>
 ./glm.exe -m <mode> -c <JSON-config file>
 ```

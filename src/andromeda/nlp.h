@@ -8,6 +8,7 @@
 #include <andromeda/nlp/rec.h> // relation (multi)
 
 #include <andromeda/nlp/utils.h>
+#include <andromeda/nlp/doclang.h>
 
 #ifndef ANDROMEDA_NLP_H
 #define ANDROMEDA_NLP_H

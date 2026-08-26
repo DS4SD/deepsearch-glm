@@ -200,6 +200,7 @@ find_package(pybind11 CONFIG REQUIRED)
 
 pybind11_add_module(andromeda_structs "${TOPLEVEL_PREFIX_PATH}/app/pybind_structs.cpp")
 pybind11_add_module(andromeda_nlp "${TOPLEVEL_PREFIX_PATH}/app/pybind_nlp.cpp")
+pybind11_add_module(andromeda_doclang "${TOPLEVEL_PREFIX_PATH}/app/pybind_doclang.cpp")
 pybind11_add_module(andromeda_glm "${TOPLEVEL_PREFIX_PATH}/app/pybind_glm.cpp")
 
 add_dependencies(andromeda_structs nlp)
@@ -211,6 +212,11 @@ add_dependencies(andromeda_nlp nlp)
 target_include_directories(andromeda_nlp INTERFACE ${DEPENDENCIES})
 target_compile_definitions(andromeda_nlp PRIVATE VERSION_INFO=${CMAKE_PROJECT_VERSION})
 target_link_libraries(andromeda_nlp PRIVATE nlp)
+
+add_dependencies(andromeda_doclang nlp)
+target_include_directories(andromeda_doclang INTERFACE ${DEPENDENCIES})
+target_compile_definitions(andromeda_doclang PRIVATE VERSION_INFO=${CMAKE_PROJECT_VERSION})
+target_link_libraries(andromeda_doclang PRIVATE nlp)
 
 add_dependencies(andromeda_glm glm)
 target_include_directories(andromeda_glm INTERFACE ${DEPENDENCIES})
@@ -225,6 +231,7 @@ target_link_libraries(andromeda_glm PRIVATE glm)
 
 install(TARGETS andromeda_structs DESTINATION "${TOPLEVEL_PREFIX_PATH}/docling_nlp")
 install(TARGETS andromeda_nlp DESTINATION "${TOPLEVEL_PREFIX_PATH}/docling_nlp")
+install(TARGETS andromeda_doclang DESTINATION "${TOPLEVEL_PREFIX_PATH}/docling_nlp")
 install(TARGETS andromeda_glm DESTINATION "${TOPLEVEL_PREFIX_PATH}/docling_nlp")
 
 # *****************

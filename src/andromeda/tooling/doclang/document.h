@@ -4,13 +4,20 @@
 #define ANDROMEDA_TOOLING_DOCLANG_DOCUMENT_H_
 
 #include <filesystem>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include <pugixml.hpp>
 
+#include <andromeda/utils.h>
+#include <andromeda/enums.h>
+#include <andromeda/tooling/base_types.h>
+#include <andromeda/tooling/structs/tokens.h>
+#include <andromeda/tooling/structs/items.h>
 #include <andromeda/tooling/doclang/archive.h>
 #include <andromeda/tooling/doclang/content.h>
 
@@ -60,12 +67,34 @@ namespace andromeda::doclang
     void set_archive(archive value) { artifact_archive = std::move(value); }
     void clear_archive() { artifact_archive.reset(); }
 
+    std::shared_ptr<std::vector<base_property> > shared_properties() { return properties; }
+    std::shared_ptr<std::vector<base_instance> > shared_instances() { return instances; }
+    std::shared_ptr<std::vector<base_relation> > shared_relations() { return relations; }
+
+    std::vector<base_property>& mutable_properties() { return *properties; }
+    std::vector<base_instance>& mutable_instances() { return *instances; }
+    std::vector<base_relation>& mutable_relations() { return *relations; }
+
+    const std::vector<base_property>& get_properties() const { return *properties; }
+    const std::vector<base_instance>& get_instances() const { return *instances; }
+    const std::vector<base_relation>& get_relations() const { return *relations; }
+
+    bool has_annotations() const;
+    void clear_annotations();
+
     const std::string& get_last_error() const { return last_error; }
     void set_last_error(std::string msg) { last_error = std::move(msg); }
 
   private:
 
     pugi::xml_document xml_doc;
+    std::shared_ptr<std::vector<base_property> > properties =
+      std::make_shared<std::vector<base_property> >();
+    std::shared_ptr<std::vector<base_instance> > instances =
+      std::make_shared<std::vector<base_instance> >();
+    std::shared_ptr<std::vector<base_relation> > relations =
+      std::make_shared<std::vector<base_relation> >();
+
     std::optional<archive> artifact_archive;
     std::filesystem::path source_path;
     std::string last_error;
@@ -74,9 +103,24 @@ namespace andromeda::doclang
   void document::clear()
   {
     xml_doc.reset();
+    clear_annotations();
     artifact_archive.reset();
     source_path.clear();
     last_error.clear();
+  }
+
+  bool document::has_annotations() const
+  {
+    return (not properties->empty()) or
+      (not instances->empty()) or
+      (not relations->empty());
+  }
+
+  void document::clear_annotations()
+  {
+    properties->clear();
+    instances->clear();
+    relations->clear();
   }
 
   template<typename callback_type>

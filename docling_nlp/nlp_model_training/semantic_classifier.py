@@ -28,9 +28,9 @@ def parse_arguments():
         epilog="""
 examples of execution: 
 
-1. end-to-end example on JSON documents:
+1. end-to-end example on legacy training documents:
 
-    uv run python ./docling_nlp/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
+    uv run python ./docling_nlp/nlp_train_semantic.py -m all --input-dir '<legacy-doc-dir> --output-dir <models-directory>'
 
 """,
         formatter_class=argparse.RawTextHelpFormatter,
@@ -83,7 +83,7 @@ examples of execution:
 
 
 def prepare_data_from_legacy_documents(doc):
-    """Function to prepare data from legacy documents"""
+    """Function to prepare data from legacy training documents"""
 
     if "file-info" in doc:
         dhash = doc["file-info"]["document-hash"]

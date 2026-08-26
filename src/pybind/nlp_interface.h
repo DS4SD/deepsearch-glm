@@ -27,7 +27,6 @@ namespace andromeda_py
     nlohmann::json evaluate(nlohmann::json& config);
     
     nlohmann::json apply_on_text(std::string& text);
-    nlohmann::json apply_on_doc(nlohmann::json& doc);
 
     bool apply_on_text(ds_text& subj);
     bool apply_on_table(ds_table& subj);
@@ -470,69 +469,6 @@ namespace andromeda_py
     return result;
   }
 
-  nlohmann::json nlp_model::apply_on_doc(nlohmann::json& data)
-  {
-    andromeda::subject<andromeda::DOCUMENT> doc;
-
-    bool update_maintext=true;
-    update_maintext = config.value("order-text", update_maintext);
-
-    nlohmann::json result = nlohmann::json::object();
-    
-    if(not doc.set_data(data, update_maintext))
-      {
-	std::string message = "could not set data for document";
-	LOG_S(ERROR) << message;
-
-	nlohmann::json& application = result["model-application"];
-	{
-	  application["success"] = false;
-	  application["message"] = message;
-	}
-
-	return result;	
-      }
-    
-    if(not doc.set_tokens(char_normaliser, text_normaliser))
-      {
-	std::string message = "could not set tokens for document";
-	LOG_S(ERROR) << message;
-
-	nlohmann::json& application = result["model-application"];
-	{
-	  application["success"] = false;
-	  application["message"] = message;
-	}
-
-	return result;
-      }
-
-    {
-      for(auto& model:models)
-	{
-	  model->apply(doc);
-	}
-      doc.finalise();
-
-      std::set<std::string> subj_filters = {};
-      if(config.is_object())
-	{
-	  subj_filters = config.value("subject-filters", subj_filters);
-	}
-      
-      result = doc.to_json(subj_filters);
-      {
-	nlohmann::json& application = result["model-application"];
-	{
-	  application["success"] = true;
-	  application["message"] = "success";
-	}
-      }
-    }
-    
-    return result;
-  }
-
   template<typename subj_type>
   bool nlp_model::apply_on_subj(std::shared_ptr<subj_type> ptr)
   {    
@@ -587,4 +523,3 @@ namespace andromeda_py
 }
 
 #endif
-

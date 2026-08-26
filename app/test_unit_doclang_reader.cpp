@@ -15,7 +15,6 @@
 #include "libraries.h"
 #include "andromeda/tooling/doclang.h"
 #include "andromeda/tooling/doclang/adapters.h"
-#include "andromeda/tooling/serializers/legacy_json.h"
 
 namespace
 {
@@ -144,6 +143,106 @@ namespace
       }
     assert(asset.has_value());
     assert(asset.value()=="artifact-bytes");
+
+    return 0;
+  }
+
+  int test_read_dclx_annotations()
+  {
+    const std::string xml =
+      "<doclang version=\"0.7\">"
+      "<text>Archive text</text>"
+      "</doclang>";
+
+    andromeda::doclang::archive zip;
+    zip.set_text("[Content_Types].xml", "<Types></Types>");
+    zip.set_text("_rels/.rels", "<Relationships></Relationships>");
+    zip.set_text("document.xml", xml);
+    zip.set_text(andromeda::doclang::PROPERTIES_CSV,
+                 "type,subj_hash,subj_name,subj_path,label,confidence\n"
+                 "language,123,text,/doclang[1]/text[1],en,0.99\n");
+    zip.set_text(andromeda::doclang::INSTANCES_CSV,
+                 "type,subtype,subj_hash,subj_name,subj_path,conf,hash,ihash,coor_i,coor_j,char_i,char_j,ctok_i,ctok_j,wtok_i,wtok_j,wtok-match,name,original\n"
+                 "term,,123,text,/doclang[1]/text[1],1,456,789,,,0,7,0,1,0,1,true,Archive,Archive\n");
+    zip.set_text(andromeda::doclang::RELATIONS_CSV,
+                 "flvr,name,conf,hash_i,hash_j,name_i,name_j\n"
+                 "42,contains,0.75,456,789,Archive,text\n");
+
+    std::vector<std::byte> bytes;
+    assert(zip.write_to_memory(bytes));
+
+    andromeda::doclang::document doc;
+    assert(andromeda::doclang::reader::read_dclx_buffer(bytes, doc));
+
+    assert(doc.get_properties().size()==1);
+    assert(doc.get_instances().size()==1);
+    assert(doc.get_relations().size()==1);
+
+    assert(doc.get_properties().at(0).get_type()=="language");
+    assert(doc.get_properties().at(0).get_subj_path()=="/doclang[1]/text[1]");
+    assert(doc.get_instances().at(0).get_type()=="term");
+    assert(doc.get_instances().at(0).get_name()=="Archive");
+    assert(doc.get_relations().at(0).get_name()=="contains");
+
+    return 0;
+  }
+
+  int test_write_dclx_annotations()
+  {
+    const std::string xml =
+      "<doclang version=\"0.7\">"
+      "<text>Writer text</text>"
+      "</doclang>";
+
+    andromeda::doclang::document doc;
+    assert(andromeda::doclang::reader::read_dclg_buffer(xml, doc));
+
+    doc.mutable_properties().emplace_back(123,
+                                          andromeda::TEXT,
+                                          "/doclang[1]/text[1]",
+                                          andromeda::LANGUAGE,
+                                          "en",
+                                          0.99);
+
+    andromeda::base_instance inst_i(123,
+                                    andromeda::TEXT,
+                                    "/doclang[1]/text[1]",
+                                    andromeda::TERM,
+                                    "term",
+                                    "Writer",
+                                    "Writer",
+                                    {0, 6},
+                                    {0, 1},
+                                    {0, 1});
+
+    andromeda::base_instance inst_j(123,
+                                    andromeda::TEXT,
+                                    "/doclang[1]/text[1]",
+                                    andromeda::TERM,
+                                    "term",
+                                    "text",
+                                    "text",
+                                    {7, 11},
+                                    {1, 2},
+                                    {1, 2});
+
+    doc.mutable_instances().push_back(inst_i);
+    doc.mutable_instances().push_back(inst_j);
+    doc.mutable_relations().emplace_back("contains", 0.75, inst_i, inst_j);
+
+    std::vector<std::byte> bytes;
+    assert(andromeda::doclang::writer::write_dclx_buffer(doc, bytes));
+
+    andromeda::doclang::document restored;
+    assert(andromeda::doclang::reader::read_dclx_buffer(bytes, restored));
+    assert(restored.artifacts().has(andromeda::doclang::PROPERTIES_CSV));
+    assert(restored.artifacts().has(andromeda::doclang::INSTANCES_CSV));
+    assert(restored.artifacts().has(andromeda::doclang::RELATIONS_CSV));
+
+    assert(restored.get_properties().size()==1);
+    assert(restored.get_instances().size()==2);
+    assert(restored.get_relations().size()==1);
+    assert(restored.get_relations().at(0).get_name()=="contains");
 
     return 0;
   }
@@ -345,58 +444,18 @@ namespace
     return 0;
   }
 
-  int test_legacy_json_serializer_boundary()
-  {
-    andromeda::subject<andromeda::TEXT> text;
-    assert(text.set_text("Serializer text"));
-    text.set_type("text");
-
-    nlohmann::json legacy_text =
-      andromeda::serializers::legacy_json::subjects::to_json(text);
-
-    assert(legacy_text["text"]=="Serializer text");
-    assert(legacy_text["payload"].is_null());
-
-    andromeda::subject<andromeda::TEXT> restored_text;
-    assert(andromeda::serializers::legacy_json::subjects::from_json(
-      legacy_text, restored_text));
-    assert(restored_text.get_text()=="Serializer text");
-
-    const std::string xml =
-      "<doclang version=\"0.7\">"
-      "<text>Boundary body</text>"
-      "</doclang>";
-
-    andromeda::doclang::document doc;
-    assert(andromeda::doclang::reader::read_dclg_buffer(xml, doc));
-
-    andromeda::subject<andromeda::DOCUMENT> subject;
-    andromeda::doclang::adapter_options options;
-    options.document_name = "serializer-boundary-test";
-
-    assert(andromeda::doclang::subject_adapter::to_subject_document(doc, subject, options));
-
-    nlohmann::json legacy_doc =
-      andromeda::serializers::legacy_json::subjects::to_json(subject);
-
-    assert(legacy_doc["texts"].size()==1);
-    assert(legacy_doc["texts"].at(0)["text"]=="Boundary body");
-    assert(legacy_doc["texts"].at(0)["payload"]["doclang_name"]=="text");
-
-    return 0;
-  }
-
 }
 
 int main()
 {
   test_read_dclg();
   test_read_dclx_buffer();
+  test_read_dclx_annotations();
+  test_write_dclx_annotations();
   test_reject_invalid_xml();
   test_preserve_mixed_content_order();
   test_read_only_document_view();
   test_subject_adapter_preserves_doclang_metadata();
-  test_legacy_json_serializer_boundary();
 
   std::cout << "test_unit_doclang_reader.exe passed\n";
   return 0;

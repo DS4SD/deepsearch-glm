@@ -39,11 +39,15 @@ namespace andromeda
     
     std::vector<std::string> to_row(std::size_t col_width);
 
-    std::string get_type() { return to_name(flvr); }
-    std::string get_name() { return to_name(flvr); }
+    std::string get_type() const { return to_name(flvr); }
+    std::string get_name() const { return to_name(flvr); }
+    flvr_type get_flvr() const { return flvr; }
+    val_type get_conf() const { return conf; }
 
-    hash_type get_hash_i() { return hash_i; }
-    hash_type get_hash_j() { return hash_j; }
+    hash_type get_hash_i() const { return hash_i; }
+    hash_type get_hash_j() const { return hash_j; }
+    std::string get_name_i() const { return name_i; }
+    std::string get_name_j() const { return name_j; }
     
   private:
 
@@ -175,7 +179,7 @@ namespace andromeda
 
   bool base_relation::from_json_row(const nlohmann::json& row)
   {
-    if((not row.is_array()) or row.size()!=9)
+    if((not row.is_array()) or (row.size()!=7 and row.size()!=9))
       {
 	LOG_S(ERROR) << "inconsistent relation-row: " << row.dump();
 	return false;
@@ -189,13 +193,21 @@ namespace andromeda
     conf = row.at(2).get<val_type>();
 
     hash_i = row.at(3).get<hash_type>();
-    //ihash_i = row.at(4).get<hash_type>();
 
-    hash_j = row.at(5).get<hash_type>();
-    //ihash_j = row.at(6).get<hash_type>();
+    if(row.size()==7)
+      {
+        hash_j = row.at(4).get<hash_type>();
+        name_i = row.at(5).get<std::string>();
+        name_j = row.at(6).get<std::string>();
+      }
+    else
+      {
+        // Older rows included hash/instance-hash pairs.
+        hash_j = row.at(5).get<hash_type>();
+        name_i = row.at(7).get<std::string>();
+        name_j = row.at(8).get<std::string>();
+      }
 
-    name_i = row.at(7).get<std::string>();
-    name_j = row.at(8).get<std::string>();
 
     return true;
   }

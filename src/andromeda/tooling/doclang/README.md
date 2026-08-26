@@ -7,20 +7,21 @@ This module owns native C++ DocLang support.
 `andromeda::doclang::document` owns the canonical parsed XML document through
 `pugi::xml_document`.
 
-DocLang XML is the source of truth. Compatibility conversions to legacy
-`subject<T>` data structures are execution views for existing NLP models, not
-the canonical document model.
+DocLang XML is the source of truth for document content. NLP annotations are
+stored on the document as shared vectors of `base_property`, `base_instance`,
+and `base_relation`, and are serialized in `.dclx` archives as CSV files under
+`annotations/`.
 
 ## Boundary Rules
 
-Core DocLang headers should stay independent of legacy subject and element
-structures:
+Core DocLang XML/archive headers should stay independent of legacy subject and
+element structures where possible:
 
 - `archive.h`
 - `content.h`
-- `document.h`
 - `reader.h`
 - `view.h`
+- `writer.h`
 
 These files may depend on:
 
@@ -30,13 +31,25 @@ These files may depend on:
 
 They should not include:
 
-- `andromeda/tooling/structs.h`
 - `andromeda/tooling/structs/subjects.h`
 - `andromeda/tooling/structs/elements.h`
 - individual legacy element headers
 
-`adapters.h` is the explicit exception. It may include legacy structs because
-its job is to create compatibility views for existing NLP code.
+`document.h` is the explicit annotation-storage exception and may include
+legacy item types. `adapters.h` is the subject compatibility exception because
+its job is to create execution views for existing NLP code.
+
+## Annotation Files
+
+DocLang archives use these stable annotation paths:
+
+- `annotations/properties.csv`
+- `annotations/instances.csv`
+- `annotations/relations.csv`
+
+When present, these files are read into the document annotation vectors. When a
+document is written as `.dclx`, the writer packages the current annotation
+vectors into these CSV files.
 
 ## Traversal
 
