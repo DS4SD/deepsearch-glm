@@ -146,8 +146,12 @@ doc.read("document.dclx")
 doc.apply_nlp("language;term")
 doc.write("document.nlp.dclx")
 
-terms = doc.query_instances(type="term")
-relations = doc.query_relations(name="contains")
+properties = doc.properties()
+entities = doc.entities()
+relations = doc.relations()
+
+terms = doc.query_entities(type="term")
+contains_relations = doc.query_relations(name="contains")
 ```
 
 The legacy Deep Search document JSON workflow has been removed from the

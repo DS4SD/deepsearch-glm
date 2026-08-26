@@ -34,12 +34,20 @@ PYBIND11_MODULE(andromeda_doclang, m) {
 
     .def("summary", &andromeda_py::DocLangXDocument::summary)
     .def("properties", &andromeda_py::DocLangXDocument::properties)
+    .def("entities", &andromeda_py::DocLangXDocument::entities)
     .def("instances", &andromeda_py::DocLangXDocument::instances)
     .def("relations", &andromeda_py::DocLangXDocument::relations)
 
     .def("query_properties", &andromeda_py::DocLangXDocument::query_properties,
          pybind11::arg("type") = "",
          pybind11::arg("label") = "",
+         pybind11::arg("subj_path") = "",
+         pybind11::arg("min_conf") = 0.0)
+    .def("query_entities", &andromeda_py::DocLangXDocument::query_entities,
+         pybind11::arg("type") = "",
+         pybind11::arg("subtype") = "",
+         pybind11::arg("name") = "",
+         pybind11::arg("name_contains") = "",
          pybind11::arg("subj_path") = "",
          pybind11::arg("min_conf") = 0.0)
     .def("query_instances", &andromeda_py::DocLangXDocument::query_instances,
@@ -55,4 +63,18 @@ PYBIND11_MODULE(andromeda_doclang, m) {
          pybind11::arg("name_j") = "",
          pybind11::arg("name_contains") = "",
          pybind11::arg("min_conf") = 0.0);
+
+  pybind11::class_<andromeda_py::DocLangXNlp>(m, "DocLangXNlp")
+    .def(pybind11::init())
+    .def(pybind11::init<const std::string&>(),
+         pybind11::arg("models"))
+    .def("initialise", &andromeda_py::DocLangXNlp::initialise,
+         pybind11::arg("models"))
+    .def("apply", &andromeda_py::DocLangXNlp::apply,
+         pybind11::arg("doc"),
+         pybind11::arg("progress_every") = 25)
+    .def("initialised", &andromeda_py::DocLangXNlp::initialised)
+    .def("model_expr", &andromeda_py::DocLangXNlp::model_expr)
+    .def("models", &andromeda_py::DocLangXNlp::models)
+    .def("last_error", &andromeda_py::DocLangXNlp::last_error);
 }

@@ -1,10 +1,11 @@
 import zipfile
 
-from docling_nlp.andromeda_doclang import DocLangXDocument
+import pandas as pd
+from docling_nlp.andromeda_doclang import DocLangXDocument, DocLangXNlp
 
 
 def create_dclx(path):
-    xml = "<doclang version=\"0.7\"><text>FeSe is a material.</text></doclang>"
+    xml = '<doclang version="0.7"><text>FeSe is a material.</text></doclang>'
 
     with zipfile.ZipFile(path, "w") as archive:
         archive.writestr("[Content_Types].xml", "<Types></Types>")
@@ -50,29 +51,49 @@ def test_doclangx_document_read_query_write(tmp_path):
     ]
     assert "document.xml" in doc.archive_paths()
 
-    assert doc.properties()["data"][0][4] == "en"
-    assert doc.instances()["data"][0][-2] == "FeSe"
-    assert doc.relations()["data"][0][1] == "contains"
+    properties = doc.properties()
+    entities = doc.entities()
+    instances = doc.instances()
+    relations = doc.relations()
 
-    assert len(doc.query_properties(type="language")["data"]) == 1
-    assert len(doc.query_instances(type="term", name_contains="Fe")["data"]) == 1
-    assert len(doc.query_instances(type="term", name="missing")["data"]) == 0
-    assert len(doc.query_relations(name="contains", name_contains="material")["data"]) == 1
-    assert len(doc.query_relations(name="contains", min_conf=0.9)["data"]) == 0
+    assert isinstance(properties, pd.DataFrame)
+    assert isinstance(entities, pd.DataFrame)
+    assert isinstance(instances, pd.DataFrame)
+    assert isinstance(relations, pd.DataFrame)
+    assert properties.loc[0, "label"] == "en"
+    assert entities.loc[0, "name"] == "FeSe"
+    assert instances.equals(entities)
+    assert relations.loc[0, "name"] == "contains"
+    assert str(properties.dtypes["type"]) == "string"
+    assert str(properties.dtypes["subj_hash"]) == "UInt64"
+    assert str(properties.dtypes["confidence"]) == "Float32"
+    assert str(entities.dtypes["hash"]) == "UInt64"
+    assert str(entities.dtypes["coor_i"]) == "UInt64"
+    assert str(entities.dtypes["wtok-match"]) == "boolean"
+    assert pd.isna(entities.loc[0, "coor_i"])
+    assert str(relations.dtypes["flvr"]) == "UInt64"
+    assert str(relations.dtypes["conf"]) == "Float32"
+
+    assert len(doc.query_properties(type="language")) == 1
+    assert len(doc.query_entities(type="term", name_contains="Fe")) == 1
+    assert len(doc.query_instances(type="term", name_contains="Fe")) == 1
+    assert len(doc.query_instances(type="term", name="missing")) == 0
+    assert len(doc.query_relations(name="contains", name_contains="material")) == 1
+    assert len(doc.query_relations(name="contains", min_conf=0.9)) == 0
 
     assert doc.write(str(output_path))
 
     restored = DocLangXDocument()
     assert restored.read(str(output_path))
     assert restored.summary()["instances"] == 1
-    assert len(restored.query_instances(name="FeSe")["data"]) == 1
+    assert len(restored.query_instances(name="FeSe")) == 1
 
 
 def test_doclangx_document_apply_nlp_empty_model_expr(tmp_path):
     output_path = tmp_path / "empty-models.dclx"
 
     doc = DocLangXDocument()
-    assert doc.read_xml("<doclang version=\"0.7\"><text>Body text</text></doclang>")
+    assert doc.read_xml('<doclang version="0.7"><text>Body text</text></doclang>')
     assert doc.apply_nlp("", progress_every=0)
     assert doc.summary()["instances"] == 0
     assert doc.write(str(output_path))
@@ -80,3 +101,30 @@ def test_doclangx_document_apply_nlp_empty_model_expr(tmp_path):
     restored = DocLangXDocument()
     assert restored.read(str(output_path))
     assert restored.valid()
+
+
+def test_doclangx_nlp_reuses_initialised_models_across_documents():
+    nlp = DocLangXNlp("")
+    assert nlp.initialised()
+    assert nlp.model_expr() == ""
+    assert nlp.models() == []
+
+    first = DocLangXDocument()
+    second = DocLangXDocument()
+    assert first.read_xml('<doclang version="0.7"><text>First text</text></doclang>')
+    assert second.read_xml('<doclang version="0.7"><text>Second text</text></doclang>')
+
+    assert nlp.apply(first, progress_every=0)
+    assert nlp.apply(second, progress_every=0)
+    assert first.summary()["instances"] == 0
+    assert second.summary()["instances"] == 0
+
+
+def test_doclangx_nlp_reports_uninitialised_apply():
+    nlp = DocLangXNlp()
+    doc = DocLangXDocument()
+    assert doc.read_xml('<doclang version="0.7"><text>Body text</text></doclang>')
+
+    assert not nlp.apply(doc, progress_every=0)
+    assert nlp.last_error() == "models have not been initialised"
+    assert doc.last_error() == "models have not been initialised"

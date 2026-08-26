@@ -9,7 +9,10 @@
 #include <string>
 #include <vector>
 
+#include <pybind11/pybind11.h>
+
 #include <andromeda.h>
+#include <pybind/utils/pybind11_json.h>
 
 namespace andromeda_py
 {
@@ -25,6 +28,7 @@ namespace andromeda_py
     bool read_xml(const std::string& xml);
     bool write(const std::string& path);
     bool apply_nlp(const std::string& models, std::size_t progress_every=25);
+    andromeda::doclang::document& mutable_document();
 
     bool valid() const;
     bool has_archive() const;
@@ -38,31 +42,70 @@ namespace andromeda_py
     std::vector<std::string> annotation_paths() const;
 
     nlohmann::json summary() const;
-    nlohmann::json properties() const;
-    nlohmann::json instances() const;
-    nlohmann::json relations() const;
+    pybind11::object properties() const;
+    pybind11::object entities() const;
+    pybind11::object instances() const;
+    pybind11::object relations() const;
 
-    nlohmann::json query_properties(const std::string& type="",
-                                    const std::string& label="",
+    pybind11::object query_properties(const std::string& type="",
+                                      const std::string& label="",
+                                      const std::string& subj_path="",
+                                      float min_conf=0.0) const;
+
+    pybind11::object query_entities(const std::string& type="",
+                                    const std::string& subtype="",
+                                    const std::string& name="",
+                                    const std::string& name_contains="",
                                     const std::string& subj_path="",
                                     float min_conf=0.0) const;
 
-    nlohmann::json query_instances(const std::string& type="",
-                                   const std::string& subtype="",
-                                   const std::string& name="",
-                                   const std::string& name_contains="",
-                                   const std::string& subj_path="",
-                                   float min_conf=0.0) const;
+    pybind11::object query_instances(const std::string& type="",
+                                     const std::string& subtype="",
+                                     const std::string& name="",
+                                     const std::string& name_contains="",
+                                     const std::string& subj_path="",
+                                     float min_conf=0.0) const;
 
-    nlohmann::json query_relations(const std::string& name="",
-                                   const std::string& name_i="",
-                                   const std::string& name_j="",
-                                   const std::string& name_contains="",
-                                   float min_conf=0.0) const;
+    pybind11::object query_relations(const std::string& name="",
+                                     const std::string& name_i="",
+                                     const std::string& name_j="",
+                                     const std::string& name_contains="",
+                                     float min_conf=0.0) const;
 
   private:
 
+    static pybind11::object dataframe_from_table(const nlohmann::json& table);
+    static std::string pandas_dtype_for_column(const std::string& column);
+
+    nlohmann::json properties_table() const;
+    nlohmann::json entities_table() const;
+    nlohmann::json relations_table() const;
+
     std::shared_ptr<andromeda::doclang::document> doc;
+  };
+
+  class DocLangXNlp
+  {
+  public:
+
+    DocLangXNlp();
+    explicit DocLangXNlp(const std::string& models);
+    ~DocLangXNlp();
+
+    bool initialise(const std::string& models);
+    bool apply(DocLangXDocument& doc, std::size_t progress_every=25);
+
+    bool initialised() const;
+    std::string model_expr() const;
+    std::string last_error() const;
+    std::vector<std::string> models() const;
+
+  private:
+
+    bool is_initialised;
+    std::string model_expr_value;
+    std::string last_error_value;
+    std::vector<std::shared_ptr<andromeda::base_nlp_model> > nlp_models;
   };
 
   inline DocLangXDocument::DocLangXDocument():
@@ -90,19 +133,100 @@ namespace andromeda_py
   inline bool DocLangXDocument::apply_nlp(const std::string& models,
                                           std::size_t progress_every)
   {
-    std::vector<std::shared_ptr<andromeda::base_nlp_model> > nlp_models;
+    DocLangXNlp nlp;
+    if(not nlp.initialise(models))
+      {
+        doc->set_last_error(nlp.last_error());
+        return false;
+      }
+
+    return nlp.apply(*this, progress_every);
+  }
+
+  inline andromeda::doclang::document& DocLangXDocument::mutable_document()
+  {
+    return *doc;
+  }
+
+  inline DocLangXNlp::DocLangXNlp():
+    is_initialised(false),
+    model_expr_value(""),
+    last_error_value(""),
+    nlp_models({})
+  {}
+
+  inline DocLangXNlp::DocLangXNlp(const std::string& models):
+    DocLangXNlp()
+  {
+    initialise(models);
+  }
+
+  inline DocLangXNlp::~DocLangXNlp()
+  {}
+
+  inline bool DocLangXNlp::initialise(const std::string& models)
+  {
+    nlp_models.clear();
+    model_expr_value = "";
+    last_error_value = "";
+    is_initialised = false;
+
     if(not andromeda::to_models(models, nlp_models, true))
       {
-        doc->set_last_error("could not initialise models: " + models);
+        last_error_value = "could not initialise models: " + models;
+        return false;
+      }
+
+    model_expr_value = models;
+    is_initialised = true;
+    return true;
+  }
+
+  inline bool DocLangXNlp::apply(DocLangXDocument& document,
+                                 std::size_t progress_every)
+  {
+    if(not is_initialised)
+      {
+        last_error_value = "models have not been initialised";
+        document.mutable_document().set_last_error(last_error_value);
         return false;
       }
 
     andromeda::doclang::nlp_apply_options options;
-    options.document_name = doc->get_source_path().string();
+    options.document_name = document.mutable_document().get_source_path().string();
     options.progress_every = progress_every;
 
     andromeda::doclang::nlp_apply_result result;
-    return andromeda::doclang::apply_models(*doc, nlp_models, options, result);
+    return andromeda::doclang::apply_models(document.mutable_document(),
+                                            nlp_models,
+                                            options,
+                                            result);
+  }
+
+  inline bool DocLangXNlp::initialised() const
+  {
+    return is_initialised;
+  }
+
+  inline std::string DocLangXNlp::model_expr() const
+  {
+    return model_expr_value;
+  }
+
+  inline std::string DocLangXNlp::last_error() const
+  {
+    return last_error_value;
+  }
+
+  inline std::vector<std::string> DocLangXNlp::models() const
+  {
+    std::vector<std::string> names;
+    for(const auto& model:nlp_models)
+      {
+        names.push_back(model->get_key());
+      }
+
+    return names;
   }
 
   inline bool DocLangXDocument::valid() const
@@ -167,7 +291,76 @@ namespace andromeda_py
       });
   }
 
-  inline nlohmann::json DocLangXDocument::properties() const
+  inline pybind11::object DocLangXDocument::dataframe_from_table(
+    const nlohmann::json& table)
+  {
+    pybind11::module_ pandas = pybind11::module_::import("pandas");
+    pybind11::object dataframe = pandas.attr("DataFrame")(
+      pyjson::from_json(table.at("data")),
+      pybind11::arg("columns") = pyjson::from_json(table.at("headers")));
+
+    pybind11::dict dtypes;
+    for(const auto& header:table.at("headers"))
+      {
+        const std::string column = header.get<std::string>();
+        const std::string dtype = pandas_dtype_for_column(column);
+        if(not dtype.empty())
+          {
+            dtypes[pybind11::str(column)] = pybind11::str(dtype);
+          }
+      }
+
+    return dataframe.attr("astype")(dtypes);
+  }
+
+  inline std::string DocLangXDocument::pandas_dtype_for_column(
+    const std::string& column)
+  {
+    if(column=="type" or
+       column=="subtype" or
+       column=="subj_name" or
+       column=="subj_path" or
+       column=="label" or
+       column=="name" or
+       column=="original" or
+       column=="name_i" or
+       column=="name_j")
+      {
+        return "string";
+      }
+
+    if(column=="confidence" or column=="conf")
+      {
+        return "Float32";
+      }
+
+    if(column=="wtok-match")
+      {
+        return "boolean";
+      }
+
+    if(column=="subj_hash" or
+       column=="hash" or
+       column=="ihash" or
+       column=="hash_i" or
+       column=="hash_j" or
+       column=="coor_i" or
+       column=="coor_j" or
+       column=="char_i" or
+       column=="char_j" or
+       column=="ctok_i" or
+       column=="ctok_j" or
+       column=="wtok_i" or
+       column=="wtok_j" or
+       column=="flvr")
+      {
+        return "UInt64";
+      }
+
+    return "";
+  }
+
+  inline nlohmann::json DocLangXDocument::properties_table() const
   {
     nlohmann::json result = nlohmann::json::object();
     result["headers"] = andromeda::base_property::HEADERS;
@@ -181,7 +374,7 @@ namespace andromeda_py
     return result;
   }
 
-  inline nlohmann::json DocLangXDocument::instances() const
+  inline nlohmann::json DocLangXDocument::entities_table() const
   {
     nlohmann::json result = nlohmann::json::object();
     result["headers"] = andromeda::base_instance::HEADERS;
@@ -195,7 +388,7 @@ namespace andromeda_py
     return result;
   }
 
-  inline nlohmann::json DocLangXDocument::relations() const
+  inline nlohmann::json DocLangXDocument::relations_table() const
   {
     nlohmann::json result = nlohmann::json::object();
     result["headers"] = andromeda::base_relation::headers();
@@ -209,7 +402,27 @@ namespace andromeda_py
     return result;
   }
 
-  inline nlohmann::json DocLangXDocument::query_properties(
+  inline pybind11::object DocLangXDocument::properties() const
+  {
+    return dataframe_from_table(properties_table());
+  }
+
+  inline pybind11::object DocLangXDocument::entities() const
+  {
+    return dataframe_from_table(entities_table());
+  }
+
+  inline pybind11::object DocLangXDocument::instances() const
+  {
+    return entities();
+  }
+
+  inline pybind11::object DocLangXDocument::relations() const
+  {
+    return dataframe_from_table(relations_table());
+  }
+
+  inline pybind11::object DocLangXDocument::query_properties(
     const std::string& type,
     const std::string& label,
     const std::string& subj_path,
@@ -241,10 +454,10 @@ namespace andromeda_py
         result["data"].push_back(prop.to_json_row());
       }
 
-    return result;
+    return dataframe_from_table(result);
   }
 
-  inline nlohmann::json DocLangXDocument::query_instances(
+  inline pybind11::object DocLangXDocument::query_entities(
     const std::string& type,
     const std::string& subtype,
     const std::string& name,
@@ -287,10 +500,21 @@ namespace andromeda_py
         result["data"].push_back(inst.to_json_row());
       }
 
-    return result;
+    return dataframe_from_table(result);
   }
 
-  inline nlohmann::json DocLangXDocument::query_relations(
+  inline pybind11::object DocLangXDocument::query_instances(
+    const std::string& type,
+    const std::string& subtype,
+    const std::string& name,
+    const std::string& name_contains,
+    const std::string& subj_path,
+    float min_conf) const
+  {
+    return query_entities(type, subtype, name, name_contains, subj_path, min_conf);
+  }
+
+  inline pybind11::object DocLangXDocument::query_relations(
     const std::string& name,
     const std::string& name_i,
     const std::string& name_j,
@@ -329,7 +553,7 @@ namespace andromeda_py
         result["data"].push_back(rel.to_json_row());
       }
 
-    return result;
+    return dataframe_from_table(result);
   }
 
 }
