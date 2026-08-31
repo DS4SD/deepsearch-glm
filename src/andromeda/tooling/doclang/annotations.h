@@ -21,7 +21,9 @@ namespace andromeda::doclang
   const static inline std::string ANNOTATIONS_DIR = "annotations";
   const static inline std::string PROPERTIES_CSV = ANNOTATIONS_DIR + "/properties.csv";
   const static inline std::string INSTANCES_CSV = ANNOTATIONS_DIR + "/instances.csv";
+  const static inline std::string ENTITIES_CSV = ANNOTATIONS_DIR + "/entities.csv";
   const static inline std::string RELATIONS_CSV = ANNOTATIONS_DIR + "/relations.csv";
+  const static inline std::string EDGES_CSV = ANNOTATIONS_DIR + "/edges.csv";
 
   inline std::string csv_escape(const std::string& value)
   {
@@ -343,6 +345,103 @@ namespace andromeda::doclang
     return true;
   }
 
+  inline bool load_entities_csv(std::string_view csv,
+                                std::vector<base_entity>& entities,
+                                std::string& error)
+  {
+    auto rows = parse_csv(csv);
+    if(rows.empty())
+      {
+        return true;
+      }
+
+    if(not headers_match(rows.at(0), base_entity::HEADERS))
+      {
+        error = "unexpected header in " + ENTITIES_CSV;
+        return false;
+      }
+
+    for(std::size_t i=1; i<rows.size(); i++)
+      {
+        const auto& row = rows.at(i);
+        if(row.size()!=base_entity::HEADERS.size())
+          {
+            error = "unexpected row width in " + ENTITIES_CSV;
+            return false;
+          }
+
+        nlohmann::json json_row = nlohmann::json::array({
+            row.at(0),
+            row.at(1),
+            row.at(2),
+            row.at(3),
+            parse_integral_cell<base_types::hash_type>(row.at(4)),
+            parse_integral_cell<base_types::cnt_type>(row.at(5)),
+            row.at(6),
+            parse_integral_cell<base_types::hash_type>(row.at(7))
+          });
+
+        base_entity ent;
+        if(not ent.from_json_row(json_row))
+          {
+            error = "could not parse row in " + ENTITIES_CSV;
+            return false;
+          }
+
+        entities.push_back(ent);
+      }
+
+    return true;
+  }
+
+  inline bool load_edges_csv(std::string_view csv,
+                             std::vector<base_graph_edge>& edges,
+                             std::string& error)
+  {
+    auto rows = parse_csv(csv);
+    if(rows.empty())
+      {
+        return true;
+      }
+
+    if(not headers_match(rows.at(0), base_graph_edge::HEADERS))
+      {
+        error = "unexpected header in " + EDGES_CSV;
+        return false;
+      }
+
+    for(std::size_t i=1; i<rows.size(); i++)
+      {
+        const auto& row = rows.at(i);
+        if(row.size()!=base_graph_edge::HEADERS.size())
+          {
+            error = "unexpected row width in " + EDGES_CSV;
+            return false;
+          }
+
+        nlohmann::json json_row = nlohmann::json::array({
+            parse_integral_cell<base_types::hash_type>(row.at(0)),
+            parse_integral_cell<base_types::flvr_type>(row.at(1)),
+            row.at(2),
+            parse_integral_cell<base_types::hash_type>(row.at(3)),
+            parse_integral_cell<base_types::hash_type>(row.at(4)),
+            parse_integral_cell<base_types::cnt_type>(row.at(5)),
+            std::stof(row.at(6))
+          });
+
+        base_graph_edge edge;
+        if(not edge.from_json_row(json_row))
+          {
+            error = "could not parse row in " + EDGES_CSV;
+            return false;
+          }
+
+        edges.push_back(edge);
+      }
+
+    return true;
+  }
+
   inline bool load_annotations(document& doc)
   {
     doc.clear_annotations();
@@ -370,12 +469,33 @@ namespace andromeda::doclang
         return false;
       }
 
+    auto entities_csv = doc.artifacts().text(ENTITIES_CSV);
+    if(entities_csv.has_value() and
+       not load_entities_csv(entities_csv.value(), doc.mutable_entities(), error))
+      {
+        doc.set_last_error(error);
+        return false;
+      }
+
     auto relations_csv = doc.artifacts().text(RELATIONS_CSV);
     if(relations_csv.has_value() and
        not load_relations_csv(relations_csv.value(), doc.mutable_relations(), error))
       {
         doc.set_last_error(error);
         return false;
+      }
+
+    auto edges_csv = doc.artifacts().text(EDGES_CSV);
+    if(edges_csv.has_value() and
+       not load_edges_csv(edges_csv.value(), doc.mutable_edges(), error))
+      {
+        doc.set_last_error(error);
+        return false;
+      }
+
+    if(not entities_csv.has_value() and not doc.get_instances().empty())
+      {
+        doc.compute_entities();
       }
 
     return true;
@@ -431,6 +551,19 @@ namespace andromeda::doclang
     return oss.str();
   }
 
+  inline std::string to_entities_csv(std::vector<base_entity>& entities)
+  {
+    std::ostringstream oss;
+    oss << csv_row(base_entity::HEADERS);
+
+    for(auto& ent:entities)
+      {
+        oss << csv_row(ent.to_row());
+      }
+
+    return oss.str();
+  }
+
   inline std::string to_relations_csv(std::vector<base_relation>& relations)
   {
     std::ostringstream oss;
@@ -439,6 +572,19 @@ namespace andromeda::doclang
     for(auto& rel:relations)
       {
         oss << csv_row(rel.to_row(0));
+      }
+
+    return oss.str();
+  }
+
+  inline std::string to_edges_csv(std::vector<base_graph_edge>& edges)
+  {
+    std::ostringstream oss;
+    oss << csv_row(base_graph_edge::HEADERS);
+
+    for(auto& edge:edges)
+      {
+        oss << csv_row(edge.to_row());
       }
 
     return oss.str();

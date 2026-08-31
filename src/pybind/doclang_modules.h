@@ -10,6 +10,8 @@ PYBIND11_MODULE(andromeda_doclang, m) {
 
   pybind11::class_<andromeda_py::DocLangXDocument>(m, "DocLangXDocument")
     .def(pybind11::init())
+    .def_static("hash", &andromeda_py::DocLangXDocument::hash,
+         pybind11::arg("text"))
 
     .def("read", &andromeda_py::DocLangXDocument::read,
          pybind11::arg("path"))
@@ -20,6 +22,12 @@ PYBIND11_MODULE(andromeda_doclang, m) {
     .def("apply_nlp", &andromeda_py::DocLangXDocument::apply_nlp,
          pybind11::arg("models"),
          pybind11::arg("progress_every") = 25)
+    .def("materialize_edges", &andromeda_py::DocLangXDocument::materialize_edges,
+         pybind11::arg("derived_entity_mode") = "terms")
+    .def("at", &andromeda_py::DocLangXDocument::at,
+         pybind11::kw_only(),
+         pybind11::arg("xpath"),
+         pybind11::arg("mode") = "auto")
 
     .def("valid", &andromeda_py::DocLangXDocument::valid)
     .def("has_archive", &andromeda_py::DocLangXDocument::has_archive)
@@ -37,6 +45,7 @@ PYBIND11_MODULE(andromeda_doclang, m) {
     .def("entities", &andromeda_py::DocLangXDocument::entities)
     .def("instances", &andromeda_py::DocLangXDocument::instances)
     .def("relations", &andromeda_py::DocLangXDocument::relations)
+    .def("edges", &andromeda_py::DocLangXDocument::edges)
 
     .def("query_properties", &andromeda_py::DocLangXDocument::query_properties,
          pybind11::arg("type") = "",
@@ -48,21 +57,27 @@ PYBIND11_MODULE(andromeda_doclang, m) {
          pybind11::arg("subtype") = "",
          pybind11::arg("name") = "",
          pybind11::arg("name_contains") = "",
-         pybind11::arg("subj_path") = "",
-         pybind11::arg("min_conf") = 0.0)
+         pybind11::arg("entity_kind") = "",
+         pybind11::arg("min_count") = 0)
     .def("query_instances", &andromeda_py::DocLangXDocument::query_instances,
          pybind11::arg("type") = "",
          pybind11::arg("subtype") = "",
          pybind11::arg("name") = "",
          pybind11::arg("name_contains") = "",
          pybind11::arg("subj_path") = "",
-         pybind11::arg("min_conf") = 0.0)
+         pybind11::arg("min_conf") = 0.0,
+         pybind11::arg("entity_hash") = 0)
     .def("query_relations", &andromeda_py::DocLangXDocument::query_relations,
          pybind11::arg("name") = "",
          pybind11::arg("name_i") = "",
          pybind11::arg("name_j") = "",
          pybind11::arg("name_contains") = "",
-         pybind11::arg("min_conf") = 0.0);
+         pybind11::arg("min_conf") = 0.0)
+    .def("query_edges", &andromeda_py::DocLangXDocument::query_edges,
+         pybind11::arg("name") = "",
+         pybind11::arg("hash_i") = 0,
+         pybind11::arg("hash_j") = 0,
+         pybind11::arg("min_count") = 0);
 
   pybind11::class_<andromeda_py::DocLangXNlp>(m, "DocLangXNlp")
     .def(pybind11::init())

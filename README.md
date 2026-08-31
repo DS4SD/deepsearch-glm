@@ -148,10 +148,16 @@ doc.write("document.nlp.dclx")
 
 properties = doc.properties()
 entities = doc.entities()
+instances = doc.instances()
 relations = doc.relations()
 
 terms = doc.query_entities(type="term")
+term_mentions = doc.query_instances(type="term")
 contains_relations = doc.query_relations(name="contains")
+
+entity_hash = DocLangXDocument.hash("Western Europe")
+mentions = doc.query_instances(entity_hash=entity_hash)
+xpaths = mentions["subj_path"].unique().tolist()
 ```
 
 The legacy Deep Search document JSON workflow has been removed from the

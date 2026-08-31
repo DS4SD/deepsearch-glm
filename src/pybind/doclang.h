@@ -3,6 +3,7 @@
 #ifndef PYBIND_ANDROMEDA_DOCLANG_H_
 #define PYBIND_ANDROMEDA_DOCLANG_H_
 
+#include <cstdint>
 #include <filesystem>
 #include <memory>
 #include <set>
@@ -24,11 +25,15 @@ namespace andromeda_py
     DocLangXDocument();
     ~DocLangXDocument();
 
+    static std::uint64_t hash(const std::string& text);
+
     bool read(const std::string& path);
     bool read_xml(const std::string& xml);
     bool write(const std::string& path);
     bool apply_nlp(const std::string& models, std::size_t progress_every=25);
+    void materialize_edges(const std::string& derived_entity_mode="terms");
     andromeda::doclang::document& mutable_document();
+    std::string at(const std::string& xpath, const std::string& mode="auto");
 
     bool valid() const;
     bool has_archive() const;
@@ -46,6 +51,7 @@ namespace andromeda_py
     pybind11::object entities() const;
     pybind11::object instances() const;
     pybind11::object relations() const;
+    pybind11::object edges() const;
 
     pybind11::object query_properties(const std::string& type="",
                                       const std::string& label="",
@@ -56,21 +62,27 @@ namespace andromeda_py
                                     const std::string& subtype="",
                                     const std::string& name="",
                                     const std::string& name_contains="",
-                                    const std::string& subj_path="",
-                                    float min_conf=0.0) const;
+                                    const std::string& entity_kind="",
+                                    std::size_t min_count=0) const;
 
     pybind11::object query_instances(const std::string& type="",
                                      const std::string& subtype="",
                                      const std::string& name="",
                                      const std::string& name_contains="",
                                      const std::string& subj_path="",
-                                     float min_conf=0.0) const;
+                                     float min_conf=0.0,
+                                     std::uint64_t entity_hash=0) const;
 
     pybind11::object query_relations(const std::string& name="",
                                      const std::string& name_i="",
                                      const std::string& name_j="",
                                      const std::string& name_contains="",
                                      float min_conf=0.0) const;
+
+    pybind11::object query_edges(const std::string& name="",
+                                 std::uint64_t hash_i=0,
+                                 std::uint64_t hash_j=0,
+                                 std::size_t min_count=0) const;
 
   private:
 
@@ -79,7 +91,9 @@ namespace andromeda_py
 
     nlohmann::json properties_table() const;
     nlohmann::json entities_table() const;
+    nlohmann::json instances_table() const;
     nlohmann::json relations_table() const;
+    nlohmann::json edges_table() const;
 
     std::shared_ptr<andromeda::doclang::document> doc;
   };
@@ -115,6 +129,11 @@ namespace andromeda_py
   inline DocLangXDocument::~DocLangXDocument()
   {}
 
+  inline std::uint64_t DocLangXDocument::hash(const std::string& text)
+  {
+    return andromeda::doclang::document::hash(text);
+  }
+
   inline bool DocLangXDocument::read(const std::string& path)
   {
     return andromeda::doclang::reader::read(path, *doc);
@@ -143,9 +162,20 @@ namespace andromeda_py
     return nlp.apply(*this, progress_every);
   }
 
+  inline void DocLangXDocument::materialize_edges(const std::string& derived_entity_mode)
+  {
+    doc->materialize_edges(derived_entity_mode);
+  }
+
   inline andromeda::doclang::document& DocLangXDocument::mutable_document()
   {
     return *doc;
+  }
+
+  inline std::string DocLangXDocument::at(const std::string& xpath,
+                                          const std::string& mode)
+  {
+    return doc->at(xpath, mode);
   }
 
   inline DocLangXNlp::DocLangXNlp():
@@ -274,7 +304,9 @@ namespace andromeda_py
     return {
       andromeda::doclang::PROPERTIES_CSV,
       andromeda::doclang::INSTANCES_CSV,
-      andromeda::doclang::RELATIONS_CSV
+      andromeda::doclang::ENTITIES_CSV,
+      andromeda::doclang::RELATIONS_CSV,
+      andromeda::doclang::EDGES_CSV
     };
   }
 
@@ -287,7 +319,9 @@ namespace andromeda_py
         {"has_annotations", has_annotations()},
         {"properties", doc->get_properties().size()},
         {"instances", doc->get_instances().size()},
-        {"relations", doc->get_relations().size()}
+        {"entities", doc->get_entities().size()},
+        {"relations", doc->get_relations().size()},
+        {"edges", doc->get_edges().size()}
       });
   }
 
@@ -321,15 +355,17 @@ namespace andromeda_py
        column=="subj_name" or
        column=="subj_path" or
        column=="label" or
+       column=="entity_kind" or
        column=="name" or
        column=="original" or
+       column=="parent" or
        column=="name_i" or
        column=="name_j")
       {
         return "string";
       }
 
-    if(column=="confidence" or column=="conf")
+    if(column=="confidence" or column=="conf" or column=="probability")
       {
         return "Float32";
       }
@@ -344,6 +380,8 @@ namespace andromeda_py
        column=="ihash" or
        column=="hash_i" or
        column=="hash_j" or
+       column=="parent_hash" or
+       column=="count" or
        column=="coor_i" or
        column=="coor_j" or
        column=="char_i" or
@@ -352,7 +390,8 @@ namespace andromeda_py
        column=="ctok_j" or
        column=="wtok_i" or
        column=="wtok_j" or
-       column=="flvr")
+       column=="flvr" or
+       column=="total-count")
       {
         return "UInt64";
       }
@@ -375,6 +414,20 @@ namespace andromeda_py
   }
 
   inline nlohmann::json DocLangXDocument::entities_table() const
+  {
+    nlohmann::json result = nlohmann::json::object();
+    result["headers"] = andromeda::base_entity::HEADERS;
+    result["data"] = nlohmann::json::array();
+
+    for(const auto& ent:doc->get_entities())
+      {
+        result["data"].push_back(ent.to_json_row());
+      }
+
+    return result;
+  }
+
+  inline nlohmann::json DocLangXDocument::instances_table() const
   {
     nlohmann::json result = nlohmann::json::object();
     result["headers"] = andromeda::base_instance::HEADERS;
@@ -402,6 +455,20 @@ namespace andromeda_py
     return result;
   }
 
+  inline nlohmann::json DocLangXDocument::edges_table() const
+  {
+    nlohmann::json result = nlohmann::json::object();
+    result["headers"] = andromeda::base_graph_edge::HEADERS;
+    result["data"] = nlohmann::json::array();
+
+    for(auto edge:doc->get_edges())
+      {
+        result["data"].push_back(edge.to_json_row());
+      }
+
+    return result;
+  }
+
   inline pybind11::object DocLangXDocument::properties() const
   {
     return dataframe_from_table(properties_table());
@@ -414,12 +481,17 @@ namespace andromeda_py
 
   inline pybind11::object DocLangXDocument::instances() const
   {
-    return entities();
+    return dataframe_from_table(instances_table());
   }
 
   inline pybind11::object DocLangXDocument::relations() const
   {
     return dataframe_from_table(relations_table());
+  }
+
+  inline pybind11::object DocLangXDocument::edges() const
+  {
+    return dataframe_from_table(edges_table());
   }
 
   inline pybind11::object DocLangXDocument::query_properties(
@@ -462,8 +534,55 @@ namespace andromeda_py
     const std::string& subtype,
     const std::string& name,
     const std::string& name_contains,
+    const std::string& entity_kind,
+    std::size_t min_count) const
+  {
+    nlohmann::json result = nlohmann::json::object();
+    result["headers"] = andromeda::base_entity::HEADERS;
+    result["data"] = nlohmann::json::array();
+
+    for(const auto& ent:doc->get_entities())
+      {
+        if((not type.empty()) and ent.get_type()!=type)
+          {
+            continue;
+          }
+        if((not subtype.empty()) and ent.get_subtype()!=subtype)
+          {
+            continue;
+          }
+        if((not name.empty()) and ent.get_name()!=name)
+          {
+            continue;
+          }
+        if((not name_contains.empty()) and
+           ent.get_name().find(name_contains)==std::string::npos)
+          {
+            continue;
+          }
+        if((not entity_kind.empty()) and ent.get_entity_kind()!=entity_kind)
+          {
+            continue;
+          }
+        if(ent.get_count()<min_count)
+          {
+            continue;
+          }
+
+        result["data"].push_back(ent.to_json_row());
+      }
+
+    return dataframe_from_table(result);
+  }
+
+  inline pybind11::object DocLangXDocument::query_instances(
+    const std::string& type,
+    const std::string& subtype,
+    const std::string& name,
+    const std::string& name_contains,
     const std::string& subj_path,
-    float min_conf) const
+    float min_conf,
+    std::uint64_t entity_hash) const
   {
     nlohmann::json result = nlohmann::json::object();
     result["headers"] = andromeda::base_instance::HEADERS;
@@ -492,6 +611,10 @@ namespace andromeda_py
           {
             continue;
           }
+        if(entity_hash!=0 and inst.get_ehash()!=entity_hash)
+          {
+            continue;
+          }
         if(inst.get_conf()<min_conf)
           {
             continue;
@@ -501,17 +624,6 @@ namespace andromeda_py
       }
 
     return dataframe_from_table(result);
-  }
-
-  inline pybind11::object DocLangXDocument::query_instances(
-    const std::string& type,
-    const std::string& subtype,
-    const std::string& name,
-    const std::string& name_contains,
-    const std::string& subj_path,
-    float min_conf) const
-  {
-    return query_entities(type, subtype, name, name_contains, subj_path, min_conf);
   }
 
   inline pybind11::object DocLangXDocument::query_relations(
@@ -551,6 +663,41 @@ namespace andromeda_py
           }
 
         result["data"].push_back(rel.to_json_row());
+      }
+
+    return dataframe_from_table(result);
+  }
+
+  inline pybind11::object DocLangXDocument::query_edges(
+    const std::string& name,
+    std::uint64_t hash_i,
+    std::uint64_t hash_j,
+    std::size_t min_count) const
+  {
+    nlohmann::json result = nlohmann::json::object();
+    result["headers"] = andromeda::base_graph_edge::HEADERS;
+    result["data"] = nlohmann::json::array();
+
+    for(auto edge:doc->get_edges())
+      {
+        if((not name.empty()) and edge.get_name()!=name)
+          {
+            continue;
+          }
+        if(hash_i!=0 and edge.get_hash_i()!=hash_i)
+          {
+            continue;
+          }
+        if(hash_j!=0 and edge.get_hash_j()!=hash_j)
+          {
+            continue;
+          }
+        if(edge.get_count()<min_count)
+          {
+            continue;
+          }
+
+        result["data"].push_back(edge.to_json_row());
       }
 
     return dataframe_from_table(result);

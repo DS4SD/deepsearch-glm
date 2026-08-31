@@ -334,6 +334,97 @@ namespace
     return 0;
   }
 
+  int test_doclang_at()
+  {
+    const std::string xml =
+      "<doclang version=\"0.7\">"
+      "<text>Body text</text>"
+      "<table><fcel/>cell-a<lcel/><nl/><ched/>head</table>"
+      "<picture>"
+      "<caption>Figure caption</caption>"
+      "<src uri=\"assets/image.png\"/>"
+      "<list><ldiv><marker>a.</marker></ldiv>List body</list>"
+      "<text>Picture text</text>"
+      "</picture>"
+      "</doclang>";
+
+    andromeda::doclang::document doc;
+    assert(andromeda::doclang::reader::read_dclg_buffer(xml, doc));
+
+    assert(doc.at("/doclang[1]/text[1]")=="Body text");
+    assert(doc.at("/doclang[1]/text[1]", "text")=="Body text");
+    assert(doc.at("/doclang[1]/text[1]", "doclang").find("<text>Body text</text>")!=std::string::npos);
+    assert(doc.at("/doclang[1]/table[1]/text()[1]")=="cell-a");
+    assert(doc.at("/doclang[1]/table[1]", "text")=="cell-a\nhead");
+    assert(doc.at("/doclang[1]/picture[1]", "text")=="Figure caption\nList body\nPicture text");
+    assert(doc.at("/doclang[1]/missing[1]").empty());
+    assert(doc.get_last_error().find("not found")!=std::string::npos);
+
+    return 0;
+  }
+
+  int test_doclang_compute_entities()
+  {
+    andromeda::doclang::document doc;
+    assert(andromeda::doclang::reader::read_dclg_buffer("<doclang><text>Body</text></doclang>", doc));
+
+    auto& instances = doc.mutable_instances();
+    using range_type = andromeda::base_types::range_type;
+
+    for(std::size_t i=0; i<4; i++)
+      {
+        instances.emplace_back(123, andromeda::TEXT, "/doclang[1]/text[1]",
+                               andromeda::TERM, "", "very tall man", "very tall man",
+                               range_type{i, i+1}, range_type{i, i+1}, range_type{i, i+1});
+      }
+
+    for(std::size_t i=0; i<3; i++)
+      {
+        instances.emplace_back(123, andromeda::TEXT, "/doclang[1]/text[1]",
+                               andromeda::TERM, "", "tall man", "tall man",
+                               range_type{i, i+1}, range_type{i, i+1}, range_type{i, i+1});
+      }
+
+    for(std::size_t i=0; i<2; i++)
+      {
+        instances.emplace_back(123, andromeda::TEXT, "/doclang[1]/text[1]",
+                               andromeda::TERM, "", "small man", "small man",
+                               range_type{i, i+1}, range_type{i, i+1}, range_type{i, i+1});
+      }
+
+    doc.compute_entities();
+    const auto& entities = doc.get_entities();
+    assert(entities.size()==4);
+    assert(andromeda::doclang::document::hash("tall man")==instances.at(4).get_ehash());
+
+    bool found_man = false;
+    bool found_tall_man = false;
+    for(const auto& entity:entities)
+      {
+        if(entity.get_name()=="man")
+          {
+            found_man = true;
+            assert(entity.get_entity_kind()=="derived");
+            assert(entity.get_count()==9);
+            assert(entity.get_parent().empty());
+          }
+
+        if(entity.get_name()=="tall man")
+          {
+            found_tall_man = true;
+            assert(entity.get_hash()==andromeda::doclang::document::hash("tall man"));
+            assert(entity.get_entity_kind()=="exact");
+            assert(entity.get_count()==7);
+            assert(entity.get_parent()=="man");
+          }
+      }
+
+    assert(found_man);
+    assert(found_tall_man);
+
+    return 0;
+  }
+
   int test_read_only_document_view()
   {
     const std::string xml =
@@ -454,6 +545,8 @@ int main()
   test_write_dclx_annotations();
   test_reject_invalid_xml();
   test_preserve_mixed_content_order();
+  test_doclang_at();
+  test_doclang_compute_entities();
   test_read_only_document_view();
   test_subject_adapter_preserves_doclang_metadata();
 

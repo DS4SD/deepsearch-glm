@@ -81,15 +81,24 @@ namespace andromeda::doclang
 
     if(options.include_annotations)
       {
+        if(doc.mutable_entities().empty() and not doc.mutable_instances().empty())
+          {
+            doc.compute_entities();
+          }
+
         zip.set_text(PROPERTIES_CSV, to_properties_csv(doc.mutable_properties()));
         zip.set_text(INSTANCES_CSV, to_instances_csv(doc.mutable_instances()));
+        zip.set_text(ENTITIES_CSV, to_entities_csv(doc.mutable_entities()));
         zip.set_text(RELATIONS_CSV, to_relations_csv(doc.mutable_relations()));
+        zip.set_text(EDGES_CSV, to_edges_csv(doc.mutable_edges()));
       }
     else
       {
         zip.erase(PROPERTIES_CSV);
         zip.erase(INSTANCES_CSV);
+        zip.erase(ENTITIES_CSV);
         zip.erase(RELATIONS_CSV);
+        zip.erase(EDGES_CSV);
       }
 
     if(not zip.write_to_memory(out))

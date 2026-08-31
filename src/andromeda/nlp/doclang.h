@@ -378,6 +378,8 @@ namespace andromeda::doclang
                 << " skipped_empty=" << result.skipped_empty_elements
                 << " elapsed_ms=" << elapsed_ms(iteration_start);
 
+    doc.compute_entities();
+
     return true;
   }
 

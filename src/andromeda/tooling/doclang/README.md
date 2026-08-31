@@ -45,11 +45,17 @@ DocLang archives use these stable annotation paths:
 
 - `annotations/properties.csv`
 - `annotations/instances.csv`
+- `annotations/entities.csv`
 - `annotations/relations.csv`
 
 When present, these files are read into the document annotation vectors. When a
 document is written as `.dclx`, the writer packages the current annotation
 vectors into these CSV files.
+
+Instances are occurrence-level text snippets with document paths and ranges.
+Entities are collapsed from instances into exact and suffix-derived entity rows;
+if `annotations/entities.csv` is missing, the document computes entities from
+the loaded instances.
 
 ## Traversal
 
