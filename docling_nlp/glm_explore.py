@@ -25,7 +25,7 @@ def parse_arguments():
 
     parser = argparse.ArgumentParser(
         prog="glm_explore",
-        description="Explore GLM from JSON documents",
+        description="Explore a Graph Language Model",
         epilog="""
 examples of execution: 
 

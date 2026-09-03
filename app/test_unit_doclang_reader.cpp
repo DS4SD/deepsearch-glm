@@ -15,7 +15,6 @@
 #include "libraries.h"
 #include "andromeda/tooling/doclang.h"
 #include "andromeda/tooling/doclang/adapters.h"
-#include "andromeda/tooling/serializers/legacy_json.h"
 
 namespace
 {
@@ -148,6 +147,106 @@ namespace
     return 0;
   }
 
+  int test_read_dclx_annotations()
+  {
+    const std::string xml =
+      "<doclang version=\"0.7\">"
+      "<text>Archive text</text>"
+      "</doclang>";
+
+    andromeda::doclang::archive zip;
+    zip.set_text("[Content_Types].xml", "<Types></Types>");
+    zip.set_text("_rels/.rels", "<Relationships></Relationships>");
+    zip.set_text("document.xml", xml);
+    zip.set_text(andromeda::doclang::PROPERTIES_CSV,
+                 "type,subj_hash,subj_name,subj_path,label,confidence\n"
+                 "language,123,text,/doclang[1]/text[1],en,0.99\n");
+    zip.set_text(andromeda::doclang::INSTANCES_CSV,
+                 "type,subtype,subj_hash,subj_name,subj_path,conf,hash,ihash,coor_i,coor_j,char_i,char_j,ctok_i,ctok_j,wtok_i,wtok_j,wtok-match,name,original\n"
+                 "term,,123,text,/doclang[1]/text[1],1,456,789,,,0,7,0,1,0,1,true,Archive,Archive\n");
+    zip.set_text(andromeda::doclang::RELATIONS_CSV,
+                 "flvr,name,conf,hash_i,hash_j,name_i,name_j\n"
+                 "42,contains,0.75,456,789,Archive,text\n");
+
+    std::vector<std::byte> bytes;
+    assert(zip.write_to_memory(bytes));
+
+    andromeda::doclang::document doc;
+    assert(andromeda::doclang::reader::read_dclx_buffer(bytes, doc));
+
+    assert(doc.get_properties().size()==1);
+    assert(doc.get_instances().size()==1);
+    assert(doc.get_relations().size()==1);
+
+    assert(doc.get_properties().at(0).get_type()=="language");
+    assert(doc.get_properties().at(0).get_subj_path()=="/doclang[1]/text[1]");
+    assert(doc.get_instances().at(0).get_type()=="term");
+    assert(doc.get_instances().at(0).get_name()=="Archive");
+    assert(doc.get_relations().at(0).get_name()=="contains");
+
+    return 0;
+  }
+
+  int test_write_dclx_annotations()
+  {
+    const std::string xml =
+      "<doclang version=\"0.7\">"
+      "<text>Writer text</text>"
+      "</doclang>";
+
+    andromeda::doclang::document doc;
+    assert(andromeda::doclang::reader::read_dclg_buffer(xml, doc));
+
+    doc.mutable_properties().emplace_back(123,
+                                          andromeda::TEXT,
+                                          "/doclang[1]/text[1]",
+                                          andromeda::LANGUAGE,
+                                          "en",
+                                          0.99);
+
+    andromeda::base_instance inst_i(123,
+                                    andromeda::TEXT,
+                                    "/doclang[1]/text[1]",
+                                    andromeda::TERM,
+                                    "term",
+                                    "Writer",
+                                    "Writer",
+                                    {0, 6},
+                                    {0, 1},
+                                    {0, 1});
+
+    andromeda::base_instance inst_j(123,
+                                    andromeda::TEXT,
+                                    "/doclang[1]/text[1]",
+                                    andromeda::TERM,
+                                    "term",
+                                    "text",
+                                    "text",
+                                    {7, 11},
+                                    {1, 2},
+                                    {1, 2});
+
+    doc.mutable_instances().push_back(inst_i);
+    doc.mutable_instances().push_back(inst_j);
+    doc.mutable_relations().emplace_back("contains", 0.75, inst_i, inst_j);
+
+    std::vector<std::byte> bytes;
+    assert(andromeda::doclang::writer::write_dclx_buffer(doc, bytes));
+
+    andromeda::doclang::document restored;
+    assert(andromeda::doclang::reader::read_dclx_buffer(bytes, restored));
+    assert(restored.artifacts().has(andromeda::doclang::PROPERTIES_CSV));
+    assert(restored.artifacts().has(andromeda::doclang::INSTANCES_CSV));
+    assert(restored.artifacts().has(andromeda::doclang::RELATIONS_CSV));
+
+    assert(restored.get_properties().size()==1);
+    assert(restored.get_instances().size()==2);
+    assert(restored.get_relations().size()==1);
+    assert(restored.get_relations().at(0).get_name()=="contains");
+
+    return 0;
+  }
+
   int test_reject_invalid_xml()
   {
     andromeda::doclang::document doc;
@@ -231,6 +330,97 @@ namespace
     assert(serialized.find("<![CDATA[cdata-value]]>")!=std::string::npos);
     assert(serialized.find("<fcel />")!=std::string::npos or
            serialized.find("<fcel/>")!=std::string::npos);
+
+    return 0;
+  }
+
+  int test_doclang_at()
+  {
+    const std::string xml =
+      "<doclang version=\"0.7\">"
+      "<text>Body text</text>"
+      "<table><fcel/>cell-a<lcel/><nl/><ched/>head</table>"
+      "<picture>"
+      "<caption>Figure caption</caption>"
+      "<src uri=\"assets/image.png\"/>"
+      "<list><ldiv><marker>a.</marker></ldiv>List body</list>"
+      "<text>Picture text</text>"
+      "</picture>"
+      "</doclang>";
+
+    andromeda::doclang::document doc;
+    assert(andromeda::doclang::reader::read_dclg_buffer(xml, doc));
+
+    assert(doc.at("/doclang[1]/text[1]")=="Body text");
+    assert(doc.at("/doclang[1]/text[1]", "text")=="Body text");
+    assert(doc.at("/doclang[1]/text[1]", "doclang").find("<text>Body text</text>")!=std::string::npos);
+    assert(doc.at("/doclang[1]/table[1]/text()[1]")=="cell-a");
+    assert(doc.at("/doclang[1]/table[1]", "text")=="cell-a\nhead");
+    assert(doc.at("/doclang[1]/picture[1]", "text")=="Figure caption\nList body\nPicture text");
+    assert(doc.at("/doclang[1]/missing[1]").empty());
+    assert(doc.get_last_error().find("not found")!=std::string::npos);
+
+    return 0;
+  }
+
+  int test_doclang_compute_entities()
+  {
+    andromeda::doclang::document doc;
+    assert(andromeda::doclang::reader::read_dclg_buffer("<doclang><text>Body</text></doclang>", doc));
+
+    auto& instances = doc.mutable_instances();
+    using range_type = andromeda::base_types::range_type;
+
+    for(std::size_t i=0; i<4; i++)
+      {
+        instances.emplace_back(123, andromeda::TEXT, "/doclang[1]/text[1]",
+                               andromeda::TERM, "", "very tall man", "very tall man",
+                               range_type{i, i+1}, range_type{i, i+1}, range_type{i, i+1});
+      }
+
+    for(std::size_t i=0; i<3; i++)
+      {
+        instances.emplace_back(123, andromeda::TEXT, "/doclang[1]/text[1]",
+                               andromeda::TERM, "", "tall man", "tall man",
+                               range_type{i, i+1}, range_type{i, i+1}, range_type{i, i+1});
+      }
+
+    for(std::size_t i=0; i<2; i++)
+      {
+        instances.emplace_back(123, andromeda::TEXT, "/doclang[1]/text[1]",
+                               andromeda::TERM, "", "small man", "small man",
+                               range_type{i, i+1}, range_type{i, i+1}, range_type{i, i+1});
+      }
+
+    doc.compute_entities();
+    const auto& entities = doc.get_entities();
+    assert(entities.size()==4);
+    assert(andromeda::doclang::document::hash("tall man")==instances.at(4).get_ehash());
+
+    bool found_man = false;
+    bool found_tall_man = false;
+    for(const auto& entity:entities)
+      {
+        if(entity.get_name()=="man")
+          {
+            found_man = true;
+            assert(entity.get_entity_kind()=="derived");
+            assert(entity.get_count()==9);
+            assert(entity.get_parent().empty());
+          }
+
+        if(entity.get_name()=="tall man")
+          {
+            found_tall_man = true;
+            assert(entity.get_hash()==andromeda::doclang::document::hash("tall man"));
+            assert(entity.get_entity_kind()=="exact");
+            assert(entity.get_count()==7);
+            assert(entity.get_parent()=="man");
+          }
+      }
+
+    assert(found_man);
+    assert(found_tall_man);
 
     return 0;
   }
@@ -345,58 +535,20 @@ namespace
     return 0;
   }
 
-  int test_legacy_json_serializer_boundary()
-  {
-    andromeda::subject<andromeda::TEXT> text;
-    assert(text.set_text("Serializer text"));
-    text.set_type("text");
-
-    nlohmann::json legacy_text =
-      andromeda::serializers::legacy_json::subjects::to_json(text);
-
-    assert(legacy_text["text"]=="Serializer text");
-    assert(legacy_text["payload"].is_null());
-
-    andromeda::subject<andromeda::TEXT> restored_text;
-    assert(andromeda::serializers::legacy_json::subjects::from_json(
-      legacy_text, restored_text));
-    assert(restored_text.get_text()=="Serializer text");
-
-    const std::string xml =
-      "<doclang version=\"0.7\">"
-      "<text>Boundary body</text>"
-      "</doclang>";
-
-    andromeda::doclang::document doc;
-    assert(andromeda::doclang::reader::read_dclg_buffer(xml, doc));
-
-    andromeda::subject<andromeda::DOCUMENT> subject;
-    andromeda::doclang::adapter_options options;
-    options.document_name = "serializer-boundary-test";
-
-    assert(andromeda::doclang::subject_adapter::to_subject_document(doc, subject, options));
-
-    nlohmann::json legacy_doc =
-      andromeda::serializers::legacy_json::subjects::to_json(subject);
-
-    assert(legacy_doc["texts"].size()==1);
-    assert(legacy_doc["texts"].at(0)["text"]=="Boundary body");
-    assert(legacy_doc["texts"].at(0)["payload"]["doclang_name"]=="text");
-
-    return 0;
-  }
-
 }
 
 int main()
 {
   test_read_dclg();
   test_read_dclx_buffer();
+  test_read_dclx_annotations();
+  test_write_dclx_annotations();
   test_reject_invalid_xml();
   test_preserve_mixed_content_order();
+  test_doclang_at();
+  test_doclang_compute_entities();
   test_read_only_document_view();
   test_subject_adapter_preserves_doclang_metadata();
-  test_legacy_json_serializer_boundary();
 
   std::cout << "test_unit_doclang_reader.exe passed\n";
   return 0;

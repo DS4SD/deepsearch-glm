@@ -49,11 +49,7 @@ PYBIND11_MODULE(andromeda_nlp, m) {
 	 "Apply NLP models on ds_table object")
     
     .def("apply_on_doc",
-	 pybind11::overload_cast<nlohmann::json&>(&andromeda_py::nlp_model::apply_on_doc),
-	 "Apply NLP models on document in json format")
-    .def("apply_on_doc",
 	 pybind11::overload_cast<andromeda_py::ds_document&>(&andromeda_py::nlp_model::apply_on_doc),
 	 "Apply NLP models on ds_document object");
 
 }
-

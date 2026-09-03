@@ -36,13 +36,13 @@ def parse_arguments():
         epilog="""
 examples of execution: 
 
-1. end-to-end example on JSON documents:
+1. end-to-end example on legacy training documents:
 
-    uv run python ./docling_nlp/nlp_train_semantic.py -m all --input-dir '<root-dir-of-json-docs> --output-dir <models-directory>'
+    uv run python ./docling_nlp/nlp_train_semantic.py -m all --input-dir '<legacy-doc-dir> --output-dir <models-directory>'
 
 2. annotate (100) references:
 
-    uv run python ./docling_nlp/nlp_train_semantic.py -m annotate --input-dir '<root-dir-of-json-docs> --output-dir <models-directory> --max-items 100'        
+    uv run python ./docling_nlp/nlp_train_semantic.py -m annotate --input-dir '<legacy-doc-dir> --output-dir <models-directory> --max-items 100'
 """,
         formatter_class=argparse.RawTextHelpFormatter,
     )

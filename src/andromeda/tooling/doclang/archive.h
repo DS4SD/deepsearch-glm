@@ -6,6 +6,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <filesystem>
+#include <fstream>
 #include <map>
 #include <optional>
 #include <span>
@@ -31,11 +33,17 @@ namespace andromeda::doclang
     void clear();
 
     bool load_from_memory(std::span<const std::byte> data);
+    bool write_to_memory(bytes_type& data) const;
+    bool write_to_file(const std::filesystem::path& path) const;
 
     bool has(std::string_view path) const;
 
     std::optional<std::string_view> text(std::string_view path) const;
     std::optional<std::span<const std::byte> > bytes(std::string_view path) const;
+
+    void set_text(std::string_view path, std::string_view text);
+    void set_bytes(std::string_view path, std::span<const std::byte> data);
+    void erase(std::string_view path);
 
     std::vector<std::string> paths() const;
 
@@ -124,6 +132,79 @@ namespace andromeda::doclang
     return success;
   }
 
+  bool archive::write_to_memory(bytes_type& data) const
+  {
+    data.clear();
+
+    mz_zip_archive zip;
+    std::memset(&zip, 0, sizeof(zip));
+
+    if(!mz_zip_writer_init_heap(&zip, 0, 0))
+      {
+        return false;
+      }
+
+    bool success = true;
+    for(const auto& item:entries)
+      {
+        const auto& path = item.first;
+        const auto& bytes = item.second;
+        const void* ptr = static_cast<const void*>(bytes.data());
+
+        success = success and mz_zip_writer_add_mem(&zip, path.c_str(),
+                                                    ptr, bytes.size(), 0);
+        if(not success)
+          {
+            break;
+          }
+      }
+
+    void* raw = nullptr;
+    size_t size = 0;
+
+    if(success)
+      {
+        success = mz_zip_writer_finalize_heap_archive(&zip, &raw, &size);
+      }
+
+    mz_zip_writer_end(&zip);
+
+    if(not success or raw==nullptr)
+      {
+        if(raw!=nullptr)
+          {
+            mz_free(raw);
+          }
+        return false;
+      }
+
+    data.resize(size);
+    std::memcpy(data.data(), raw, size);
+    mz_free(raw);
+
+    return true;
+  }
+
+  bool archive::write_to_file(const std::filesystem::path& path) const
+  {
+    bytes_type data;
+    if(not write_to_memory(data))
+      {
+        return false;
+      }
+
+    std::ofstream ofs(path, std::ios::binary);
+    if(not ofs)
+      {
+        return false;
+      }
+
+    ofs.write(reinterpret_cast<const char*>(data.data()),
+              static_cast<std::streamsize>(data.size()));
+
+    return static_cast<bool>(ofs);
+  }
+
   bool archive::has(std::string_view path) const
   {
     return entries.count(std::string(path))==1;
@@ -151,6 +232,22 @@ namespace andromeda::doclang
       }
 
     return std::span<const std::byte>(itr->second.data(), itr->second.size());
+  }
+
+  void archive::set_text(std::string_view path, std::string_view text)
+  {
+    const auto* ptr = reinterpret_cast<const std::byte*>(text.data());
+    entries[std::string(path)] = bytes_type(ptr, ptr+text.size());
+  }
+
+  void archive::set_bytes(std::string_view path, std::span<const std::byte> data)
+  {
+    entries[std::string(path)] = bytes_type(data.begin(), data.end());
+  }
+
+  void archive::erase(std::string_view path)
+  {
+    entries.erase(std::string(path));
   }
 
   std::vector<std::string> archive::paths() const

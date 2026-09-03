@@ -14,6 +14,7 @@
 #include <vector>
 
 #include <andromeda/tooling/doclang/document.h>
+#include <andromeda/tooling/doclang/annotations.h>
 
 namespace andromeda::doclang
 {
@@ -132,7 +133,7 @@ namespace andromeda::doclang
       }
 
     out.set_archive(std::move(zip));
-    return true;
+    return load_annotations(out);
   }
 
   bool reader::read_file(const std::filesystem::path& path,
