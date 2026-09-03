@@ -1,3 +1,10 @@
+## [v1.4.0](https://github.com/docling-project/docling-nlp/releases/tag/v1.4.0) - 2026-09-03
+
+### Feature
+
+* Promoting the DocLangXDocument object ([#104](https://github.com/docling-project/docling-nlp/issues/104)) ([`4fd64f3`](https://github.com/docling-project/docling-nlp/commit/4fd64f3bcaa63ce6068d272b907ebff7c75e5968))
+* Making doclang documents central to NLP ([#103](https://github.com/docling-project/docling-nlp/issues/103)) ([`7e656a3`](https://github.com/docling-project/docling-nlp/commit/7e656a39f5713d65dd0a58f1ff153b428b06a00b))
+
 ## [v1.3.0](https://github.com/docling-project/docling-nlp/releases/tag/v1.3.0) - 2026-08-24
 
 ### Feature
