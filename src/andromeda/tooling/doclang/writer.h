@@ -11,7 +11,7 @@
 
 #include <andromeda/tooling/doclang/annotations.h>
 #include <andromeda/tooling/doclang/content.h>
-#include <andromeda/tooling/doclang/document.h>
+#include <andromeda/tooling/doclang/dclx_document.h>
 
 namespace andromeda::doclang
 {
@@ -26,16 +26,16 @@ namespace andromeda::doclang
   public:
 
     static bool write_dclx(const std::filesystem::path& path,
-                           document& doc,
+                           dclx_document& doc,
                            const writer_options& options = writer_options());
 
-    static bool write_dclx_buffer(document& doc,
+    static bool write_dclx_buffer(dclx_document& doc,
                                   std::vector<std::byte>& out,
                                   const writer_options& options = writer_options());
   };
 
   bool writer::write_dclx(const std::filesystem::path& path,
-                          document& doc,
+                          dclx_document& doc,
                           const writer_options& options)
   {
     std::vector<std::byte> data;
@@ -62,7 +62,7 @@ namespace andromeda::doclang
     return true;
   }
 
-  bool writer::write_dclx_buffer(document& doc,
+  bool writer::write_dclx_buffer(dclx_document& doc,
                                  std::vector<std::byte>& out,
                                  const writer_options& options)
   {
@@ -91,6 +91,47 @@ namespace andromeda::doclang
         zip.set_text(ENTITIES_CSV, to_entities_csv(doc.mutable_entities()));
         zip.set_text(RELATIONS_CSV, to_relations_csv(doc.mutable_relations()));
         zip.set_text(EDGES_CSV, to_edges_csv(doc.mutable_edges()));
+
+        if(doc.has_document_reference())
+          {
+            zip.set_text(DOCUMENT_REFERENCE_BIB, doc.get_document_reference().value());
+          }
+        else
+          {
+            zip.erase(DOCUMENT_REFERENCE_BIB);
+          }
+        if(doc.has_references())
+          {
+            zip.set_text(REFERENCES_BIB, doc.get_references().value());
+          }
+        else
+          {
+            zip.erase(REFERENCES_BIB);
+          }
+        if(doc.has_summary())
+          {
+            zip.set_text(SUMMARY_DCLG, doc.get_summary().value()->raw());
+          }
+        else
+          {
+            zip.erase(SUMMARY_DCLG);
+          }
+        if(doc.has_toc())
+          {
+            zip.set_text(TOC_DCLG, doc.get_toc().value()->raw());
+          }
+        else
+          {
+            zip.erase(TOC_DCLG);
+          }
+        if(doc.has_concepts())
+          {
+            zip.set_text(CONCEPTS_DCLG, doc.get_concepts().value()->raw());
+          }
+        else
+          {
+            zip.erase(CONCEPTS_DCLG);
+          }
       }
     else
       {
@@ -99,6 +140,11 @@ namespace andromeda::doclang
         zip.erase(ENTITIES_CSV);
         zip.erase(RELATIONS_CSV);
         zip.erase(EDGES_CSV);
+        zip.erase(DOCUMENT_REFERENCE_BIB);
+        zip.erase(REFERENCES_BIB);
+        zip.erase(SUMMARY_DCLG);
+        zip.erase(TOC_DCLG);
+        zip.erase(CONCEPTS_DCLG);
       }
 
     if(not zip.write_to_memory(out))

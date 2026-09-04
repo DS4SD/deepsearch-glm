@@ -233,7 +233,7 @@ namespace andromeda::doclang
       }
   }
 
-  inline bool apply_models(document& doc,
+  inline bool apply_models(dclx_document& doc,
                            const std::vector<std::shared_ptr<base_nlp_model> >& models,
                            const nlp_apply_options& options,
                            nlp_apply_result& result)

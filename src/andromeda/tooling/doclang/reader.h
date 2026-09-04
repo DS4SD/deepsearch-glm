@@ -13,7 +13,7 @@
 #include <string_view>
 #include <vector>
 
-#include <andromeda/tooling/doclang/document.h>
+#include <andromeda/tooling/doclang/dclx_document.h>
 #include <andromeda/tooling/doclang/annotations.h>
 
 namespace andromeda::doclang
@@ -32,18 +32,16 @@ namespace andromeda::doclang
 
     static format detect_format(const std::filesystem::path& path);
 
-    static bool read(const std::filesystem::path& path, document& out);
+    static bool read(const std::filesystem::path& path, dclx_document& out);
 
-    static bool read_dclg_buffer(std::string_view xml, document& out);
-    static bool read_dclx_buffer(std::span<const std::byte> bytes, document& out);
+    static bool read_dclg_buffer(std::string_view xml, dclg_document& out);
+    static bool read_dclx_buffer(std::span<const std::byte> bytes, dclx_document& out);
 
   private:
 
     static bool read_file(const std::filesystem::path& path,
                           std::vector<std::byte>& data,
                           std::string& error);
-
-    static bool parse_xml(std::string_view xml, document& out);
   };
 
   format reader::detect_format(const std::filesystem::path& path)
@@ -68,48 +66,56 @@ namespace andromeda::doclang
     return format::unknown;
   }
 
-  bool reader::read(const std::filesystem::path& path, document& out)
+  bool reader::read(const std::filesystem::path& path, dclx_document& out)
   {
     out.clear();
-    out.set_source_path(path);
+
+    bool success = false;
 
     std::vector<std::byte> data;
     std::string error;
     if(not read_file(path, data, error))
       {
         out.set_last_error(error);
-        return false;
       }
-
-    switch(detect_format(path))
+    else
       {
-      case format::dclg:
-        {
-          const char* ptr = reinterpret_cast<const char*>(data.data());
-          return read_dclg_buffer(std::string_view(ptr, data.size()), out);
-        }
+        switch(detect_format(path))
+          {
+          case format::dclg:
+            {
+              const char* ptr = reinterpret_cast<const char*>(data.data());
+              success = read_dclg_buffer(std::string_view(ptr, data.size()), out);
+              break;
+            }
 
-      case format::dclx:
-        {
-          return read_dclx_buffer(std::span<const std::byte>(data.data(), data.size()), out);
-        }
+          case format::dclx:
+            {
+              success = read_dclx_buffer(std::span<const std::byte>(data.data(), data.size()), out);
+              break;
+            }
 
-      case format::unknown:
-      default:
-        {
-          out.set_last_error("unsupported DocLang file extension: " + path.extension().string());
-          return false;
-        }
+          case format::unknown:
+          default:
+            {
+              out.set_last_error("unsupported DocLang file extension: " +
+                                 path.extension().string());
+              break;
+            }
+          }
       }
+
+    // set last: read_dclx_buffer clears the whole document, source path included
+    out.set_source_path(path);
+    return success;
   }
 
-  bool reader::read_dclg_buffer(std::string_view xml, document& out)
+  bool reader::read_dclg_buffer(std::string_view xml, dclg_document& out)
   {
-    out.clear();
-    return parse_xml(xml, out);
+    return out.read(xml);
   }
 
-  bool reader::read_dclx_buffer(std::span<const std::byte> bytes, document& out)
+  bool reader::read_dclx_buffer(std::span<const std::byte> bytes, dclx_document& out)
   {
     out.clear();
 
@@ -127,7 +133,7 @@ namespace andromeda::doclang
         return false;
       }
 
-    if(not parse_xml(xml.value(), out))
+    if(not out.read(xml.value()))
       {
         return false;
       }
@@ -166,28 +172,6 @@ namespace andromeda::doclang
             error = "could not read file: " + path.string();
             return false;
           }
-      }
-
-    return true;
-  }
-
-  bool reader::parse_xml(std::string_view xml, document& out)
-  {
-    pugi::xml_parse_result result = out.xml().load_buffer(
-      xml.data(), xml.size(), pugi::parse_default | pugi::parse_ws_pcdata);
-    if(not result)
-      {
-        std::stringstream ss;
-        ss << "could not parse DocLang XML: " << result.description()
-           << " at offset " << result.offset;
-        out.set_last_error(ss.str());
-        return false;
-      }
-
-    if(not out.root())
-      {
-        out.set_last_error("DocLang XML does not contain root <doclang>");
-        return false;
       }
 
     return true;

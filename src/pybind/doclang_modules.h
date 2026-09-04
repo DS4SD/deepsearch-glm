@@ -8,7 +8,27 @@
 
 PYBIND11_MODULE(andromeda_doclang, m) {
 
-  pybind11::class_<andromeda_py::DocLangXDocument>(m, "DocLangXDocument")
+  pybind11::class_<andromeda_py::DoclangDocument>(m, "DoclangDocument")
+    .def(pybind11::init())
+    .def(pybind11::init<const std::string&>(), pybind11::arg("dclg"))
+    .def("read_xml", &andromeda_py::DoclangDocument::read_xml,
+         pybind11::arg("dclg"))
+    .def("valid", &andromeda_py::DoclangDocument::valid)
+    .def("xml", &andromeda_py::DoclangDocument::xml)
+    .def("last_error", &andromeda_py::DoclangDocument::last_error)
+    .def("at", &andromeda_py::DoclangDocument::at,
+         pybind11::kw_only(),
+         pybind11::arg("xpath"),
+         pybind11::arg("mode") = "auto")
+    .def("elements", &andromeda_py::DoclangDocument::elements,
+         pybind11::arg("name") = "")
+    .def("__iter__", [](const andromeda_py::DoclangDocument& doc)
+         {
+           return doc.elements().attr("__iter__")();
+         });
+
+  pybind11::class_<andromeda_py::DocLangXDocument,
+                   andromeda_py::DoclangDocument>(m, "DocLangXDocument")
     .def(pybind11::init())
     .def_static("hash", &andromeda_py::DocLangXDocument::hash,
          pybind11::arg("text"))
@@ -24,21 +44,34 @@ PYBIND11_MODULE(andromeda_doclang, m) {
          pybind11::arg("progress_every") = 25)
     .def("materialize_edges", &andromeda_py::DocLangXDocument::materialize_edges,
          pybind11::arg("derived_entity_mode") = "terms")
-    .def("at", &andromeda_py::DocLangXDocument::at,
-         pybind11::kw_only(),
-         pybind11::arg("xpath"),
-         pybind11::arg("mode") = "auto")
 
-    .def("valid", &andromeda_py::DocLangXDocument::valid)
     .def("has_archive", &andromeda_py::DocLangXDocument::has_archive)
     .def("has_annotations", &andromeda_py::DocLangXDocument::has_annotations)
 
-    .def("xml", &andromeda_py::DocLangXDocument::xml)
     .def("source_path", &andromeda_py::DocLangXDocument::source_path)
-    .def("last_error", &andromeda_py::DocLangXDocument::last_error)
 
     .def("archive_paths", &andromeda_py::DocLangXDocument::archive_paths)
     .def("annotation_paths", &andromeda_py::DocLangXDocument::annotation_paths)
+    .def("document_reference", &andromeda_py::DocLangXDocument::document_reference)
+    .def("references", &andromeda_py::DocLangXDocument::references)
+    .def("document_summary", &andromeda_py::DocLangXDocument::document_summary)
+    .def("toc", &andromeda_py::DocLangXDocument::toc)
+    .def("concepts", &andromeda_py::DocLangXDocument::concepts)
+    .def("set_document_reference", &andromeda_py::DocLangXDocument::set_document_reference,
+         pybind11::arg("bibtex"))
+    .def("set_references", &andromeda_py::DocLangXDocument::set_references,
+         pybind11::arg("bibtex"))
+    .def("set_document_summary", &andromeda_py::DocLangXDocument::set_document_summary,
+         pybind11::arg("dclg"))
+    .def("set_toc", &andromeda_py::DocLangXDocument::set_toc,
+         pybind11::arg("dclg"))
+    .def("set_concepts", &andromeda_py::DocLangXDocument::set_concepts,
+         pybind11::arg("dclg"))
+    .def("clear_document_reference", &andromeda_py::DocLangXDocument::clear_document_reference)
+    .def("clear_references", &andromeda_py::DocLangXDocument::clear_references)
+    .def("clear_document_summary", &andromeda_py::DocLangXDocument::clear_document_summary)
+    .def("clear_toc", &andromeda_py::DocLangXDocument::clear_toc)
+    .def("clear_concepts", &andromeda_py::DocLangXDocument::clear_concepts)
 
     .def("summary", &andromeda_py::DocLangXDocument::summary)
     .def("properties", &andromeda_py::DocLangXDocument::properties)

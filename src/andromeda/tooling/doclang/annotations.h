@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -13,7 +14,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include <andromeda/tooling/doclang/document.h>
+#include <andromeda/tooling/doclang/dclx_document.h>
 
 namespace andromeda::doclang
 {
@@ -24,6 +25,138 @@ namespace andromeda::doclang
   const static inline std::string ENTITIES_CSV = ANNOTATIONS_DIR + "/entities.csv";
   const static inline std::string RELATIONS_CSV = ANNOTATIONS_DIR + "/relations.csv";
   const static inline std::string EDGES_CSV = ANNOTATIONS_DIR + "/edges.csv";
+  const static inline std::string DOCUMENT_REFERENCE_BIB = ANNOTATIONS_DIR + "/document_reference.bib";
+  const static inline std::string REFERENCES_BIB = ANNOTATIONS_DIR + "/references.bib";
+  const static inline std::string SUMMARY_DCLG = ANNOTATIONS_DIR + "/summary.dclg";
+  const static inline std::string TOC_DCLG = ANNOTATIONS_DIR + "/toc.dclg";
+  const static inline std::string CONCEPTS_DCLG = ANNOTATIONS_DIR + "/concepts.dclg";
+
+  inline std::size_t element_count(pugi::xml_node parent, std::string_view name)
+  {
+    const std::string name_value(name);
+    std::size_t count = 0;
+    for(const auto child:parent.children(name_value.c_str()))
+      {
+        (void)child;
+        count += 1;
+      }
+    return count;
+  }
+
+  // parses one DCLG sidecar, forwards parse errors to the owning DCLX
+  // document, then applies the sidecar-specific validation
+  template<typename validator_type>
+  inline bool parse_sidecar_dclg(dclx_document& doc,
+                                 std::string_view xml,
+                                 const std::string& path,
+                                 validator_type&& validate,
+                                 std::shared_ptr<dclg_document>& out)
+  {
+    auto sidecar = std::make_shared<dclg_document>();
+    if(not sidecar->read(xml))
+      {
+        doc.set_last_error(path + ": " + sidecar->get_last_error());
+        return false;
+      }
+
+    std::string error;
+    if(not validate(*sidecar, error))
+      {
+        doc.set_last_error(error);
+        return false;
+      }
+
+    out = std::move(sidecar);
+    return true;
+  }
+
+  inline bool validate_summary_dclg(const dclg_document&, std::string&)
+  {
+    // a valid DCLG root is all a summary sidecar has to satisfy
+    return true;
+  }
+
+  inline bool validate_toc_dclg(const dclg_document& sidecar, std::string& error)
+  {
+    const auto root = sidecar.root();
+    if(element_count(root, "toc")!=1)
+      {
+        error = TOC_DCLG + " must contain one <toc> element";
+        return false;
+      }
+
+    for(const auto entry:root.child("toc").children("entry"))
+      {
+        if(std::string_view(entry.attribute("xpath").value()).empty() or
+           element_count(entry, "description")!=1)
+          {
+            error = TOC_DCLG + " entries require xpath and one <description>";
+            return false;
+          }
+      }
+
+    return true;
+  }
+
+  inline bool validate_concepts_dclg(const dclg_document& sidecar, std::string& error)
+  {
+    const auto root = sidecar.root();
+    if(element_count(root, "concepts")!=1)
+      {
+        error = CONCEPTS_DCLG + " must contain one <concepts> element";
+        return false;
+      }
+
+    for(const auto concept_node:root.child("concepts").children("concept"))
+      {
+        if(element_count(concept_node, "header")!=1 or
+           element_count(concept_node, "abbreviation")>1 or
+           element_count(concept_node, "description")>1 or
+           element_count(concept_node, "table")>1)
+          {
+            error = CONCEPTS_DCLG + " concepts require one <header> and allow at most one optional child";
+            return false;
+          }
+      }
+
+    return true;
+  }
+
+  inline bool set_summary_dclg(dclx_document& doc, std::string_view xml)
+  {
+    std::shared_ptr<dclg_document> sidecar;
+    if(not parse_sidecar_dclg(doc, xml, SUMMARY_DCLG, validate_summary_dclg, sidecar))
+      {
+        return false;
+      }
+
+    doc.set_summary(std::move(sidecar));
+    return true;
+  }
+
+  inline bool set_toc_dclg(dclx_document& doc, std::string_view xml)
+  {
+    std::shared_ptr<dclg_document> sidecar;
+    if(not parse_sidecar_dclg(doc, xml, TOC_DCLG, validate_toc_dclg, sidecar))
+      {
+        return false;
+      }
+
+    doc.set_toc(std::move(sidecar));
+    return true;
+  }
+
+  inline bool set_concepts_dclg(dclx_document& doc, std::string_view xml)
+  {
+    std::shared_ptr<dclg_document> sidecar;
+    if(not parse_sidecar_dclg(doc, xml, CONCEPTS_DCLG, validate_concepts_dclg, sidecar))
+      {
+        return false;
+      }
+
+    doc.set_concepts(std::move(sidecar));
+    return true;
+  }
 
   inline std::string csv_escape(const std::string& value)
   {
@@ -442,7 +575,7 @@ namespace andromeda::doclang
     return true;
   }
 
-  inline bool load_annotations(document& doc)
+  inline bool load_annotations(dclx_document& doc)
   {
     doc.clear_annotations();
 
@@ -490,6 +623,36 @@ namespace andromeda::doclang
        not load_edges_csv(edges_csv.value(), doc.mutable_edges(), error))
       {
         doc.set_last_error(error);
+        return false;
+      }
+
+    auto document_reference = doc.artifacts().text(DOCUMENT_REFERENCE_BIB);
+    if(document_reference.has_value())
+      {
+        doc.set_document_reference(std::string(document_reference.value()));
+      }
+
+    auto references = doc.artifacts().text(REFERENCES_BIB);
+    if(references.has_value())
+      {
+        doc.set_references(std::string(references.value()));
+      }
+
+    auto summary = doc.artifacts().text(SUMMARY_DCLG);
+    if(summary.has_value() and not set_summary_dclg(doc, summary.value()))
+      {
+        return false;
+      }
+
+    auto toc = doc.artifacts().text(TOC_DCLG);
+    if(toc.has_value() and not set_toc_dclg(doc, toc.value()))
+      {
+        return false;
+      }
+
+    auto concepts = doc.artifacts().text(CONCEPTS_DCLG);
+    if(concepts.has_value() and not set_concepts_dclg(doc, concepts.value()))
+      {
         return false;
       }
 

@@ -241,6 +241,13 @@ install(TARGETS andromeda_glm DESTINATION "${TOPLEVEL_PREFIX_PATH}/docling_nlp")
 include(CTest)
 
 if(BUILD_TESTING)
+    add_executable(test_unit_dclg_document.exe "${TOPLEVEL_PREFIX_PATH}/app/test_unit_dclg_document.cpp")
+    set_property(TARGET test_unit_dclg_document.exe PROPERTY CXX_STANDARD 20)
+    add_dependencies(test_unit_dclg_document.exe ${DEPENDENCIES})
+    target_include_directories(test_unit_dclg_document.exe INTERFACE ${DEPENDENCIES})
+    target_link_libraries(test_unit_dclg_document.exe ${DEPENDENCIES} ${LIB_LINK})
+    add_test(NAME test_unit_dclg_document COMMAND test_unit_dclg_document.exe)
+
     add_executable(test_unit_doclang_reader.exe "${TOPLEVEL_PREFIX_PATH}/app/test_unit_doclang_reader.cpp")
     set_property(TARGET test_unit_doclang_reader.exe PROPERTY CXX_STANDARD 20)
     add_dependencies(test_unit_doclang_reader.exe ${DEPENDENCIES})

@@ -16,7 +16,7 @@ int main()
     "<text>Body</text>"
     "</doclang>";
 
-  andromeda::doclang::document doc;
+  andromeda::doclang::dclx_document doc;
   assert(andromeda::doclang::reader::read_dclg_buffer(xml, doc));
 
   unsigned count = 0;
@@ -28,7 +28,7 @@ int main()
   assert(count==2);
 
   andromeda::doclang::document_view view(
-    std::make_shared<andromeda::doclang::document>(std::move(doc)));
+    std::make_shared<andromeda::doclang::dclx_document>(std::move(doc)));
 
   assert(view.valid());
   assert(view.text_like_elements().size()==2);

@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
       std::filesystem::create_directories(output_dir);
     }
 
-  andromeda::doclang::document doc;
+  andromeda::doclang::dclx_document doc;
   if(not andromeda::doclang::reader::read(args.input_path, doc))
     {
       LOG_S(ERROR) << "could not read DocLang archive: " << doc.get_last_error();

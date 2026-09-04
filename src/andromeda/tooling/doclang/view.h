@@ -12,6 +12,8 @@
 
 #include <pugixml.hpp>
 
+#include <andromeda/tooling/doclang/dclg_document.h>
+
 namespace andromeda::doclang
 {
 
@@ -42,7 +44,7 @@ namespace andromeda::doclang
   public:
 
     document_view() = default;
-    explicit document_view(std::shared_ptr<const document> doc):
+    explicit document_view(std::shared_ptr<const dclg_document> doc):
       doc_ptr(std::move(doc))
     {}
 
@@ -59,7 +61,7 @@ namespace andromeda::doclang
 
   private:
 
-    std::shared_ptr<const document> doc_ptr;
+    std::shared_ptr<const dclg_document> doc_ptr;
   };
 
   std::optional<unsigned> element_view::heading_level() const
