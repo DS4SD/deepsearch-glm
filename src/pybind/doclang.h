@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -18,33 +19,70 @@
 namespace andromeda_py
 {
 
-  class DocLangXDocument
+  class DoclangDocument
+  {
+  public:
+
+    DoclangDocument();
+    explicit DoclangDocument(const std::string& dclg);
+    explicit DoclangDocument(std::shared_ptr<andromeda::doclang::dclg_document> value);
+
+    virtual ~DoclangDocument();
+
+    virtual bool read_xml(const std::string& dclg);
+
+    bool valid() const;
+    std::string xml() const;
+    std::string last_error() const;
+    std::string at(const std::string& xpath, const std::string& mode="auto");
+    pybind11::list elements(const std::string& name="") const;
+
+  private:
+
+    std::shared_ptr<andromeda::doclang::dclg_document> dclg_doc;
+  };
+
+  class DocLangXDocument: public DoclangDocument
   {
   public:
 
     DocLangXDocument();
-    ~DocLangXDocument();
+    ~DocLangXDocument() override;
 
     static std::uint64_t hash(const std::string& text);
 
     bool read(const std::string& path);
-    bool read_xml(const std::string& xml);
+    bool read_xml(const std::string& xml) override;
     bool write(const std::string& path);
     bool apply_nlp(const std::string& models, std::size_t progress_every=25);
     void materialize_edges(const std::string& derived_entity_mode="terms");
-    andromeda::doclang::document& mutable_document();
-    std::string at(const std::string& xpath, const std::string& mode="auto");
+    andromeda::doclang::dclx_document& mutable_document();
 
-    bool valid() const;
     bool has_archive() const;
     bool has_annotations() const;
 
-    std::string xml() const;
     std::string source_path() const;
-    std::string last_error() const;
 
     std::vector<std::string> archive_paths() const;
     std::vector<std::string> annotation_paths() const;
+
+    std::optional<std::string> document_reference() const;
+    std::optional<std::string> references() const;
+    std::optional<DoclangDocument> document_summary() const;
+    std::optional<DoclangDocument> toc() const;
+    std::optional<DoclangDocument> concepts() const;
+
+    void set_document_reference(const std::string& bibtex);
+    void set_references(const std::string& bibtex);
+    bool set_document_summary(const std::string& dclg);
+    bool set_toc(const std::string& dclg);
+    bool set_concepts(const std::string& dclg);
+
+    void clear_document_reference();
+    void clear_references();
+    void clear_document_summary();
+    void clear_toc();
+    void clear_concepts();
 
     nlohmann::json summary() const;
     pybind11::object properties() const;
@@ -95,7 +133,11 @@ namespace andromeda_py
     nlohmann::json relations_table() const;
     nlohmann::json edges_table() const;
 
-    std::shared_ptr<andromeda::doclang::document> doc;
+  private:
+
+    explicit DocLangXDocument(std::shared_ptr<andromeda::doclang::dclx_document> value);
+
+    std::shared_ptr<andromeda::doclang::dclx_document> doc;
   };
 
   class DocLangXNlp
@@ -122,8 +164,77 @@ namespace andromeda_py
     std::vector<std::shared_ptr<andromeda::base_nlp_model> > nlp_models;
   };
 
+  inline DoclangDocument::DoclangDocument():
+    dclg_doc(std::make_shared<andromeda::doclang::dclg_document>())
+  {}
+
+  inline DoclangDocument::DoclangDocument(const std::string& dclg):
+    DoclangDocument()
+  {
+    read_xml(dclg);
+  }
+
+  inline DoclangDocument::DoclangDocument(
+    std::shared_ptr<andromeda::doclang::dclg_document> value):
+    dclg_doc(std::move(value))
+  {}
+
+  inline DoclangDocument::~DoclangDocument()
+  {}
+
+  inline bool DoclangDocument::read_xml(const std::string& dclg)
+  {
+    return andromeda::doclang::reader::read_dclg_buffer(dclg, *dclg_doc);
+  }
+
+  inline bool DoclangDocument::valid() const
+  {
+    return dclg_doc->valid();
+  }
+
+  inline std::string DoclangDocument::xml() const
+  {
+    return dclg_doc->raw();
+  }
+
+  inline std::string DoclangDocument::last_error() const
+  {
+    return dclg_doc->get_last_error();
+  }
+
+  inline std::string DoclangDocument::at(const std::string& xpath,
+                                         const std::string& mode)
+  {
+    return dclg_doc->at(xpath, mode);
+  }
+
+  inline pybind11::list DoclangDocument::elements(const std::string& name) const
+  {
+    pybind11::list result;
+    dclg_doc->iterate_elements([&](pugi::xml_node node)
+    {
+      if(not name.empty() and name!=node.name())
+        {
+          return;
+        }
+
+      pybind11::dict element;
+      element["name"] = node.name();
+      element["xml"] = andromeda::doclang::serialize_node(node);
+      element["text"] = andromeda::doclang::node_text_content(*dclg_doc, node);
+      result.append(element);
+    });
+    return result;
+  }
+
   inline DocLangXDocument::DocLangXDocument():
-    doc(std::make_shared<andromeda::doclang::document>())
+    DocLangXDocument(std::make_shared<andromeda::doclang::dclx_document>())
+  {}
+
+  inline DocLangXDocument::DocLangXDocument(
+    std::shared_ptr<andromeda::doclang::dclx_document> value):
+    DoclangDocument(value),
+    doc(std::move(value))
   {}
 
   inline DocLangXDocument::~DocLangXDocument()
@@ -131,7 +242,7 @@ namespace andromeda_py
 
   inline std::uint64_t DocLangXDocument::hash(const std::string& text)
   {
-    return andromeda::doclang::document::hash(text);
+    return andromeda::doclang::dclx_document::hash(text);
   }
 
   inline bool DocLangXDocument::read(const std::string& path)
@@ -141,6 +252,9 @@ namespace andromeda_py
 
   inline bool DocLangXDocument::read_xml(const std::string& xml)
   {
+    // a plain DCLG buffer carries no archive or annotations: drop the DCLX
+    // state the previous document left behind before reparsing
+    doc->clear();
     return andromeda::doclang::reader::read_dclg_buffer(xml, *doc);
   }
 
@@ -167,15 +281,9 @@ namespace andromeda_py
     doc->materialize_edges(derived_entity_mode);
   }
 
-  inline andromeda::doclang::document& DocLangXDocument::mutable_document()
+  inline andromeda::doclang::dclx_document& DocLangXDocument::mutable_document()
   {
     return *doc;
-  }
-
-  inline std::string DocLangXDocument::at(const std::string& xpath,
-                                          const std::string& mode)
-  {
-    return doc->at(xpath, mode);
   }
 
   inline DocLangXNlp::DocLangXNlp():
@@ -259,11 +367,6 @@ namespace andromeda_py
     return names;
   }
 
-  inline bool DocLangXDocument::valid() const
-  {
-    return static_cast<bool>(doc->root());
-  }
-
   inline bool DocLangXDocument::has_archive() const
   {
     return doc->has_archive();
@@ -274,19 +377,9 @@ namespace andromeda_py
     return doc->has_annotations();
   }
 
-  inline std::string DocLangXDocument::xml() const
-  {
-    return andromeda::doclang::serialize_xml(doc->xml());
-  }
-
   inline std::string DocLangXDocument::source_path() const
   {
     return doc->get_source_path().string();
-  }
-
-  inline std::string DocLangXDocument::last_error() const
-  {
-    return doc->get_last_error();
   }
 
   inline std::vector<std::string> DocLangXDocument::archive_paths() const
@@ -306,8 +399,100 @@ namespace andromeda_py
       andromeda::doclang::INSTANCES_CSV,
       andromeda::doclang::ENTITIES_CSV,
       andromeda::doclang::RELATIONS_CSV,
-      andromeda::doclang::EDGES_CSV
+      andromeda::doclang::EDGES_CSV,
+      andromeda::doclang::DOCUMENT_REFERENCE_BIB,
+      andromeda::doclang::REFERENCES_BIB,
+      andromeda::doclang::SUMMARY_DCLG,
+      andromeda::doclang::TOC_DCLG,
+      andromeda::doclang::CONCEPTS_DCLG
     };
+  }
+
+  inline std::optional<std::string> DocLangXDocument::document_reference() const
+  {
+    return doc->get_document_reference();
+  }
+
+  inline std::optional<std::string> DocLangXDocument::references() const
+  {
+    return doc->get_references();
+  }
+
+  inline std::optional<DoclangDocument> to_sidecar_wrapper(
+    const andromeda::doclang::dclx_document::sidecar_type& sidecar)
+  {
+    if(not sidecar.has_value())
+      {
+        return std::nullopt;
+      }
+
+    // the wrapper shares the parsed sidecar allocation, it does not copy it
+    return DoclangDocument(sidecar.value());
+  }
+
+  inline std::optional<DoclangDocument> DocLangXDocument::document_summary() const
+  {
+    return to_sidecar_wrapper(doc->get_summary());
+  }
+
+  inline std::optional<DoclangDocument> DocLangXDocument::toc() const
+  {
+    return to_sidecar_wrapper(doc->get_toc());
+  }
+
+  inline std::optional<DoclangDocument> DocLangXDocument::concepts() const
+  {
+    return to_sidecar_wrapper(doc->get_concepts());
+  }
+
+  inline void DocLangXDocument::set_document_reference(const std::string& bibtex)
+  {
+    doc->set_document_reference(bibtex);
+  }
+
+  inline void DocLangXDocument::set_references(const std::string& bibtex)
+  {
+    doc->set_references(bibtex);
+  }
+
+  inline bool DocLangXDocument::set_document_summary(const std::string& dclg)
+  {
+    return andromeda::doclang::set_summary_dclg(*doc, dclg);
+  }
+
+  inline bool DocLangXDocument::set_toc(const std::string& dclg)
+  {
+    return andromeda::doclang::set_toc_dclg(*doc, dclg);
+  }
+
+  inline bool DocLangXDocument::set_concepts(const std::string& dclg)
+  {
+    return andromeda::doclang::set_concepts_dclg(*doc, dclg);
+  }
+
+  inline void DocLangXDocument::clear_document_reference()
+  {
+    doc->clear_document_reference();
+  }
+
+  inline void DocLangXDocument::clear_references()
+  {
+    doc->clear_references();
+  }
+
+  inline void DocLangXDocument::clear_document_summary()
+  {
+    doc->clear_summary();
+  }
+
+  inline void DocLangXDocument::clear_toc()
+  {
+    doc->clear_toc();
+  }
+
+  inline void DocLangXDocument::clear_concepts()
+  {
+    doc->clear_concepts();
   }
 
   inline nlohmann::json DocLangXDocument::summary() const
@@ -321,7 +506,12 @@ namespace andromeda_py
         {"instances", doc->get_instances().size()},
         {"entities", doc->get_entities().size()},
         {"relations", doc->get_relations().size()},
-        {"edges", doc->get_edges().size()}
+        {"edges", doc->get_edges().size()},
+        {"has_document_reference", doc->has_document_reference()},
+        {"has_references", doc->has_references()},
+        {"has_summary", doc->has_summary()},
+        {"has_toc", doc->has_toc()},
+        {"has_concepts", doc->has_concepts()}
       });
   }
 

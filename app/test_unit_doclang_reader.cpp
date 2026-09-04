@@ -100,7 +100,7 @@ namespace
       }
     assert(wrote_xml);
 
-    andromeda::doclang::document doc;
+    andromeda::doclang::dclx_document doc;
     assert(andromeda::doclang::reader::read(path, doc));
     assert(doc.root());
     assert(std::string(doc.root().attribute("version").value())=="0.7");
@@ -127,7 +127,7 @@ namespace
       }
     assert(created_archive);
 
-    andromeda::doclang::document doc;
+    andromeda::doclang::dclx_document doc;
     assert(andromeda::doclang::reader::read_dclx_buffer(bytes, doc));
     assert(doc.root());
     assert(doc.has_archive());
@@ -171,7 +171,7 @@ namespace
     std::vector<std::byte> bytes;
     assert(zip.write_to_memory(bytes));
 
-    andromeda::doclang::document doc;
+    andromeda::doclang::dclx_document doc;
     assert(andromeda::doclang::reader::read_dclx_buffer(bytes, doc));
 
     assert(doc.get_properties().size()==1);
@@ -194,7 +194,7 @@ namespace
       "<text>Writer text</text>"
       "</doclang>";
 
-    andromeda::doclang::document doc;
+    andromeda::doclang::dclx_document doc;
     assert(andromeda::doclang::reader::read_dclg_buffer(xml, doc));
 
     doc.mutable_properties().emplace_back(123,
@@ -233,7 +233,7 @@ namespace
     std::vector<std::byte> bytes;
     assert(andromeda::doclang::writer::write_dclx_buffer(doc, bytes));
 
-    andromeda::doclang::document restored;
+    andromeda::doclang::dclx_document restored;
     assert(andromeda::doclang::reader::read_dclx_buffer(bytes, restored));
     assert(restored.artifacts().has(andromeda::doclang::PROPERTIES_CSV));
     assert(restored.artifacts().has(andromeda::doclang::INSTANCES_CSV));
@@ -249,7 +249,7 @@ namespace
 
   int test_reject_invalid_xml()
   {
-    andromeda::doclang::document doc;
+    andromeda::doclang::dclx_document doc;
     const std::string xml = "<doclang><text>missing close";
 
     assert(not andromeda::doclang::reader::read_dclg_buffer(xml, doc));
@@ -279,7 +279,7 @@ namespace
       "</picture>"
       "</doclang>";
 
-    andromeda::doclang::document doc;
+    andromeda::doclang::dclx_document doc;
     assert(andromeda::doclang::reader::read_dclg_buffer(xml, doc));
 
     auto text_nodes = andromeda::doclang::child_content(doc.root().child("text"));
@@ -348,7 +348,7 @@ namespace
       "</picture>"
       "</doclang>";
 
-    andromeda::doclang::document doc;
+    andromeda::doclang::dclx_document doc;
     assert(andromeda::doclang::reader::read_dclg_buffer(xml, doc));
 
     assert(doc.at("/doclang[1]/text[1]")=="Body text");
@@ -365,7 +365,7 @@ namespace
 
   int test_doclang_compute_entities()
   {
-    andromeda::doclang::document doc;
+    andromeda::doclang::dclx_document doc;
     assert(andromeda::doclang::reader::read_dclg_buffer("<doclang><text>Body</text></doclang>", doc));
 
     auto& instances = doc.mutable_instances();
@@ -395,7 +395,7 @@ namespace
     doc.compute_entities();
     const auto& entities = doc.get_entities();
     assert(entities.size()==4);
-    assert(andromeda::doclang::document::hash("tall man")==instances.at(4).get_ehash());
+    assert(andromeda::doclang::dclg_document::hash("tall man")==instances.at(4).get_ehash());
 
     bool found_man = false;
     bool found_tall_man = false;
@@ -412,7 +412,7 @@ namespace
         if(entity.get_name()=="tall man")
           {
             found_tall_man = true;
-            assert(entity.get_hash()==andromeda::doclang::document::hash("tall man"));
+            assert(entity.get_hash()==andromeda::doclang::dclg_document::hash("tall man"));
             assert(entity.get_entity_kind()=="exact");
             assert(entity.get_count()==7);
             assert(entity.get_parent()=="man");
@@ -421,6 +421,127 @@ namespace
 
     assert(found_man);
     assert(found_tall_man);
+
+    return 0;
+  }
+
+  int test_dclg_sidecars()
+  {
+    const std::string summary_dclg =
+      "<doclang version=\"0.7\"><text>Summary</text></doclang>";
+    const std::string toc_dclg =
+      "<doclang version=\"0.7\"><toc>"
+      "<entry xpath=\"/doclang[1]/heading[1]\"><description>Introduction</description></entry>"
+      "</toc></doclang>";
+    const std::string concepts_dclg =
+      "<doclang version=\"0.7\"><concepts>"
+      "<concept><header>FeSe</header><abbreviation>FeSe</abbreviation>"
+      "<description>Material</description></concept>"
+      "</concepts></doclang>";
+
+    andromeda::doclang::dclx_document doc;
+    assert(andromeda::doclang::reader::read_dclg_buffer(
+             "<doclang version=\"0.7\"><text>Body</text></doclang>", doc));
+
+    // absent
+    assert(not doc.has_summary());
+    assert(not doc.has_toc());
+    assert(not doc.has_concepts());
+    assert(not doc.get_summary().has_value());
+    assert(not doc.has_annotations());
+
+    // valid: each sidecar is stored parsed, and keeps its own raw DCLG string
+    assert(andromeda::doclang::set_summary_dclg(doc, summary_dclg));
+    assert(andromeda::doclang::set_toc_dclg(doc, toc_dclg));
+    assert(andromeda::doclang::set_concepts_dclg(doc, concepts_dclg));
+
+    assert(doc.has_summary() and doc.has_toc() and doc.has_concepts());
+    assert(doc.has_annotations());
+    assert(doc.get_summary().value()->valid());
+    assert(doc.get_summary().value()->raw()==summary_dclg);
+    assert(doc.get_toc().value()->raw()==toc_dclg);
+    assert(doc.get_concepts().value()->raw()==concepts_dclg);
+
+    // the sidecar is a full DCLG document, not an opaque string
+    assert(doc.get_summary().value()->at("/doclang[1]/text[1]")=="Summary");
+    assert(std::string(doc.get_toc().value()->root().child("toc").child("entry")
+                       .attribute("xpath").value())=="/doclang[1]/heading[1]");
+
+    // invalid: malformed XML is rejected and reported against the sidecar path
+    assert(not andromeda::doclang::set_summary_dclg(doc, "<doclang><text>oops"));
+    assert(doc.get_last_error().find(andromeda::doclang::SUMMARY_DCLG)!=std::string::npos);
+    assert(doc.get_last_error().find("could not parse DocLang XML")!=std::string::npos);
+
+    assert(not andromeda::doclang::set_toc_dclg(
+             doc, "<doclang><toc><entry /></toc></doclang>"));
+    assert(doc.get_last_error().find("entries require xpath")!=std::string::npos);
+
+    assert(not andromeda::doclang::set_concepts_dclg(
+             doc, "<doclang><concepts><concept /></concepts></doclang>"));
+    assert(doc.get_last_error().find("require one <header>")!=std::string::npos);
+
+    // a rejected sidecar leaves the previously accepted one untouched
+    assert(doc.get_summary().value()->raw()==summary_dclg);
+    assert(doc.get_toc().value()->raw()==toc_dclg);
+
+    // replacement
+    const std::string replaced_dclg =
+      "<doclang version=\"0.7\"><text>Replaced</text></doclang>";
+    assert(andromeda::doclang::set_summary_dclg(doc, replaced_dclg));
+    assert(doc.get_summary().value()->raw()==replaced_dclg);
+    assert(doc.get_summary().value()->at("/doclang[1]/text[1]")=="Replaced");
+
+    // DCLX round trip
+    std::vector<std::byte> bytes;
+    assert(andromeda::doclang::writer::write_dclx_buffer(doc, bytes));
+
+    andromeda::doclang::dclx_document restored;
+    assert(andromeda::doclang::reader::read_dclx_buffer(bytes, restored));
+    assert(restored.has_summary() and restored.has_toc() and restored.has_concepts());
+    assert(restored.get_summary().value()->valid());
+    assert(restored.get_summary().value()->raw()==replaced_dclg);
+    assert(restored.get_toc().value()->raw()==toc_dclg);
+    assert(restored.get_concepts().value()->raw()==concepts_dclg);
+    assert(restored.get_concepts().value()->root().child("concepts")
+           .child("concept").child("header").child_value()==std::string("FeSe"));
+
+    // clearing
+    restored.clear_summary();
+    restored.clear_toc();
+    restored.clear_concepts();
+    assert(not restored.has_summary());
+    assert(not restored.has_toc());
+    assert(not restored.has_concepts());
+    assert(not restored.get_summary().has_value());
+
+    // a cleared sidecar is dropped from the archive on the next write
+    std::vector<std::byte> cleared_bytes;
+    assert(andromeda::doclang::writer::write_dclx_buffer(restored, cleared_bytes));
+
+    andromeda::doclang::dclx_document reread;
+    assert(andromeda::doclang::reader::read_dclx_buffer(cleared_bytes, reread));
+    assert(not reread.has_summary());
+    assert(not reread.has_toc());
+    assert(not reread.has_concepts());
+
+    return 0;
+  }
+
+  int test_dclx_without_sidecars_stays_valid()
+  {
+    const std::string xml =
+      "<doclang version=\"0.7\"><text>Archive text</text></doclang>";
+
+    std::vector<std::byte> bytes;
+    assert(create_dclx(bytes, xml));
+
+    andromeda::doclang::dclx_document doc;
+    assert(andromeda::doclang::reader::read_dclx_buffer(bytes, doc));
+    assert(doc.valid());
+    assert(not doc.has_summary());
+    assert(not doc.has_toc());
+    assert(not doc.has_concepts());
+    assert(doc.raw()==xml);
 
     return 0;
   }
@@ -441,7 +562,7 @@ namespace
       "<table><fcel/>cell<nl/></table>"
       "</doclang>";
 
-    auto doc = std::make_shared<andromeda::doclang::document>();
+    auto doc = std::make_shared<andromeda::doclang::dclx_document>();
     assert(andromeda::doclang::reader::read_dclg_buffer(xml, *doc));
 
     unsigned iterated = 0;
@@ -504,7 +625,7 @@ namespace
       "<table><fcel/>Cell<nl/></table>"
       "</doclang>";
 
-    andromeda::doclang::document doc;
+    andromeda::doclang::dclx_document doc;
     assert(andromeda::doclang::reader::read_dclg_buffer(xml, doc));
 
     andromeda::subject<andromeda::DOCUMENT> subject;
@@ -547,6 +668,8 @@ int main()
   test_preserve_mixed_content_order();
   test_doclang_at();
   test_doclang_compute_entities();
+  test_dclg_sidecars();
+  test_dclx_without_sidecars_stays_valid();
   test_read_only_document_view();
   test_subject_adapter_preserves_doclang_metadata();
 

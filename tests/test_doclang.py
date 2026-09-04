@@ -2,7 +2,7 @@ import zipfile
 
 import pandas as pd
 import pytest
-from docling_nlp.andromeda_doclang import DocLangXDocument, DocLangXNlp
+from docling_nlp.andromeda_doclang import DoclangDocument, DocLangXDocument, DocLangXNlp
 
 
 def create_dclx(path):
@@ -80,6 +80,11 @@ def test_doclangx_document_read_query_write(tmp_path):
         "annotations/entities.csv",
         "annotations/relations.csv",
         "annotations/edges.csv",
+        "annotations/document_reference.bib",
+        "annotations/references.bib",
+        "annotations/summary.dclg",
+        "annotations/toc.dclg",
+        "annotations/concepts.dclg",
     ]
     assert "document.xml" in doc.archive_paths()
 
@@ -191,6 +196,113 @@ def test_doclangx_document_apply_nlp_empty_model_expr(tmp_path):
     restored = DocLangXDocument()
     assert restored.read(str(output_path))
     assert restored.valid()
+
+
+def test_doclangx_document_document_level_annotations_round_trip(tmp_path):
+    output_path = tmp_path / "annotations.dclx"
+
+    doc = DocLangXDocument()
+    assert doc.read_xml('<doclang version="0.7"><text>Body text</text></doclang>')
+    doc.set_document_reference("@article{document, title={Document}}\n")
+    doc.set_references("@article{reference, title={Reference}}\n")
+    assert doc.set_document_summary(
+        '<doclang version="0.7"><text>Summary</text></doclang>'
+    )
+    assert doc.set_toc(
+        '<doclang version="0.7"><toc><entry xpath="/doclang[1]/section[1]">'
+        "<description>Introduction</description></entry></toc></doclang>"
+    )
+    assert doc.set_concepts(
+        '<doclang version="0.7"><concepts><concept><header>FeSe</header>'
+        "<abbreviation>FeSe</abbreviation><description>Material</description>"
+        "</concept></concepts></doclang>"
+    )
+    assert doc.summary()["has_document_reference"]
+    assert doc.summary()["has_references"]
+    assert doc.summary()["has_summary"]
+    assert doc.summary()["has_toc"]
+    assert doc.summary()["has_concepts"]
+    assert doc.write(str(output_path))
+
+    restored = DocLangXDocument()
+    assert restored.read(str(output_path))
+    assert restored.document_reference() == "@article{document, title={Document}}\n"
+    assert restored.references() == "@article{reference, title={Reference}}\n"
+    # the sidecars come back as parsed DoclangDocument objects
+    assert restored.document_summary().valid()
+    assert "<text>Summary</text>" in restored.document_summary().xml()
+    assert restored.document_summary().at(xpath="/doclang[1]/text[1]") == "Summary"
+    assert 'xpath="/doclang[1]/section[1]"' in restored.toc().xml()
+    assert "<header>FeSe</header>" in restored.concepts().xml()
+
+    restored.clear_document_reference()
+    restored.clear_references()
+    restored.clear_document_summary()
+    restored.clear_toc()
+    restored.clear_concepts()
+    assert restored.document_reference() is None
+    assert restored.references() is None
+    assert restored.document_summary() is None
+    assert restored.toc() is None
+    assert restored.concepts() is None
+
+
+def test_doclangx_document_rejects_invalid_document_level_dclg():
+    doc = DocLangXDocument()
+    assert doc.read_xml('<doclang version="0.7"><text>Body text</text></doclang>')
+    assert not doc.set_toc('<doclang version="0.7"><toc><entry /></toc></doclang>')
+    assert "entries require xpath" in doc.last_error()
+    assert not doc.set_concepts(
+        '<doclang version="0.7"><concepts><concept /></concepts></doclang>'
+    )
+    assert "require one <header>" in doc.last_error()
+
+
+def test_doclang_document_iterates_dclg_elements():
+    doc = DoclangDocument(
+        '<doclang version="0.7"><heading>Title</heading><text>Body</text></doclang>'
+    )
+
+    assert doc.valid()
+    assert doc.xml().startswith("<doclang")
+    assert [element["name"] for element in doc] == ["heading", "text"]
+    assert doc.elements(name="heading")[0]["text"] == "Title"
+    assert "<text>Body</text>" in doc.elements(name="text")[0]["xml"]
+
+    invalid = DoclangDocument()
+    assert not invalid.read_xml("<text>missing root</text>")
+    assert "root <doclang>" in invalid.last_error()
+
+
+def test_doclangx_document_is_a_doclang_document():
+    doc = DocLangXDocument()
+    assert isinstance(doc, DoclangDocument)
+
+    assert doc.read_xml(
+        '<doclang version="0.7"><heading>Title</heading><text>Body</text></doclang>'
+    )
+    assert doc.valid()
+    assert doc.xml().startswith("<doclang")
+    assert [element["name"] for element in doc] == ["heading", "text"]
+    assert doc.elements(name="heading")[0]["text"] == "Title"
+
+
+def test_doclangx_document_read_xml_drops_previous_dclx_state(tmp_path):
+    input_path = tmp_path / "input.dclx"
+    create_dclx(input_path)
+
+    doc = DocLangXDocument()
+    assert doc.read(str(input_path))
+    assert doc.has_archive()
+    assert doc.has_annotations()
+
+    # a bare DCLG buffer has no archive and no annotations to carry over
+    assert doc.read_xml('<doclang version="0.7"><text>Body</text></doclang>')
+    assert doc.valid()
+    assert not doc.has_archive()
+    assert not doc.has_annotations()
+    assert doc.summary()["properties"] == 0
+    assert doc.summary()["instances"] == 0
 
 
 def test_doclangx_document_at_resolves_doclang_paths():

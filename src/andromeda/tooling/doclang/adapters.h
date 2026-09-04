@@ -7,7 +7,7 @@
 #include <string>
 #include <string_view>
 
-#include <andromeda/tooling/doclang/document.h>
+#include <andromeda/tooling/doclang/dclx_document.h>
 #include <andromeda/tooling/doclang/view.h>
 #include <andromeda/utils.h>
 #include <andromeda/enums.h>
@@ -27,7 +27,7 @@ namespace andromeda::doclang
   {
   public:
 
-    static bool to_subject_document(const document& in,
+    static bool to_subject_document(const dclx_document& in,
                                     subject<DOCUMENT>& out,
                                     const adapter_options& options = {});
 
@@ -44,7 +44,7 @@ namespace andromeda::doclang
                                       std::string_view path);
   };
 
-  bool subject_adapter::to_subject_document(const document& in,
+  bool subject_adapter::to_subject_document(const dclx_document& in,
                                             subject<DOCUMENT>& out,
                                             const adapter_options& options)
   {
