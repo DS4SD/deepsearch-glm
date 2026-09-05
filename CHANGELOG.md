@@ -1,3 +1,9 @@
+## [v1.5.0](https://github.com/docling-project/docling-nlp/releases/tag/v1.5.0) - 2026-09-05
+
+### Feature
+
+* Adding dclg_document ([#105](https://github.com/docling-project/docling-nlp/issues/105)) ([`d07a29b`](https://github.com/docling-project/docling-nlp/commit/d07a29bdbb3435487fb0b2e2124d3502724ea9f7))
+
 ## [v1.4.0](https://github.com/docling-project/docling-nlp/releases/tag/v1.4.0) - 2026-09-03
 
 ### Feature
