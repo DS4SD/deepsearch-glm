@@ -25,6 +25,7 @@ dependencies = [
 pyplot = ["matplotlib>=3.7.1,<4.0.0"]
 networks = ["networkx>=3,<4", "netwulf>=0.1.5", "setuptools>=77.0.3"]
 docling = [
+    "docling>=2.126.0,<3.0.0",
     "docling-core>=2.0,<3.0",
     "pandas>=1.5.1,<3.0.0",
 ]
@@ -37,6 +38,7 @@ utils = [
     "requests>=2.32.3,<3.0.0",
 ]
 all = [
+    "docling>=2.126.0,<3.0.0",
     "docling-core>=2.0,<3.0",
     "huggingface-hub>=1.28.0,<2.0.0",
     "matplotlib>=3.7.1,<4.0.0",

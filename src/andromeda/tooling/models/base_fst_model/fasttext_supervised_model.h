@@ -517,12 +517,9 @@ namespace andromeda
     auto char_normaliser = text_element::create_char_normaliser(false);
     auto text_normaliser = text_element::create_text_normaliser(false);
 
-    std::size_t cnt=0;
     std::string line, orig="null", text="null", label="null";
     while(std::getline(ifs, line))
       {
-	std::cout << "\r\t#-lines: " << cnt++ << std::flush;
-	
 	nlohmann::json item = nlohmann::json::parse(line);
 
 	bool training_sample = bool(dis(gen)<0.9);

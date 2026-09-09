@@ -22,6 +22,7 @@ PYBIND11_MODULE(andromeda_doclang, m) {
          pybind11::arg("mode") = "auto")
     .def("elements", &andromeda_py::DoclangDocument::elements,
          pybind11::arg("name") = "")
+    .def("iterate_items", &andromeda_py::DoclangDocument::iterate_items)
     .def("__iter__", [](const andromeda_py::DoclangDocument& doc)
          {
            return doc.elements().attr("__iter__")();

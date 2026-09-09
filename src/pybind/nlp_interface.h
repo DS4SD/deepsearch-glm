@@ -284,11 +284,17 @@ namespace andromeda_py
     model_name = config.value("model", model_name);
 
     std::vector<std::shared_ptr<andromeda::base_nlp_model> > dep_models={};
-    andromeda::to_models(model_name, dep_models, true);
-
-    if(dep_models.size()>0)
+    // The generic CUSTOM_FST training config has no model file yet. It also
+    // has no dependencies, so attempting to initialise custom_fst(:) is both
+    // unnecessary and produces a misleading warning.
+    if(model_name!="custom_fst(:)")
       {
-	dep_models.pop_back();
+	andromeda::to_models(model_name, dep_models, true);
+
+	if(dep_models.size()>0)
+	  {
+	    dep_models.pop_back();
+	  }
       }
     
     andromeda::model_name name = andromeda::to_modelname(model_name);
