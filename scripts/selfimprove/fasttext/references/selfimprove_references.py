@@ -115,6 +115,10 @@ def arguments() -> argparse.Namespace:
         help="Maximum seconds to wait for one Ollama review response.",
     )
     parser.add_argument(
+        "--llm-context-window", type=int, default=8192,
+        help="Maximum Ollama context tokens per isolated review request.",
+    )
+    parser.add_argument(
         "--min-confidence", type=float, default=0.90,
         help="FastText confidence below which a candidate is sent to Ollama.",
     )
@@ -173,8 +177,8 @@ def arguments() -> argparse.Namespace:
         parser.error(f"missing input directory: {args.input_dir}")
     if (args.iterations < 1 or args.review_limit == 0 or args.review_limit < -1
             or args.max_files < 1 or args.arxiv_batch_size < 1
-            or args.fasttext_retries < 0):
-        parser.error("iterations, max-files, and arxiv-batch-size must be positive; review-limit must be positive or -1; fasttext-retries cannot be negative")
+            or args.fasttext_retries < 0 or args.llm_context_window < 1):
+        parser.error("iterations, max-files, arxiv-batch-size, and llm-context-window must be positive; review-limit must be positive or -1; fasttext-retries cannot be negative")
     if not 0 < args.min_confidence <= 1 or not 0 < args.validation_ratio < 1:
         parser.error("confidence and validation ratio must be in (0, 1)")
     return args
@@ -891,8 +895,20 @@ def uncertain(item: dict[str, Any], minimum: float) -> bool:
 
 
 def local_review(item: dict[str, Any], args: argparse.Namespace) -> dict[str, Any]:
+    """Classify one text item in a fresh, isolated Ollama context."""
+
+    return local_reviews([item], args)[item["candidate_id"]]
+
+
+def local_reviews(
+    items: list[dict[str, Any]], args: argparse.Namespace
+) -> dict[str, dict[str, Any]]:
+    """Classify multiple text items in one Ollama request."""
+
+    if not items:
+        return {}
     prompt = {
-        "task": "Classify a document text item.",
+        "task": "Classify each document text item independently.",
         "labels": {
             "meta-data": (
                 "An author name or author list, affiliation, email address, "
@@ -904,16 +920,32 @@ def local_review(item: dict[str, Any], args: argparse.Namespace) -> dict[str, An
             ),
             "text": "Any other prose, heading, caption, keyword list, or text item.",
         },
-        "text": item["text"],
-        "baseline": {
-            "label": item["prediction_label"],
-            "confidence": item["prediction_confidence"],
-            "in_reference_section": item["in_reference_section"],
-        },
-        "instruction": (
-            "Return JSON only with label set to meta-data, reference, or text."
-        ),
+        "items": [
+            {
+                "text": item["text"],
+                "baseline": {
+                    "label": item["prediction_label"],
+                    "confidence": item["prediction_confidence"],
+                    "in_reference_section": item["in_reference_section"],
+                },
+            }
+            for item in items
+        ],
+        "instruction": "Return one label per item, in the same order as the input items.",
     }
+    response_schema = {
+        "type": "object",
+        "properties": {
+            "labels": {
+                "type": "array",
+                "items": {"type": "string", "enum": sorted(LABELS)},
+                "minItems": len(items),
+                "maxItems": len(items),
+            },
+        },
+        "required": ["labels"],
+    }
+    started = time.monotonic()
     response = requests.post(
         f"{args.ollama_url.rstrip('/')}/api/chat",
         headers={"Content-Type": "application/json"},
@@ -921,14 +953,13 @@ def local_review(item: dict[str, Any], args: argparse.Namespace) -> dict[str, An
             "model": args.llm_model,
             "stream": False,
             "think": args.llm_thinking,
-            "format": {
-                "type": "object",
-                "properties": {
-                    "label": {"type": "string", "enum": sorted(LABELS)},
-                },
-                "required": ["label"],
+            "format": response_schema,
+            "keep_alive": "30m",
+            "options": {
+                "temperature": 0,
+                "num_ctx": args.llm_context_window,
+                "num_predict": max(32, 8 * len(items)),
             },
-            "options": {"temperature": 0},
             "messages": [
                 {"role": "system", "content": "You are a careful document reviewer."},
                 {"role": "user", "content": json.dumps(prompt, ensure_ascii=False)},
@@ -938,28 +969,73 @@ def local_review(item: dict[str, Any], args: argparse.Namespace) -> dict[str, An
     )
     response.raise_for_status()
     payload = response.json()
-    content = payload["message"]["content"].strip()
     try:
-        parsed = json.loads(content)
-    except json.JSONDecodeError:
+        parsed = json.loads(payload["message"]["content"].strip())
+    except (KeyError, AttributeError, json.JSONDecodeError):
         parsed = {}
-    accepted = parsed.get("label") in LABELS
-    confidence = item["prediction_confidence"]
-    compact_text = " ".join(item["text"].split())
-    if len(compact_text) > 180:
-        compact_text = f"{compact_text[:177]}..."
-    if LOG.isEnabledFor(logging.DEBUG):
-        tqdm.write(
-            "conf: %s, orig: %s -> pred: %s, text: %s" % (
-                f"{confidence:.2f}" if isinstance(confidence, (int, float)) else "n/a",
-                f"{item['prediction_label'] or 'unknown':>9}",
-                f"{parsed.get('label', 'invalid'):>9}",
-                compact_text,
-            ),
-            file=sys.stderr,
+    labels = parsed.get("labels")
+    accepted = (
+        isinstance(labels, list)
+        and len(labels) == len(items)
+        and all(label in LABELS for label in labels)
+    )
+    if not accepted and len(items) > 1:
+        midpoint = len(items) // 2
+        LOG.warning(
+            "Ollama returned an invalid %d-item batch; retrying as %d and %d items",
+            len(items), midpoint, len(items) - midpoint,
         )
-    return {"accepted": accepted, "parsed": parsed if accepted else None,
-            "request": prompt, "response": payload}
+        return {
+            **local_reviews(items[:midpoint], args),
+            **local_reviews(items[midpoint:], args),
+        }
+    if not accepted:
+        labels = [None] * len(items)
+    if LOG.isEnabledFor(logging.DEBUG):
+        timing = {
+            key: payload.get(key)
+            for key in (
+                "total_duration", "load_duration", "prompt_eval_count",
+                "prompt_eval_duration", "eval_count", "eval_duration",
+            )
+            if key in payload
+        }
+        LOG.debug(
+            "Ollama batch: %d samples in %.2fs; timing=%s",
+            len(items), time.monotonic() - started, timing,
+        )
+    reviews = {}
+    for index, (item, label) in enumerate(zip(items, labels)):
+        confidence = item["prediction_confidence"]
+        compact_text = " ".join(item["text"].split())
+        if len(compact_text) > 180:
+            compact_text = f"{compact_text[:177]}..."
+        if LOG.isEnabledFor(logging.DEBUG):
+            tqdm.write(
+                "conf: %s, orig: %s -> pred: %s, text: %s" % (
+                    f"{confidence:.2f}" if isinstance(confidence, (int, float)) else "n/a",
+                    f"{item['prediction_label'] or 'unknown':>9}",
+                    f"{label or 'invalid':>9}",
+                    compact_text,
+                ),
+                file=sys.stderr,
+            )
+        item_parsed = {"label": label} if label in LABELS else None
+        item_request = {
+            "task": prompt["task"],
+            "labels": prompt["labels"],
+            "item": prompt["items"][index],
+            "batch_position": index,
+            "batch_size": len(items),
+            "instruction": prompt["instruction"],
+        }
+        reviews[item["candidate_id"]] = {
+            "accepted": item_parsed is not None,
+            "parsed": item_parsed,
+            "request": item_request,
+            "response": payload,
+        }
+    return reviews
 
 
 def is_training_sample(candidate_id: str, ratio: float) -> bool:
