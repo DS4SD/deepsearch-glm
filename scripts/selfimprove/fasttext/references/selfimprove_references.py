@@ -103,7 +103,7 @@ def arguments() -> argparse.Namespace:
         help="Base URL of local Ollama; the script calls its /api/chat endpoint.",
     )
     parser.add_argument(
-        "--llm-model", default="qwen3.6:35b-mlx",
+        "--llm-model", default="qwen3.6:27b",
         help="Installed Ollama model used to review uncertain candidates.",
     )
     parser.add_argument(
@@ -117,6 +117,10 @@ def arguments() -> argparse.Namespace:
     parser.add_argument(
         "--llm-context-window", type=int, default=8192,
         help="Maximum Ollama context tokens per isolated review request.",
+    )
+    parser.add_argument(
+        "--llm-batch-size", type=int, default=32,
+        help="Uncertain items classified in each Ollama request.",
     )
     parser.add_argument(
         "--min-confidence", type=float, default=0.90,
@@ -177,8 +181,13 @@ def arguments() -> argparse.Namespace:
         parser.error(f"missing input directory: {args.input_dir}")
     if (args.iterations < 1 or args.review_limit == 0 or args.review_limit < -1
             or args.max_files < 1 or args.arxiv_batch_size < 1
-            or args.fasttext_retries < 0 or args.llm_context_window < 1):
-        parser.error("iterations, max-files, arxiv-batch-size, and llm-context-window must be positive; review-limit must be positive or -1; fasttext-retries cannot be negative")
+            or args.fasttext_retries < 0 or args.llm_context_window < 1
+            or args.llm_batch_size < 1):
+        parser.error(
+            "iterations, max-files, arxiv-batch-size, llm-context-window, and "
+            "llm-batch-size must be positive; review-limit must be positive or -1; "
+            "fasttext-retries cannot be negative"
+        )
     if not 0 < args.min_confidence <= 1 or not 0 < args.validation_ratio < 1:
         parser.error("confidence and validation ratio must be in (0, 1)")
     return args
@@ -1512,12 +1521,25 @@ def refine_training_data(
         LOG.info("Reusing %d completed Ollama reviews", len(reviews))
     else:
         reviews = {}
-        for item in tqdm(review_items, desc="Ollama review", unit="sample", file=sys.stderr, dynamic_ncols=True):
+        progress = tqdm(
+            total=len(review_items), desc="Ollama review", unit="sample",
+            file=sys.stderr, dynamic_ncols=True,
+        )
+        for start in range(0, len(review_items), args.llm_batch_size):
+            batch = review_items[start:start + args.llm_batch_size]
             try:
-                reviews[item["candidate_id"]] = local_review(item, args)
+                reviews.update(local_reviews(batch, args))
             except (requests.RequestException, KeyError, TypeError, ValueError) as exc:
-                reviews[item["candidate_id"]] = {"accepted": False, "error": str(exc)}
-        write_json(reviews_file, [{"candidate-id": identifier, **review} for identifier, review in reviews.items()])
+                reviews.update({
+                    item["candidate_id"]: {"accepted": False, "error": str(exc)}
+                    for item in batch
+                })
+            progress.update(len(batch))
+        progress.close()
+        write_json(reviews_file, [
+            {"candidate-id": identifier, **review}
+            for identifier, review in reviews.items()
+        ])
     new_labels = accepted_labels(reviews)
     review_predictions = {item["candidate_id"]: item["prediction_label"] for item in predictions}
     review_report = {
