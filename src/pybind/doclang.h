@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <filesystem>
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -36,6 +37,7 @@ namespace andromeda_py
     std::string last_error() const;
     std::string at(const std::string& xpath, const std::string& mode="auto");
     pybind11::list elements(const std::string& name="") const;
+    pybind11::list iterate_items() const;
 
   private:
 
@@ -223,6 +225,24 @@ namespace andromeda_py
       element["xml"] = andromeda::doclang::serialize_node(node);
       element["text"] = andromeda::doclang::node_text_content(*dclg_doc, node);
       result.append(element);
+    });
+    return result;
+  }
+
+  inline pybind11::list DoclangDocument::iterate_items() const
+  {
+    pybind11::list result;
+    std::map<std::string, std::size_t> positions;
+    dclg_doc->iterate_elements([&](pugi::xml_node node)
+    {
+      const std::string name = node.name();
+      const std::string xpath = "/doclang[1]/" + name + "[" +
+        std::to_string(++positions[name]) + "]";
+      pybind11::dict item;
+      item["name"] = name;
+      item["xml"] = andromeda::doclang::serialize_node(node);
+      item["text"] = andromeda::doclang::node_text_content(*dclg_doc, node);
+      result.append(pybind11::make_tuple(xpath, item));
     });
     return result;
   }
