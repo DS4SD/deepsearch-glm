@@ -286,7 +286,8 @@ def test_doclangx_document_is_a_doclang_document():
     assert [element["name"] for element in doc] == ["heading", "text"]
     assert doc.elements(name="heading")[0]["text"] == "Title"
     assert [xpath for xpath, _ in doc.iterate_items()] == [
-        "/doclang[1]/heading[1]", "/doclang[1]/text[1]",
+        "/doclang[1]/heading[1]",
+        "/doclang[1]/text[1]",
     ]
     assert doc.iterate_items()[1][1]["text"] == "Body"
 

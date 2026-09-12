@@ -74,11 +74,11 @@ The template configuration also supports these fields:
 
 | Config group | Fields |
 | --- | --- |
-| hpo | autotune, modelsize, duration |
-| args | mode (supervised), learning-rate, epoch, dim, ws, n-gram |
+| hpo | autotune, modelsize, duration, metric, predictions |
+| args | mode (supervised), learning-rate, epoch, dim, ws, n-gram, loss, min-count, min-char-ngram, max-char-ngram, bucket, thread, seed |
 | files | data-file, model-file, metrics-file |
 
-Pass only parameters you intend to override. Important current limitation: when epoch is explicitly passed through fasttext_supervised_model, launch_training sends dim as the FastText epoch value. Until that implementation defect is fixed, omit explicit epoch or verify the emitted FastText arguments before relying on it.
+Pass only parameters you intend to override. A missing or null training parameter is not forwarded to FastText, allowing its native default or autotune search to apply.
 
 ## Python: apply a custom classifier
 
@@ -158,4 +158,3 @@ The report is not JSON. For automated model selection, parse it carefully or add
 - Use explicit training-sample values and retain the source JSONL, generated FastText files, model, vectors, config, and metrics together.
 - Keep model-file as the intended base path. Saving normalizes a .bin suffix and writes both .bin and .vec.
 - Test application with representative short, long, multilingual, and dependency-sensitive text before deployment.
-
